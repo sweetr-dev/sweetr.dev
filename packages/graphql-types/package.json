@@ -1,0 +1,8 @@
+{
+  "name": "@sweetr/graphql-types",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "typescript": "^4.9.3"
+  }
+}

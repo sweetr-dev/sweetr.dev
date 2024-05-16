@@ -1,0 +1,20 @@
+.label {
+  text-align: center;
+  font-weight: 900;
+  font-size: 7.5rem;
+  line-height: 1;
+  margin-bottom: calc(var(--mantine-spacing-xl) * 1.5);
+  color: var(--mantine-color-red-3);
+}
+
+.title {
+  text-align: center;
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--mantine-color-white);
+}
+
+.description {
+  max-width: 33.25rem;
+  margin: var(--mantine-spacing-xl) auto var(--mantine-spacing-xl) auto !important;
+}

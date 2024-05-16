@@ -1,0 +1,25 @@
+{
+  "-- get-started": {
+    "type": "separator",
+    "title": "Get Started"
+  },
+  "index": "Introduction",
+  "install": "Install the App",
+  "-- features": {
+    "type": "separator",
+    "title": "Features"
+  },
+  "dependency-changes": "Dependency Changes",
+  "pr-size-labeler": "Pull Request Size Labeler",
+
+  "-- more": {
+    "type": "separator",
+    "title": "More"
+  },
+
+  "github-app": {
+    "title": "GitHub App",
+    "href": "https://github.com/sweetr-dev",
+    "newWindow": true
+  }
+}

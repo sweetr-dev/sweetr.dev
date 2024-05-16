@@ -1,0 +1,11 @@
+button[data-weekend="true"] {
+  --_day-color: var(--mantine-color-text) !important;
+}
+
+.dateShortcut {
+  border-radius: 5px;
+}
+
+.datePickerContainer {
+  border-left: 1px solid var(--mantine-color-dark-4);
+}

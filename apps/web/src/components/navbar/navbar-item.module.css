@@ -1,0 +1,41 @@
+.link {
+  text-decoration: none;
+}
+
+.button {
+  padding: 13px !important;
+  border-radius: var(--mantine-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button svg {
+  color: var(--mantine-color-dark-1);
+}
+
+.label {
+  color: var(--mantine-color-dark-1);
+  padding-left: 8px;
+}
+
+.button:hover {
+  background-color: var(--mantine-color-gray-light-hover) !important;
+}
+
+.active {
+  background-color: var(--mantine-color-green-light-hover) !important;
+}
+
+.active .label {
+  color: var(--mantine-color-green-2);
+}
+
+.active svg,
+.active:hover {
+  color: var(--mantine-color-green-2);
+}
+
+.active:hover {
+  background-color: var(--mantine-color-green-light-hover) !important;
+}

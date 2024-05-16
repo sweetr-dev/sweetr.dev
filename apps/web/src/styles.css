@@ -1,0 +1,11 @@
+.grow-on-hover {
+  transition:
+    transform 150ms ease,
+    box-shadow 100ms ease;
+
+  &:hover {
+    box-shadow: var(--mantine-shadow-md);
+    transform: scale(1.02);
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,187 @@
+import { useParams } from "react-router-dom";
+import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
+import {
+  Accordion,
+  Avatar,
+  Box,
+  Button,
+  Group,
+  Paper,
+  Skeleton,
+  Table,
+} from "@mantine/core";
+import { useChartDrawer } from "../../chart-page.provider";
+import { useForm } from "@mantine/form";
+import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
+import { IconBook2, IconCalendar } from "@tabler/icons-react";
+import { FilterDate } from "../../../../../../components/filter-date";
+import { parseNullableISO } from "../../../../../../providers/date.provider";
+import startOfDay from "date-fns/startOfDay";
+import endOfToday from "date-fns/endOfToday";
+import subDays from "date-fns/subDays";
+import { LoadableContent } from "../../../../../../components/loadable-content";
+import { CardInfo } from "../../../../../../components/card-info";
+import { useCodeReviewDistributionQuery } from "../../../../../../api/chart.api";
+import { useWorkspace } from "../../../../../../providers/workspace.provider";
+import { Period } from "@sweetr/graphql-types/frontend/graphql";
+import { PageEmptyState } from "../../../../../../components/page-empty-state";
+import { ChartCodeReviewDistribution } from "../../components/chart-code-review-distribution";
+import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
+
+export const TeamHealthCodeReviewDistributionPage = () => {
+  const { teamId } = useParams();
+  const { workspace } = useWorkspace();
+  const drawerProps = useChartDrawer({
+    closeUrl: `/teams/${teamId}/health-and-performance/`,
+  });
+  const searchParams = useFilterSearchParameters();
+  const filters = useForm<{
+    period: Period;
+    from: string | null;
+    to: string | null;
+  }>({
+    initialValues: {
+      period: (searchParams.get("period") as Period) || Period.WEEKLY,
+      from:
+        searchParams.get("from") ||
+        startOfDay(subDays(new Date(), 30)).toISOString(),
+      to: searchParams.get("to") || endOfToday().toISOString(),
+    },
+  });
+
+  if (!teamId) throw new ResourceNotFound();
+
+  const { data, isLoading } = useCodeReviewDistributionQuery({
+    workspaceId: workspace.id,
+    chartInput: {
+      dateRange: {
+        from: filters.values.from,
+        to: filters.values.to,
+      },
+      period: filters.values.period as Period,
+      teamId,
+    },
+  });
+
+  const isEmpty =
+    !data?.workspace.charts?.codeReviewDistribution?.entities.length &&
+    !isLoading;
+
+  const reviewers =
+    data?.workspace.charts?.codeReviewDistribution?.entities.filter(
+      (entity) => entity.reviewCount !== null,
+    );
+
+  return (
+    <>
+      <DrawerScrollable
+        {...drawerProps}
+        title="Code review distribution"
+        toolbar={
+          <>
+            <Button
+              leftSection={<IconBook2 stroke={1.5} size={20} />}
+              variant="subtle"
+              color="dark.1"
+            >
+              Docs
+            </Button>
+          </>
+        }
+      >
+        <Box p="md">
+          <CardInfo>
+            Understand who are performing most reviews on your team and the
+            breadth of their impact.
+          </CardInfo>
+
+          <Group mt="md" wrap="nowrap" gap={5}>
+            <FilterDate
+              label="Date range"
+              icon={IconCalendar}
+              onChange={(dates) => {
+                const from = dates[0]?.toISOString() || null;
+                const to = dates[1]?.toISOString() || null;
+
+                filters.setFieldValue("from", from);
+                filters.setFieldValue("to", to);
+                searchParams.set("from", from);
+                searchParams.set("to", to);
+              }}
+              value={[
+                parseNullableISO(filters.values.from) || null,
+                parseNullableISO(filters.values.to) || null,
+              ]}
+            />
+          </Group>
+          <Paper withBorder h={500} p="xs" mt="md" bg="dark.6">
+            <LoadableContent
+              isLoading={isLoading}
+              whenLoading={<Skeleton h="100%" />}
+              h="100%"
+              display="flex"
+              content={
+                <ChartCodeReviewDistribution
+                  chartData={data?.workspace.charts?.codeReviewDistribution}
+                  period={filters.values.period}
+                />
+              }
+              style={
+                isEmpty
+                  ? { alignItems: "center", justifyContent: "center" }
+                  : undefined
+              }
+              isEmpty={isEmpty}
+              whenEmpty={<PageEmptyState message="No data available" />}
+            />
+          </Paper>
+
+          {!isEmpty && (
+            <Paper mt="md" withBorder p="xs" bg="dark.6">
+              <Table>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Reviewer</Table.Th>
+                    <Table.Th ta="right">Reviews</Table.Th>
+                    <Table.Th ta="right">%</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {reviewers?.map((reviewer) => (
+                    <Table.Tr key={reviewer.id}>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <Avatar src={reviewer.image} size={24} />
+                          {reviewer.name}
+                        </Group>
+                      </Table.Td>
+                      <Table.Td align="right">{reviewer.reviewCount}</Table.Td>
+                      <Table.Td align="right">
+                        {reviewer.reviewSharePercentage}%
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Paper>
+          )}
+
+          <Accordion variant="contained" mt="md">
+            <Accordion.Item value="improve">
+              <Accordion.Control c="dimmed">
+                Why monitor and improve this metric?
+              </Accordion.Control>
+              <Accordion.Panel>Content</Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="data">
+              <Accordion.Control c="dimmed">
+                How is the data aggregated?
+              </Accordion.Control>
+              <Accordion.Panel>Content</Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+        </Box>
+      </DrawerScrollable>
+    </>
+  );
+};

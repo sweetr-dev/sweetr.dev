@@ -1,0 +1,34 @@
+{
+  "name": "sweetr.dev",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "ssl:generate": "node ./certs/devcert.js",
+    "heroku-postbuild": "turbo run build --filter api",
+    "start": "cd apps/api && npm run start",
+    "ngrok": "ngrok http https://api.sweetr.local:8000 --domain weekly-flying-primate.ngrok-free.app"
+  },
+  "dependencies": {
+    "devcert": "^1.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "latest",
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@8.5.5"
+}

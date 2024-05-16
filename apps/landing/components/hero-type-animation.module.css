@@ -1,0 +1,19 @@
+.cursor {
+  background: #69db7c;
+  width: 1px;
+  height: 45px;
+  animation: blink 1s step-end infinite;
+  transform: skew(-15deg, 15deg);
+  margin-left: 8px;
+  self-align: bottom;
+}
+
+@keyframes blink {
+  from,
+  to {
+    background: transparent;
+  }
+  50% {
+    background: #69db7c;
+  }
+}

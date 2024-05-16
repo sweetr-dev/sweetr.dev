@@ -1,0 +1,364 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgres"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum GitProvider {
+  GITHUB
+}
+
+enum InstallationTargetType {
+  ORGANIZATION
+  USER
+}
+
+enum PullRequestState {
+  DRAFT
+  OPEN
+  CLOSED
+  MERGED
+}
+
+enum PullRequestSize {
+  TINY
+  SMALL
+  MEDIUM
+  LARGE
+  HUGE
+}
+
+enum CodeReviewState {
+  APPROVED
+  CHANGES_REQUESTED
+  COMMENTED
+}
+
+enum TeamMemberRole {
+  DESIGNER
+  ENGINEER
+  LEADER
+  MANAGER
+  PRODUCT
+  QA
+}
+
+// User git profiles. Public data. May not have an associated user. 
+model GitProfile {
+  id Int @id @default(autoincrement())
+
+  gitProvider GitProvider
+  gitUserId   String
+
+  handle               String
+  name                 String
+  avatar               String?
+  workspaceMemberships WorkspaceMembership[]
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  // A single user might have multiple git profiles, with multiple personal workspaces.
+  workspace       Workspace?
+  pullRequests    PullRequest[]
+  teamMemberships TeamMember[]
+  codeReviews     CodeReview[]
+
+  @@unique([gitProvider, gitUserId])
+  @@unique([gitProvider, userId])
+  @@index([userId])
+}
+
+// A person that has authorized GitHub OAuth
+model User {
+  id          Int          @id @default(autoincrement())
+  slug        String       @unique
+  email       String       @unique
+  gitProfiles GitProfile[]
+}
+
+// An org that has authorized GitHub OAuth
+model Organization {
+  id Int @id @default(autoincrement())
+
+  gitProvider       GitProvider
+  gitOrganizationId String
+
+  name      String
+  handle    String
+  avatar    String?
+  workspace Workspace?
+
+  @@unique([gitProvider, gitOrganizationId])
+}
+
+model Automation {
+  id               Int     @id @default(autoincrement())
+  slug             String  @unique
+  title            String
+  description      String
+  shortDescription String
+  demoUrl          String
+  color            String
+  icon             String
+  benefits         Json
+  available        Boolean @default(true)
+  docsUrl          String?
+
+  settings AutomationSetting[]
+}
+
+model Workspace {
+  id Int @id @default(autoincrement())
+
+  gitProvider  GitProvider
+  memberships  WorkspaceMembership[]
+  repositories Repository[]
+  teams        Team[]
+
+  installation Installation?
+
+  // A workspace can belong either to an Organization or an User
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int?
+
+  // A personal workspace can become orphan when an user revokes their OAuth
+  // Re-authenticating creates a new user and reconnects 
+  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
+  gitProfileId Int?
+
+  AutomationSetting   AutomationSetting[]
+  CodeReview          CodeReview[]
+  PullRequestTracking PullRequestTracking[]
+  PullRequest         PullRequest[]
+  TeamMember          TeamMember[]
+
+  @@unique([gitProfileId])
+  @@unique([organizationId])
+}
+
+// ---------------------------------------------------------------------------------------
+// Workspace Scope (RLS-Enabled)
+// |- Add workspaceId in all tables below to ensure query performance and data isolation.
+// |- When adding new models, create a migration to activate RLS for the new tables.
+// ---------------------------------------------------------------------------------------
+
+model Installation {
+  id Int @id @default(autoincrement())
+
+  gitInstallationId String      @unique
+  gitProvider       GitProvider
+
+  targetId            String
+  targetType          InstallationTargetType
+  repositorySelection String
+  permissions         Json
+  events              Json
+  suspendedAt         DateTime?
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@unique([workspaceId])
+}
+
+model WorkspaceMembership {
+  id Int @id @default(autoincrement())
+
+  gitProfile   GitProfile @relation(fields: [gitProfileId], references: [id], onDelete: Cascade)
+  gitProfileId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  role String?
+
+  @@unique([gitProfileId, workspaceId])
+  @@index([workspaceId])
+}
+
+model Repository {
+  id Int @id @default(autoincrement())
+
+  gitProvider     GitProvider
+  gitRepositoryId String
+
+  name        String
+  fullName    String
+  description String?
+  isPrivate   Boolean
+  isFork      Boolean
+  isMirror    Boolean
+  archivedAt  DateTime?
+  starCount   Int
+  createdAt   DateTime
+
+  pullRequests PullRequest[]
+
+  workspace         Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId       Int
+  AutomationSetting AutomationSetting[]
+
+  @@unique([gitProvider, gitRepositoryId])
+  @@index([workspaceId])
+}
+
+model PullRequest {
+  id Int @id @default(autoincrement())
+
+  gitProvider      GitProvider
+  gitPullRequestId String
+  gitUrl           String
+
+  title  String
+  number String
+
+  commentCount      Int
+  changedFilesCount Int
+  linesAddedCount   Int
+  linesDeletedCount Int
+
+  state PullRequestState
+
+  mergedAt  DateTime?
+  closedAt  DateTime?
+  createdAt DateTime
+  updatedAt DateTime
+
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  repositoryId Int
+
+  author      GitProfile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    Int
+  codeReviews CodeReview[]
+
+  tracking PullRequestTracking?
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@unique([gitProvider, gitPullRequestId])
+  @@index([workspaceId])
+  @@index([repositoryId])
+  @@index([authorId])
+}
+
+model PullRequestTracking {
+  id Int @id @default(autoincrement())
+
+  size PullRequestSize
+
+  firstCommitAt            DateTime?
+  firstDraftedAt           DateTime?
+  firstReadyAt             DateTime? // Ready for review, i.e. open
+  firstReviewerRequestedAt DateTime?
+  firstReviewAt            DateTime?
+  firstApprovalAt          DateTime?
+
+  timeToCode          BigInt?
+  timeToFirstReview   BigInt?
+  timeToFirstApproval BigInt?
+  timeToMerge         BigInt?
+  cycleTime           BigInt?
+
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@unique([pullRequestId])
+  @@index([workspaceId])
+  @@index([pullRequestId])
+}
+
+model CodeReview {
+  id Int @id @default(autoincrement())
+
+  commentCount Int
+  state        CodeReviewState
+
+  createdAt DateTime
+
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int
+
+  author   GitProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@unique([pullRequestId, authorId])
+  @@index([workspaceId])
+  @@index([authorId])
+  @@index([pullRequestId])
+}
+
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  icon        String
+  startColor  String
+  endColor    String
+  members     TeamMember[]
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  archivedAt        DateTime?
+  AutomationSetting AutomationSetting[]
+
+  @@index([workspaceId])
+}
+
+model TeamMember {
+  id   Int            @id @default(autoincrement())
+  role TeamMemberRole
+
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId Int
+
+  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id])
+  gitProfileId Int?
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@index([workspaceId])
+  @@index([gitProfileId])
+  @@index([teamId])
+}
+
+model AutomationSetting {
+  id       Int     @id @default(autoincrement())
+  enabled  Boolean
+  settings Json
+
+  automationId Int
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  // Setting scope (Workspace | Repository | Team)
+  workspaceId  Int?
+  repositoryId Int?
+  teamId       Int?
+  workspace    Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  repository   Repository? @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  team         Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, workspaceId])
+  @@unique([automationId, repositoryId])
+  @@unique([automationId, teamId])
+  @@index([workspaceId])
+  @@index([automationId])
+  @@index([repositoryId])
+  @@index([teamId])
+}

@@ -1,0 +1,34 @@
+/* styles.module.css */
+.root {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.label {
+  text-align: center;
+  font-weight: 900;
+  font-size: 13.75rem;
+  line-height: 1;
+  margin-bottom: var(--mantine-spacing-xl);
+  color: var(--mantine-color-dark-4);
+
+  @media (max-width: 600px) {
+    font-size: 10rem;
+  }
+}
+
+.title {
+  font-family: --mantine-font-family-headings;
+  text-align: center;
+  font-weight: 900;
+  font-size: 2.375rem;
+
+  @media (max-width: 600px) {
+    font-size: 2rem;
+  }
+}
+
+.description {
+  max-width: 31.25rem;
+  margin: var(--mantine-spacing-xl) auto var(--mantine-spacing-xl) auto !important;
+}

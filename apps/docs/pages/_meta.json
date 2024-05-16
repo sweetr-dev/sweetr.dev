@@ -1,0 +1,20 @@
+{
+  "docs": {
+    "type": "page",
+    "title": "Documentation",
+    "href": "/test"
+  },
+  "about": {
+    "title": "About",
+    "type": "page",
+    "theme": {
+      "typesetting": "article"
+    }
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "type": "page",
+    "href": "https://github.com/orgs/sweetr-dev/projects/1",
+    "newWindow": true
+  }
+}
