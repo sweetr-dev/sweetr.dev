@@ -9,14 +9,15 @@ import { Dialog } from "@headlessui/react";
 export const HeroVideo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const videoId = "IMxDeACOWCE";
-  const handleOpen = () => setIsOpen(true);
+  // const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 
   return (
     <>
-      <div className="block relative ease-out duration-300 hover:scale-105 cursor-pointer">
+      <div className="block relative ease-out duration-300">
+        {/* hover:scale-105 cursor-pointer */}
         <Image
-          onClick={handleOpen}
+          // onClick={handleOpen}
           className="rounded-lg border border-dark-400 shadow-[0_0px_30px_-15px_rgba(255,255,255,0.2)] "
           src={HeroImage}
           width={1104}
@@ -25,12 +26,12 @@ export const HeroVideo = () => {
           quality={100}
           priority
         />
-        <div
+        {/* <div
           className="flex absolute h-20 w-20 top-0 left-[50%] ml-[-40px] mt-[25%] justify-center text-3xl items-center rounded-full 
               bg-green-400 text-green-900 border border-green-500 uppercase font-bold shadow-[0px_0px_105px_35px_rgba(74,222,128,0.3)] animate-heartbeat"
         >
           <IconPlayerPlayFilled stroke={1} size={32} />
-        </div>
+        </div> */}
       </div>
 
       <Dialog
