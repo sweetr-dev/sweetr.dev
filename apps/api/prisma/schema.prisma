@@ -347,10 +347,10 @@ model AutomationSetting {
   automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
 
   // Setting scope (Workspace | Repository | Team)
-  workspaceId  Int?
+  workspaceId  Int
   repositoryId Int?
   teamId       Int?
-  workspace    Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   repository   Repository? @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   team         Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
 

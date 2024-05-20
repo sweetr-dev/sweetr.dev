@@ -15,6 +15,7 @@ import {
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
+import { AutomationSlug } from "@sweetr/graphql-types/api";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -50,11 +51,13 @@ export const syncGitHubInstallation = async (
   });
 
   if (workspace.organization) {
-    addJob(SweetQueue.GITHUB_MEMBERS_SYNC, {
+    await addJob(SweetQueue.GITHUB_MEMBERS_SYNC, {
       organization: { login: workspace.organization.handle },
       installation: { id: parseInt(installation.gitInstallationId) },
     });
   }
+
+  await createWorkspaceDefaultAutomationSettings(workspace);
 };
 
 const getTargetType = (targetType: string) => {
@@ -152,6 +155,23 @@ const createOrFindWorkspace = (targetType: string, targetId: number) => {
       organization: true,
       gitProfile: true,
     },
+  });
+};
+
+const createWorkspaceDefaultAutomationSettings = async (
+  workspace: Workspace
+) => {
+  const automations = await getPrisma().automation.findMany({
+    where: { available: true },
+  });
+
+  await getPrisma(workspace.id).automationSetting.createMany({
+    data: automations.map((automation) => ({
+      enabled: true,
+      workspaceId: workspace.id,
+      automationId: automation.id,
+      settings: {},
+    })),
   });
 };
 
