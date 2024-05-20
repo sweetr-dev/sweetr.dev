@@ -34,7 +34,7 @@ export const handleAppUninstall = async (
 
   if (installation.workspace.organization) {
     // Deleting organization causes cascade action for whole workspace.
-    await getPrisma().organization.delete({
+    await getPrisma(installation.workspace.id).organization.delete({
       where: {
         id: installation.workspace.organization.id,
       },
