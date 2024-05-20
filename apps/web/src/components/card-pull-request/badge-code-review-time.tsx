@@ -8,7 +8,7 @@ import {
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 
 interface BadgeCodeReviewTimeProps {
-  timeToFirstReview: number;
+  timeToFirstReview?: number;
   mergedAt?: Date;
   firstReviewAt?: Date;
   timeToFirstApproval?: number;
@@ -34,16 +34,18 @@ export const BadgeCodeReviewTime = ({
   })();
 
   const getLabel = () => {
+    if (mergedWithoutApproval) return "Merged without approval";
+
     if (timeToFirstApproval && timeToFirstApproval === timeToFirstReview) {
       return `Reviewed and approved in ${humanizeDuration(timeToFirstReview)}`;
     }
 
+    if (!timeToFirstReview) return;
+
     if (timeToFirstApproval)
       return `First reviewed in ${humanizeDuration(
-        timeToFirstReview,
+        timeToFirstReview!,
       )}, approved in ${humanizeDuration(timeToFirstApproval)}`;
-
-    if (mergedWithoutApproval) return "Merged without approval";
 
     if (isWaitingForReview)
       return `Waiting for review for ${humanizeDuration(timeToFirstReview)}`;
@@ -52,12 +54,14 @@ export const BadgeCodeReviewTime = ({
   };
 
   const getIconColor = () => {
+    if (mergedWithoutApproval) return "red.9";
+
+    if (!timeToFirstReview) return;
+
     const hoursToFirstReview = timeToFirstReview / msToHour;
     const hoursToApprove = timeToFirstApproval
       ? timeToFirstApproval / msToHour
       : undefined;
-
-    if (mergedWithoutApproval) return "red.9";
 
     if (hoursToFirstReview >= 48 || (hoursToApprove && hoursToApprove >= 48))
       return "red.9";

@@ -149,14 +149,12 @@ export const CardPullRequest = ({
             <Stack gap={4} miw={28} mih={61} justify="center">
               {state !== PullRequestState.CLOSED && (
                 <>
-                  {timeToFirstReview && (
-                    <BadgeCodeReviewTime
-                      timeToFirstReview={timeToFirstReview}
-                      timeToFirstApproval={timeToFirstApproval}
-                      firstReviewAt={firstReviewAt}
-                      mergedAt={mergedAt}
-                    />
-                  )}
+                  <BadgeCodeReviewTime
+                    timeToFirstReview={timeToFirstReview}
+                    timeToFirstApproval={timeToFirstApproval}
+                    firstReviewAt={firstReviewAt}
+                    mergedAt={mergedAt}
+                  />
                   {timeToMerge && (
                     <BadgeMergeTime
                       timeToMerge={timeToMerge}
