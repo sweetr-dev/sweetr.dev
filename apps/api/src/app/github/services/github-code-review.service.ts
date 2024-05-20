@@ -111,6 +111,7 @@ const fetchPullRequestReviews = async (
                 id
                 body
                 author {
+                  __typename
                   ... on User {
                     id
                     login
@@ -155,6 +156,9 @@ const fetchPullRequestReviews = async (
 
       // Ignore self-reviews
       if (pullRequest.author.login === authorHandle) continue;
+
+      // Ignore non-user reviews (i.e. bots)
+      if (pullRequest.author.__typename !== "User") continue;
 
       const bodyComment = review.body ? 1 : 0;
       const oldCommentCount = reviews[authorHandle]?.commentCount ?? 0;
@@ -286,7 +290,6 @@ const updatePullRequestTracking = async (
   });
 };
 
-// TO-DO: Breaking for bots
 const upsertGitProfile = async (author: Author) => {
   return getPrisma().gitProfile.upsert({
     where: {
