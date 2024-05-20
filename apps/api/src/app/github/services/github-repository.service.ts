@@ -10,7 +10,10 @@ import { logger } from "../../../lib/logger";
 import { SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { isRepositorySyncable } from "../../repositories/services/repository.service";
 
-type RepositoryData = Omit<Repository, "id" | "workspaceId">;
+type RepositoryData = Omit<
+  Repository,
+  "id" | "workspaceId" | "createdAt" | "updatedAt"
+>;
 
 export const syncGitHubRepositories = async (
   gitInstallationId: number,
@@ -111,6 +114,7 @@ const upsertRepositories = async (
       create: {
         ...repository,
         workspaceId: workspace.id,
+        createdAt: new Date(),
       },
       update: {
         ...repository,

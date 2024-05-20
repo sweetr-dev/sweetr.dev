@@ -16,7 +16,10 @@ type GitOrganizationMember = {
   avatarUrl?: string;
 };
 
-type MemberData = Omit<GitProfile, "id" | "userId"> & {
+type MemberData = Omit<
+  GitProfile,
+  "id" | "userId" | "createdAt" | "updatedAt"
+> & {
   role: string;
 };
 

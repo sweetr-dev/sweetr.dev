@@ -71,6 +71,9 @@ model GitProfile {
   teamMemberships TeamMember[]
   codeReviews     CodeReview[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   @@unique([gitProvider, gitUserId])
   @@unique([gitProvider, userId])
   @@index([userId])
@@ -82,6 +85,9 @@ model User {
   slug        String       @unique
   email       String       @unique
   gitProfiles GitProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 // An org that has authorized GitHub OAuth
@@ -95,6 +101,9 @@ model Organization {
   handle    String
   avatar    String?
   workspace Workspace?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([gitProvider, gitOrganizationId])
 }
@@ -111,6 +120,9 @@ model Automation {
   benefits         Json
   available        Boolean @default(true)
   docsUrl          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   settings AutomationSetting[]
 }
@@ -131,14 +143,16 @@ model Workspace {
 
   // A personal workspace can become orphan when an user revokes their OAuth
   // Re-authenticating creates a new user and reconnects 
-  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
-  gitProfileId Int?
-
+  gitProfile          GitProfile?           @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
+  gitProfileId        Int?
   AutomationSetting   AutomationSetting[]
   CodeReview          CodeReview[]
   PullRequestTracking PullRequestTracking[]
   PullRequest         PullRequest[]
   TeamMember          TeamMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -166,6 +180,9 @@ model Installation {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   @@unique([workspaceId])
 }
 
@@ -179,6 +196,9 @@ model WorkspaceMembership {
   workspaceId Int
 
   role String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([gitProfileId, workspaceId])
   @@index([workspaceId])
@@ -205,6 +225,8 @@ model Repository {
   workspace         Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId       Int
   AutomationSetting AutomationSetting[]
+
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([gitProvider, gitRepositoryId])
   @@index([workspaceId])
@@ -274,6 +296,9 @@ model PullRequestTracking {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   @@unique([pullRequestId])
   @@index([workspaceId])
   @@index([pullRequestId])
@@ -282,12 +307,10 @@ model PullRequestTracking {
 model CodeReview {
   id Int @id @default(autoincrement())
 
-  commentCount Int
-  state        CodeReviewState
-
-  createdAt DateTime
-
-  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  commentCount  Int
+  state         CodeReviewState
+  createdAt     DateTime
+  pullRequest   PullRequest     @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
   pullRequestId Int
 
   author   GitProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -295,6 +318,8 @@ model CodeReview {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
+
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([pullRequestId, authorId])
   @@index([workspaceId])
@@ -310,12 +335,15 @@ model Team {
   startColor  String
   endColor    String
   members     TeamMember[]
+  archivedAt  DateTime?
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  archivedAt        DateTime?
   AutomationSetting AutomationSetting[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([workspaceId])
 }
@@ -332,6 +360,9 @@ model TeamMember {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([workspaceId])
   @@index([gitProfileId])
@@ -353,6 +384,9 @@ model AutomationSetting {
   workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   repository   Repository? @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   team         Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([automationId, workspaceId])
   @@unique([automationId, repositoryId])
