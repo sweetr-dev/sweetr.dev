@@ -1,0 +1,100 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Sweetr Docs",
+  "logo": {
+    "dark": "/logo.svg",
+    "light": "/logo.svg"
+  },
+  "favicon": "/logo.svg",
+  "colors": {
+    "primary": "#69db7c",
+    "background": {
+      "dark": "#141517"
+    },
+    "anchors": {
+      "from": "#69db7c",
+      "to": "#53851d"
+    }
+  },
+  "modeToggle": {
+    "default": "dark",
+    "isHidden": true
+  },
+  "topbarLinks": [
+    {
+      "name": "Login",
+      "url": "https://app.sweetr.dev/"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://github.com/apps/sweetr-dev/installations/new"
+  },
+  "anchors": [
+    {
+      "name": "Repository",
+      "icon": "github",
+      "url": "https://github.com/sweetr-dev/sweetr.dev"
+    },
+    {
+      "name": "Community",
+      "icon": "message-code",
+      "url": "https://github.com/sweetr-dev/sweetr.dev/discussions"
+    }
+  ],
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "navigation": [
+    {
+      "group": "Welcome",
+      "pages": [
+        "get-started/intro",
+        {
+          "group": "Get Started",
+          "icon": "sparkles",
+          "pages": ["get-started/cloud", "get-started/self-host"]
+        }
+      ]
+    },
+    {
+      "group": "Features",
+      "pages": [
+        "features/pull-requests",
+        "features/code-reviews",
+        {
+          "group": "Team Insights",
+          "icon": "chart-simple",
+          "pages": [
+            "features/team/code-review-distribution",
+            "features/team/pr-size-distribution",
+            "features/team/cycle-time",
+            "features/team/time-to-first-review",
+            "features/team/time-to-approve",
+            "features/team/time-to-merge"
+          ]
+        },
+        {
+          "group": "Automations",
+          "icon": "robot",
+          "pages": ["features/automations/packages-health-summary"]
+        }
+      ]
+    },
+    {
+      "group": "About Us",
+      "pages": [
+        "about/principles",
+        "about/open-source",
+        "about/data-privacy-and-security",
+        "about/roadmap"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/sweetr_dev",
+    "github": "https://github.com/sweetr-dev",
+    "linkedin": "https://www.linkedin.com/company/sweetr-dev"
+  }
+}
