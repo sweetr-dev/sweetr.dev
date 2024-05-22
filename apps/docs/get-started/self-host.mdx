@@ -1,6 +1,135 @@
 ---
 title: Self-host
-description: "Learn how to self host"
 ---
 
-<Warning>This page is under construction</Warning>
+When you choose to self-host, the responsibility for updates, maintenance, and
+merging future enhancements rests entirely with you.
+
+<Tip>
+  We highly recommend the <a href="/get-started/cloud">Cloud</a> version, unless
+  you have hard requirements to manage your own infrastructure.
+</Tip>
+
+## Requirements
+
+- NodeJS 20
+- Postgres
+- Redis
+- GitHub App
+
+## Prepare the environment
+
+<Steps>
+  <Step title="Create a GitHub Application">
+    Firstly, you'll need to <a href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app">create a GitHub application</a>.  
+    
+    Setup your GitHub app following the instructions below:
+    <Tabs>
+        <Tab title="General">
+            - Generate a Client Secret
+            - Callback Url: https://your-web-app.com/github/callback
+            - Check "Request user authorization (OAuth) during installation"
+            - Webhook
+                - Check "Active"
+                - Webhook Url: https://your-api.com/github/callback
+            - SSL verification
+                - Check "Enable SSL verification"
+            - Generate a Private Key
+        </Tab>
+        <Tab title="Permissions & events">
+            #### Repository permissions
+            - Contents: Read-only
+            - Metadata: Read-only
+            - Pull requests: Read and Write
+            - Organization permissions
+                - Members: Read-only
+            #### Account permissions
+                - Email adresses: Read-only
+            #### Subscribe to events
+                - Installation target
+                - Organization
+                - Public
+                - Pull request
+                - Pull request review
+                - Repository
+        </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Host API">
+    Secondly, you'll need to setup hosting for the API application.
+
+    #### Update the .env file
+    Make it production-ready.
+    ```
+    # App
+    NODE_ENV=production
+    APP_ENV=production
+    PORT=8000
+    FRONTEND_URL= # Update to the URL of your web app
+    USE_SSL=true
+    JWT_SECRET= # Add a random sequence of characters
+    ```
+    Set your database credentials.
+    ```
+    # Prisma
+    DB_DATABASE=sweetr
+    DB_HOST=localhost
+    DB_USERNAME=sweetr
+    DB_PASSWORD=sweetr
+    DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}/${DB_DATABASE}?sslaccept=strict"
+    ```
+    Set your Redis credentials.
+    ```
+    # Redis (BullMQ)
+    REDIS_CONNECTION_STRING="redis://default@127.0.0.1:6379"
+    ```
+    Set your GitHub App credentials.
+    ```
+    # GitHub App
+    GITHUB_CLIENT_SECRET=
+    GITHUB_CLIENT_ID=
+    GITHUB_OAUTH_REDIRECT_PATH=/github/callback
+    GITHUB_APP_ID=
+    GITHUB_APP_HANDLE=
+    GITHUB_APP_PRIVATE_KEY=
+    ```
+
+  </Step>
+  <Step title="Host Web App">
+    Lastly, you'll need to host the frontend, the web application.
+
+    Update the .env file:
+    ```
+    VITE_GRAPHQL_API=https://your-api.com
+    VITE_AUTH_COOKIE_DOMAIN=you-web-app.com
+    VITE_GITHUB_APP=your-github-app-slug
+    ```
+
+  </Step>
+</Steps>
+
+## API
+
+- Use `npm` to install dependencies.
+- Run `npm run build` to build the application.
+- Run `npm run start` to start the application.
+
+### Database Migrations
+
+Our API uses Prisma to communicate with the database.
+
+Run `npx prisma migrate deploy` to run migrations.
+
+### Monitoring
+
+We currently support LogTail and Sentry for monitoring.
+
+Update .env to enable:
+
+```
+# Sentry
+SENTRY_DSN=
+
+# LogTail
+LOGTAIL_TOKEN=
+```

@@ -1,6 +1,41 @@
 ---
 title: Cloud
-description: "Learn how to get started"
 ---
 
-<Warning>This page is under construction</Warning>
+Our cloud solution is the fastest and easiest way to get started.
+
+<Steps>
+  <Step title="Login">
+    To get started, simply <a href="https://app.sweetr.dev/" target="_blank">login with your GitHub account</a>.
+  </Step>
+  <Step title="Your first workspace">
+    You'll be prompted to install our GitHub app.
+
+    <Frame>
+        <img src="/images/install-the-app.png" />
+    </Frame>
+
+  </Step>
+  <Step title="Review the permissions">
+    Our GitHub app asks for permission for:
+
+    - Read: <Tooltip tip="Used in our automations, to read content from your yarn.lock or package-lock.json files.">code</Tooltip>, <Tooltip tip="Used to enable features like teams, people directory and allow teammates to login to your workspace.">members</Tooltip> and <Tooltip tip="Used to name your workspace.">metadata</Tooltip>
+    - Read and write: <Tooltip tip="Read: Used to enable features like insights | Write: Used in our automations, to post comments to pull requests.">pull requests</Tooltip>
+
+    These permissions are necessary to sync metadata from GitHub to our database and provide service to you.
+
+    <Note>We'll never any store your repositories' code in our servers.</Note>
+
+    You're more than welcome to audit our <a href="https://github.com/sweetr-dev/sweetr.dev" target="_blank">source code</a> to see exactly how the data is used. You can also <a href="https://github.com/sweetr-dev/sweetr.dev/discussions" target="_blank">reach out</a> if you have any questions.
+
+  </Step>
+  <Step title="Choose where to install">
+    We'll create a workspace for the organization or personal account where you choose the GitHub app to be installed. 
+  </Step>
+  <Step title="The data sync starts">
+    After installing the app, our app will start syncing metadata from your GitHub account. This process might take from a few minutes to several hours, depending on how much data your account has.
+  </Step>
+  <Step title="Share with your organization">
+    Simply share the link https://app.sweetr.dev and your organization members will have access to your workspace when logging in with their GitHub accounts.
+  </Step>
+</Steps>
