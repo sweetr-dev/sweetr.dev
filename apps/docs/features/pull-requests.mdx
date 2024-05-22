@@ -1,6 +1,87 @@
 ---
 title: Pull Requests
+description: Filterable list of a team's pull requests.
 icon: "code-pull-request"
 ---
 
-<Warning>This page is under construction</Warning>
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { PrSize } from "/snippets/pr-size.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/pull-requests.png" />
+</Frame>
+
+## Size
+
+The pull request size is calculated based on the amount of lines changed.
+
+<PrSize color="#69DB7C" size="Tiny" label="< 20 lines changed" />
+<PrSize color="#69DB7C" size="Small" label="20~100 lines changed" />
+<PrSize color="#A6A7AB" size="Medium" label="100~250 lines changed" />
+<PrSize color="#ff8787" size="Large" label="250~500 lines changed" />
+<PrSize color="#ff8787" size="Huge" label="> 500 lines changed" />
+
+## Lifecycle indicators
+
+Every pull request has indicators regarding the time to review, approve and merge.
+
+<PrBadge color="#a6a7ab" type="no-review" />
+<PrBadge color="#a6a7ab" type="reviewed" />
+<PrBadge color="#a6a7ab" type="approved" />
+<PrBadge color="#a6a7ab" type="open" />
+<PrBadge color="#a6a7ab" type="merged" />
+<PrBadge color="#C92A2A" type="merged-no-review" />
+
+The color of the icons also changes depending on the time it took for the corresponding event.
+
+<div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+  <div
+    style={{
+      width: 24,
+      height: 24,
+      border: "1px solid #51cf66",
+      borderRadius: 4,
+    }}
+  ></div>
+  <div>< 2 hours</div>
+</div>
+
+<div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+  <div
+    style={{
+      width: 24,
+      height: 24,
+      border: "1px solid #a6a7ab",
+      borderRadius: 4,
+    }}
+  ></div>
+  <div>2~24 hours</div>
+</div>
+
+<div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+  <div
+    style={{
+      width: 24,
+      height: 24,
+      border: "1px solid #fab005",
+      borderRadius: 4,
+    }}
+  ></div>
+  <div>24~48 hours</div>
+</div>
+
+<div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+  <div
+    style={{
+      width: 24,
+      height: 24,
+      border: "1px solid #C92A2A",
+      borderRadius: 4,
+    }}
+  ></div>
+  <div>> 48 hours</div>
+</div>
+
+<Info>Weekends are not included when calculating time elapsed.</Info>

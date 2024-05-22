@@ -1,0 +1,142 @@
+export const PrBadge = ({ type, color }) => (
+  <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+    <div
+      style={{
+        background: "#25262b",
+        border: "1px solid #373a40",
+        borderRadius: "4px",
+        width: 28,
+        height: 28,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color,
+      }}
+    >
+      {type === "merged-no-review" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-eye-off"
+        >
+          <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
+          <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87"></path>
+          <path d="M3 3l18 18"></path>
+        </svg>
+      )}
+      {type === "reviewed" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-eye"
+        >
+          <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+          <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
+        </svg>
+      )}
+      {type === "approved" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-eye-check"
+        >
+          <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+          <path d="M11.102 17.957c-3.204 -.307 -5.904 -2.294 -8.102 -5.957c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6a19.5 19.5 0 0 1 -.663 1.032"></path>
+          <path d="M15 19l2 2l4 -4"></path>
+        </svg>
+      )}
+      {type === "open" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-git-pull-request"
+        >
+          <path d="M6 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M6 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M18 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M6 8l0 8"></path>
+          <path d="M11 6h5a2 2 0 0 1 2 2v8"></path>
+          <path d="M14 9l-3 -3l3 -3"></path>
+        </svg>
+      )}
+      {type === "merged" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-git-merge"
+        >
+          <path d="M7 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M7 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M17 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M7 8l0 8"></path>
+          <path d="M7 8a4 4 0 0 0 4 4h4"></path>
+        </svg>
+      )}
+      {type === "no-review" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="tabler-icon tabler-icon-eye-closed"
+        >
+          <path d="M21 9c-2.4 2.667 -5.4 4 -9 4c-3.6 0 -6.6 -1.333 -9 -4"></path>
+          <path d="M3 15l2.5 -3.8"></path>
+          <path d="M21 14.976l-2.492 -3.776"></path>
+          <path d="M9 17l.5 -4"></path>
+          <path d="M15 17l-.5 -4"></path>
+        </svg>
+      )}
+    </div>
+    <div>
+      {type === "merged-no-review" && "Merged without review"}
+      {type === "reviewed" && "Reviewed"}
+      {type === "approved" && "Approved"}
+      {type === "merged" && "Merged"}
+      {type === "open" && "Open"}
+      {type === "no-review" && "Awaiting review"}
+    </div>
+  </div>
+);
+
+;

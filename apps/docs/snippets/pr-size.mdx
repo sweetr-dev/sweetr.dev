@@ -1,0 +1,23 @@
+export const PrSize = ({ size, label, color }) => (
+  <div className="flex gap-[10px] items-center" style={{ marginBottom: 10 }}>
+    <div
+      style={{
+        width: 72,
+        borderRadius: 50,
+        background: "#25262b",
+        fontWeight: 700,
+        textTransform: "uppercase",
+        fontSize: 10,
+        border: "1px solid #373a40",
+        display: "flex",
+        height: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        color,
+      }}
+    >
+      {size}
+    </div>
+    <div>{label}</div>
+  </div>
+);
