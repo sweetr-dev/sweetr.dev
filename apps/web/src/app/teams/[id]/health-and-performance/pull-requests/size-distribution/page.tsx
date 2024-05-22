@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
-import { Accordion, Box, Button, Group, Paper, Skeleton } from "@mantine/core";
+import { Box, Group, Paper, Skeleton } from "@mantine/core";
 import { useChartDrawer } from "../../chart-page.provider";
 import { FilterSelect } from "../../../../../../components/filter-select";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
-import { IconBook2, IconCalendar, IconRefresh } from "@tabler/icons-react";
+import { IconCalendar, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../providers/date.provider";
 import startOfDay from "date-fns/startOfDay";
@@ -19,6 +19,7 @@ import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../components/page-empty-state";
 import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { ChartStackedBars } from "../../components/chart-stacked-bars";
+import { ButtonDocs } from "../../../../../../components/button-docs";
 
 export const TeamPullRequestsSizeDistribution = () => {
   const { teamId } = useParams();
@@ -66,15 +67,7 @@ export const TeamPullRequestsSizeDistribution = () => {
         {...drawerProps}
         title="Pull Request size distribution"
         toolbar={
-          <>
-            <Button
-              leftSection={<IconBook2 stroke={1.5} size={20} />}
-              variant="subtle"
-              color="dark.1"
-            >
-              Docs
-            </Button>
-          </>
+          <ButtonDocs href="http://docs.sweetr.dev/features/team/pr-size-distribution" />
         }
       >
         <Box p="md">
@@ -140,20 +133,6 @@ export const TeamPullRequestsSizeDistribution = () => {
               whenEmpty={<PageEmptyState message="No data available" />}
             />
           </Paper>
-          <Accordion variant="contained" mt="md">
-            <Accordion.Item value="improve">
-              <Accordion.Control c="dimmed">
-                Why monitor and improve this metric?
-              </Accordion.Control>
-              <Accordion.Panel>Content</Accordion.Panel>
-            </Accordion.Item>
-            <Accordion.Item value="data">
-              <Accordion.Control c="dimmed">
-                How is the data aggregated?
-              </Accordion.Control>
-              <Accordion.Panel>Content</Accordion.Panel>
-            </Accordion.Item>
-          </Accordion>
         </Box>
       </DrawerScrollable>
     </>

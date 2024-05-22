@@ -33,8 +33,8 @@ import { TeamHealthCodeReviewDistributionPage } from "./app/teams/[id]/health-an
 import { TeamPullRequestsCycleTimePage } from "./app/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
 import { TeamPullRequestsSizeDistribution } from "./app/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
 import { TeamPullRequestsTimeToMergePage } from "./app/teams/[id]/health-and-performance/pull-requests/time-to-merge/page";
-import { TeamCodeReviewsTimeForApprovalPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-for-approval/page";
-import { TeamCodeReviewsTimeForFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-for-first-review/page";
+import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
+import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 
@@ -152,12 +152,12 @@ export const router = createBrowserRouter([
                     element: <TeamPullRequestsTimeToMergePage />,
                   },
                   {
-                    path: "/teams/:teamId/health-and-performance/code-reviews/time-for-approval",
-                    element: <TeamCodeReviewsTimeForApprovalPage />,
+                    path: "/teams/:teamId/health-and-performance/code-reviews/time-to-approve",
+                    element: <TeamCodeReviewsTimeToApprovePage />,
                   },
                   {
-                    path: "/teams/:teamId/health-and-performance/code-reviews/time-for-first-review",
-                    element: <TeamCodeReviewsTimeForFirstReviewPage />,
+                    path: "/teams/:teamId/health-and-performance/code-reviews/time-to-first-review",
+                    element: <TeamCodeReviewsTimeToFirstReviewPage />,
                   },
                 ],
               },

@@ -64,14 +64,14 @@ export const TeamHealthAndPerformancePage = () => {
           icon={IconEyeStar}
           label="Time to first review"
           description="Time between reviewer requested and first review."
-          href={`/teams/${teamId}/health-and-performance/code-reviews/time-for-first-review`}
+          href={`/teams/${teamId}/health-and-performance/code-reviews/time-to-first-review`}
         />
 
         <CardChart
           icon={IconEyeCheck}
           label="Time to approve"
           description="Time between reviewer requested and first approval."
-          href={`/teams/${teamId}/health-and-performance/code-reviews/time-for-approval`}
+          href={`/teams/${teamId}/health-and-performance/code-reviews/time-to-approve`}
         />
       </SimpleGrid>
 

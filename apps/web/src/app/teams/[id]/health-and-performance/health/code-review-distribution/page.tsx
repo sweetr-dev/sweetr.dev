@@ -1,19 +1,10 @@
 import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
-import {
-  Accordion,
-  Avatar,
-  Box,
-  Button,
-  Group,
-  Paper,
-  Skeleton,
-  Table,
-} from "@mantine/core";
+import { Avatar, Box, Group, Paper, Skeleton, Table } from "@mantine/core";
 import { useChartDrawer } from "../../chart-page.provider";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
-import { IconBook2, IconCalendar } from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../providers/date.provider";
 import startOfDay from "date-fns/startOfDay";
@@ -27,6 +18,7 @@ import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../components/page-empty-state";
 import { ChartCodeReviewDistribution } from "../../components/chart-code-review-distribution";
 import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
+import { ButtonDocs } from "../../../../../../components/button-docs";
 
 export const TeamHealthCodeReviewDistributionPage = () => {
   const { teamId } = useParams();
@@ -78,15 +70,7 @@ export const TeamHealthCodeReviewDistributionPage = () => {
         {...drawerProps}
         title="Code review distribution"
         toolbar={
-          <>
-            <Button
-              leftSection={<IconBook2 stroke={1.5} size={20} />}
-              variant="subtle"
-              color="dark.1"
-            >
-              Docs
-            </Button>
-          </>
+          <ButtonDocs href="http://docs.sweetr.dev/features/team/code-review-distribution" />
         }
       >
         <Box p="md">
@@ -165,21 +149,6 @@ export const TeamHealthCodeReviewDistributionPage = () => {
               </Table>
             </Paper>
           )}
-
-          <Accordion variant="contained" mt="md">
-            <Accordion.Item value="improve">
-              <Accordion.Control c="dimmed">
-                Why monitor and improve this metric?
-              </Accordion.Control>
-              <Accordion.Panel>Content</Accordion.Panel>
-            </Accordion.Item>
-            <Accordion.Item value="data">
-              <Accordion.Control c="dimmed">
-                How is the data aggregated?
-              </Accordion.Control>
-              <Accordion.Panel>Content</Accordion.Panel>
-            </Accordion.Item>
-          </Accordion>
         </Box>
       </DrawerScrollable>
     </>
