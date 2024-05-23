@@ -6,7 +6,9 @@ import HeroTypeAnimation from "./hero-type-animation";
 
 export default async function Hero() {
   const repo = "sweetr-dev/sweetr.dev";
-  const response = await fetch(`https://api.github.com/repos/${repo}`); // TO-DO: Update to correct url after open sourcing
+  const response = await fetch(`https://api.github.com/repos/${repo}`, {
+    next: { revalidate: 3600 },
+  });
   const data = await response.json();
 
   const stars = data?.stargazers_count;
