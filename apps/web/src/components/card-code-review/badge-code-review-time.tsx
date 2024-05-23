@@ -17,7 +17,7 @@ export const BadgeFirstReview = ({
         <Tooltip
           label={`First to review: ${humanizeDuration(
             timeToFirstReview,
-          )} after PR was opened`}
+          )} after PR was ready`}
           withArrow
           position="right"
         >

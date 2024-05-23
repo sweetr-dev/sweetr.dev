@@ -1,5 +1,5 @@
 import { ThemeIcon, Tooltip } from "@mantine/core";
-import { IconGitMerge } from "@tabler/icons-react";
+import { IconGitMerge, IconGitPullRequest } from "@tabler/icons-react";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 
 interface BadgeMergeTimeProps {
@@ -28,7 +28,8 @@ export const BadgeMergeTime = ({
         variant="default"
         c={getMergeColor(timeToMerge / msToHour, mergedAt)}
       >
-        <IconGitMerge size={20} stroke={1.5} />{" "}
+        {hasMerged && <IconGitMerge size={20} stroke={1.5} />}
+        {!hasMerged && <IconGitPullRequest size={20} stroke={1.5} />}
       </ThemeIcon>
     </Tooltip>
   );
