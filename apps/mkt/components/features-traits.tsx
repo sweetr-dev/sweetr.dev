@@ -53,7 +53,11 @@ export default function FeaturesTraits() {
                     </div>
                     <p className="grow max-w-md text-sm text-dark-100">
                       No individual performance tracking or harmful metrics.{" "}
-                      <Link href="#" className="text-green-400 underline">
+                      <Link
+                        href="https://docs.sweetr.dev/about/principles"
+                        target="_blank"
+                        className="text-green-400 underline"
+                      >
                         We are human-centric.
                       </Link>
                     </p>

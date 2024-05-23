@@ -7,7 +7,7 @@ export default function PricingTabs() {
   const faqs = [
     {
       title: "Is training needed?",
-      text: "We design simple and intuitive interfaces; you and your team should be able to use it without any prior training. Documentation is built into the product.",
+      text: "Not at all, you and your team should be able to use sweetr.dev without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
       active: true,
     },
     {
@@ -71,7 +71,20 @@ export default function PricingTabs() {
     },
     {
       title: "Are contributions accepted?",
-      text: "Of course! We welcome PRs from the community.",
+      text: (
+        <>
+          Fore sure! We welcome PRs from the community. You can learn more in
+          our{" "}
+          <Link
+            target="_blank"
+            className="text-green-400 hover:underline"
+            href="https://docs.sweetr.dev/about/open-source"
+          >
+            contribution guide
+          </Link>
+          .
+        </>
+      ),
       active: false,
     },
   ];

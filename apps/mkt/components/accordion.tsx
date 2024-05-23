@@ -22,7 +22,9 @@ export default function Accordion({
   }, []);
 
   return (
-    <div className="border border-dark-400 rounded bg-dark-800">
+    <div
+      className={`border border-dark-400 rounded bg-dark-800 transition ${accordionOpen ? "" : "hover:scale-105"}`}
+    >
       <h2>
         <button
           className="flex items-center justify-between w-full font-inter-tight text-left font-medium text-dark-100 px-4 py-2.5"
