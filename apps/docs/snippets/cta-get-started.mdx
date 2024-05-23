@@ -1,0 +1,49 @@
+export const CtaGetStarted = ({
+  label = "Ready to unlock continuous improvement in your team?",
+}) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 80,
+      background: "#1a1b1e",
+      color: "#fff",
+      borderRadius: 8,
+      border: "1px solid #69db7c",
+      padding: "10px",
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 12,
+        fontWeight: 500,
+      }}
+    >
+      <img
+        src="/images/logo.svg"
+        height={24}
+        width={24}
+        style={{ margin: 0 }}
+      />
+      <div>{label}</div>
+    </div>
+    <a
+      href="https://github.com/apps/sweetr-dev/installations/new"
+      rel="nofollow"
+      className="not-prose"
+      style={{
+        padding: "8px 16px",
+        background: "#69db7c",
+        color: "#000",
+        borderRadius: 4,
+        fontSize: 14,
+      }}
+    >
+      Try now
+    </a>
+  </div>
+);

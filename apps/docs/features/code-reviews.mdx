@@ -1,6 +1,60 @@
 ---
 title: Code Reviews
+description: List of a persons's code reviews.
 icon: "code"
 ---
 
-<Warning>This page is under construction</Warning>
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { ColorBadge } from "/snippets/color-badge.mdx";
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/code-reviews.png" />
+</Frame>
+
+## Indicators
+
+Each code review has an indicator for whether it was the Pull Request's first review.
+
+<PrBadge color="#a6a7ab" type="first-to-review" />
+
+The indicator can also change color depending on time elapsed between the Pull Request being "ready" and the review timestamp.
+
+<ColorBadge color="#51cf66" label="< 2 hours." />
+<ColorBadge color="#a6a7ab" label="> 2 hours." marginBottom={20} />
+
+<Accordion title="What ready means">
+The timestamp used for being "ready" is calculated based on what is available first:
+
+- The timestamp of the first review request.
+- Or the timestamp when the Pull Request was opened. A draft isn't considered open.
+- Or the timestamp the Pull Request was created.
+
+<Accordion title="Examples">
+
+- A Pull Request that got reviewed while in draft state, without requesting reviews, would use the Pull
+  Request creation time.
+- A Pull Request that got created in draft, converted to open, and then got reviewed without ever requesting reviews, would use the
+  timestamp of when it was converted to open.
+- A Pull Request that got created in draft, and requested multiple reviewers, would use the timestamp of the first review request.
+
+</Accordion>
+
+While this may seem overly complex, it's important so that the time elapsed calculation is fair for developers.
+
+</Accordion>
+
+<Info>Weekends are not included when calculating time elapsed.</Info>
+
+## Use Cases
+
+- Easily see developer's code reviews in one place. Quickly open the pull requests and go through the comments.
+- Spot LGTM stamps in a glance (number of comments vs Pull Request size).
+- Coach a developer into becoming a better reviewer.
+  - Assess their communication style.
+  - Assess the depth of their reviews.
+  - Assess review frequency.
+
+<CtaGetStarted />

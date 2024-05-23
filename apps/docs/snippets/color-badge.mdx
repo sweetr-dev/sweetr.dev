@@ -1,0 +1,13 @@
+export const ColorBadge = ({ size, label, color, marginBottom = 10 }) => (
+  <div style={{ display: "flex", gap: 10, marginBottom, alignItems: "center" }}>
+    <div
+      style={{
+        width: 24,
+        height: 24,
+        border: `1px solid ${color}`,
+        borderRadius: 4,
+      }}
+    ></div>
+    <div>{label}</div>
+  </div>
+);
