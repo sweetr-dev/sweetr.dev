@@ -74,10 +74,7 @@ export const TeamHealthCodeReviewDistributionPage = () => {
         }
       >
         <Box p="md">
-          <CardInfo>
-            Understand who are performing most reviews on your team and the
-            breadth of their impact.
-          </CardInfo>
+          <CardInfo>Understand the feedback circle in your team.</CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>
             <FilterDate
