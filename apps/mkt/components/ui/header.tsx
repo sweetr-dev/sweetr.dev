@@ -28,7 +28,9 @@ export default function Header() {
             {/* Logo */}
             <Link className="flex items-center justify-center gap-2" href="/">
               <Image src={Logo} width={24} height={24} alt="Logo" />
-              <h1 className={`text-white ${lexendFont.className}`}>
+              <h1
+                className={`text-white ${lexendFont.className} hidden sm:inline-block`}
+              >
                 sweetr.dev
               </h1>
             </Link>
@@ -37,7 +39,7 @@ export default function Header() {
           {/* Desktop navigation */}
           <nav className="flex grow">
             {/* Desktop sign in links */}
-            <ul className="flex grow justify-end flex-wrap items-center">
+            <ul className="flex grow justify-end flex-nowrap items-center">
               <li>
                 <Link
                   className="text-sm font-medium text-zinc-300 hover:text-white px-3 lg:px-5 py-2 flex items-center transition"
