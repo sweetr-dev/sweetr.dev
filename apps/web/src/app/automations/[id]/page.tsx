@@ -34,6 +34,7 @@ import {
   showSuccessNotification,
 } from "../../../providers/notification.provider";
 import { benefitLabels } from "../../../providers/automation.provider";
+import { ImageDemo } from "./components/image-demo";
 
 export const AutomationPage = () => {
   const { workspace } = useWorkspace();
@@ -122,12 +123,9 @@ export const AutomationPage = () => {
                 )}
               </PageTitle>
 
-              <Image
-                radius="md"
-                src={null}
-                h={200}
-                fallbackSrc="https://placehold.co/500x100?text=img"
-              />
+              {automation && (
+                <ImageDemo title={automation.title} src={automation.demoUrl} />
+              )}
               <Text mt="sm">{automation?.description}</Text>
               <Divider label="Setup" labelPosition="left" mt="lg" mb="sm" />
               <Stack>

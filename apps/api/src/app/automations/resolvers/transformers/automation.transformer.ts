@@ -14,7 +14,7 @@ export const transformAutomation = (
     enabled: automation.settings[0]?.enabled || false,
     benefits: automation.benefits as AutomationBenefits,
     overrides: [],
-    demoUrl: "https://placehold.co/500x100?text=img",
+    demoUrl: automation.demoUrl,
     scope: "WORKSPACE" as AutomationScope,
     slug: automation.slug as AutomationSlug,
   };
