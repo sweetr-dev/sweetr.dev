@@ -2,10 +2,10 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Sweetr Docs",
   "logo": {
-    "dark": "logo.svg",
-    "light": "logo.svg"
+    "dark": "/logo.svg",
+    "light": "/logo.svg"
   },
-  "favicon": "logo.svg",
+  "favicon": "/logo.svg",
   "colors": {
     "primary": "#69db7c",
     "background": {
