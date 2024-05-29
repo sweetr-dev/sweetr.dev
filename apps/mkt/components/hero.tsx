@@ -34,9 +34,9 @@ export default async function Hero() {
                 </h1>
                 <div className="max-w-2xl mx-auto">
                   <p className="text-lg text-dark-100 mb-8">
-                    An open-source GitHub-integrated solution to identify
-                    engineering bottlenecks, speed up development and improve
-                    developer experience.
+                    An open-source solution for your dev teams to find ways to
+                    optimize, speed up development and improve developer
+                    experience & wellbeing.
                   </p>
                 </div>
                 <div className="max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">
