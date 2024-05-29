@@ -1,5 +1,22 @@
 ---
 title: PR size distribution
+description: Is the team striving for small Pull Requests?
 ---
 
-<Warning>This page is under construction</Warning>
+import { PrSize } from "/snippets/pr-size.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/pr-size-distribution.png" />
+</Frame>
+
+## Size
+
+The pull request size is calculated based on the amount of lines changed.
+
+<PrSize color="#69DB7C" size="Tiny" label="< 20 lines changed." />
+<PrSize color="#69DB7C" size="Small" label="20~100 lines changed." />
+<PrSize color="#A6A7AB" size="Medium" label="100~250 lines changed." />
+<PrSize color="#ff8787" size="Large" label="250~500 lines changed." />
+<PrSize color="#ff8787" size="Huge" label="> 500 lines changed." />
