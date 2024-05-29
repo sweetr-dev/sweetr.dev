@@ -70,7 +70,7 @@ export const TeamPullRequestsCycleTimePage = () => {
         <Box p="md">
           <CardInfo>
             Track the full cycle of a Pull Request to measure your team&apos;s
-            velocity.
+            flow.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>

@@ -71,7 +71,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
         <Box p="md">
           <CardInfo>
             Track how long developers take to merge a Pull Request after
-            it&apos;s approved. Measure whether developers are prioritizing
+            it&apos;s approved. Understand whether developers are prioritizing
             finalizing existing work over starting new work.
           </CardInfo>
 
