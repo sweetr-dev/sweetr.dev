@@ -11,4 +11,47 @@ import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
   <img src="/images/time-to-approve.png" />
 </Frame>
 
+## Insights
+
+This chart can help you measure and answer questions like:
+
+- Are code reviews a bottleneck?
+- Is the defect rate related to the review process?
+- Are the recent process changes effective?
+- Are there any recurring patterns or periodic fluctuations?
+
+## What good looks like
+
+Ideally, most Pull Requests should be approved within hours of its creation, but it can vary significantly depending on the context, such as the complexity of the project and the size of the Pull Request.
+
+## How to improve
+
+There are some strategies that can help your team's time to approve.
+
+- Visit this data during retrospectives and discuss options with the team.
+- Outline requirements well in tickets.
+- Keep Pull Requests small.
+- Keep process lightweight.
+- Automate as much as you can.
+- Leave code styling for Linters. Focus on business logic and architecture.
+- Encourage the team to communicate and ask questions early.
+- Encourage the team to review their own work before requesting reviews.
+
+A even better way to understand how to improve is to go through <a href="/features/pull-requests">the pull requests</a> and assess the common causes for delay:
+
+- blocked due to nitpicks.
+- missing requirements.
+- code quality issues.
+- delay on first review.
+- too many changes.
+
+## Bad Practices
+
+It's very important to know how this
+data should **not** be used.
+
+- **Do not** obsess over improving this metric.
+
+Strive for a good balance of code quality vs speed instead.
+
 <CtaGetStarted />

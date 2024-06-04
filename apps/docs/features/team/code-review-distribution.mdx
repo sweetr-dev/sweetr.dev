@@ -9,17 +9,17 @@ import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
 
 ## Demo
 
-<Frame caption="Taylor's avatar is larger because she has the most reviews in the team.">
+<Frame caption="Taylor's avatar is larger because she has the most reviews on the team.">
   <img src="/images/code-review-distribution.png" />
 </Frame>
 
 ## How it works
 
-Each named node represents a reviewer _(Justin, Taylor and Jack)_. They are connected to the people whose PRs they reviewed.
+Each named node represents a reviewer _(Justin, Taylor, and Jack)_. They are connected to the people whose PRs they reviewed.
 
 You can hover over each reviewer to see detailed info on:
 
-- Whose PRs they reviewed the most.
+- Whose PRs they review the most.
 - Distribution of reviews for the team vs. external.
 
 ## Insights
@@ -31,15 +31,6 @@ This chart can help you measure and answer questions like:
 - Is any reviewer interacting only with selected members of the team?
 - Is considerable time being spent on reviewing other team's code?
 - Is our strategy to assign reviewers effective?
-
-## Bad Practices
-
-It's very important to know how this
-data should **not** be used.
-
-- **Do not** evaluate review quality based on quantity.
-- **Do not** evaluate performance based solely on review quantity.
-- **Do not** use this data to stack rank developers.
 
 ## What good looks like
 
@@ -56,6 +47,15 @@ There are some strategies you can employ to try to achieve a more balanced revie
 - Visit this data during retrospectives and discuss options with the team.
 - Discuss code review accountability during 1:1s and performance evaluations.
 - Encourage new developers to review code early on their onboarding - even if only to ask questions.
-- Make sure your team feels safe giving feedback. Go though your team's <a href="/features/pull-requests">Pull Requests</a> to assert your team members have a healthy communication style.
+- Make sure your team feels safe giving feedback. Go through your team's <a href="/features/pull-requests">Pull Requests</a> to assert your team members have a healthy communication style.
+
+## Bad Practices
+
+It's very important to know how this
+data should **not** be used.
+
+- **Do not** evaluate review quality based on quantity.
+- **Do not** evaluate performance based solely on review quantity.
+- **Do not** use this data to stack rank developers.
 
 <CtaGetStarted />

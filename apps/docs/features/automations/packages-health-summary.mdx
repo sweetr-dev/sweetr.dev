@@ -11,4 +11,24 @@ import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
   <img src="/images/package-health-summary.png" />
 </Frame>
 
+## How it works
+
+Every time a yarn.lock or package-lock.json file is modified on a Pull Request, sweetr.dev adds a comment to the file with a summary of the changes. The summary lists for each updated package:
+
+- Package Name.
+- Type (Removed/Downgraded/Updated/Added).
+- Previous and New Version.
+- Package's minified bundle size (powered by bundlephobia.com).
+- Package's health (powered by snyk.com).
+
+## How can this help your team?
+
+Engineers hardly ever review lock files. They are huge and hard to read. This helps them understand how dependencies are being changed on a quick glance.
+
+- **Package health**: Reconsider unmaintained packages that will become tech-debt. Instant access to package's full health analysis on Snyk.
+- **Bundle size**: Understand how adding a package will affect the website's bundle size, enabling better performance management.
+- **Security awareness**: Instant access to vulnerability reports ensures that security concerns are addressed promptly.
+- **Streamlined reviews**: Engineers can quickly understand the impact of changes without manually sifting through large lock files.
+- **Understand the dependency tree**: Expose the real cost of adding a package, including sub-dependencies.
+
 <CtaGetStarted />
