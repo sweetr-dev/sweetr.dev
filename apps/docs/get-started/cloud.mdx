@@ -2,6 +2,8 @@
 title: Cloud
 ---
 
+import GithubPermissions from "/snippets/github-permissions.mdx";
+
 Our cloud solution is the fastest and easiest way to get started.
 
 <Steps>
@@ -17,12 +19,7 @@ Our cloud solution is the fastest and easiest way to get started.
 
   </Step>
   <Step title="Review the permissions">
-    Our GitHub app asks for permission for:
-
-    - Read: <Tooltip tip="Used in our automations, to read content from your yarn.lock or package-lock.json files.">code</Tooltip>, <Tooltip tip="Used to enable features like teams, people directory and allow teammates to login to your workspace.">members</Tooltip> and <Tooltip tip="Used to name your workspace.">metadata</Tooltip>
-    - Read and write: <Tooltip tip="Read: Used to enable features like insights | Write: Used in our automations, to post comments to pull requests.">pull requests</Tooltip>
-
-    These permissions are necessary to sync metadata from GitHub to our database and provide service to you.
+    <GithubPermissions />
 
     <Note>We'll never store any of your repositories' code in our servers.</Note>
 

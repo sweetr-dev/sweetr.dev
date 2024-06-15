@@ -70,8 +70,8 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
       >
         <Box p="md">
           <CardInfo>
-            Track how long it takes for a Pull Request to receive it&apos;s
-            first review.
+            Track how long it takes for a Pull Request to receive its first
+            review.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>

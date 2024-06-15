@@ -29,12 +29,18 @@ The pull request size is calculated based on the amount of lines changed.
 
 Each pull request has indicators regarding the time to review, approve and merge.
 
-<PrBadge color="#a6a7ab" type="no-review" />
-<PrBadge color="#a6a7ab" type="reviewed" />
-<PrBadge color="#a6a7ab" type="approved" />
-<PrBadge color="#a6a7ab" type="open" />
-<PrBadge color="#a6a7ab" type="merged" />
-<PrBadge color="#C92A2A" type="merged-no-review" />
+<CardGroup cols={2}>
+  <Card title="Review badge">
+    <PrBadge color="#a6a7ab" type="no-review" />
+    <PrBadge color="#a6a7ab" type="reviewed" />
+    <PrBadge color="#a6a7ab" type="approved" />
+    <PrBadge color="#C92A2A" type="merged-no-review" />
+  </Card>
+  <Card title="Merge badge">
+    <PrBadge color="#a6a7ab" type="open" />
+    <PrBadge color="#a6a7ab" type="merged" />
+  </Card>
+</CardGroup>
 
 The color of the icons also changes depending on the time elapsed for the corresponding event.
 
@@ -45,7 +51,7 @@ The color of the icons also changes depending on the time elapsed for the corres
 
 <Info>Weekends are not included when calculating time elapsed.</Info>
 
-## Use Cases
+## Use cases
 
 - Easily see all team PRs in one place.
 - Identify blocked PRs.
