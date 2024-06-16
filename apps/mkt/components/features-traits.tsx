@@ -58,7 +58,7 @@ export default function FeaturesTraits() {
                         target="_blank"
                         className="text-green-400 underline"
                       >
-                        We are human-centric.
+                        Read our guiding principles.
                       </Link>
                     </p>
                   </div>
