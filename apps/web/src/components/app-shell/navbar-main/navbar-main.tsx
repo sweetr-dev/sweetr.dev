@@ -5,17 +5,17 @@ import {
   Stack,
   useMantineTheme,
 } from "@mantine/core";
-import Logo from "../../assets/logo.svg";
+import Logo from "../../../assets/logo.svg";
 import { NavbarItem } from "./navbar-item";
 import { NavbarUser } from "./navbar-user";
 import { useMediaQuery } from "@mantine/hooks";
-import { navItems } from "../../providers/nav.provider";
+import { navItems } from "../../../providers/nav.provider";
 
 interface NavbarProps {
   onNavigate: () => void;
 }
 
-export const Navbar = ({ onNavigate }: NavbarProps) => {
+export const NavbarMain = ({ onNavigate }: NavbarProps) => {
   const { pathname } = useLocation();
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);

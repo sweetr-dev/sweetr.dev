@@ -15,12 +15,12 @@ import {
 } from "@tabler/icons-react";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../providers/auth.provider";
-import { installGithubAppUrl } from "../../providers/github.provider";
-import { WorkspaceSwitcher } from "../workspace-switcher";
-import { AvatarUser } from "../avatar-user";
+import { logout } from "../../../providers/auth.provider";
+import { installGithubAppUrl } from "../../../providers/github.provider";
+import { WorkspaceSwitcher } from "../../workspace-switcher";
+import { AvatarUser } from "../../avatar-user";
 import classes from "./navbar-user.module.css";
-import { useAppStore } from "../../providers/app.provider";
+import { useAppStore } from "../../../providers/app.provider";
 
 interface NavbarUserProps {
   onNavigate: () => void;

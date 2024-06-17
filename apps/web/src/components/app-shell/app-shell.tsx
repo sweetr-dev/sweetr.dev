@@ -1,7 +1,9 @@
 import { AppShell as MantineAppShell, useMantineTheme } from "@mantine/core";
 import { Header } from "./header";
-import { Navbar } from "../navbar";
+import { NavbarMain } from "./navbar-main";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useNavbar } from "./use-navbar";
+import { NavbarSettings } from "./navbar-settings";
 
 interface Props {
   children: React.ReactNode;
@@ -11,6 +13,7 @@ export const AppShell = ({ children }: Props) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [isMobileNavOpen, handlers] = useDisclosure(false);
+  const { width, isSettings } = useNavbar();
 
   return (
     <MantineAppShell
@@ -21,7 +24,7 @@ export const AppShell = ({ children }: Props) => {
       }}
       layout={isSmallScreen ? "default" : "alt"}
       navbar={{
-        width: 80,
+        width,
         breakpoint: "sm",
         collapsed: { desktop: false, mobile: !isMobileNavOpen },
       }}
@@ -32,7 +35,8 @@ export const AppShell = ({ children }: Props) => {
         onToggleMenu={handlers.toggle}
         isMobile={!!isSmallScreen}
       />
-      <Navbar onNavigate={handlers.close} />
+      {!isSettings && <NavbarMain onNavigate={handlers.close} />}
+      {isSettings && <NavbarSettings onNavigate={handlers.close} />}
       <MantineAppShell.Main>{children}</MantineAppShell.Main>
     </MantineAppShell>
   );

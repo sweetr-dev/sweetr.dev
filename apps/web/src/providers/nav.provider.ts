@@ -5,7 +5,7 @@ import {
   IconBrandGithub,
   IconBolt,
 } from "@tabler/icons-react";
-import { NavbarItemProps } from "../components/navbar/navbar-item";
+import { NavbarItemProps } from "../components/app-shell/navbar-main/navbar-item";
 
 export const navItems: (Omit<NavbarItemProps, "href"> & {
   href: string;
