@@ -18,12 +18,10 @@ export const WorkspaceSettingsPage = () => {
 
   return (
     <PageContainer>
-      <Breadcrumbs
-        items={[{ label: "Settings" }, { label: "Organization details" }]}
-      />
+      <Breadcrumbs items={[{ label: "Settings" }, { label: "Workspace" }]} />
 
       <Box maw={600}>
-        <Title order={3}>Organization details</Title>
+        <Title order={3}>Workspace</Title>
         <Paper mt="xs" p="lg" withBorder>
           <AvatarUser
             src={workspace.avatar}
@@ -41,7 +39,7 @@ export const WorkspaceSettingsPage = () => {
             disabled
           />
           <Text color="dimmed" size="xs" mt="md">
-            Your organization data is automatically synced with GitHub.
+            Your workspace data is automatically synced with GitHub.
           </Text>
         </Paper>
 

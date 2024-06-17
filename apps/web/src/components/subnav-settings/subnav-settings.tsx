@@ -1,6 +1,8 @@
 import { Badge, Divider, Stack, Title, NavLink } from "@mantine/core";
 import {
   IconAspectRatio,
+  IconBuilding,
+  IconBuildingCommunity,
   IconCash,
   IconForms,
   IconUser,
@@ -8,9 +10,11 @@ import {
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { useSubnav } from "../../providers/nav.provider";
+import { useWorkspace } from "../../providers/workspace.provider";
 
 export const SubnavSettings = () => {
   const { pathname } = useLocation();
+  const { workspace } = useWorkspace();
   useSubnav();
 
   // TO-DO: Create subnav-item component, abstract styles and add menus to spotlight.
@@ -25,14 +29,18 @@ export const SubnavSettings = () => {
       <Title order={3} mt={34}>
         Settings
       </Title>
-      <Divider label="Workspace" labelPosition="left" mt="sm" />
+      <Divider
+        label={workspace?.name || "Workspace"}
+        labelPosition="left"
+        mt="sm"
+      />
       <NavLink
         to="/settings/workspace"
         active={pathname === "/settings/workspace"}
         component={Link}
         style={{ borderRadius: 4 }}
-        label="Organization details"
-        leftSection={<IconForms stroke={1.5} size={18} />}
+        label="Workspace"
+        leftSection={<IconBuildingCommunity stroke={1.5} size={18} />}
       />
       <NavLink
         to="/settings/billing"
