@@ -8,10 +8,10 @@ import {
   Box,
 } from "@mantine/core";
 import {
-  IconSettings,
   IconLogout,
   IconSpeakerphone,
   IconBuilding,
+  IconBook2,
 } from "@tabler/icons-react";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +42,7 @@ export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
   };
 
   return (
-    <Box w={50} ml="auto">
+    <Box>
       <Menu withArrow position="right-end" offset={9}>
         <Menu.Target>
           <UnstyledButton className={classes.link}>
@@ -69,7 +69,7 @@ export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
 
           <Menu.Divider />
 
-          <Menu.Label>Select workspace</Menu.Label>
+          <Menu.Label>Switch workspace</Menu.Label>
           <Box m="sm" mt={0}>
             <WorkspaceSwitcher workspaces={availableWorkspaces} />
           </Box>
@@ -86,13 +86,13 @@ export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
             Connect new organization
           </Menu.Item>
           <Menu.Item
-            leftSection={<IconSettings size={14} stroke={1.5} />}
-            onClick={() => handleNavigate("/settings")}
+            leftSection={<IconBook2 size={14} stroke={1.5} />}
+            component="a"
+            href="https://docs.sweetr.dev"
+            target="_blank"
           >
-            Settings
+            Documentation
           </Menu.Item>
-
-          <Menu.Divider />
 
           <Menu.Item
             leftSection={<IconSpeakerphone size={14} stroke={1.5} />}
@@ -103,6 +103,9 @@ export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
           >
             Give feedback
           </Menu.Item>
+
+          <Menu.Divider />
+
           <Menu.Item
             component="a"
             href="/login"

@@ -17,6 +17,9 @@ import { HomePage } from "./app/home/page";
 import { AppPage } from "./app/page";
 import { RepositoriesPage } from "./app/repositories/page";
 import { SettingsPage } from "./app/settings/page";
+import { MyAccountPage } from "./app/settings/my-account/page";
+import { BillingPage } from "./app/settings/billing/page";
+import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
 import { TeamsPage } from "./app/teams/page";
 import { TeamPage } from "./app/teams/[id]/page";
 import { TeamMembersPage } from "./app/teams/[id]/members/page";
@@ -114,6 +117,20 @@ export const router = createBrowserRouter([
           {
             path: "/settings",
             element: <SettingsPage />,
+            children: [
+              {
+                path: "/settings/workspace",
+                element: <WorkspaceSettingsPage />,
+              },
+              {
+                path: "/settings/billing",
+                element: <BillingPage />,
+              },
+              {
+                path: "/settings/my-account",
+                element: <MyAccountPage />,
+              },
+            ],
           },
           {
             path: "/teams",
