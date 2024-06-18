@@ -12,10 +12,8 @@ import {
   Installation as GitHubInstallation,
   User as GitHubUser,
 } from "@octokit/webhooks-types";
-import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
-import { AutomationSlug } from "@sweetr/graphql-types/api";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -28,6 +26,7 @@ export const syncGitHubInstallation = async (
 
   const targetType = getTargetType(gitInstallation.target_type);
   const isOrganization = targetType === InstallationTargetType.ORGANIZATION;
+
   const gitProfile = await findGitProfileByGitIdOrThrow(
     gitUser.node_id.toString()
   );
@@ -182,11 +181,6 @@ const findGitProfileByGitIdOrThrow = async (
     where: { gitUserId },
     include: { user: true },
   });
-
-  if (!gitProfile.user)
-    throw new ResourceNotFoundException(
-      "findUserByGitIdOrThrow: User not found"
-    );
 
   return gitProfile;
 };
