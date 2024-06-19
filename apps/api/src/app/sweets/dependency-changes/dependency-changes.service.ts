@@ -4,7 +4,7 @@ import { comparePackageLocks } from "./lock-file.service";
 import { env } from "../../../env";
 import { DependencyUpdate } from "./lock-file.types";
 import { captureException } from "../../../lib/sentry";
-import { AutomationSlug } from "@sweetr/graphql-types/api";
+import { AutomationSlug } from "@sweetr/graphql-types/dist/api";
 import { isAutomationEnabled } from "../automation-setting.service";
 
 export const handlePackageHealthAutomation = async (
