@@ -14,7 +14,6 @@ import { InputValidationException } from "../../../errors/exceptions/input-valid
 
 const redirectUrl = config.app.frontend.url.concat(config.github.redirectPath);
 
-// TO-DO: Add "state" to prevent CSRF
 export const getGithubAuthtUrl = (state: string): string => {
   const baseUrl = new URL("https://github.com/login/oauth/authorize");
 

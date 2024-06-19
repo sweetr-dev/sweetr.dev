@@ -7,13 +7,13 @@ import {
   GitProfile,
 } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
-import { octokit } from "../../../lib/octokit";
 import {
   Installation as GitHubInstallation,
   User as GitHubUser,
 } from "@octokit/webhooks-types";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
+import { octokit } from "../../../lib/octokit";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -24,25 +24,11 @@ export const syncGitHubInstallation = async (
     gitUser,
   });
 
-  const targetType = getTargetType(gitInstallation.target_type);
-  const isOrganization = targetType === InstallationTargetType.ORGANIZATION;
-
-  const gitProfile = await findGitProfileByGitIdOrThrow(
-    gitUser.node_id.toString()
-  );
-
-  const organization = isOrganization
-    ? await upsertOrganization(gitInstallation.account.login)
-    : undefined;
-
-  const workspace = await createOrFindWorkspace(
-    targetType,
-    organization?.id || gitProfile.id
-  );
-
+  const gitProfile = await upsertGitProfile(gitUser);
+  const workspace = await upsertWorkspace(gitInstallation, gitProfile);
   const installation = await upsertInstallation(gitInstallation, workspace);
 
-  await connectUserToWorkspace(gitUser, workspace);
+  await connectUserToWorkspace(gitProfile, workspace);
 
   await addJob(SweetQueue.GITHUB_REPOSITORIES_SYNC, {
     installation: { id: parseInt(installation.gitInstallationId) },
@@ -66,6 +52,7 @@ const getTargetType = (targetType: string) => {
 };
 
 const upsertOrganization = async (login: string) => {
+  // We don't get the organization's name in the webhook.
   const { data } = await octokit.rest.users.getByUsername({
     username: login,
   });
@@ -74,19 +61,19 @@ const upsertOrganization = async (login: string) => {
     where: {
       gitProvider_gitOrganizationId: {
         gitProvider: GitProvider.GITHUB,
-        gitOrganizationId: data.id.toString(),
+        gitOrganizationId: data.node_id.toString(),
       },
     },
     create: {
       gitProvider: GitProvider.GITHUB,
-      gitOrganizationId: data.id.toString(),
-      name: data.name!,
+      gitOrganizationId: data.node_id.toString(),
+      name: data.name || data.login,
       avatar: data.avatar_url,
       handle: data.login,
     },
     update: {
       gitProvider: GitProvider.GITHUB,
-      name: data.name!,
+      name: data.name || data.login,
       avatar: data.avatar_url,
       handle: data.login,
     },
@@ -123,14 +110,24 @@ const upsertInstallation = async (
   });
 };
 
-const createOrFindWorkspace = (targetType: string, targetId: number) => {
-  if (targetType === InstallationTargetType.ORGANIZATION) {
+const upsertWorkspace = async (
+  gitInstallation: GitHubInstallation,
+  gitProfile: GitProfile
+) => {
+  const targetType = getTargetType(gitInstallation.target_type);
+  const isOrganization = targetType === InstallationTargetType.ORGANIZATION;
+
+  if (isOrganization) {
+    const organization = await upsertOrganization(
+      gitInstallation.account.login
+    );
+
     return getBypassRlsPrisma().workspace.upsert({
       where: {
-        organizationId: targetId,
+        organizationId: organization.id,
       },
       create: {
-        organizationId: targetId,
+        organizationId: organization.id,
         gitProvider: GitProvider.GITHUB,
       },
       update: {},
@@ -143,10 +140,10 @@ const createOrFindWorkspace = (targetType: string, targetId: number) => {
 
   return getBypassRlsPrisma().workspace.upsert({
     where: {
-      gitProfileId: targetId,
+      gitProfileId: gitProfile.id,
     },
     create: {
-      gitProfileId: targetId,
+      gitProfileId: gitProfile.id,
       gitProvider: GitProvider.GITHUB,
     },
     update: {},
@@ -174,26 +171,32 @@ const createWorkspaceDefaultAutomationSettings = async (
   });
 };
 
-const findGitProfileByGitIdOrThrow = async (
-  gitUserId: string
-): Promise<GitProfile> => {
-  const gitProfile = await getPrisma().gitProfile.findFirstOrThrow({
-    where: { gitUserId },
-    include: { user: true },
+const upsertGitProfile = async (gitUser: GitHubUser): Promise<GitProfile> => {
+  const gitUserId = gitUser.node_id.toString();
+
+  const data = {
+    gitUserId,
+    gitProvider: GitProvider.GITHUB,
+    handle: gitUser.login,
+    name: gitUser.name || gitUser.login,
+    avatar: gitUser.avatar_url,
+  };
+
+  const gitProfile = await getPrisma().gitProfile.upsert({
+    where: {
+      gitProvider_gitUserId: { gitUserId, gitProvider: GitProvider.GITHUB },
+    },
+    create: data,
+    update: data,
   });
 
   return gitProfile;
 };
 
 const connectUserToWorkspace = async (
-  gitUser: GitHubUser,
+  gitProfile: GitProfile,
   workspace: Workspace
 ): Promise<WorkspaceMembership> => {
-  const gitProfile = await getPrisma().gitProfile.findFirstOrThrow({
-    where: { gitUserId: gitUser.node_id.toString() },
-    include: { user: true },
-  });
-
   return getPrisma(workspace.id).workspaceMembership.upsert({
     where: {
       gitProfileId_workspaceId: {

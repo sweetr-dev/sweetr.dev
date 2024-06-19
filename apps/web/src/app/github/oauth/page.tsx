@@ -37,10 +37,19 @@ export const OAuthGithubPage = () => {
   document.body.style.backgroundColor = "#141517";
 
   const handleError = useCallback(() => {
-    showErrorNotification({
-      title: "Error",
-      message: "Something went wrong, please try again.",
-    });
+    if (!csrfToken) {
+      showErrorNotification({
+        title: "Error",
+        message:
+          "Could not verify the request origin, please authenticate again.",
+        autoClose: false,
+      });
+    } else {
+      showErrorNotification({
+        title: "Error",
+        message: "Something went wrong, please try again.",
+      });
+    }
 
     navigate("/login");
   }, [navigate]);
