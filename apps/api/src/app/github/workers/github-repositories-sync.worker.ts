@@ -4,22 +4,32 @@ import { createWorker } from "../../../bull-mq/workers";
 import { RepositoryEvent } from "@octokit/webhooks-types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { syncGitHubRepositories } from "../services/github-repository.service";
+import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const githubRepositoriesSyncWorker = createWorker(
   SweetQueue.GITHUB_REPOSITORIES_SYNC,
   async (
     job: Job<RepositoryEvent & { shouldSyncRepositoryPullRequests?: boolean }>
   ) => {
-    if (!job.data.installation) {
+    const installationId = job.data.installation?.id;
+
+    if (!installationId) {
       throw new InputValidationException(
         "Missing installation or organization",
         { job }
       );
     }
 
-    await syncGitHubRepositories(
-      job.data.installation.id,
-      job.data.shouldSyncRepositoryPullRequests || false
+    await withDelayedRetryOnRateLimit(
+      () =>
+        syncGitHubRepositories(
+          installationId,
+          job.data.shouldSyncRepositoryPullRequests || false
+        ),
+      {
+        job,
+        installationId,
+      }
     );
   }
 );

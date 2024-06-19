@@ -7,13 +7,16 @@ import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { syncCodeReviews } from "../services/github-code-review.service";
+import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const syncCodeReviewWorker = createWorker(
   SweetQueue.GITHUB_SYNC_CODE_REVIEW,
   async (
     job: Job<PullRequestReviewSubmittedEvent | PullRequestReviewDismissedEvent>
   ) => {
-    if (!job.data.installation?.id) {
+    const installationId = job.data.installation?.id;
+
+    if (!installationId) {
       throw new InputValidationException(
         "Received Pull Request webhook without installation",
         { extra: { jobData: job.data }, severity: "error" }
@@ -27,9 +30,12 @@ export const syncCodeReviewWorker = createWorker(
       );
     }
 
-    await syncCodeReviews(
-      job.data.installation.id,
-      job.data.pull_request.node_id
+    await withDelayedRetryOnRateLimit(
+      () => syncCodeReviews(installationId, job.data.pull_request.node_id),
+      {
+        job,
+        installationId,
+      }
     );
   }
 );

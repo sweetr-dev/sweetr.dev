@@ -7,22 +7,29 @@ import {
   OrganizationMemberRemovedEvent,
 } from "@octokit/webhooks-types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
+import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const githubMemberSyncWorker = createWorker(
   SweetQueue.GITHUB_MEMBERS_SYNC,
   async (
     job: Job<OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent>
   ) => {
-    if (!job.data.installation || !job.data.organization) {
+    const installationId = job.data.installation?.id;
+
+    if (!installationId || !job.data.organization) {
       throw new InputValidationException(
         "Missing installation or organization",
         { job }
       );
     }
 
-    await syncOrganizationMembers(
-      job.data.installation.id,
-      job.data.organization.login
+    await withDelayedRetryOnRateLimit(
+      () =>
+        syncOrganizationMembers(installationId, job.data.organization.login),
+      {
+        job,
+        installationId,
+      }
     );
   }
 );
