@@ -55,8 +55,8 @@ export const loginWithGithub = async (
   });
 };
 
-export const getGithubLoginUrl = () => {
-  return github.getGithubAuthtUrl(getTemporaryNonce());
+export const getGithubLoginUrl = (redirectTo?: string) => {
+  return github.getGithubAuthtUrl(getLoginState(redirectTo));
 };
 
 const signJwtToken = (payload: JWTPayload): Token => {
@@ -72,15 +72,21 @@ const signJwtToken = (payload: JWTPayload): Token => {
 };
 
 const preventCSRFAttack = async (state: string) => {
-  const nonce = await redisConnection.get(`oauth:state:${state}`);
+  const nonce = state.split(":::").at(-1);
 
-  if (!nonce) {
+  const keyValue = await redisConnection.get(`oauth:state:${nonce}`);
+
+  if (!keyValue) {
     throw new BusinessRuleException("Could not validate state", {
       severity: "info",
     });
   }
 
-  redisConnection.del(`oauth:state:${state}`);
+  redisConnection.del(`oauth:state:${nonce}`);
+};
+
+const getLoginState = (redirectTo: string = "/") => {
+  return `${redirectTo}:::${getTemporaryNonce()}`;
 };
 
 const getTemporaryNonce = () => {

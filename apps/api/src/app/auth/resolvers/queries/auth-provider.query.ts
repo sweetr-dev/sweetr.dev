@@ -13,7 +13,7 @@ export const authProviderQuery = createQueryResolver({
     }
 
     return {
-      redirectUrl: getGithubLoginUrl(),
+      redirectUrl: getGithubLoginUrl(input.redirectTo || undefined),
     };
   },
 });

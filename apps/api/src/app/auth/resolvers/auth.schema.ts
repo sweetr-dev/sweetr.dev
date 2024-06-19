@@ -11,6 +11,7 @@ export default /* GraphQL */ `
 
   input AuthProviderInput {
     provider: AuthProvider!
+    redirectTo: String
   }
 
   type AuthProviderResponse {
@@ -24,6 +25,7 @@ export default /* GraphQL */ `
 
   type LoginWithGithubResponse {
     token: Token! @skipAuth
+    redirectTo: String @skipAuth
   }
 
   type Token {

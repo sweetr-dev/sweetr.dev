@@ -12,11 +12,20 @@ import { AuthProvider } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { useAuthProviderQuery } from "../../../api/auth.api";
 import { Logo } from "../../../components/logo";
+import { useSearchParams } from "react-router-dom";
 
 export const LoginPage = () => {
-  const { data, isLoading } = useAuthProviderQuery({
-    input: { provider: AuthProvider.GITHUB },
+  const [searchParams] = useSearchParams({
+    redirectTo: "",
   });
+
+  const { data, isLoading } = useAuthProviderQuery({
+    input: {
+      provider: AuthProvider.GITHUB,
+      redirectTo: searchParams.get("redirectTo"),
+    },
+  });
+
   const { colorScheme } = useMantineColorScheme();
 
   document.body.style.backgroundColor = "#141517";

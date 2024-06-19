@@ -37,6 +37,7 @@ export enum AuthProvider {
 
 export type AuthProviderInput = {
   provider: AuthProvider;
+  redirectTo?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AuthProviderResponse = {
@@ -177,6 +178,7 @@ export type LoginWithGithubInput = {
 
 export type LoginWithGithubResponse = {
   __typename?: 'LoginWithGithubResponse';
+  redirectTo?: Maybe<Scalars['String']['output']>;
   token: Token;
 };
 
@@ -811,6 +813,7 @@ export interface HexColorCodeScalarConfig extends GraphQLScalarTypeConfig<Resolv
 }
 
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
+  redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

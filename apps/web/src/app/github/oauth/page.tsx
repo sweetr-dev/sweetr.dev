@@ -9,7 +9,7 @@ import { showErrorNotification } from "../../../providers/notification.provider"
 import { isUrlGithubInstallCallback } from "../../../providers/github.provider";
 import { forwardQueryParameters } from "../../../providers/url.provider";
 
-const getRedirectUrl = () => {
+const getRedirectUrl = (encodedUrl?: string) => {
   if (isUrlGithubInstallCallback(new URL(window.location.href))) {
     const redirectTo = forwardQueryParameters(
       new URL("/github/install", window.location.origin),
@@ -18,19 +18,22 @@ const getRedirectUrl = () => {
     return `${redirectTo.pathname}${redirectTo.search}`;
   }
 
+  if (encodedUrl) return decodeURIComponent(encodedUrl);
+
   return "/";
 };
 
 export const OAuthGithubPage = () => {
   const [searchParams] = useSearchParams({
     code: "",
-    installationId: "",
     state: "",
   });
 
   const code = searchParams.get("code");
-  const csrfToken = searchParams.get("state");
-  const redirectUrl = getRedirectUrl();
+  const state = searchParams.get("state");
+  const stateEncodedUrl = state?.split(":::").at(0);
+  const csrfToken = state?.split(":::").at(-1);
+  const redirectUrl = getRedirectUrl(stateEncodedUrl);
 
   const navigate = useNavigate();
 
@@ -51,8 +54,17 @@ export const OAuthGithubPage = () => {
       });
     }
 
-    navigate("/login");
-  }, [navigate]);
+    if (isUrlGithubInstallCallback(new URL(window.location.href))) {
+      const installationId = searchParams.get("installation_id");
+
+      navigate(
+        `/login?redirectTo=${encodeURIComponent(`/github/install?installation_id=${installationId}`)}`,
+      );
+      return;
+    }
+
+    navigate("/");
+  }, [navigate, csrfToken, searchParams]);
 
   const { data, error, isPending, mutate } = useLoginWithGithubMutation({
     onSuccess: (data) => {

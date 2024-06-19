@@ -35,6 +35,7 @@ export enum AuthProvider {
 
 export type AuthProviderInput = {
   provider: AuthProvider;
+  redirectTo?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AuthProviderResponse = {
@@ -175,6 +176,7 @@ export type LoginWithGithubInput = {
 
 export type LoginWithGithubResponse = {
   __typename?: 'LoginWithGithubResponse';
+  redirectTo?: Maybe<Scalars['String']['output']>;
   token: Token;
 };
 
