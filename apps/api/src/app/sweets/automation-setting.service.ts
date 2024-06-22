@@ -1,6 +1,5 @@
 import { GitProvider } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../prisma";
-import { ResourceNotFoundException } from "../errors/exceptions/resource-not-found.exception";
 import { AutomationSlug } from "@sweetr/graphql-types/api";
 
 export const isAutomationEnabled = async (
@@ -8,6 +7,8 @@ export const isAutomationEnabled = async (
   slug: AutomationSlug
 ) => {
   const workspace = await findWorkspaceOrThrow(gitInstallationId);
+
+  if (!workspace) return false;
 
   const automationSetting = await getPrisma(
     workspace.id
@@ -21,7 +22,7 @@ export const isAutomationEnabled = async (
 };
 
 const findWorkspaceOrThrow = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
+  return getBypassRlsPrisma().workspace.findFirst({
     where: {
       installation: {
         gitInstallationId: gitInstallationId.toString(),
@@ -29,12 +30,4 @@ const findWorkspaceOrThrow = async (gitInstallationId: number) => {
       },
     },
   });
-
-  if (!workspace) {
-    throw new ResourceNotFoundException("Could not find workspace", {
-      gitInstallationId,
-    });
-  }
-
-  return workspace;
 };
