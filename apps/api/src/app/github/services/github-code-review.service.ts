@@ -19,6 +19,7 @@ import {
 } from "./github-pull-request-tracking.service";
 import { parseNullableISO } from "../../../lib/date";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { SweetQueue, addJob } from "../../../bull-mq/queues";
 
 interface Author {
   id: string;
@@ -43,11 +44,31 @@ export const syncCodeReviews = async (
     pullRequestId,
   });
 
-  const pullRequest = await findPullRequestOrThrow(pullRequestId);
+  const pullRequest = await findPullRequest(pullRequestId);
+
+  if (!pullRequest) {
+    logger.info("syncCodeReviews: PR not synced yet, scheduling PR job.", {
+      installationId,
+      pullRequestId,
+    });
+
+    addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
+      pull_request: {
+        node_id: pullRequestId,
+      },
+      installation: {
+        id: installationId,
+      },
+      shouldSyncReviews: true,
+    });
+
+    return;
+  }
 
   if (pullRequest.repository.isFork) {
-    logger.info("syncPullRequest: Skipping forked repository", {
+    logger.debug("syncCodeReviews: Skipping forked repository", {
       pullRequestId,
+      installationId,
     });
 
     return;
@@ -309,8 +330,8 @@ const upsertGitProfile = async (author: Author) => {
   });
 };
 
-const findPullRequestOrThrow = async (gitPullRequestId: string) => {
-  return getBypassRlsPrisma().pullRequest.findFirstOrThrow({
+const findPullRequest = async (gitPullRequestId: string) => {
+  return getBypassRlsPrisma().pullRequest.findFirst({
     where: {
       gitProvider: GitProvider.GITHUB,
       gitPullRequestId,
