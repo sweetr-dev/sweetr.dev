@@ -1,10 +1,12 @@
 <div align="center">
   <a href="https://sweetr.dev">
-    <img src="https://github.com/sweetr-dev/sweetr.dev/assets/1367578/256c5052-b488-41f1-9ff5-2032930feb55" alt="Banner" width="829" height="300">
+    <img src="https://github.com/sweetr-dev/sweetr.dev/assets/1367578/4b35cc76-78d1-4f01-8476-c1d7f515fad4" alt="Banner">
   </a>
 </div>
-
 <h3 align="center">sweetr.dev</h3>
+<p align="center">
+  <i>An open-source solution for your dev teams to find ways to optimize,<br/>speed up development and improve developer experience & wellbeing.</i>
+</p>
 
 <p align="center">
   <a href="https://sweetr.dev">Website</a>
@@ -13,3 +15,11 @@
   ·
   <a href="https://github.com/sweetr-dev/sweetr.dev/discussions">Community</a>
 </p>
+
+<p align="center">
+  <img width="1640" alt="screenshot" src="https://sweetr.dev/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fhome.0ad81bd1.png&w=1200&q=100">
+</p>
+
+# License
+
+Sweetr.dev is [FSL-1.1-Apache-2.0 licensed](LICENSE).
