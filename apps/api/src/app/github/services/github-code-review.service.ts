@@ -36,19 +36,29 @@ interface ReviewData {
 }
 
 export const syncCodeReviews = async (
-  installationId: number,
+  gitInstallationId: number,
   pullRequestId: string
 ) => {
   logger.info("syncCodeReviews", {
-    installationId,
+    installationId: gitInstallationId,
     pullRequestId,
   });
 
-  const pullRequest = await findPullRequest(pullRequestId);
+  const workspace = await findWorkspace(gitInstallationId);
+
+  if (!workspace) {
+    logger.info("syncCodeReviews: Could not find Workspace", {
+      gitInstallationId,
+      pullRequestId,
+    });
+    return;
+  }
+
+  const pullRequest = await findPullRequest(workspace.id, pullRequestId);
 
   if (!pullRequest) {
-    logger.info("syncCodeReviews: PR not synced yet, scheduling PR job.", {
-      installationId,
+    logger.info("syncCodeReviews: PR not synced yet, scheduling PR job", {
+      gitInstallationId,
       pullRequestId,
     });
 
@@ -57,9 +67,9 @@ export const syncCodeReviews = async (
         node_id: pullRequestId,
       },
       installation: {
-        id: installationId,
+        id: gitInstallationId,
       },
-      shouldSyncReviews: true,
+      syncReviews: true,
     });
 
     return;
@@ -68,14 +78,14 @@ export const syncCodeReviews = async (
   if (pullRequest.repository.isFork) {
     logger.debug("syncCodeReviews: Skipping forked repository", {
       pullRequestId,
-      installationId,
+      gitInstallationId,
     });
 
     return;
   }
 
   const { reviews, firstReviewerRequestedAt } = await fetchPullRequestReviews(
-    installationId,
+    gitInstallationId,
     pullRequestId
   );
 
@@ -121,6 +131,7 @@ const fetchPullRequestReviews = async (
           ... on PullRequest {
             id
             author {
+              __typename
               login
             }
             reviews(first: ${GITHUB_MAX_PAGE_LIMIT}, after: $cursor) {
@@ -330,8 +341,11 @@ const upsertGitProfile = async (author: Author) => {
   });
 };
 
-const findPullRequest = async (gitPullRequestId: string) => {
-  return getBypassRlsPrisma().pullRequest.findFirst({
+const findPullRequest = async (
+  workspaceId: number,
+  gitPullRequestId: string
+) => {
+  return getPrisma(workspaceId).pullRequest.findFirst({
     where: {
       gitProvider: GitProvider.GITHUB,
       gitPullRequestId,
@@ -341,4 +355,24 @@ const findPullRequest = async (gitPullRequestId: string) => {
       tracking: true,
     },
   });
+};
+
+const findWorkspace = async (gitInstallationId: number) => {
+  const workspace = await getBypassRlsPrisma().workspace.findFirst({
+    where: {
+      installation: {
+        gitInstallationId: gitInstallationId.toString(),
+        gitProvider: GitProvider.GITHUB,
+      },
+    },
+    include: {
+      organization: true,
+      gitProfile: true,
+    },
+  });
+
+  if (!workspace) return null;
+  if (!workspace.gitProfile && !workspace.organization) return null;
+
+  return workspace;
 };

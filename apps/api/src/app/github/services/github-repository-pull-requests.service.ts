@@ -37,7 +37,7 @@ export const syncGitHubRepositoryPullRequests = async (
     gitHubPullRequests.map((pullRequest) => ({
       installation: { id: gitInstallationId },
       pull_request: { node_id: pullRequest.id },
-      shouldSyncReviews: true,
+      syncReviews: true,
     })),
     {
       priority: JobPriority.LOW,

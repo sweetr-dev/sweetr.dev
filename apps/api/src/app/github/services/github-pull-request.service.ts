@@ -24,18 +24,34 @@ interface Author {
   name: string;
   avatarUrl: string;
 }
+type RepositoryData = Omit<
+  Repository,
+  "id" | "workspaceId" | "createdAt" | "updatedAt"
+>;
 
 export const syncPullRequest = async (
-  installationId: number,
+  gitInstallationId: number,
   pullRequestId: string,
-  shouldSyncReviews = false
+  syncReviews = false
 ) => {
   logger.info("syncPullRequest", {
-    installationId,
+    installationId: gitInstallationId,
     pullRequestId,
   });
 
-  const gitPrData = await fetchPullRequest(installationId, pullRequestId);
+  const workspace = await findWorkspace(gitInstallationId);
+
+  if (!workspace) {
+    logger.info("syncPullRequest: Could not find Workspace", {
+      gitInstallationId,
+      pullRequestId,
+      syncReviews,
+    });
+
+    return;
+  }
+
+  const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
 
   if (gitPrData.repository.isFork) {
     logger.info("syncPullRequest: Skipping forked repository", {
@@ -54,15 +70,14 @@ export const syncPullRequest = async (
   }
 
   const gitProfile = await upsertGitProfile(gitPrData.author);
-  const repository = await findRepositoryOrThrow(gitPrData.repository.id);
-
+  const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(
     gitProfile.id,
     repository,
     gitPrData
   );
 
-  if (shouldSyncReviews) {
+  if (syncReviews) {
     logger.debug("syncPullRequest: Adding job to sync reviews", {
       gitPrData,
     });
@@ -74,7 +89,7 @@ export const syncPullRequest = async (
           node_id: pullRequest.gitPullRequestId,
         },
         installation: {
-          id: installationId,
+          id: gitInstallationId,
         },
       },
       {
@@ -128,7 +143,14 @@ const fetchPullRequest = async (
               id
               name
               nameWithOwner
+              description
+              stargazerCount
               isFork
+              isArchived
+              isMirror
+              isPrivate
+              archivedAt
+              createdAt
             }
 
             commits(first: 1) {
@@ -275,13 +297,60 @@ const upsertGitProfile = async (author: Author) => {
   });
 };
 
-const findRepositoryOrThrow = async (gitRepositoryId: string) => {
-  return getBypassRlsPrisma().repository.findFirstOrThrow({
+const upsertRepository = async (workspaceId, gitRepositoryData: any) => {
+  const data: RepositoryData = {
+    gitRepositoryId: gitRepositoryData.id,
+    gitProvider: GitProvider.GITHUB,
+    name: gitRepositoryData.name,
+    fullName: gitRepositoryData.nameWithOwner,
+    description: gitRepositoryData.description,
+    starCount: gitRepositoryData.stargazerCount,
+    isFork: gitRepositoryData.isFork,
+    isMirror: gitRepositoryData.isMirror,
+    isPrivate: gitRepositoryData.isPrivate,
+    archivedAt: gitRepositoryData.archivedAt
+      ? new Date(gitRepositoryData.archivedAt)
+      : null,
+  };
+
+  return await getPrisma(workspaceId).repository.upsert({
     where: {
-      gitProvider: GitProvider.GITHUB,
-      gitRepositoryId,
+      gitProvider_gitRepositoryId: {
+        gitProvider: GitProvider.GITHUB,
+        gitRepositoryId: gitRepositoryData.id,
+      },
+    },
+    create: {
+      ...data,
+      workspaceId: workspaceId,
+      createdAt: new Date(),
+    },
+    update: {
+      ...data,
+      workspaceId: workspaceId,
     },
   });
+};
+
+const findWorkspace = async (gitInstallationId: number) => {
+  const workspace = await getBypassRlsPrisma().workspace.findFirst({
+    where: {
+      installation: {
+        gitInstallationId: gitInstallationId.toString(),
+        gitProvider: GitProvider.GITHUB,
+      },
+    },
+    include: {
+      organization: true,
+      gitProfile: true,
+    },
+  });
+
+  if (!workspace) return null;
+
+  if (!workspace.gitProfile && !workspace.organization) return null;
+
+  return workspace;
 };
 
 // A draft that was closed will have state === "CLOSED" and isDraft === true.

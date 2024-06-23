@@ -4,7 +4,6 @@ import {
   getInstallationGraphQLOctoKit,
 } from "../../../lib/octokit";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
-import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { parallel } from "radash";
 import { logger } from "../../../lib/logger";
 import { SweetQueue, addJobs } from "../../../bull-mq/queues";
@@ -21,10 +20,16 @@ export const syncGitHubRepositories = async (
 ): Promise<void> => {
   logger.info("syncGitHubRepositories", { gitInstallationId });
 
-  const workspace = await findWorkspaceOrThrow(gitInstallationId);
+  const workspace = await findWorkspace(gitInstallationId);
+
+  if (!workspace) {
+    logger.info("syncGitHubRepositories: Could not find Workspace", {
+      gitInstallationId,
+    });
+    return;
+  }
 
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
-
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
 
   if (shouldSyncRepositoryPullRequests) {
@@ -124,7 +129,7 @@ const upsertRepositories = async (
   });
 };
 
-const findWorkspaceOrThrow = async (gitInstallationId: number) => {
+const findWorkspace = async (gitInstallationId: number) => {
   const workspace = await getBypassRlsPrisma().workspace.findFirst({
     where: {
       installation: {
@@ -138,17 +143,8 @@ const findWorkspaceOrThrow = async (gitInstallationId: number) => {
     },
   });
 
-  if (!workspace) {
-    throw new ResourceNotFoundException("Could not find workspace", {
-      gitInstallationId,
-    });
-  }
-
-  if (!workspace.gitProfile && !workspace.organization) {
-    throw new ResourceNotFoundException("Could not find workspace owner", {
-      gitInstallationId,
-    });
-  }
+  if (!workspace) return null;
+  if (!workspace.gitProfile && !workspace.organization) return null;
 
   return workspace;
 };

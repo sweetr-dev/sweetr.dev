@@ -14,7 +14,7 @@ export const syncPullRequestWorker = createWorker(
   async (
     job: Job<
       (PullRequestSynchronizeEvent | PullRequestOpenedEvent) & {
-        shouldSyncReviews?: boolean;
+        syncReviews?: boolean;
       }
     >
   ) => {
@@ -39,7 +39,7 @@ export const syncPullRequestWorker = createWorker(
         syncPullRequest(
           installationId,
           job.data.pull_request.node_id,
-          job.data.shouldSyncReviews
+          job.data.syncReviews
         ),
       {
         job,
