@@ -9,8 +9,8 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
   // Installation
   "installation.created": [SweetQueue.GITHUB_INSTALLATION_SYNC],
   "installation_target.renamed": [SweetQueue.GITHUB_INSTALLATION_SYNC],
-  "installation_repositories.added": [SweetQueue.GITHUB_INSTALLATION_SYNC],
-  "installation_repositories.removed": [SweetQueue.GITHUB_INSTALLATION_SYNC],
+  "installation_repositories.added": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
+  "installation_repositories.removed": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
   "installation.deleted": [SweetQueue.GITHUB_INSTALLATION_DELETED],
   "installation.new_permissions_accepted": [],
   "github_app_authorization.revoked": [SweetQueue.GITHUB_OAUTH_REVOKED],
