@@ -155,7 +155,8 @@ export default function FeaturesOverview() {
               Meet the solution.
             </h2>
             <h3 className="text-lg text-green-400">
-              Unlock continuous improvement with team-focused data & insights.
+              Unlock continuous improvement with team-focused data, insights &
+              automations.
             </h3>
           </div>
 

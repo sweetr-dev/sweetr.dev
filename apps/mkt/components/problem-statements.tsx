@@ -1,4 +1,10 @@
-import { IconClipboardData } from "@tabler/icons-react";
+import {
+  IconClipboardData,
+  IconMessageDown,
+  IconMessageExclamation,
+  IconSeeding,
+  IconUserPentagon,
+} from "@tabler/icons-react";
 import { IconEyeClosed, IconCode, IconInfinity } from "@tabler/icons-react";
 
 export default function ProblemStatements() {
@@ -12,32 +18,32 @@ export default function ProblemStatements() {
         />
       ),
       title: "Lack of visibility",
-      description: "Data is scattered and you can't measure impact.",
+      description: "Scattered data make it hard to measure impact.",
     },
     {
       icon: (
         <IconCode size={64} stroke={0.5} className="text-red-500 mx-auto" />
       ),
       title: "Slow output",
-      description: "Hidden bottlenecks slows down your development.",
+      description: "Hidden bottlenecks slow down development.",
     },
     {
       icon: (
         <IconInfinity size={64} stroke={0.5} className="text-red-500 mx-auto" />
       ),
       title: "Low predictability",
-      description: "It's hard to understand your team's flow.",
+      description: "It's hard to understand the team's flow.",
     },
     {
       icon: (
-        <IconClipboardData
+        <IconUserPentagon
           size={64}
           stroke={0.5}
           className="text-red-500 mx-auto"
         />
       ),
-      title: "Performance reviews",
-      description: "You lack actionable data for fair performance assessments.",
+      title: "Inconsistent feedback",
+      description: "Struggle to coach and mentor the team.",
     },
   ];
 
@@ -47,10 +53,10 @@ export default function ProblemStatements() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
           <div className="relative max-w-3xl mx-auto text-center pb-12 md:pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              The problem
+              The problems
             </h2>
             <h3 className="text-lg text-red-400">
-              The challenges of modern software development.
+              Faced by engineering managers and team leads.
             </h3>
           </div>
           <div className="flex flex-wrap">
