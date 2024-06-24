@@ -22,7 +22,9 @@ import {
   IconHeadphones,
   IconExternalLink,
   IconBrandGithub,
+  IconBook2,
 } from "@tabler/icons-react";
+import { ButtonDocs } from "./ui/button-docs";
 
 const features = [
   {
@@ -35,6 +37,10 @@ const features = [
           <li>Flags hot PRs with lots of comments.</li>
           <li>Flags PRs that are too big.</li>
         </ul>
+        <ButtonDocs
+          href="https://docs.sweetr.dev/features/pull-requests"
+          className="mt-4"
+        />
       </>
     ),
     contentHeight: 165,
@@ -52,6 +58,10 @@ const features = [
           <li>Spot "LGTM" stamps.</li>
           <li>Empower leaders to coach developers to be better reviewers.</li>
         </ul>
+        <ButtonDocs
+          href="https://docs.sweetr.dev/features/code-reviews"
+          className="mt-4"
+        />
       </>
     ),
     contentHeight: 213,
@@ -67,6 +77,10 @@ const features = [
           <li>Identify bottlenecks that need action.</li>
           <li>Understand whether iterations on process are being effective.</li>
         </ul>
+        <ButtonDocs
+          href="https://docs.sweetr.dev/features/team/cycle-time"
+          className="mt-4"
+        />
       </>
     ),
     contentHeight: 165,
@@ -86,6 +100,10 @@ const features = [
           <li>Understand team dynamics and mentorship.</li>
           <li>Understand reviewer cross-team allocation.</li>
         </ul>
+        <ButtonDocs
+          href="https://docs.sweetr.dev/features/team/code-review-distribution"
+          className="mt-4"
+        />
       </>
     ),
     contentHeight: 165,
@@ -102,6 +120,10 @@ const features = [
           <li>Correlate with cycle time and time to review.</li>
           <li>Encourage a culture of small PRs.</li>
         </ul>
+        <ButtonDocs
+          href="https://docs.sweetr.dev/features/team/pr-size-distribution"
+          className="mt-4"
+        />
       </>
     ),
     contentHeight: 189,
@@ -131,18 +153,21 @@ export default function FeaturesOverview() {
         <div className="max-w-xl lg:max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
           <div className="relative max-w-3xl mx-auto text-center pb-12 md:pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              Understand your flow.
+              Meet the solution.
             </h2>
-            <p className="text-lg text-green-400">
+            <h3 className="text-lg text-green-400">
               Unlock continuous improvement with team-focused data & insights.
-            </p>
+            </h3>
           </div>
 
           <div className="lg:flex space-y-12 lg:space-y-0 lg:space-x-12 xl:space-x-12">
             {/* Content */}
             <div className="lg:max-w-none lg:min-w-[430px]">
               {/* Tabs buttons */}
-              <div className="mb-8 md:mb-0 space-y-2">
+              <div className="mb-8 md:mb-0 space-y-3">
+                <p className="text-white uppercase text-sm font-medium text-center ">
+                  For managers & team leads
+                </p>
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
 
@@ -157,7 +182,6 @@ export default function FeaturesOverview() {
                           tab === index ? feature.contentHeight + 58 : 61,
                       }}
                       onClick={(e) => {
-                        e.preventDefault();
                         setTab(index);
                       }}
                     >

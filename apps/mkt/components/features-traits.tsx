@@ -25,9 +25,9 @@ export default function FeaturesTraits() {
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
               Your team will love it.
             </h2>
-            <p className="text-lg text-green-400">
+            <h3 className="text-lg text-green-400">
               Designed for modern software teams.
-            </p>
+            </h3>
           </div>
 
           <div>

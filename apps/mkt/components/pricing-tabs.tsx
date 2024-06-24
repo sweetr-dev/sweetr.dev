@@ -16,8 +16,15 @@ export default function PricingTabs() {
         <>
           Absolutely. Sweetr.dev never clones your repository, nor persists any
           data from it. We follow stringent security best practices to protect
-          our servers and application. You can audit our entire codebase on
-          GitHub for compliance or just peace of mind.
+          our servers and application.{" "}
+          <a
+            href="https://docs.sweetr.dev/about/data-privacy-and-security"
+            target="_blank"
+            className="text-green-400 underline"
+          >
+            Read more
+          </a>
+          .
         </>
       ),
       active: false,
@@ -97,9 +104,9 @@ export default function PricingTabs() {
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
               Pricing.
             </h2>
-            <p className="text-lg text-dark-100">
+            <h3 className="text-lg text-dark-100">
               Totally free while in beta. No credit card required.
-            </p>
+            </h3>
           </div>
 
           {/* Pricing tabs component */}

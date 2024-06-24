@@ -2,7 +2,6 @@ import Link from "next/link";
 import { HeroVideo } from "./hero-video";
 import Image from "next/image";
 import Particles from "./automation-carousel/particles";
-import HeroTypeAnimation from "./hero-type-animation";
 
 export default async function Hero() {
   const repo = "sweetr-dev/sweetr.dev";
@@ -30,14 +29,19 @@ export default async function Hero() {
             <div className="mx-auto relative">
               <div className="text-center pb-12 md:pb-16 z-10">
                 <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent text-white pb-4">
-                  The dev-first platform for <br /> <HeroTypeAnimation />
+                  The dev-first platform for <br />{" "}
+                  <em
+                    className={`italic flex relative justify-center items-center text-green-400`}
+                  >
+                    continuous improvement
+                  </em>
                 </h1>
                 <div className="max-w-2xl mx-auto">
-                  <p className="text-lg text-dark-100 mb-8">
+                  <h2 className="text-lg text-dark-100 mb-8">
                     An open-source solution for your dev teams to find ways to
                     optimize, speed up development and improve developer
                     experience & wellbeing.
-                  </p>
+                  </h2>
                 </div>
                 <div className="max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                   <div>

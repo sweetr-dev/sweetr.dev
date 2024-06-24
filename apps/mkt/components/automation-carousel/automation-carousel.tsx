@@ -71,7 +71,7 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <a
-                    href="https://docs.sweetr.dev/features/dependency-changes-summary"
+                    href="https://docs.sweetr.dev/features/automations/packages-health-summary"
                     target="_blank"
                     className="text-green-500 underline"
                   >

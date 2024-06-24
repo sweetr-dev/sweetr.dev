@@ -9,10 +9,10 @@ export default function FeaturesAutomations() {
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
               Automate the pain away.
             </h2>
-            <p className="text-lg text-dark-100">
+            <h3 className="text-lg text-dark-100">
               Configurable no-code routines to improve productivity and
               developer experience.
-            </p>
+            </h3>
           </div>
           <div>
             <AutomationCarousel />
