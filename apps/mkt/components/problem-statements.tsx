@@ -60,14 +60,16 @@ export default function ProblemStatements() {
                   className="py-12 rounded-lg border border-red-400 shadow-md text-center bg-dark-900"
                   style={{
                     background:
-                      "linear-gradient(151deg, rgba(248,113,113,0.15) 0%, rgba(20,21,23,1) 30%, rgba(20,21,23,1) 70%, rgba(248,113,113,0.15) 100%);",
+                      "linear-gradient(151deg, rgba(248,113,113,0.15) 0%, rgba(20,21,23,1) 30%, rgba(20,21,23,1) 70%, rgba(248,113,113,0.15) 100%)",
                   }}
                 >
                   {challenge.icon}
                   <h3 className="mt-2 text-xl font-semibold text-black bg-red-400 px-3 inline-block rounded">
                     {challenge.title}
                   </h3>
-                  <p className="mt-4 text-dark-100 ">{challenge.description}</p>
+                  <p className="mt-4 text-dark-100 px-2">
+                    {challenge.description}
+                  </p>
                 </div>
               </div>
             ))}

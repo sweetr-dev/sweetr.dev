@@ -22,7 +22,6 @@ import {
   IconHeadphones,
   IconExternalLink,
   IconBrandGithub,
-  IconBook2,
 } from "@tabler/icons-react";
 import { ButtonDocs } from "./ui/button-docs";
 
@@ -43,7 +42,7 @@ const features = [
         />
       </>
     ),
-    contentHeight: 165,
+    contentHeight: 211,
     icon: IconGitMerge,
     image: FeaturePRs,
   },
@@ -64,7 +63,7 @@ const features = [
         />
       </>
     ),
-    contentHeight: 213,
+    contentHeight: 259,
     icon: IconEyeCode,
     image: FeatureCodeReviews,
   },
@@ -83,7 +82,7 @@ const features = [
         />
       </>
     ),
-    contentHeight: 165,
+    contentHeight: 211,
     icon: IconClock,
     image: FeatureCycleTime,
   },
@@ -106,7 +105,7 @@ const features = [
         />
       </>
     ),
-    contentHeight: 165,
+    contentHeight: 211,
     icon: IconEyeDiscount,
     image: FeatureCRDistribution,
   },
