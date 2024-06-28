@@ -61,7 +61,7 @@ export const syncPullRequest = async (
     return;
   }
 
-  if (!gitPrData.author.id) {
+  if (!gitPrData.author?.id || !gitPrData.author?.login) {
     logger.info("syncPullRequest: Skipping unknown author", {
       gitPrData,
     });
@@ -286,7 +286,11 @@ const upsertGitProfile = async (author: Author) => {
         gitUserId: author.id,
       },
     },
-    update: {},
+    update: {
+      handle: author.login,
+      name: author.name ? author.name : author.login,
+      avatar: author.avatarUrl,
+    },
     create: {
       gitProvider: GitProvider.GITHUB,
       gitUserId: author.id,
