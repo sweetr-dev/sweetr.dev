@@ -1,8 +1,9 @@
 #!/bin/bash
+. .env
 set -e
 
 # Creates non-super-user to access database with RLS restrictions
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+psql -v ON_ERROR_STOP=1 -h "$DB_HOST" --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
     CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
     GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $DB_USERNAME;
     GRANT USAGE ON SCHEMA public TO $DB_USERNAME;

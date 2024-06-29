@@ -8,8 +8,9 @@ const automations: Omit<Automation, "id">[] = [
       "Summary of package health when changing dependencies, directly in your pull request. Supports NPM and Yarn.",
     shortDescription:
       "Summary of package health when changing dependencies, directly in your pull request. Supports NPM and Yarn.",
-    demoUrl: "https://google.com",
-    docsUrl: "https://docs.sweetr.dev",
+    demoUrl: "/images/package-health-summary.png",
+    docsUrl:
+      "https://docs.sweetr.dev/features/automations/packages-health-summary",
     available: true,
     color: "red.1",
     icon: "📦",
@@ -18,6 +19,8 @@ const automations: Omit<Automation, "id">[] = [
       techDebt: "Prevent depending on badly maintained packages.",
       security: "Assess package vulnerabilities in a glance.",
     },
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 
