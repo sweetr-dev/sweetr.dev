@@ -61,12 +61,15 @@
     {
       "group": "Features",
       "pages": [
+        "features/teams",
+        "features/people",
         "features/pull-requests",
         "features/code-reviews",
         {
           "group": "Team Insights",
           "icon": "chart-simple",
           "pages": [
+            "features/team/intro",
             "features/team/code-review-distribution",
             "features/team/pr-size-distribution",
             "features/team/cycle-time",
@@ -78,7 +81,10 @@
         {
           "group": "Automations",
           "icon": "robot",
-          "pages": ["features/automations/packages-health-summary"]
+          "pages": [
+            "features/automations/intro",
+            "features/automations/packages-health-summary"
+          ]
         }
       ]
     },
