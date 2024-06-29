@@ -109,9 +109,9 @@ export const TeamPullRequestsTimeToMergePage = () => {
                 searchParams.set("period", value);
               }}
             />
-            <ActionIcon variant="default" size="lg" color="dark.1" bg="dark.7">
+            {/* <ActionIcon variant="default" size="lg" color="dark.1" bg="dark.7">
               <IconFilterPlus stroke={1.5} size={20} />
-            </ActionIcon>
+            </ActionIcon> */}
           </Group>
           <Paper withBorder h={400} p="xs" mt="md" bg="dark.6">
             <LoadableContent
@@ -131,7 +131,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
                   : undefined
               }
               isEmpty={isEmpty}
-              whenEmpty={<PageEmptyState message="No data available" />}
+              whenEmpty={<PageEmptyState message="No data available." />}
             />
           </Paper>
         </Box>

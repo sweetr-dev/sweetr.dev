@@ -85,7 +85,7 @@ export const PersonPullRequestsPage = () => {
       }
       whenEmpty={
         <Box mt={80}>
-          <PageEmptyState message="This person has no pull requests" />
+          <PageEmptyState message="This person has no pull requests." />
         </Box>
       }
       content={

@@ -113,7 +113,7 @@ export const TeamHealthCodeReviewDistributionPage = () => {
                   : undefined
               }
               isEmpty={isEmpty}
-              whenEmpty={<PageEmptyState message="No data available" />}
+              whenEmpty={<PageEmptyState message="No data available." />}
             />
           </Paper>
 
