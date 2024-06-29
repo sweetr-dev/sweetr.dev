@@ -1,28 +1,14 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**",
-        ".next/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
     },
     "web#build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**"
-      ],
-      "env": [
-        "GITHUB_CLIENT_ID",
-        "GITHUB_SECRET",
-        "NODE_ENV",
-        "APP_SECRET"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**"],
+      "env": ["GITHUB_CLIENT_ID", "GITHUB_SECRET", "NODE_ENV", "APP_SECRET"]
     },
     "lint": {
       "outputs": []
