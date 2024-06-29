@@ -14,7 +14,6 @@ import {
   IconBook2,
 } from "@tabler/icons-react";
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
 import { logout } from "../../providers/auth.provider";
 import { installGithubAppUrl } from "../../providers/github.provider";
 import { WorkspaceSwitcher } from "../workspace-switcher";
@@ -26,8 +25,7 @@ interface NavbarUserProps {
   onNavigate: () => void;
 }
 
-export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
-  const navigate = useNavigate();
+export const NavbarUser: FC<NavbarUserProps> = () => {
   const { authenticatedUser: user, availableWorkspaces } = useAppStore();
 
   const handleLogout = () => {
@@ -35,11 +33,6 @@ export const NavbarUser: FC<NavbarUserProps> = ({ onNavigate }) => {
   };
 
   if (!user) return <Skeleton height={50} circle />;
-
-  const handleNavigate = (path: string) => {
-    navigate(path);
-    onNavigate();
-  };
 
   return (
     <Box>
