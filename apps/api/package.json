@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
-    "dev": "concurrently --names \"API,GEN\" -c \"bgGreen.bold,bgMagenta.bold\" \"npm run dev:api\" \"npm run graphql:generate -- --watch\"",
+    "dev": "concurrently --names \"API,GQL\" -c \"bgGreen.bold,bgMagenta.bold\" \"npm run dev:api\" \"npm run graphql:generate -- --watch\"",
     "dev:api": "tsx watch src/index.ts | pino-pretty --I msg,payload",
     "start": "node ./build/index.js",
     "prebuild": "npm run rimraf build && npm run prisma:generate",
