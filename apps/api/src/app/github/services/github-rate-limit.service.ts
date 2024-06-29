@@ -6,6 +6,7 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { isPast } from "date-fns/isPast";
 import { getTime } from "date-fns/getTime";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
+import { addSeconds } from "date-fns";
 
 const oneSecondInMs = 1000;
 
@@ -23,9 +24,7 @@ export const withDelayedRetryOnRateLimit = async (
 
     if (rateLimitResetAtInMs) {
       logger.info(
-        `[GitHub Rate Limit] Rate limit reached. Skipping callback and retrying at ${new Date(
-          rateLimitResetAtInMs
-        )}...`,
+        `[🐈‍⬛ GitHub Rate Limit] 🕛 Re-scheduling delayed job to ${new Date(rateLimitResetAtInMs)}...`,
         {
           jobId: job.id,
           installationId,
@@ -42,6 +41,7 @@ export const withDelayedRetryOnRateLimit = async (
 
     await callback();
   } catch (error) {
+    // Primary rate limit
     if ("headers" in error && error.headers["x-ratelimit-remaining"] === "0") {
       const rateLimitResetAt = fromUnixTime(
         parseInt(error.headers["x-ratelimit-reset"]) // GitHub returns *seconds* since Unix epoch.
@@ -49,21 +49,21 @@ export const withDelayedRetryOnRateLimit = async (
 
       if (!rateLimitResetAt) {
         throw new BusinessRuleException(
-          "[GitHub Rate Limit] Rate limit reset time not found.",
+          "[🐈‍⬛ GitHub Rate Limit] Rate limit reset time not found.",
           { extra: { errorHeaders: error.headers }, originalError: error }
         );
       }
 
       if (isPast(rateLimitResetAt)) {
         logger.error(
-          "[GitHub Rate Limit] Rate limit reset time is in the past."
+          "[🐈‍⬛ GitHub Rate Limit] Rate limit reset time is in the past."
         );
         throw error;
       }
 
       logger.info(
-        `[GitHub Rate Limit] Rate limit reached. Delaying job to ${rateLimitResetAt}...`,
-        { headers: error.headers, jobId: job.id }
+        `[🐈‍⬛ GitHub Rate Limit] Rate limit reached. Delaying job to ${rateLimitResetAt}...`,
+        { jobId: job.id }
       );
 
       setGitInstallationRateLimitEpochInMs(
@@ -73,6 +73,25 @@ export const withDelayedRetryOnRateLimit = async (
 
       await addJob(job.queueName as SweetQueue, job.data, {
         delay: getTime(rateLimitResetAt) + oneSecondInMs - Date.now(),
+      });
+
+      return;
+    }
+
+    // Secondary rate limit (Concurrency)
+    if ("headers" in error && error.headers["retry-after"]) {
+      const retryAfterSeconds = parseInt(error.headers["retry-after"]) + 5; // 5 seconds buffer
+      const canRetryAt = addSeconds(new Date(), retryAfterSeconds);
+
+      logger.info(
+        `[🐈‍⬛ GitHub Rate Limit] Concurrency error. Delaying job to ${canRetryAt}...`,
+        { jobId: job.id }
+      );
+
+      setGitInstallationRateLimitEpochInMs(installationId, getTime(canRetryAt));
+
+      await addJob(job.queueName as SweetQueue, job.data, {
+        delay: getTime(canRetryAt) + oneSecondInMs - Date.now(),
       });
 
       return;

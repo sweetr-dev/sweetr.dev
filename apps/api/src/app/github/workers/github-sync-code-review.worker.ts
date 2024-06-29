@@ -37,5 +37,11 @@ export const syncCodeReviewWorker = createWorker(
         installationId,
       }
     );
+  },
+  {
+    limiter: {
+      max: 8,
+      duration: 1000,
+    },
   }
 );

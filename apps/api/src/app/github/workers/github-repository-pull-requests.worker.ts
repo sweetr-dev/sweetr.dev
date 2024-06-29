@@ -26,5 +26,11 @@ export const githubRepositoryPullRequestsSyncWorker = createWorker(
         installationId,
       }
     );
+  },
+  {
+    limiter: {
+      max: 1,
+      duration: 1000,
+    },
   }
 );

@@ -6,6 +6,8 @@ import { apiUrl, env } from "./env";
 import { expressApp } from "./express";
 import { initBullMQ } from "./bull-mq/init-bull-mq";
 import { captureException } from "./lib/sentry";
+import { UnknownException } from "./app/errors/exceptions/unknown.exception";
+import { closeAllQueueWorkers } from "./bull-mq/workers";
 
 const server = env.USE_SSL
   ? createSslServer(
@@ -25,6 +27,34 @@ server.listen(env.PORT, async () => {
   return;
 });
 
-process.on("unhandledRejection", (reason) => {
-  captureException(reason as Error);
+const shutdownGracefully = async (signal) => {
+  console.log(`🔶 Received ${signal}, closing server..`);
+
+  await closeAllQueueWorkers();
+  process.exit(0);
+};
+
+process.on("SIGINT", () => shutdownGracefully("SIGINT"));
+process.on("SIGTERM", () => shutdownGracefully("SIGTERM"));
+
+process.on("uncaughtException", function (error: Error, origin) {
+  captureException(
+    new UnknownException("Uncaught Exception", {
+      originalError: error,
+      extra: {
+        origin,
+      },
+    })
+  );
+});
+
+process.on("unhandledRejection", (error: Error, promise) => {
+  captureException(
+    new UnknownException("Unhandled Promise Rejection", {
+      originalError: error,
+      extra: {
+        promise,
+      },
+    })
+  );
 });

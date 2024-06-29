@@ -2,8 +2,8 @@ import { Job } from "bullmq";
 import { captureException } from "../lib/sentry";
 import { logger } from "../lib/logger";
 
-export const workerErrorHandler = (error: Error) => {
-  logger.info(`🐂❌ BullMQ`);
+export const bullMQErrorHandler = (error: Error) => {
+  logger.info(`🐂❌ BullMQ: ${error.message}`);
 
   captureException(error);
 };

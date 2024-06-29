@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// Re-export all workers here, so they'll auto start.
-
 import { Processor, Worker, WorkerOptions } from "bullmq";
 import { redisConnection } from "./redis-connection";
 import { SweetQueue } from "./queues";
 import {
-  workerErrorHandler,
+  bullMQErrorHandler,
   workerFailedHandler,
   workerStalledHandler,
 } from "./error-handler";
 import { logger } from "../lib/logger";
+
+const workers: Worker[] = [];
 
 export const createWorker = (
   queueName: SweetQueue,
@@ -34,11 +33,23 @@ export const createWorker = (
   );
 
   worker.on("failed", workerFailedHandler);
-  worker.on("error", workerErrorHandler);
+  worker.on("error", bullMQErrorHandler);
   worker.on("stalled", workerStalledHandler);
   worker.on("completed", (job) =>
     logger.info(`🐂✅ BullMQ: ${job.name} - Completed job #${job.id}`)
   );
 
+  workers.push(worker);
+
   return worker;
+};
+
+export const closeAllQueueWorkers = async () => {
+  await Promise.all(
+    workers.map(async (worker) => {
+      return worker
+        .close()
+        .then(() => logger.info(`🐂🔶 BullMQ: Closed ${worker.name}`));
+    })
+  );
 };

@@ -31,5 +31,11 @@ export const githubMemberSyncWorker = createWorker(
         installationId,
       }
     );
+  },
+  {
+    limiter: {
+      max: 2,
+      duration: 1000,
+    },
   }
 );
