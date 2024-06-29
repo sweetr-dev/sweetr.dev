@@ -9,6 +9,7 @@ import { useArchiveTeam, useUnarchiveTeam } from "../../../../../api/teams.api";
 import { showSuccessNotification } from "../../../../../providers/notification.provider";
 import { useHotkeys } from "@mantine/hooks";
 import { useContextualActions } from "../../../../../providers/contextual-actions.provider";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
 interface MenuTeamProps {
   teamId: string;
   isTeamArchived: boolean;
@@ -27,6 +28,7 @@ export const MenuTeam: FC<MenuTeamProps> = ({
   const { mutate: archiveTeam } = useArchiveTeam();
   const { mutate: unarchiveTeam } = useUnarchiveTeam();
   const [opened, setOpened] = useState(false);
+  const { workspace } = useWorkspace();
 
   useHotkeys([
     [
@@ -57,13 +59,13 @@ export const MenuTeam: FC<MenuTeamProps> = ({
 
   const handleToggleArchive = async () => {
     if (isTeamArchived) {
-      await unarchiveTeam({ teamId });
-      showSuccessNotification({ message: "Team unarchived" });
+      await unarchiveTeam({ input: { workspaceId: workspace.id, teamId } });
+      showSuccessNotification({ message: "Team unarchived." });
       return;
     }
 
-    await archiveTeam({ teamId });
-    showSuccessNotification({ message: "Team archived" });
+    await archiveTeam({ input: { workspaceId: workspace.id, teamId } });
+    showSuccessNotification({ message: "Team archived." });
   };
 
   return (

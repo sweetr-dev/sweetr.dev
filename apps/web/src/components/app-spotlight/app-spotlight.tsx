@@ -70,9 +70,8 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
             leftSection: <Icon stroke={1.5} size={18} />,
           };
         })
-        .filter(
-          (item) =>
-            item.label?.toLowerCase().includes(search.toLowerCase().trim()),
+        .filter((item) =>
+          item.label?.toLowerCase().includes(search.toLowerCase().trim()),
         ),
     },
     {
@@ -102,7 +101,10 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
         },
       ].filter(
         (item) =>
-          item.label?.toLowerCase().includes(search.toLowerCase().trim()) &&
+          (item.label?.toLowerCase().includes(search.toLowerCase().trim()) ||
+            item.description
+              ?.toLowerCase()
+              .includes(search.toLowerCase().trim())) &&
           search.length,
       ),
     },
