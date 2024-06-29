@@ -7,7 +7,7 @@
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
     "dev": "concurrently --names \"API,GEN\" -c \"bgGreen.bold,bgMagenta.bold\" \"npm run dev:api\" \"npm run graphql:generate -- --watch\"",
-    "dev:api": "nodemon --watch 'src/' --exec 'ts-node src/index.ts | pino-pretty --I msg,payload' -e ts",
+    "dev:api": "tsx watch src/index.ts | pino-pretty --I msg,payload",
     "start": "node ./build/index.js",
     "prebuild": "npm run rimraf build && npm run prisma:generate",
     "rimraf": "rimraf",
@@ -21,7 +21,7 @@
     "prisma:push": "prisma db push"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed/run-seeder.ts"
+    "seed": "tsx prisma/seed/run-seeder.ts"
   },
   "keywords": [],
   "author": "",
@@ -48,9 +48,10 @@
     "graphql-scalars": "^1.22.4",
     "graphql-yoga": "^5.0.0",
     "hashids": "^2.3.0",
+    "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "markdown-table": "2.0.0",
-    "octokit": "^3.1.1",
+    "octokit": "^3.2.1",
     "pino": "^8.16.1",
     "radash": "^11.0.0",
     "semver": "^7.5.4",
@@ -67,7 +68,7 @@
     "nodemon": "^3.0.1",
     "pino-pretty": "^10.2.3",
     "prisma": "^5.5.2",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.15.9",
     "typescript": "^5.2.2"
   }
 }

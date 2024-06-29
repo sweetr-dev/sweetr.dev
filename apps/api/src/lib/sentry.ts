@@ -3,7 +3,6 @@ import { env, isLive } from "../env";
 import { Hub } from "@sentry/node";
 import { ScopeContext } from "@sentry/types";
 import { BaseException } from "../app/errors/exceptions/base.exception";
-import { expressApp } from "../express";
 import { logger } from "./logger";
 
 Sentry.init({
@@ -17,12 +16,7 @@ Sentry.init({
 
     return breadcrumb;
   },
-  integrations: [
-    new Sentry.Integrations.Http({ tracing: true }),
-    new Sentry.Integrations.Express({
-      app: expressApp,
-    }),
-  ],
+  integrations: [new Sentry.Integrations.Http({ tracing: true })],
   normalizeDepth: 11,
 });
 
@@ -42,6 +36,15 @@ export const captureException = (
 
   return Sentry.captureException(exception, captureContext);
 };
+
+export const addExpressIntegration = (expressApp: any) => {
+  Sentry.addIntegration(
+    new Sentry.Integrations.Express({
+      app: expressApp,
+    })
+  );
+};
+
 export const setSentryUser = Sentry.setUser;
 export const addBreadcrumb = Sentry.addBreadcrumb;
 export type ExceptionSeverity = Sentry.SeverityLevel;

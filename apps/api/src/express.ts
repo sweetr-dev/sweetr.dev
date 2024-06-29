@@ -3,6 +3,7 @@ import { yoga } from "./yoga";
 import { githubRouter } from "./app/github/github.router";
 import { errorHandler } from "./lib/express-helpers";
 import { bullBoardRouter } from "./bull-mq/bull-board.router";
+import { addExpressIntegration } from "./lib/sentry";
 
 export const expressApp = express();
 
@@ -17,3 +18,5 @@ expressApp.use(yoga); // Leave Yoga last
 
 // Error handler
 expressApp.use(errorHandler);
+
+addExpressIntegration(expressApp);
