@@ -161,14 +161,25 @@ const createWorkspaceDefaultAutomationSettings = async (
     where: { available: true },
   });
 
-  await getPrisma(workspace.id).automationSetting.createMany({
-    data: automations.map((automation) => ({
-      enabled: true,
-      workspaceId: workspace.id,
-      automationId: automation.id,
-      settings: {},
-    })),
-  });
+  await Promise.all(
+    automations.map((automation) => {
+      return getPrisma(workspace.id).automationSetting.upsert({
+        where: {
+          automationId_workspaceId: {
+            automationId: automation.id,
+            workspaceId: workspace.id,
+          },
+        },
+        create: {
+          enabled: true,
+          workspaceId: workspace.id,
+          automationId: automation.id,
+          settings: {},
+        },
+        update: {},
+      });
+    })
+  );
 };
 
 const upsertGitProfile = async (gitUser: GitHubUser): Promise<GitProfile> => {
