@@ -90,7 +90,7 @@ export default function Footer() {
               <li>
                 <a
                   className="text-zinc-500 hover:text-dark-100 transition"
-                  href="https://github.com/sweetr-dev/sweetr.dev/blob/main/LICENSE.md"
+                  href="https://github.com/sweetr-dev/sweetr.dev/blob/main/LICENSE"
                   target="_blank"
                   rel="nofollow"
                 >
