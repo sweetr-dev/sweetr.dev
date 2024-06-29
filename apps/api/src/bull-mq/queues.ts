@@ -1,6 +1,7 @@
 import { BulkJobOptions, JobsOptions, Queue } from "bullmq";
 import { redisConnection } from "./redis-connection";
 import { logger } from "../lib/logger";
+import { bullMQErrorHandler } from "./error-handler";
 
 export enum SweetQueue {
   // Crons - https://docs.bullmq.io/guide/jobs/repeatable
@@ -31,9 +32,20 @@ export const queues: Record<SweetQueue, Queue> = (() => {
   const queues = {};
 
   for (const queueName of Object.values(SweetQueue)) {
-    queues[queueName] = new Queue(queueName, {
+    const queue = new Queue(queueName, {
       connection: redisConnection,
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 60000, // 60 seconds
+        },
+      },
     });
+
+    queue.on("error", bullMQErrorHandler);
+
+    queues[queueName] = queue;
 
     logger.info(`🐂🧵 BullMQ: Queue ${queueName} initialized.`);
   }

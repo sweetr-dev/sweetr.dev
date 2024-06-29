@@ -32,6 +32,8 @@ export const syncGitHubRepositoryPullRequests = async (
     gitInstallationId
   );
 
+  if (!gitHubPullRequests.length) return;
+
   addJobs(
     SweetQueue.GITHUB_SYNC_PULL_REQUEST,
     gitHubPullRequests.map((pullRequest) => ({
