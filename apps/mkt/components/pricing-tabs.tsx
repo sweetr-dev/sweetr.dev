@@ -7,16 +7,16 @@ export default function PricingTabs() {
   const faqs = [
     {
       title: "Is training needed?",
-      text: "Not at all, you and your team should be able to use sweetr.dev without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
+      text: "Not at all, you and your team should be able to use Sweetr without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
       active: true,
     },
     {
       title: "Is my repository code safe?",
       text: (
         <>
-          Absolutely. Sweetr.dev never clones your repository, nor persists any
-          data from it. We follow stringent security best practices to protect
-          our servers and application.{" "}
+          Absolutely. Sweetr never clones your repository, nor persists any data
+          from it. We follow stringent security best practices to protect our
+          servers and application.{" "}
           <a
             href="https://docs.sweetr.dev/about/data-privacy-and-security"
             target="_blank"
@@ -33,8 +33,8 @@ export default function PricingTabs() {
       title: "How is my data used? Can it be removed?",
       text: (
         <>
-          Sweetr.dev only saves data necessary to provide service to you. You
-          can delete all of your private data from our servers by revoking OAuth
+          Sweetr only saves data necessary to provide service to you. You can
+          delete all of your private data from our servers by revoking OAuth
           access or uninstalling our application from your GitHub account or
           organization at any moment.
           <Link

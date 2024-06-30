@@ -65,7 +65,7 @@ export const PersonCodeReviewsPage = () => {
   if (codeReviews.length === 0 && !isFetching) {
     return (
       <Box mt={80}>
-        <PageEmptyState message="This person has no code reviews" />
+        <PageEmptyState message="This person has no code reviews." />
       </Box>
     );
   }

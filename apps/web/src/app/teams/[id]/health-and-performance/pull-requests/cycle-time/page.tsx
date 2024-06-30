@@ -126,7 +126,7 @@ export const TeamPullRequestsCycleTimePage = () => {
                   : undefined
               }
               isEmpty={isEmpty}
-              whenEmpty={<PageEmptyState message="No data available" />}
+              whenEmpty={<PageEmptyState message="No data available." />}
             />
           </Paper>
         </Box>

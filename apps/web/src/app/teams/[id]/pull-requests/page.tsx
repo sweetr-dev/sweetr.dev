@@ -164,7 +164,7 @@ export const TeamPullRequestsPage = () => {
         whenEmpty={
           <Box mt={80}>
             <PageEmptyState
-              message="This team has no pull requests"
+              message="This team has no pull requests."
               isFiltering={isFiltering}
               onResetFilter={() => {
                 filters.reset();
