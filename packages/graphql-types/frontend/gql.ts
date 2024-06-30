@@ -39,6 +39,7 @@ const documents = {
     "\n          mutation UnarchiveTeam($input: UnarchiveTeamInput!) {\n            unarchiveTeam(input: $input) {\n              id\n              name\n              description\n              icon\n              startColor\n              endColor\n              archivedAt\n            }\n          }\n        ": types.UnarchiveTeamDocument,
     "\n        query UserWorkspaces {\n          userWorkspaces {\n            id\n            name\n            avatar\n            handle\n            gitUninstallUrl\n            me {\n              id\n              handle\n              name\n              avatar\n              email\n            }\n          }\n        }\n      ": types.UserWorkspacesDocument,
     "\n          query WorkspaceByInstallationId($gitInstallationId: String!) {\n            workspaceByInstallationId(gitInstallationId: $gitInstallationId) {\n              id\n              name\n              avatar\n              handle\n              gitUninstallUrl\n              repositories {\n                id\n              }\n            }\n          }\n        ": types.WorkspaceByInstallationIdDocument,
+    "\n          query WorkspaceSyncProgress($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              initialSyncProgress\n            }\n          }\n        ": types.WorkspaceSyncProgressDocument,
 };
 
 /**
@@ -159,6 +160,10 @@ export function graphql(source: "\n        query UserWorkspaces {\n          use
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n          query WorkspaceByInstallationId($gitInstallationId: String!) {\n            workspaceByInstallationId(gitInstallationId: $gitInstallationId) {\n              id\n              name\n              avatar\n              handle\n              gitUninstallUrl\n              repositories {\n                id\n              }\n            }\n          }\n        "): (typeof documents)["\n          query WorkspaceByInstallationId($gitInstallationId: String!) {\n            workspaceByInstallationId(gitInstallationId: $gitInstallationId) {\n              id\n              name\n              avatar\n              handle\n              gitUninstallUrl\n              repositories {\n                id\n              }\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          query WorkspaceSyncProgress($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              initialSyncProgress\n            }\n          }\n        "): (typeof documents)["\n          query WorkspaceSyncProgress($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              initialSyncProgress\n            }\n          }\n        "];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
