@@ -482,6 +482,8 @@ export type Workspace = {
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
+  /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
+  initialSyncProgress: Scalars['Int']['output'];
   me?: Maybe<Person>;
   name: Scalars['String']['output'];
   people: Array<Person>;

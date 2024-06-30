@@ -14,6 +14,7 @@ import {
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
 import { octokit } from "../../../lib/octokit";
+import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -30,9 +31,11 @@ export const syncGitHubInstallation = async (
 
   await connectUserToWorkspace(gitProfile, workspace);
 
+  await setInitialSyncProgress(workspace.id);
+
   await addJob(SweetQueue.GITHUB_REPOSITORIES_SYNC, {
     installation: { id: parseInt(installation.gitInstallationId) },
-    shouldSyncRepositoryPullRequests: true,
+    syncPullRequests: true,
   });
 
   if (workspace.organization) {

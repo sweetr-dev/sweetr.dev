@@ -6,9 +6,13 @@ import {
 import { getBypassRlsPrisma } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { logger } from "../../../lib/logger";
-import { getWorkspaceHandle } from "../../workspaces/services/workspace.service";
+import {
+  getWorkspaceHandle,
+  incrementInitialSyncProgress,
+} from "../../workspaces/services/workspace.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
+import { sleep } from "radash";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
@@ -34,12 +38,19 @@ export const syncGitHubRepositoryPullRequests = async (
 
   if (!gitHubPullRequests.length) return;
 
+  await incrementInitialSyncProgress(
+    workspace.id,
+    "waiting",
+    gitHubPullRequests.length
+  );
+
   addJobs(
     SweetQueue.GITHUB_SYNC_PULL_REQUEST,
     gitHubPullRequests.map((pullRequest) => ({
       installation: { id: gitInstallationId },
       pull_request: { node_id: pullRequest.id },
       syncReviews: true,
+      initialSync: true,
     })),
     {
       priority: JobPriority.LOW,
@@ -47,6 +58,8 @@ export const syncGitHubRepositoryPullRequests = async (
   );
 };
 
+// Note: We could optimize initial sync by fetching all PR data here and saving to our database.
+// For now we dispatch one job per PR instead, to break down the problem and keep the code simpler.
 const fetchGitHubPullRequests = async (
   repositoryName: string,
   owner: string,
@@ -98,6 +111,7 @@ const fetchGitHubPullRequests = async (
 
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
+    await sleep(500);
   }
 
   return pullRequests;

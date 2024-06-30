@@ -15,6 +15,7 @@ export const syncPullRequestWorker = createWorker(
     job: Job<
       (PullRequestSynchronizeEvent | PullRequestOpenedEvent) & {
         syncReviews?: boolean;
+        initialSync?: boolean;
       }
     >
   ) => {
@@ -33,14 +34,14 @@ export const syncPullRequestWorker = createWorker(
     }
 
     const installationId = job.data.installation.id;
+    const options = {
+      syncReviews: job.data.syncReviews || false,
+      initialSync: job.data.initialSync || false,
+    };
 
     await withDelayedRetryOnRateLimit(
       () =>
-        syncPullRequest(
-          installationId,
-          job.data.pull_request.node_id,
-          job.data.syncReviews
-        ),
+        syncPullRequest(installationId, job.data.pull_request.node_id, options),
       {
         job,
         installationId,
