@@ -16,7 +16,7 @@ type RepositoryData = Omit<
 
 export const syncGitHubRepositories = async (
   gitInstallationId: number,
-  shouldSyncRepositoryPullRequests: boolean
+  syncPullRequests: boolean
 ): Promise<void> => {
   logger.info("syncGitHubRepositories", { gitInstallationId });
 
@@ -32,7 +32,7 @@ export const syncGitHubRepositories = async (
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
 
-  if (shouldSyncRepositoryPullRequests) {
+  if (syncPullRequests) {
     const nonArchivedRepositories = repositories.filter(
       (repository) => !repository.archivedAt
     );

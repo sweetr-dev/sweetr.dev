@@ -17,6 +17,7 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
+import { incrementInitialSync } from "../../workspaces/services/workspace.service";
 
 interface Author {
   id: string;
@@ -32,7 +33,10 @@ type RepositoryData = Omit<
 export const syncPullRequest = async (
   gitInstallationId: number,
   pullRequestId: string,
-  syncReviews = false
+  { syncReviews, initialSync } = {
+    syncReviews: false,
+    initialSync: false,
+  }
 ) => {
   logger.info("syncPullRequest", {
     installationId: gitInstallationId,
@@ -76,6 +80,10 @@ export const syncPullRequest = async (
     repository,
     gitPrData
   );
+
+  if (initialSync) {
+    incrementInitialSync(workspace.id, "done", 1);
+  }
 
   if (syncReviews) {
     logger.debug("syncPullRequest: Adding job to sync reviews", {

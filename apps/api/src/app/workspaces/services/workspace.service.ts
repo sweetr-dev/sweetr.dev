@@ -5,6 +5,9 @@ import {
   Workspace,
 } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { redisConnection } from "../../../bull-mq/redis-connection";
+import { UnknownException } from "../../errors/exceptions/unknown.exception";
+import { captureException } from "../../../lib/sentry";
 
 type WorkspaceWithUserOrOrganization = Workspace & {
   gitProfile: GitProfile | null;
@@ -108,4 +111,46 @@ export const getWorkspaceUninstallGitUrl = (
   }
 
   return `https://github.com/settings/installations/${workspace.installation?.gitInstallationId}`;
+};
+
+export const incrementInitialSync = async (
+  workspaceId: number,
+  field: "waiting" | "done",
+  amount: number
+) => {
+  const key = `workspace:${workspaceId}:sync`;
+  const sevenDaysInSeconds = 60 * 60 * 24 * 7;
+
+  await redisConnection
+    .multi()
+    .hincrby(key, field, amount)
+    .expire(key, sevenDaysInSeconds)
+    .exec();
+};
+
+export const getInitialSyncProgress = async (workspaceId: number) => {
+  try {
+    const progress = await redisConnection.hgetall(
+      `workspace:${workspaceId}:sync`
+    );
+
+    if (!progress) return 100;
+
+    const done = Number(progress.done);
+    const waiting = Number(progress.waiting);
+
+    // Avoid division by zero
+    if (waiting === 0) return 0;
+
+    return Math.round((done * 100) / waiting);
+  } catch (error) {
+    captureException(
+      new UnknownException("Redis: Could not get workspace sync progress.", {
+        originalError: error,
+        severity: "warning",
+      })
+    );
+
+    return 100;
+  }
 };

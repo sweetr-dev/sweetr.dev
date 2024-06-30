@@ -32,7 +32,7 @@ export const syncGitHubInstallation = async (
 
   await addJob(SweetQueue.GITHUB_REPOSITORIES_SYNC, {
     installation: { id: parseInt(installation.gitInstallationId) },
-    shouldSyncRepositoryPullRequests: true,
+    syncPullRequests: true,
   });
 
   if (workspace.organization) {
