@@ -245,6 +245,14 @@ const upsertCodeReviews = async (
   logger.debug("upsertCodeReviews", { pullRequest, reviews });
 
   return parallel(10, reviews, async (review) => {
+    if (!review.author?.id || !review.author?.login) {
+      logger.info("syncCodeReviews: Skipping unknown author", {
+        review,
+      });
+
+      return;
+    }
+
     const gitProfile = await upsertGitProfile(review.author);
 
     return await getPrisma(pullRequest.workspaceId).codeReview.upsert({
