@@ -17,7 +17,7 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
-import { incrementInitialSync } from "../../workspaces/services/workspace.service";
+import { incrementInitialSyncProgress } from "../../workspaces/services/workspace.service";
 
 interface Author {
   id: string;
@@ -82,7 +82,7 @@ export const syncPullRequest = async (
   );
 
   if (initialSync) {
-    incrementInitialSync(workspace.id, "done", 1);
+    incrementInitialSyncProgress(workspace.id, "done", 1);
   }
 
   if (syncReviews) {

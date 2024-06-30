@@ -8,7 +8,7 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 import { logger } from "../../../lib/logger";
 import {
   getWorkspaceHandle,
-  incrementInitialSync,
+  incrementInitialSyncProgress,
 } from "../../workspaces/services/workspace.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
@@ -38,7 +38,7 @@ export const syncGitHubRepositoryPullRequests = async (
 
   if (!gitHubPullRequests.length) return;
 
-  await incrementInitialSync(
+  await incrementInitialSyncProgress(
     workspace.id,
     "waiting",
     gitHubPullRequests.length

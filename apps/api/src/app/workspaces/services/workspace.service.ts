@@ -113,19 +113,25 @@ export const getWorkspaceUninstallGitUrl = (
   return `https://github.com/settings/installations/${workspace.installation?.gitInstallationId}`;
 };
 
-export const incrementInitialSync = async (
-  workspaceId: number,
-  field: "waiting" | "done",
-  amount: number
-) => {
+export const setInitialSyncProgress = async (workspaceId: number) => {
   const key = `workspace:${workspaceId}:sync`;
   const sevenDaysInSeconds = 60 * 60 * 24 * 7;
 
   await redisConnection
     .multi()
-    .hincrby(key, field, amount)
+    .hset(key, { waiting: 0, done: 0 })
     .expire(key, sevenDaysInSeconds)
     .exec();
+};
+
+export const incrementInitialSyncProgress = async (
+  workspaceId: number,
+  field: "waiting" | "done",
+  amount: number
+) => {
+  const key = `workspace:${workspaceId}:sync`;
+
+  await redisConnection.hincrby(key, field, amount);
 };
 
 export const getInitialSyncProgress = async (workspaceId: number) => {
@@ -134,7 +140,7 @@ export const getInitialSyncProgress = async (workspaceId: number) => {
       `workspace:${workspaceId}:sync`
     );
 
-    if (!progress) return 100;
+    if (!progress || !("waiting" in progress)) return 100;
 
     const done = Number(progress.done);
     const waiting = Number(progress.waiting);
