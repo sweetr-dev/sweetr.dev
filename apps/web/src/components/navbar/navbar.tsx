@@ -22,7 +22,7 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
             h={"100%"}
             style={{
               borderRight: hasSubnav
-                ? "1px solid var(--_app-shell-border-color)"
+                ? "1px solid var(--mantine-color-dark-4)"
                 : "",
             }}
             gap={0}
