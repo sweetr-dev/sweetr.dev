@@ -21,6 +21,10 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
   const combobox = useCombobox();
   const { workspace: activeWorkspace, setWorkspace } = useAppStore();
 
+  if (!activeWorkspace && workspaces.length) {
+    setWorkspace(workspaces[0]);
+  }
+
   return (
     <Combobox
       store={combobox}

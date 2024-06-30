@@ -6,9 +6,11 @@ import { useAuthenticatedUser } from "../../providers/auth.provider";
 import { MyOpenPullRequests } from "./components/my-open-pull-requests";
 import { TeamOpenPullRequests } from "./components/team-open-pull-requests";
 import { MyStats } from "./components/my-stats";
+import { useSyncProgressNotification } from "./use-sync-progress-notification";
 
 export const HomePage = () => {
   const { user } = useAuthenticatedUser();
+  useSyncProgressNotification();
 
   return (
     <PageContainer>

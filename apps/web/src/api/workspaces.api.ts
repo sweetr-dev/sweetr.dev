@@ -6,6 +6,9 @@ import {
   UserWorkspacesQueryVariables,
   QueryWorkspaceByInstallationIdArgs,
   WorkspaceByInstallationIdQuery,
+  WorkspaceAutomationQuery,
+  WorkspaceSyncProgressQuery,
+  WorkspaceSyncProgressQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
 
 export const userWorkspacesQuery = (
@@ -62,6 +65,26 @@ export const useWorkspaceByInstallationIdQuery = (
               repositories {
                 id
               }
+            }
+          }
+        `),
+        args,
+      ),
+    ...options,
+  });
+
+export const useWorkspaceSyncProgressQuery = (
+  args: WorkspaceSyncProgressQueryVariables,
+  options?: Partial<UseQueryOptions<WorkspaceSyncProgressQuery>>,
+) =>
+  useQuery({
+    queryKey: ["workspace", args.workspaceId, "sync-progress"],
+    queryFn: () =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          query WorkspaceSyncProgress($workspaceId: SweetID!) {
+            workspace(workspaceId: $workspaceId) {
+              initialSyncProgress
             }
           }
         `),
