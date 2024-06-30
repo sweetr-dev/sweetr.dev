@@ -12,6 +12,7 @@ import {
   IconSpeakerphone,
   IconBuilding,
   IconBook2,
+  IconLifebuoy,
 } from "@tabler/icons-react";
 import { FC } from "react";
 import { logout } from "../../providers/auth.provider";
@@ -20,6 +21,7 @@ import { WorkspaceSwitcher } from "../workspace-switcher";
 import { AvatarUser } from "../avatar-user";
 import classes from "./navbar-user.module.css";
 import { useAppStore } from "../../providers/app.provider";
+import { useSupportChat } from "./use-support-chat";
 
 interface NavbarUserProps {
   onNavigate: () => void;
@@ -27,6 +29,7 @@ interface NavbarUserProps {
 
 export const NavbarUser: FC<NavbarUserProps> = () => {
   const { authenticatedUser: user, availableWorkspaces } = useAppStore();
+  const { openChat } = useSupportChat();
 
   const handleLogout = () => {
     logout();
@@ -60,16 +63,14 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
             </Stack>
           </Group>
 
-          <Menu.Divider />
+          <Menu.Divider mx={-4} />
 
           <Menu.Label>Switch workspace</Menu.Label>
           <Box m="sm" mt={0}>
             <WorkspaceSwitcher workspaces={availableWorkspaces} />
           </Box>
+          <Menu.Divider mx={-4} />
 
-          <Menu.Divider />
-
-          <Menu.Label>Options</Menu.Label>
           <Menu.Item
             leftSection={<IconBuilding size={14} stroke={1.5} />}
             component="a"
@@ -78,6 +79,9 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
           >
             Connect new organization
           </Menu.Item>
+          <Menu.Divider mx={-4} />
+
+          <Menu.Label>Options</Menu.Label>
           <Menu.Item
             leftSection={<IconBook2 size={14} stroke={1.5} />}
             component="a"
@@ -85,6 +89,15 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
             target="_blank"
           >
             Documentation
+          </Menu.Item>
+
+          <Menu.Item
+            leftSection={<IconLifebuoy size={14} stroke={1.5} />}
+            onClick={() => {
+              openChat();
+            }}
+          >
+            Chat with support
           </Menu.Item>
 
           <Menu.Item
@@ -97,7 +110,7 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
             Give feedback
           </Menu.Item>
 
-          <Menu.Divider />
+          <Menu.Divider mx={-4} />
 
           <Menu.Item
             component="a"
