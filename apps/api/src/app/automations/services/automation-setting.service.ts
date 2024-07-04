@@ -1,5 +1,5 @@
 import { GitProvider } from "@prisma/client";
-import { getBypassRlsPrisma, getPrisma } from "../../prisma";
+import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { AutomationSlug } from "@sweetr/graphql-types/api";
 
 export const isAutomationEnabled = async (

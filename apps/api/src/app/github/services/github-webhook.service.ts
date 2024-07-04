@@ -16,14 +16,8 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
   "github_app_authorization.revoked": [SweetQueue.GITHUB_OAUTH_REVOKED],
 
   // Pull Request
-  "pull_request.opened": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.SWEET_DEPENDENCY_CHANGES,
-  ],
-  "pull_request.synchronize": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.SWEET_DEPENDENCY_CHANGES,
-  ],
+  "pull_request.opened": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
+  "pull_request.synchronize": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.edited": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.closed": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.converted_to_draft": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],

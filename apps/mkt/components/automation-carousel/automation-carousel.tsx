@@ -51,37 +51,6 @@ export const AutomationCarousel = () => {
             {/* Carousel items */}
             <div className="rounded-[4px] swiper-slide  h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-red-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
-                  📦
-                  <Particles
-                    className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
-                    quantity={4}
-                    refresh={swiperInitialized}
-                    rgb="23, 25, 25"
-                  />
-                </div>
-                <div className="flex flex-col p-4 h-full">
-                  <div className="grow">
-                    <div className="font-bold text-lg mb-1 text-zinc-200">
-                      Package Health Summary
-                    </div>
-                    <div className="text-dark-200 mb-3">
-                      Summary of packages' health when changing dependencies,
-                      directly in your pull request. NPM and Yarn supported.
-                    </div>
-                  </div>
-                  <a
-                    href="https://docs.sweetr.dev/features/automations/packages-health-summary"
-                    target="_blank"
-                    className="text-green-500 underline"
-                  >
-                    Learn more
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[4px] swiper-slide  h-full group/slide">
-              <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
                 <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
                   📏
                   <Particles

@@ -1,6 +1,6 @@
 export default /* GraphQL */ `
   enum AutomationSlug {
-    PACKAGE_HEALTH
+    LABEL_PR_SIZE
   }
 
   enum AutomationScope {

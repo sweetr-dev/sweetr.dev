@@ -81,10 +81,7 @@
         {
           "group": "Automations",
           "icon": "robot",
-          "pages": [
-            "features/automations/intro",
-            "features/automations/packages-health-summary"
-          ]
+          "pages": ["features/automations/intro"]
         }
       ]
     },

@@ -79,7 +79,7 @@ export enum AutomationScope {
 }
 
 export enum AutomationSlug {
-  PACKAGE_HEALTH = 'PACKAGE_HEALTH'
+  LABEL_PR_SIZE = 'LABEL_PR_SIZE'
 }
 
 export type ChartInput = {
