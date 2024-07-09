@@ -76,10 +76,8 @@ export const withDelayedRetryOnRateLimit = async (
       });
 
       return;
-    }
-
-    // Secondary rate limit (Concurrency)
-    if ("headers" in error && error.headers["retry-after"]) {
+    } else if ("headers" in error && error.headers["retry-after"]) {
+      // Secondary rate limit (Concurrency)
       const retryAfterSeconds = parseInt(error.headers["retry-after"]) + 5; // 5 seconds buffer
       const canRetryAt = addSeconds(new Date(), retryAfterSeconds);
 
