@@ -11,7 +11,7 @@ const futureAutomations = [
   {
     title: "Label PR Size",
     shortDescription:
-      "Automatically label a Pull Request with it's size. Increase awareness on creating small PRs.",
+      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     status: "soon" as const,
     color: "green.1",
     icon: "📏",

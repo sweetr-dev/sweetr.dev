@@ -2,22 +2,24 @@ import { Automation, Prisma, PrismaClient } from "@prisma/client";
 
 const automations: Omit<Automation, "id">[] = [
   {
-    slug: "PACKAGE_HEALTH",
-    title: "Package Health Summary",
+    slug: "LABEL_PR_SIZE",
+    title: "Label PR Size",
     description:
-      "Summary of package health when changing dependencies, directly in your pull request. Supports NPM and Yarn.",
+      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     shortDescription:
-      "Summary of package health when changing dependencies, directly in your pull request. Supports NPM and Yarn.",
+      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     demoUrl: "https://google.com",
     docsUrl: "https://docs.sweetr.dev",
     available: true,
     color: "red.1",
     icon: "📦",
     benefits: {
-      failureRate: "Truly understand the impact of a dependency change.",
-      techDebt: "Prevent depending on badly maintained packages.",
-      security: "Assess package vulnerabilities in a glance.",
+      cycleTime:
+        "Helps encouraing smaller PRs and getting them reviewed faster.",
+      failureRate: "Lower risks with smaller changesets.",
     },
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 

@@ -18,7 +18,7 @@ export enum SweetQueue {
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
 
   // Automations
-  SWEET_DEPENDENCY_CHANGES = "{sweet.dependencies}",
+  AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",
 }
 
 export enum JobPriority {
