@@ -1,4 +1,7 @@
-import { getInstallationGraphQLOctoKit } from "../../../lib/octokit";
+import {
+  getInstallationGraphQLOctoKit,
+  getInstallationOctoKit,
+} from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
@@ -18,6 +21,7 @@ import {
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
 import { incrementInitialSyncProgress } from "../../workspaces/services/workspace.service";
+import { parseNullableISO } from "../../../lib/date";
 
 interface Author {
   id: string;
@@ -76,6 +80,7 @@ export const syncPullRequest = async (
   const gitProfile = await upsertGitProfile(gitPrData.author);
   const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(
+    gitInstallationId,
     gitProfile.id,
     repository,
     gitPrData
@@ -161,14 +166,6 @@ const fetchPullRequest = async (
               createdAt
             }
 
-            commits(first: 1) {
-              nodes {
-                commit {
-                  committedDate
-                }
-              }
-            }
-
             timelineItems(itemTypes: [READY_FOR_REVIEW_EVENT, CONVERT_TO_DRAFT_EVENT], last: 100) {
               nodes {
                 __typename
@@ -193,6 +190,7 @@ const fetchPullRequest = async (
 };
 
 const upsertPullRequest = async (
+  installationId: number,
   gitProfileId: number,
   repository: Repository,
   gitPrData: any
@@ -230,15 +228,28 @@ const upsertPullRequest = async (
     update: data,
   });
 
-  await upsertPullRequestTracking(pullRequest, gitPrData);
+  await upsertPullRequestTracking(
+    installationId,
+    repository,
+    pullRequest,
+    gitPrData
+  );
 
   return pullRequest;
 };
 
 const upsertPullRequestTracking = async (
+  installationId: number,
+  repository: Repository,
   pullRequest: PullRequest,
   gitPrData: any
 ) => {
+  const firstCommit = await getFirstCommit(
+    installationId,
+    repository,
+    pullRequest
+  );
+
   const { firstDraftedAt, firstReadyAt } = getFirstDraftAndReadyDates(
     pullRequest,
     gitPrData
@@ -255,7 +266,7 @@ const upsertPullRequestTracking = async (
   const size = getPullRequestSize(pullRequest);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
-  const firstCommitAt = gitPrData.commits.nodes[0]?.commit.committedDate;
+  const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);
   const timeToCode = getTimeToCode(firstCommitAt, tracking?.firstReadyAt);
   const cycleTime = getCycleTime(pullRequest, firstCommitAt);
 
@@ -284,6 +295,29 @@ const upsertPullRequestTracking = async (
       cycleTime,
     },
   });
+};
+
+const getFirstCommit = async (
+  installationId: number,
+  repository: Repository,
+  pullRequest: PullRequest
+) => {
+  try {
+    const octokit = await getInstallationOctoKit(installationId);
+    const [owner, ...repo] = repository.fullName.split("/");
+
+    const response = await octokit.rest.pulls.listCommits({
+      owner,
+      pull_number: parseInt(pullRequest.number),
+      repo: repo.join("/"),
+      page: 1,
+      per_page: 1,
+    });
+
+    return response.data.at(0);
+  } catch (error) {
+    return undefined;
+  }
 };
 
 const upsertGitProfile = async (author: Author) => {
