@@ -14,9 +14,9 @@ export default function PricingTabs() {
       title: "Is my repository code safe?",
       text: (
         <>
-          Absolutely. Sweetr never clones your repository, nor persists any data
-          from it. We follow stringent security best practices to protect our
-          servers and application.{" "}
+          Absolutely. Sweetr does not require access to your code. We follow
+          stringent security best practices to protect our servers and
+          application.{" "}
           <a
             href="https://docs.sweetr.dev/about/data-privacy-and-security"
             target="_blank"
