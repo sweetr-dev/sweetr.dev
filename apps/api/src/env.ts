@@ -70,6 +70,17 @@ export const env = envsafe({
   REDIS_CONNECTION_STRING: str({
     desc: "The connection string to the Redis server. Used for BullMQ.",
   }),
+  BULLBOARD_PATH: str({
+    desc: "The API path to open BullBoard",
+    devDefault: "/bullboard",
+    default: "",
+  }),
+  BULLBOARD_USERNAME: str({
+    desc: "The username to login to BullBoard.",
+  }),
+  BULLBOARD_PASSWORD: str({
+    desc: "The password to login to BullBoard.",
+  }),
 });
 
 export const isDev = env.APP_ENV === "development";

@@ -3,24 +3,34 @@ import { ExpressAdapter } from "@bull-board/express";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { queues } from "./queues";
-import { isProduction } from "../env";
-
-const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath("/bullboard");
-
-createBullBoard({
-  queues: Object.values(queues).map((queue) => new BullMQAdapter(queue)),
-  serverAdapter: serverAdapter,
-});
+import auth from "basic-auth";
+import { env } from "../env";
 
 export const bullBoardRouter = Router();
 
-bullBoardRouter.use(
-  "/bullboard",
-  (_req, _res, next) => {
-    if (isProduction) next("Not available in production");
+if (env.BULLBOARD_PATH) {
+  const serverAdapter = new ExpressAdapter();
+  serverAdapter.setBasePath(env.BULLBOARD_PATH);
 
-    return next();
-  },
-  serverAdapter.getRouter()
-);
+  createBullBoard({
+    queues: Object.values(queues).map((queue) => new BullMQAdapter(queue)),
+    serverAdapter: serverAdapter,
+  });
+
+  bullBoardRouter.use(
+    env.BULLBOARD_PATH,
+    (req, res, next) => {
+      const user = auth(req);
+      const username = env.BULLBOARD_USERNAME;
+      const password = env.BULLBOARD_PASSWORD;
+
+      if (!user || user.name !== username || user.pass !== password) {
+        res.set("WWW-Authenticate", 'Basic realm="BullBoard"');
+        return res.status(401).send("Authentication required.");
+      }
+
+      next();
+    },
+    serverAdapter.getRouter()
+  );
+}
