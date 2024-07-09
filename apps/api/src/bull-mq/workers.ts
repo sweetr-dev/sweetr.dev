@@ -20,7 +20,7 @@ export const createWorker = (
     async (job, token) => {
       logger.info(`🐂▶️ BullmQ: ${job.name} - Processing job #${job.id}`);
 
-      processor(job, token);
+      return processor(job, token);
     },
     {
       connection: redisConnection,
