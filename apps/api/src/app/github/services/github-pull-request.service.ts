@@ -37,9 +37,10 @@ type RepositoryData = Omit<
 export const syncPullRequest = async (
   gitInstallationId: number,
   pullRequestId: string,
-  { syncReviews, initialSync } = {
+  { syncReviews, initialSync, failCount } = {
     syncReviews: false,
     initialSync: false,
+    failCount: 0,
   }
 ) => {
   logger.info("syncPullRequest", {
@@ -57,6 +58,10 @@ export const syncPullRequest = async (
     });
 
     return;
+  }
+
+  if (initialSync && failCount === 0) {
+    incrementInitialSyncProgress(workspace.id, "done", 1);
   }
 
   const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
@@ -85,10 +90,6 @@ export const syncPullRequest = async (
     repository,
     gitPrData
   );
-
-  if (initialSync) {
-    incrementInitialSyncProgress(workspace.id, "done", 1);
-  }
 
   if (syncReviews) {
     logger.debug("syncPullRequest: Adding job to sync reviews", {

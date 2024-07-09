@@ -37,6 +37,7 @@ export const syncPullRequestWorker = createWorker(
     const options = {
       syncReviews: job.data.syncReviews || false,
       initialSync: job.data.initialSync || false,
+      failCount: job.attemptsMade,
     };
 
     await withDelayedRetryOnRateLimit(
