@@ -12,7 +12,8 @@ import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.servi
 export const githubMemberSyncWorker = createWorker(
   SweetQueue.GITHUB_MEMBERS_SYNC,
   async (
-    job: Job<OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent>
+    job: Job<OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent>,
+    token?: string
   ) => {
     const installationId = job.data.installation?.id;
 
@@ -28,6 +29,7 @@ export const githubMemberSyncWorker = createWorker(
         syncOrganizationMembers(installationId, job.data.organization.login),
       {
         job,
+        jobToken: token,
         installationId,
       }
     );

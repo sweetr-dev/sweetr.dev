@@ -12,7 +12,8 @@ import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.servi
 export const syncCodeReviewWorker = createWorker(
   SweetQueue.GITHUB_SYNC_CODE_REVIEW,
   async (
-    job: Job<PullRequestReviewSubmittedEvent | PullRequestReviewDismissedEvent>
+    job: Job<PullRequestReviewSubmittedEvent | PullRequestReviewDismissedEvent>,
+    token?: string
   ) => {
     const installationId = job.data.installation?.id;
 
@@ -34,6 +35,7 @@ export const syncCodeReviewWorker = createWorker(
       () => syncCodeReviews(installationId, job.data.pull_request.node_id),
       {
         job,
+        jobToken: token,
         installationId,
       }
     );

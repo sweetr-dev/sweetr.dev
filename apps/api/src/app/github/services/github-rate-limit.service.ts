@@ -1,11 +1,10 @@
-import { Job } from "bullmq";
+import { DelayedError, Job } from "bullmq";
 import { fromUnixTime } from "date-fns/fromUnixTime";
 import { logger } from "../../../lib/logger";
 import { redisConnection } from "../../../bull-mq/redis-connection";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { isPast } from "date-fns/isPast";
 import { getTime } from "date-fns/getTime";
-import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { addSeconds } from "date-fns";
 
 const oneSecondInMs = 1000;
@@ -13,10 +12,11 @@ const oneSecondInMs = 1000;
 interface WithDelayedRetryOnRateLimitArgs {
   job: Job;
   installationId: number;
+  jobToken?: string;
 }
 export const withDelayedRetryOnRateLimit = async (
   callback: () => Promise<void>,
-  { job, installationId }: WithDelayedRetryOnRateLimitArgs
+  { job, jobToken, installationId }: WithDelayedRetryOnRateLimitArgs
 ) => {
   try {
     const rateLimitResetAtInMs =
@@ -32,11 +32,8 @@ export const withDelayedRetryOnRateLimit = async (
         }
       );
 
-      await addJob(job.queueName as SweetQueue, job.data, {
-        delay: rateLimitResetAtInMs + oneSecondInMs - Date.now(),
-      });
-
-      return;
+      await job.moveToDelayed(rateLimitResetAtInMs + oneSecondInMs, jobToken);
+      throw new DelayedError();
     }
 
     await callback();
@@ -71,13 +68,15 @@ export const withDelayedRetryOnRateLimit = async (
         getTime(rateLimitResetAt)
       );
 
-      await addJob(job.queueName as SweetQueue, job.data, {
-        delay: getTime(rateLimitResetAt) + oneSecondInMs - Date.now(),
-      });
+      await job.moveToDelayed(
+        getTime(rateLimitResetAt) + oneSecondInMs,
+        jobToken
+      );
+      throw new DelayedError();
+    }
 
-      return;
-    } else if ("headers" in error && error.headers["retry-after"]) {
-      // Secondary rate limit (Concurrency)
+    // Secondary rate limit (Concurrency)
+    if ("headers" in error && error.headers["retry-after"]) {
       const retryAfterSeconds = parseInt(error.headers["retry-after"]) + 5; // 5 seconds buffer
       const canRetryAt = addSeconds(new Date(), retryAfterSeconds);
 
@@ -88,11 +87,8 @@ export const withDelayedRetryOnRateLimit = async (
 
       setGitInstallationRateLimitEpochInMs(installationId, getTime(canRetryAt));
 
-      await addJob(job.queueName as SweetQueue, job.data, {
-        delay: getTime(canRetryAt) + oneSecondInMs - Date.now(),
-      });
-
-      return;
+      await job.moveToDelayed(getTime(canRetryAt) + oneSecondInMs, jobToken);
+      throw new DelayedError();
     }
 
     throw error;

@@ -8,7 +8,10 @@ import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.servi
 
 export const githubRepositoriesSyncWorker = createWorker(
   SweetQueue.GITHUB_REPOSITORIES_SYNC,
-  async (job: Job<RepositoryEvent & { syncPullRequests?: boolean }>) => {
+  async (
+    job: Job<RepositoryEvent & { syncPullRequests?: boolean }>,
+    token?: string
+  ) => {
     const installationId = job.data.installation?.id;
 
     if (!installationId) {
@@ -26,6 +29,7 @@ export const githubRepositoriesSyncWorker = createWorker(
         ),
       {
         job,
+        jobToken: token,
         installationId,
       }
     );

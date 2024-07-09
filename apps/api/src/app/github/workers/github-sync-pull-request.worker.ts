@@ -17,7 +17,8 @@ export const syncPullRequestWorker = createWorker(
         syncReviews?: boolean;
         initialSync?: boolean;
       }
-    >
+    >,
+    token?: string
   ) => {
     if (!job.data.installation?.id) {
       throw new InputValidationException(
@@ -45,6 +46,7 @@ export const syncPullRequestWorker = createWorker(
         syncPullRequest(installationId, job.data.pull_request.node_id, options),
       {
         job,
+        jobToken: token,
         installationId,
       }
     );
