@@ -81,6 +81,13 @@ export const env = envsafe({
   BULLBOARD_PASSWORD: str({
     desc: "The password to login to BullBoard.",
   }),
+  EMAIL_ENABLED: bool({
+    desc: "Whether transactional emails are enabled",
+    default: false,
+  }),
+  RESEND_API_KEY: str({
+    desc: "The API Key for Resend.",
+  }),
 });
 
 export const isDev = env.APP_ENV === "development";

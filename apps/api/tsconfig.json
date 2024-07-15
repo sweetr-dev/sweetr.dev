@@ -5,6 +5,7 @@
     "lib": ["es2017", "ES2022"],
     "rootDir": "./src",
     "outDir": "build",
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
