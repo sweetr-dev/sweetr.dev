@@ -37,6 +37,7 @@
     "@sentry/node": "^7.80.0",
     "@sentry/tracing": "^7.80.0",
     "@sweetr/graphql-types": "*",
+    "@sweetr/email-templates": "*",
     "@yarnpkg/lockfile": "^1.1.0",
     "basic-auth": "^2.0.1",
     "bullmq": "^5.2.0",
@@ -55,6 +56,7 @@
     "octokit": "^3.2.1",
     "pino": "^8.16.1",
     "radash": "^11.0.0",
+    "resend": "^3.4.0",
     "semver": "^7.5.4",
     "utility-types": "^3.10.0"
   },

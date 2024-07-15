@@ -1,0 +1,21 @@
+{
+  "name": "@sweetr/email-templates",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.tsx",
+  "types": "index.tsx",
+  "scripts": {
+    "build": "email build",
+    "dev": "email dev",
+    "export": "email export --outDir compiled/html && email export --plainText --outDir compiled/txt"
+  },
+  "dependencies": {
+    "@react-email/components": "0.0.21",
+    "react-email": "2.1.5",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14"
+  }
+}
