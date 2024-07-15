@@ -37,3 +37,6 @@ yarn-error.log*
 # Local SSL
 certs/*.cert
 certs/*.key
+
+# Build
+*.tsbuildinfo
