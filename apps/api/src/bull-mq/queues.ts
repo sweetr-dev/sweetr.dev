@@ -4,6 +4,9 @@ import { logger } from "../lib/logger";
 import { bullMQErrorHandler } from "./error-handler";
 
 export enum SweetQueue {
+  // System
+  SEND_EMAIL = "{system.send_email}",
+
   // Crons - https://docs.bullmq.io/guide/jobs/repeatable
   CRON_GITHUB_RETRY_FAILED_WEBHOOKS = "{cron.github.retry_failed_webhooks}",
 
