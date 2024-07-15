@@ -1,16 +1,16 @@
-import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
+import { Button, Heading, Section, Text } from "@react-email/components";
 import { Layout } from "../_components/layout";
 
-interface InitialSyncCompleteprops {
+export interface InitialSyncCompleteProps {
   username: string;
-  createTeamLink: string;
+  createTeamLink?: string;
 }
 
 export const InitialSyncCompleteEmail = ({
   username,
   createTeamLink = "https://app.sweetr.dev/teams",
-}: InitialSyncCompleteprops) => {
+}: InitialSyncCompleteProps) => {
   return (
     <Layout preview="Your workspace data is ready.">
       <Heading className="text-zinc-100 text-[24px] font-normal p-0 mt-[30px] mx-0">
@@ -35,6 +35,6 @@ export const InitialSyncCompleteEmail = ({
 
 InitialSyncCompleteEmail.PreviewProps = {
   username: "John Doe",
-} as InitialSyncCompleteprops;
+} as InitialSyncCompleteProps;
 
 export default InitialSyncCompleteEmail;
