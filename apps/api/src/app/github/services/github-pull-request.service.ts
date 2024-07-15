@@ -20,8 +20,19 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
-import { incrementInitialSyncProgress } from "../../workspaces/services/workspace.service";
+import {
+  findWorkspaceUsers,
+  getInitialSyncProgress,
+  incrementInitialSyncProgress,
+} from "../../workspaces/services/workspace.service";
 import { parseNullableISO } from "../../../lib/date";
+import {
+  enqueueEmail,
+  hasSentEmail,
+  markEmailAsSent,
+} from "../../email/services/send-email.service";
+import { captureException } from "@sentry/node";
+import { EmailTemplate } from "../../email/services/email-template.service";
 
 interface Author {
   id: string;
@@ -61,7 +72,7 @@ export const syncPullRequest = async (
   }
 
   if (initialSync && failCount === 0) {
-    incrementInitialSyncProgress(workspace.id, "done", 1);
+    await incrementInitialSyncProgress(workspace.id, "done", 1);
   }
 
   const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
@@ -110,6 +121,12 @@ export const syncPullRequest = async (
         priority: JobPriority.LOW,
       }
     );
+  }
+
+  if (initialSync) {
+    const shouldSendEmail = await isSyncComplete(workspace.id);
+
+    if (shouldSendEmail) sendSyncCompleteEmail(workspace.id);
   }
 };
 
@@ -412,3 +429,52 @@ function getPullRequestState(
   if (state === "OPEN") return PullRequestState.OPEN;
   throw new BusinessRuleException(`Unknown pull request state: ${state}`);
 }
+
+const isSyncComplete = async (workspaceId: number) => {
+  const progress = await getInitialSyncProgress(workspaceId);
+
+  return progress >= 100;
+};
+
+const sendSyncCompleteEmail = async (workspaceId: number) => {
+  const emailTemplate: EmailTemplate = "InitialSyncCompleteEmail";
+  const emailKey = `workspace:${workspaceId}:email:${emailTemplate}`;
+
+  const isDuplicateEmail = await hasSentEmail(emailKey);
+  if (isDuplicateEmail) return;
+
+  const members = await findWorkspaceUsers(workspaceId);
+
+  if (!members.length) {
+    captureException(
+      new BusinessRuleException(
+        "Attempted to send sync complete email to workspace with no members.",
+        {
+          extra: {
+            workspaceId,
+          },
+        }
+      )
+    );
+
+    return;
+  }
+
+  for (const member of members) {
+    if (!member.user) continue;
+
+    await enqueueEmail({
+      to: member.user.email,
+      subject: "Sync complete.",
+      template: {
+        type: emailTemplate,
+        props: {
+          username: member.name,
+        },
+      },
+    });
+  }
+
+  const oneDayInSeconds = 60 * 60 * 24;
+  await markEmailAsSent(emailKey, oneDayInSeconds);
+};

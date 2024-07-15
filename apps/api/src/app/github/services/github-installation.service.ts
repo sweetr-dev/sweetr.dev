@@ -221,6 +221,7 @@ const connectUserToWorkspace = async (
     create: {
       gitProfileId: gitProfile.id,
       workspaceId: workspace.id,
+      // TO-DO: Role = ADMIN
     },
     update: {},
   });

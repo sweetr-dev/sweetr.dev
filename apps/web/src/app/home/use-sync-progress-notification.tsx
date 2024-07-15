@@ -38,7 +38,7 @@ export const useSyncProgressNotification = () => {
     if (progress === undefined) return;
 
     // A user who never saw the "in-progress" notification should never see any notification.
-    if (syncStatus === "unknown" && progress === 100) {
+    if (syncStatus === "unknown" && progress >= 100) {
       setAutoPolling(false);
       setSyncStatus("acknowledged");
       return;

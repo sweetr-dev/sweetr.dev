@@ -60,6 +60,24 @@ export const findUserWorkspaces = async (gitProfileId: number) => {
   });
 };
 
+export const findWorkspaceUsers = (workspaceId: number) => {
+  return getPrisma(workspaceId).gitProfile.findMany({
+    where: {
+      workspaceMemberships: {
+        some: {
+          workspaceId,
+        },
+      },
+      NOT: {
+        userId: null,
+      },
+    },
+    include: {
+      user: true,
+    },
+  });
+};
+
 export const getWorkspaceName = (
   workspace: WorkspaceWithUserOrOrganization
 ): string => {
@@ -146,9 +164,9 @@ export const getInitialSyncProgress = async (workspaceId: number) => {
     const waiting = Number(progress.waiting);
 
     // Avoid division by zero
-    if (waiting === 0) return 0;
+    if (waiting === 0) return 100;
 
-    return Math.round((done * 100) / waiting);
+    return Math.min(Math.round((done * 100) / waiting), 100);
   } catch (error) {
     captureException(
       new UnknownException("Redis: Could not get workspace sync progress.", {

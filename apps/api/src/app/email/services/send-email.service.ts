@@ -6,6 +6,7 @@ import { captureException } from "../../../lib/sentry";
 import { EmailPayload, EmailOptions, getEmailClient } from "../../../lib/email";
 import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
 import { BuildEmailTemplate } from "./email-template.service";
+import { redisConnection } from "../../../bull-mq/redis-connection";
 
 const emailTemplates = {
   initialSyncComplete: InitialSyncCompleteEmail,
@@ -47,4 +48,12 @@ export const sendEmail = async (
   }
 
   return data;
+};
+
+export const markEmailAsSent = (key: string, expireInSeconds: number) => {
+  return redisConnection.setex(key, expireInSeconds, 1);
+};
+
+export const hasSentEmail = (key: string) => {
+  return redisConnection.exists(key);
 };

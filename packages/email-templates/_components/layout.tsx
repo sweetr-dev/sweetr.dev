@@ -43,13 +43,13 @@ export const Layout = ({ preview, children }: LayoutProps) => {
               <Text className="text-zinc-400 text-xs mb-0">
                 Tip: You can simply reply to this email to reach out to us.
               </Text>
-              <Section className="mt-2">
+              <Section className="pt-2">
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <tr>
                     <td>
                       <Button
                         href="https://docs.sweetr.dev"
-                        className="text-zinc-500 text-sm rounded mr-4"
+                        className="text-zinc-500 text-sm rounded pr-4"
                       >
                         Docs
                       </Button>
@@ -57,7 +57,7 @@ export const Layout = ({ preview, children }: LayoutProps) => {
                     <td>
                       <Button
                         href="https://github.com/sweetr-dev/sweetr.dev"
-                        className="text-zinc-500 text-sm rounded mr-4"
+                        className="text-zinc-500 text-sm rounded pr-4"
                       >
                         GitHub
                       </Button>
