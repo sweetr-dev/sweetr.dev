@@ -5,7 +5,6 @@
   "main": "index.tsx",
   "types": "index.tsx",
   "scripts": {
-    "build": "email build",
     "dev": "email dev",
     "export": "email export"
   },
