@@ -31,7 +31,7 @@ export const sendEmail = async (
   }
 
   const client = getEmailClient();
-  const to = isProduction || 1 ? payload.to : "delivered@resend.dev";
+  const to = isProduction ? payload.to : "delivered@resend.dev";
 
   const { data, error } = await client.emails.send(
     {
