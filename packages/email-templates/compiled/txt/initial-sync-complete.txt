@@ -1,8 +1,0 @@
-YOUR WORKSPACE DATA IS READY.
-
-Hello ,
-
-Your GitHub metadata is now fully synced with Sweetr. Create a team to explore
-insights from your data and get the most out of Sweetr.
-
-Create a team https://app.sweetr.dev/teams

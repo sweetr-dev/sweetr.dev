@@ -7,7 +7,7 @@
   "scripts": {
     "build": "email build",
     "dev": "email dev",
-    "export": "email export --outDir compiled/html && email export --plainText --outDir compiled/txt"
+    "export": "email export"
   },
   "dependencies": {
     "@react-email/components": "0.0.21",
