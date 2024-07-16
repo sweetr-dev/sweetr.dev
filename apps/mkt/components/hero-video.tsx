@@ -12,21 +12,15 @@ import Image7 from "@/public/images/hero/7-swetr-team-pr-size-distribution.png";
 import Image8 from "@/public/images/hero/8-sweetr-teamc-deo-review-distribution-hover.png";
 import Image9 from "@/public/images/hero/9-sweetr-people-directory.png";
 import Image10 from "@/public/images/hero/10-sweetr-person-code-reviews.png";
-import { Dialog } from "@headlessui/react";
 import {
   IconChevronLeft,
   IconChevronRight,
+  IconInfoCircle,
   IconPlayerPause,
   IconPlayerPlay,
-  IconPlayerStop,
-  IconPlayerTrackNext,
-  IconPlayerTrackPrev,
 } from "@tabler/icons-react";
 
 export const HeroVideo = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const videoId = "IMxDeACOWCE";
-  const handleClose = () => setIsOpen(false);
   const images = [
     Image1,
     Image2,
@@ -39,6 +33,36 @@ export const HeroVideo = () => {
     Image9,
     Image10,
   ];
+  const docs = [
+    null,
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
+    {
+      label: "Pull Requests",
+      href: "https://docs.sweetr.dev/features/pull-requests",
+    },
+    {
+      label: "Team Insights",
+      href: "https://docs.sweetr.dev/features/team/intro",
+    },
+    {
+      label: "Cycle Time",
+      href: "https://docs.sweetr.dev/features/team/cycle-time",
+    },
+    {
+      label: "PR Size Distribution",
+      href: "https://docs.sweetr.dev/features/team/pr-size-distribution",
+    },
+    {
+      label: "Code Review Distribution",
+      href: "https://docs.sweetr.dev/features/team/code-review-distribution",
+    },
+    { label: "People", href: "https://docs.sweetr.dev/features/people" },
+    {
+      label: "Code Reviews",
+      href: "https://docs.sweetr.dev/features/code-reviews",
+    },
+  ];
   const [currentImage, setImage] = useState(0);
   const autoPlay = useRef(true);
   const [isAutoPlaying, setIsAutoPlaying] = useState(autoPlay.current);
@@ -50,7 +74,7 @@ export const HeroVideo = () => {
       setImage((imageIndex) =>
         imageIndex + 1 === images.length ? 0 : imageIndex + 1
       );
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
@@ -80,7 +104,7 @@ export const HeroVideo = () => {
     <>
       <div className="hidden md:flex justify-end gap-1 text-dark-100 mb-1">
         <button onClick={handleAutoPlay}>
-          {autoPlay.current ? (
+          {isAutoPlaying ? (
             <IconPlayerPause stroke={1.5} size={20} />
           ) : (
             <IconPlayerPlay stroke={1.5} size={20} />
@@ -105,6 +129,17 @@ export const HeroVideo = () => {
           quality={100}
           priority
         />
+        {docs[currentImage] && (
+          <a
+            href={docs[currentImage]?.href}
+            target="_blank"
+            className="absolute flex gap-2 bg-dark-900 border border-dark-400 text-zinc-400 rounded right-0 bottom-0 mr-4 mb-4 items-center p-1 px-2 hover:opacity-100 opacity-70 hover:scale-105 transition"
+          >
+            <IconInfoCircle stroke={1.5} size={16} />
+            {docs[currentImage].label}
+          </a>
+        )}
+
         {/* <div
           className="flex absolute h-20 w-20 top-0 left-[50%] ml-[-40px] mt-[25%] justify-center text-3xl items-center rounded-full 
               bg-green-400 text-green-900 border border-green-500 uppercase font-bold shadow-[0px_0px_105px_35px_rgba(74,222,128,0.3)] animate-heartbeat"
@@ -113,7 +148,7 @@ export const HeroVideo = () => {
         </div> */}
       </div>
 
-      <Dialog
+      {/* <Dialog
         open={isOpen}
         onClose={handleClose}
         className="fixed z-50 inset-0 overflow-y-auto"
@@ -139,7 +174,7 @@ export const HeroVideo = () => {
             </div>
           </div>
         </div>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 };
