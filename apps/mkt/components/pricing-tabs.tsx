@@ -22,12 +22,12 @@ export default function PricingTabs() {
           .
         </>
       ),
-      active: false,
+      active: true,
     },
     {
       title: "Is training needed?",
       text: "Not at all, you and your team should be able to use Sweetr without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
-      active: true,
+      active: false,
     },
     {
       title: "How is my data used? Can it be removed?",
