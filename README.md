@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://sweetr.dev">
-    <img src="https://github.com/sweetr-dev/sweetr.dev/assets/1367578/4b35cc76-78d1-4f01-8476-c1d7f515fad4" alt="Banner">
+    <img src="https://sweetr.dev/images/demo.gif" alt="Banner">
   </a>
 </div>
 <h3 align="center">sweetr.dev</h3>
