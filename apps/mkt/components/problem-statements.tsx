@@ -63,7 +63,7 @@ export default function ProblemStatements() {
             {challenges.map((challenge, index) => (
               <div key={index} className="w-full md:w-1/2 lg:w-1/2 px-4 mb-8">
                 <div
-                  className="py-12 rounded-lg border border-red-400 shadow-md text-center bg-dark-900"
+                  className="py-12 rounded-lg border border-red-400/50 shadow-md text-center bg-dark-900"
                   style={{
                     background:
                       "linear-gradient(151deg, rgba(248,113,113,0.15) 0%, rgba(20,21,23,1) 30%, rgba(20,21,23,1) 70%, rgba(248,113,113,0.15) 100%)",
