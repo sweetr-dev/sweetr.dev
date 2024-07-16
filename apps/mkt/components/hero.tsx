@@ -80,7 +80,7 @@ export default async function Hero() {
             </div>
           </div>
           {/* Image */}
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-center relative before:absolute before:-top-12 before:w-96 before:h-96 before:bg-zinc-900 before:opacity-[.15] before:rounded-full before:blur-3xl before:-z-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 relative before:absolute before:-top-12 before:w-96 before:h-96 before:bg-zinc-900 before:opacity-[.15] before:rounded-full before:blur-3xl before:-z-10">
             <HeroVideo />
           </div>
         </div>
