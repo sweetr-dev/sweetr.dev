@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://sweetr.dev">
-    <img src="https://sweetr.dev/images/demo.gif" alt="Banner">
+    <img src="https://github.com/sweetr-dev/sweetr.dev/assets/1367578/4b35cc76-78d1-4f01-8476-c1d7f515fad4" alt="Banner">
   </a>
 </div>
 <h3 align="center">sweetr.dev</h3>
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img width="1640" alt="screenshot" src="https://sweetr.dev/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fhome.0ad81bd1.png&w=1200&q=100">
+  <img width="1640" alt="screenshot" src="https://sweetr.dev/images/demo.gif">
 </p>
 
 # License
