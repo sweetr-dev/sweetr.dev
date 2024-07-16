@@ -42,7 +42,6 @@ const features = [
         />
       </>
     ),
-    contentHeight: 211,
     icon: IconGitMerge,
     image: FeaturePRs,
   },
@@ -63,7 +62,6 @@ const features = [
         />
       </>
     ),
-    contentHeight: 259,
     icon: IconEyeCode,
     image: FeatureCodeReviews,
   },
@@ -82,7 +80,6 @@ const features = [
         />
       </>
     ),
-    contentHeight: 211,
     icon: IconClock,
     image: FeatureCycleTime,
   },
@@ -105,7 +102,6 @@ const features = [
         />
       </>
     ),
-    contentHeight: 211,
     icon: IconEyeDiscount,
     image: FeatureCRDistribution,
   },
@@ -125,7 +121,6 @@ const features = [
         />
       </>
     ),
-    contentHeight: 189,
     icon: IconAspectRatio,
     image: FeaturePRSize,
   },
@@ -135,15 +130,6 @@ export default function FeaturesOverview() {
   const [tab, setTab] = useState<number>(0);
 
   const tabs = useRef<HTMLDivElement>(null);
-
-  const heightFix = () => {
-    if (tabs.current && tabs.current.parentElement)
-      tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`;
-  };
-
-  useEffect(() => {
-    setTimeout(heightFix, 300);
-  }, [tab, tabs.current]);
 
   return (
     <section className="relative border-t border-dark-400 bg-dark-800">
@@ -162,7 +148,7 @@ export default function FeaturesOverview() {
 
           <div className="lg:flex space-y-12 lg:space-y-0 lg:space-x-12 xl:space-x-12">
             {/* Content */}
-            <div className="lg:max-w-none lg:min-w-[430px]">
+            <div className="lg:max-w-[430px] lg:min-w-[430px]">
               {/* Tabs buttons */}
               <div className="mb-8 md:mb-0 space-y-3">
                 <p className="text-white uppercase text-sm font-medium text-center ">
@@ -177,10 +163,6 @@ export default function FeaturesOverview() {
                       className={`w-full text-left px-4 py-4 rounded border border-dark-400 transition-all duration-500 ${
                         tab !== index ? "hover:scale-105" : ``
                       }`}
-                      style={{
-                        maxHeight:
-                          tab === index ? feature.contentHeight + 58 : 61,
-                      }}
                       onClick={(e) => {
                         setTab(index);
                       }}
@@ -250,7 +232,6 @@ export default function FeaturesOverview() {
                       leave="transition ease-in-out duration-300 transform absolute"
                       leaveFrom="opacity-100 translate-y-0"
                       leaveTo="opacity-0 translate-y-4"
-                      beforeEnter={() => heightFix()}
                       unmount={false}
                     >
                       <div>
