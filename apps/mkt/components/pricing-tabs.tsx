@@ -6,11 +6,6 @@ import { IconBook, IconBrandGithub } from "@tabler/icons-react";
 export default function PricingTabs() {
   const faqs = [
     {
-      title: "Is training needed?",
-      text: "Not at all, you and your team should be able to use Sweetr without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
-      active: true,
-    },
-    {
       title: "Is my repository code safe?",
       text: (
         <>
@@ -28,6 +23,11 @@ export default function PricingTabs() {
         </>
       ),
       active: false,
+    },
+    {
+      title: "Is training needed?",
+      text: "Not at all, you and your team should be able to use Sweetr without any prior training. We design simple and intuitive interfaces, and documentation is highly available.",
+      active: true,
     },
     {
       title: "How is my data used? Can it be removed?",

@@ -81,16 +81,16 @@ export const HeroVideo = () => {
       <div className="hidden md:flex justify-end gap-1 text-dark-100 mb-1">
         <button onClick={handleAutoPlay}>
           {autoPlay.current ? (
-            <IconPlayerPause stroke={1.5} size={16} />
+            <IconPlayerPause stroke={1.5} size={20} />
           ) : (
-            <IconPlayerPlay stroke={1.5} size={16} />
+            <IconPlayerPlay stroke={1.5} size={20} />
           )}
         </button>
         <button onClick={handlePrevious}>
-          <IconChevronLeft stroke={1.5} size={16} />
+          <IconChevronLeft stroke={1.5} size={20} />
         </button>
         <button onClick={handleNext}>
-          <IconChevronRight stroke={1.5} size={16} />
+          <IconChevronRight stroke={1.5} size={20} />
         </button>
       </div>
       <div className="block relative ease-out duration-300">
