@@ -20,6 +20,10 @@ export enum SweetQueue {
   GITHUB_SYNC_CODE_REVIEW = "{github.sync.code_review}",
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
 
+  // Stripe
+  STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
+  STRIPE_SUBSCRIPTION_REPORT_USAGE = "{stripe.subscription.report_usage}",
+
   // Automations
   AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",
 }

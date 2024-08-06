@@ -36,8 +36,8 @@
     "@prisma/client": "^5.5.2",
     "@sentry/node": "^7.80.0",
     "@sentry/tracing": "^7.80.0",
-    "@sweetr/graphql-types": "*",
     "@sweetr/email-templates": "*",
+    "@sweetr/graphql-types": "*",
     "@yarnpkg/lockfile": "^1.1.0",
     "basic-auth": "^2.0.1",
     "bullmq": "^5.2.0",
@@ -58,6 +58,7 @@
     "radash": "^11.0.0",
     "resend": "^3.4.0",
     "semver": "^7.5.4",
+    "stripe": "^16.6.0",
     "utility-types": "^3.10.0"
   },
   "devDependencies": {

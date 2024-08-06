@@ -48,6 +48,16 @@ export const env = envsafe({
   GITHUB_APP_PRIVATE_KEY: str({
     desc: "The application private key",
   }),
+  STRIPE_API_KEY: str({
+    desc: "The secret API Key for Stripe access",
+    allowEmpty: true,
+    devDefault: "",
+  }),
+  STRIPE_WEBHOOK_SECRET: str({
+    desc: "The secret string used to sign Stripe webhooks",
+    allowEmpty: true,
+    devDefault: "",
+  }),
   JWT_SECRET: str({
     desc: "The secret string used to sign JWT tokens",
   }),
