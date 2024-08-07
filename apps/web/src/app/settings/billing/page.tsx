@@ -1,24 +1,37 @@
-import { Alert, Box, Title } from "@mantine/core";
-import { IconInfoCircle } from "@tabler/icons-react";
+import { Box, Button, Group, Paper, Title, Text } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
+import { Pricing } from "./components/pricing";
+import { IconExternalLink } from "@tabler/icons-react";
 
 export const BillingPage = () => {
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Settings" }, { label: "Billing" }]} />
+      <Box maw={700}>
+        <Title order={3} mb="md">
+          Billing
+        </Title>
 
-      <Box maw={600}>
-        <Title order={3}>Billing</Title>
-        <Alert
-          variant="light"
-          color="blue"
-          title="Coming soon."
-          mt="xs"
-          icon={<IconInfoCircle stroke={1.5} />}
-        >
-          Enjoy all features for free during our open beta period.
-        </Alert>
+        <Pricing />
+
+        <Paper mt="xs" p="md" withBorder>
+          <Group justify="space-between">
+            <Box flex="1 1">
+              <Title order={5}>Customer Portal</Title>
+              <Text c="dimmed" size="sm" display="flex">
+                Manage your subscriptions, payment methods and invoices.
+              </Text>
+            </Box>
+
+            <Button
+              variant="outline"
+              rightSection={<IconExternalLink stroke={1.5} size={16} />}
+            >
+              Stripe
+            </Button>
+          </Group>
+        </Paper>
       </Box>
     </PageContainer>
   );
