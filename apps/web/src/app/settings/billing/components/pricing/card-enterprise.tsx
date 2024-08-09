@@ -9,8 +9,11 @@ import {
   Divider,
 } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
+import { useSupportChat } from "../../../../../components/navbar/use-support-chat";
 
 export const CardEnterprise = () => {
+  const { openChat } = useSupportChat();
+
   return (
     <Paper withBorder flex="1 1" radius="md">
       <Stack p="sm" gap={0}>
@@ -28,7 +31,7 @@ export const CardEnterprise = () => {
           size="sm"
           mt="lg"
           icon={
-            <ThemeIcon color="dark.4" size={20} radius="xl">
+            <ThemeIcon color="dark.6" size={20} radius="xl">
               <IconChevronRight size={16} />
             </ThemeIcon>
           }
@@ -39,7 +42,13 @@ export const CardEnterprise = () => {
           <List.Item>All features included</List.Item>
         </List>
 
-        <Button mt="lg" fullWidth color="gray.3" autoContrast>
+        <Button
+          mt="lg"
+          fullWidth
+          color="dark.5"
+          autoContrast
+          onClick={openChat}
+        >
           Contact Us
         </Button>
       </Stack>

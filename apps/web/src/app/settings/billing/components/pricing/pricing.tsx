@@ -7,28 +7,54 @@ import {
   Paper,
   Slider,
   Text,
+  Skeleton,
 } from "@mantine/core";
 import { CardEnterprise } from "./card-enterprise";
 import { CardCloud } from "./card-cloud";
 import { useState } from "react";
 import { Faq } from "./faq";
 import { IconChevronUp } from "@tabler/icons-react";
+import { SubscriptionPeriod } from "./types";
 
-export const Pricing = () => {
+interface PricingProps {
+  plan: {
+    monthly: string;
+    yearly: string;
+  };
+  isLoading: boolean;
+}
+
+export const Pricing = ({ plan, isLoading }: PricingProps) => {
   const currentUsage = 45;
-  const [period, setPeriod] = useState("monthly");
+  const [period, setPeriod] = useState<SubscriptionPeriod>("monthly");
   const [contributors, setContributors] = useState(currentUsage);
+
+  if (isLoading) {
+    return (
+      <Stack>
+        <Skeleton h={40} w={196} mx="auto"></Skeleton>
+        <Box mt="lg">
+          <Skeleton h={57} />
+        </Box>
+        <Group justify="space-between">
+          <Skeleton h={344} w={342} radius="md" />
+          <Skeleton h={344} w={342} radius="md" />
+        </Group>
+        <Skeleton h={151} mt="lg" radius="md" />
+      </Stack>
+    );
+  }
 
   return (
     <>
       <Stack>
         <SegmentedControl
           radius="xl"
-          color="gray.4"
+          color="dark.6"
           autoContrast
           mx="auto"
           value={period}
-          onChange={setPeriod}
+          onChange={(value: string) => setPeriod(value as SubscriptionPeriod)}
           data={[
             {
               value: "monthly",
@@ -59,7 +85,7 @@ export const Pricing = () => {
             )}
             {contributors < currentUsage && (
               <Text fw={600} fz="sm" c="red">
-                You can't subscribe for less seats than your current usage.
+                You can&apos;t subscribe for less seats than your current usage.
               </Text>
             )}
             {contributors > currentUsage && (
@@ -72,10 +98,10 @@ export const Pricing = () => {
             mt={4}
             label={null}
             defaultValue={currentUsage}
-            max={150}
-            min={1}
+            max={100}
+            min={5}
             onChange={setContributors}
-            color="gray.4"
+            color="dark.2"
             marks={[
               {
                 value: currentUsage,
@@ -89,6 +115,7 @@ export const Pricing = () => {
             price={49}
             period={period}
             contributors={contributors}
+            plan={plan}
             disabled={contributors < currentUsage}
           />
           <CardEnterprise />

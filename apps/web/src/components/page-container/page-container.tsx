@@ -3,11 +3,17 @@ import type { ReactNode } from "react";
 
 interface PageContainerProps {
   children?: ReactNode;
+  pt?: number;
+  pb?: number;
 }
 
-export const PageContainer = ({ children }: PageContainerProps) => {
+export const PageContainer = ({
+  children,
+  pt = 48,
+  pb = 48,
+}: PageContainerProps) => {
   return (
-    <Container pt={48} pb={48}>
+    <Container pt={pt} pb={pb}>
       {children}
     </Container>
   );

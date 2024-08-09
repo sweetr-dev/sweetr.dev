@@ -1,0 +1,11 @@
+.alert {
+  color: var(--mantine-color-violet-light-color);
+  background: var(--mantine-color-violet-light);
+  border-radius: var(--mantine-radius-default);
+}
+
+.alert-warning {
+  color: var(--mantine-color-yellow-light-color);
+  background: var(--mantine-color-yellow-light);
+  border-radius: var(--mantine-radius-default);
+}

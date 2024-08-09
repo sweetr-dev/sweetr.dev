@@ -1,10 +1,23 @@
-import { Box, Button, Group, Paper, Title, Text } from "@mantine/core";
+import { Box, Title } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
 import { Pricing } from "./components/pricing";
-import { IconExternalLink } from "@tabler/icons-react";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { usePurchasablePlansQuery } from "../../../api/billing.api";
+import { CardCustomerPortal } from "./components/card-customer-portal";
 
 export const BillingPage = () => {
+  const { workspace } = useWorkspace();
+
+  const { data, isLoading } = usePurchasablePlansQuery(
+    {
+      workspaceId: workspace.id,
+    },
+    { enabled: !workspace.billing?.subscription?.isActive },
+  );
+
+  const plans = data?.workspace.billing?.purchasablePlans;
+
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Settings" }, { label: "Billing" }]} />
@@ -13,25 +26,9 @@ export const BillingPage = () => {
           Billing
         </Title>
 
-        <Pricing />
+        {plans && <Pricing plan={plans.cloud} isLoading={isLoading} />}
 
-        <Paper mt="xs" p="md" withBorder>
-          <Group justify="space-between">
-            <Box flex="1 1">
-              <Title order={5}>Customer Portal</Title>
-              <Text c="dimmed" size="sm" display="flex">
-                Manage your subscriptions, payment methods and invoices.
-              </Text>
-            </Box>
-
-            <Button
-              variant="outline"
-              rightSection={<IconExternalLink stroke={1.5} size={16} />}
-            >
-              Stripe
-            </Button>
-          </Group>
-        </Paper>
+        {workspace.billing?.subscription && <CardCustomerPortal />}
       </Box>
     </PageContainer>
   );

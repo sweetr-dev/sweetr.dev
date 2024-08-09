@@ -6,9 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgres"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider          = "postgres"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  relationMode      = "prisma"
 }
 
 enum GitProvider {
@@ -150,9 +151,11 @@ model Workspace {
   PullRequestTracking PullRequestTracking[]
   PullRequest         PullRequest[]
   TeamMember          TeamMember[]
+  subscription        Subscription?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  trialEndAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -163,6 +166,25 @@ model Workspace {
 // |- Add workspaceId in all tables below to ensure query performance and data isolation.
 // |- When adding new models, create a migration to activate RLS for the new tables.
 // ---------------------------------------------------------------------------------------
+
+model Subscription {
+  id Int @id @default(autoincrement())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int       @unique
+
+  // Stripe data
+  customerId         String
+  subscriptionId     String   @unique
+  priceId            String
+  status             String
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  object             Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
 
 model Installation {
   id Int @id @default(autoincrement())

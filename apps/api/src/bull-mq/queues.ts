@@ -22,7 +22,6 @@ export enum SweetQueue {
 
   // Stripe
   STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
-  STRIPE_SUBSCRIPTION_REPORT_USAGE = "{stripe.subscription.report_usage}",
 
   // Automations
   AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",

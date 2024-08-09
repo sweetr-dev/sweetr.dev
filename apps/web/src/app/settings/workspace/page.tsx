@@ -7,7 +7,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconUser } from "@tabler/icons-react";
+import { IconExternalLink, IconUser } from "@tabler/icons-react";
 import { AvatarUser } from "../../../components/avatar-user";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { useWorkspace } from "../../../providers/workspace.provider";
@@ -49,7 +49,7 @@ export const WorkspaceSettingsPage = () => {
 
         <Paper mt="xs" p="md" withBorder>
           <Group justify="space-between" wrap="nowrap">
-            <Box>
+            <Box flex="1 1">
               <Title order={5}>Delete workspace</Title>
               <Text c="dimmed" size="sm">
                 Uninstall the app from your GitHub organization to remove all
@@ -63,6 +63,7 @@ export const WorkspaceSettingsPage = () => {
               component="a"
               href={workspace.gitUninstallUrl}
               target="_blank"
+              rightSection={<IconExternalLink stroke={1.5} size={16} />}
             >
               Uninstall App
             </Button>

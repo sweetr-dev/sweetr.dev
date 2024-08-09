@@ -160,7 +160,7 @@ const upsertWorkspace = async (
 const createWorkspaceDefaultAutomationSettings = async (
   workspace: Workspace
 ) => {
-  const automations = await getPrisma().automation.findMany({
+  const automations = await getPrisma(workspace.id).automation.findMany({
     where: { available: true },
   });
 

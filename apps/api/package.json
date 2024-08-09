@@ -18,7 +18,8 @@
     "prisma:reset": "prisma db push --force-reset",
     "prisma:format": "prisma format",
     "prisma:studio": "prisma studio",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "prisma:migrate:new": "prisma migrate dev --create-only --name"
   },
   "prisma": {
     "seed": "tsx prisma/seed/run-seeder.ts"

@@ -1,9 +1,12 @@
 import {
+  differenceInDays,
   formatDistanceToNow,
   formatDuration,
   intervalToDuration,
+  isPast,
   parseISO,
 } from "date-fns";
+import { ParseOptions } from "graphql";
 
 export const msToHour = 1000 * 60 * 60;
 
@@ -23,3 +26,9 @@ export const formatMsDuration = (durationInMs: number, format?: string[]) => {
 export const parseNullableISO = (
   date: string | null | undefined,
 ): Date | undefined => (date ? parseISO(date) : undefined);
+
+export const getDaysLeft = (until: Date) => {
+  if (isPast(until)) return null;
+
+  return Math.max(0, differenceInDays(until, new Date()));
+};

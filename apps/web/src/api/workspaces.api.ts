@@ -6,7 +6,6 @@ import {
   UserWorkspacesQueryVariables,
   QueryWorkspaceByInstallationIdArgs,
   WorkspaceByInstallationIdQuery,
-  WorkspaceAutomationQuery,
   WorkspaceSyncProgressQuery,
   WorkspaceSyncProgressQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
@@ -32,6 +31,14 @@ export const userWorkspacesQuery = (
               name
               avatar
               email
+            }
+            billing {
+              trial {
+                endAt
+              }
+              subscription {
+                isActive
+              }
             }
           }
         }

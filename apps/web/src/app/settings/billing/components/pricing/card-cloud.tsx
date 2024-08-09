@@ -9,12 +9,19 @@ import {
   Divider,
 } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { SubscriptionPeriod } from "./types";
+import { useState } from "react";
 
 interface CardCloudProps {
   price: number;
-  period: string;
+  period: SubscriptionPeriod;
   contributors: number;
   disabled: boolean;
+  plan: {
+    monthly: string;
+    yearly: string;
+  };
 }
 
 export const CardCloud = ({
@@ -22,10 +29,13 @@ export const CardCloud = ({
   period,
   contributors,
   disabled,
+  plan,
 }: CardCloudProps) => {
+  const { workspace } = useWorkspace();
   const discount = period === "yearly" ? 0.8 : 1;
   const pricePerExtraContributor = 7 * discount;
   const extraContributors = Math.max(contributors - 5, 0);
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   return (
     <Paper withBorder flex="1 1" radius="md">
@@ -50,7 +60,7 @@ export const CardCloud = ({
           size="sm"
           mt="lg"
           icon={
-            <ThemeIcon color="dark.4" size={20} radius="xl">
+            <ThemeIcon color="dark.6" size={20} radius="xl">
               <IconChevronRight size={16} />
             </ThemeIcon>
           }
@@ -65,9 +75,25 @@ export const CardCloud = ({
           <List.Item>All features included</List.Item>
         </List>
 
-        <Button mt="lg" fullWidth color="green.6" disabled={disabled}>
-          Subscribe
-        </Button>
+        <form
+          method="POST"
+          action={`${import.meta.env.VITE_GRAPHQL_API}/stripe/checkout`}
+          onSubmit={() => setIsSubscribing(true)}
+        >
+          <input type="hidden" name="quantity" value={contributors} />
+          <input type="hidden" name="workspaceId" value={workspace.id} />
+          <input type="hidden" name="key" value={plan[period]} />
+          <Button
+            type="submit"
+            mt="lg"
+            fullWidth
+            color="green.6"
+            disabled={disabled}
+            loading={isSubscribing}
+          >
+            Subscribe
+          </Button>
+        </form>
       </Stack>
     </Paper>
   );

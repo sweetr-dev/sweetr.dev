@@ -14,7 +14,8 @@ type WorkspaceWithUserOrOrganization = Workspace & {
   organization: Organization | null;
 };
 
-export const findWorkspaceByid = (workspaceId: number) => {
+export const findWorkspaceByIdOrThrow = (workspaceId: number) => {
+  // https://www.prisma.io/docs/orm/prisma-client/queries/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prisma-clients-dataloader
   return getPrisma(workspaceId).workspace.findUniqueOrThrow({
     where: { id: workspaceId },
     include: {

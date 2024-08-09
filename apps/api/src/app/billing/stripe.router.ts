@@ -1,20 +1,27 @@
-import { Router } from "express";
+import { Router, urlencoded } from "express";
 import { catchErrors } from "../../lib/express-helpers";
 import { getStripeClient } from "../../lib/stripe";
 import { env } from "../../env";
-import { enqueueStripeWebhook } from "./services/stripe-webhook.service";
+import {
+  createStripeCheckoutSession,
+  enqueueStripeWebhook,
+} from "./services/stripe.service";
 import { captureException } from "../../lib/sentry";
+import { InputValidationException } from "../errors/exceptions/input-validation.exception";
+import { z } from "zod";
+import { decodeId } from "../../lib/hash-id";
+import { ResourceNotFoundException } from "../errors/exceptions/resource-not-found.exception";
 
-export const githubRouter = Router();
+export const stripeRouter = Router();
 
-githubRouter.post(
-  "/stripe",
+stripeRouter.post(
+  "/stripe/webhook",
   catchErrors(async (req, res) => {
     const signature = req.get("Stripe-Signature");
 
     try {
       const event = getStripeClient().webhooks.constructEvent(
-        req.body,
+        req.rawBody,
         signature,
         env.STRIPE_WEBHOOK_SECRET
       );
@@ -27,5 +34,33 @@ githubRouter.post(
 
       return res.status(400).send(`Webhook Error: ${error.message}`);
     }
+  })
+);
+
+stripeRouter.post(
+  "/stripe/checkout",
+  urlencoded({ extended: true }),
+  catchErrors(async (req, res) => {
+    const schema = z.object({
+      key: z.string(),
+      quantity: z.string(),
+      workspaceId: z.string(),
+    });
+
+    const parsed = schema.safeParse(req.body);
+
+    if (!parsed.success) {
+      throw new InputValidationException();
+    }
+
+    const { key, quantity, workspaceId } = parsed.data;
+
+    const session = await createStripeCheckoutSession({
+      key,
+      quantity: parseInt(quantity),
+      workspaceId: decodeId(workspaceId),
+    });
+
+    res.redirect(303, session.url);
   })
 );
