@@ -1,10 +1,11 @@
 import { Subscription } from "@prisma/client";
-import { getPrisma } from "../../../prisma";
+import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { logger } from "../../../lib/logger";
 import { findWorkspaceByIdOrThrow } from "../../workspaces/services/workspace.service";
 import { getStripeSubscription } from "./stripe.service";
-import { subDays } from "date-fns";
+import { startOfDay, subDays } from "date-fns";
+import { getStripeClient } from "../../../lib/stripe";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findFirst({
@@ -15,12 +16,42 @@ export const findSubscription = (workspaceId: number) => {
   });
 };
 
+export const findActiveSubscriptions = () => {
+  return getBypassRlsPrisma().subscription.findMany({
+    where: {
+      status: "active",
+    },
+    include: {
+      workspace: true,
+    },
+  });
+};
+
 export const isSubscriptionActive = (subscription: Subscription) => {
   return subscription.status === "active";
 };
 
+export const syncSubscriptionQuantity = async (subscription: Subscription) => {
+  const contributors = await countContributors(subscription.workspaceId);
+
+  if (contributors !== subscription.quantity) {
+    const stripeSubscription = JSON.parse(subscription.object as string);
+    const item = stripeSubscription.items.data.at(0);
+
+    if (!item) {
+      throw new BusinessRuleException("Stripe subscription has no item", {
+        extra: { subscription },
+      });
+    }
+
+    await getStripeClient().subscriptionItems.update(item.id, {
+      quantity: contributors,
+    });
+  }
+};
+
 export const countContributors = (workspaceId: number) => {
-  const thirtyDaysAgo = subDays(new Date(), 30);
+  const sinceDate = startOfDay(subDays(new Date(), 30));
 
   return getPrisma(workspaceId).workspaceMembership.count({
     where: {
@@ -31,7 +62,7 @@ export const countContributors = (workspaceId: number) => {
             codeReviews: {
               some: {
                 createdAt: {
-                  gte: thirtyDaysAgo,
+                  gte: sinceDate,
                 },
               },
             },
@@ -40,7 +71,7 @@ export const countContributors = (workspaceId: number) => {
             pullRequests: {
               some: {
                 createdAt: {
-                  gte: thirtyDaysAgo,
+                  gte: sinceDate,
                 },
               },
             },
@@ -60,18 +91,25 @@ export const syncSubscriptionWithStripe = async (subscriptionId: string) => {
     parseInt(subscription.metadata.workspaceId)
   );
 
-  const priceId = subscription.items.data.at(0)?.plan.id;
+  const item = subscription.items.data.at(0);
 
-  if (!priceId) {
-    throw new BusinessRuleException("[Stripe] Missing priceId");
+  if (!item) {
+    throw new BusinessRuleException("[Stripe] Missing item");
+  }
+
+  if (!item.quantity) {
+    throw new BusinessRuleException("[Stripe] Missing item quantity");
   }
 
   const data = {
     workspaceId: workspace.id,
-    priceId,
+    priceId: item.plan.id,
     subscriptionId: subscription.id,
     customerId: subscription.customer as string,
     status: subscription.status,
+    interval: item.plan.interval,
+    quantity: item.quantity,
+    startedAt: new Date(subscription.start_date * 1000),
     currentPeriodStart: new Date(subscription.current_period_start * 1000),
     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
     object: JSON.stringify(subscription),

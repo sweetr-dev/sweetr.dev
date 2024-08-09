@@ -15,6 +15,7 @@ import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
 import { octokit } from "../../../lib/octokit";
 import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
+import { addDays, endOfDay } from "date-fns";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -132,6 +133,7 @@ const upsertWorkspace = async (
       create: {
         organizationId: organization.id,
         gitProvider: GitProvider.GITHUB,
+        trialEndAt: endOfDay(addDays(new Date(), 14)),
       },
       update: {},
       include: {

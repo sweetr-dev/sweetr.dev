@@ -9,8 +9,11 @@ CREATE TABLE "Subscription" (
     "subscriptionId" TEXT NOT NULL,
     "priceId" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "interval" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
     "currentPeriodStart" TIMESTAMP(3) NOT NULL,
     "currentPeriodEnd" TIMESTAMP(3) NOT NULL,
+    "startedAt" TIMESTAMP(3) NOT NULL,
     "object" JSONB NOT NULL,
 
     CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")

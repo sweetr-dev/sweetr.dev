@@ -38,11 +38,7 @@ export const createStripeCustomerPortalSession = async (
     },
   });
 
-  console.log("no sub", workspace);
-
   if (!workspace?.subscription) return null;
-
-  console.log("creating session");
 
   const session = await getStripeClient().billingPortal.sessions.create({
     customer: workspace.subscription.customerId,

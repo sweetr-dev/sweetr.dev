@@ -178,8 +178,11 @@ model Subscription {
   subscriptionId     String   @unique
   priceId            String
   status             String
+  interval           String
+  quantity           Int
   currentPeriodStart DateTime
   currentPeriodEnd   DateTime
+  startedAt          DateTime
   object             Json
 
   createdAt DateTime @default(now())
