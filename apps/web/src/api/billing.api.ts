@@ -9,20 +9,20 @@ import { graphQLClient } from "./clients/graphql-client";
 import {
   LoginToStripeMutation,
   LoginToStripeMutationVariables,
-  PurchasablePlansQuery,
-  PurchasablePlansQueryVariables,
+  BillingQuery,
+  BillingQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
 
-export const usePurchasablePlansQuery = (
-  args: PurchasablePlansQueryVariables,
-  options?: Partial<UseQueryOptions<PurchasablePlansQuery>>,
+export const useBillingQuery = (
+  args: BillingQueryVariables,
+  options?: Partial<UseQueryOptions<BillingQuery>>,
 ) =>
   useQuery({
     queryKey: ["workspace", args.workspaceId, "purchasable-plans"],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
-          query PurchasablePlans($workspaceId: SweetID!) {
+          query Billing($workspaceId: SweetID!) {
             workspace(workspaceId: $workspaceId) {
               billing {
                 purchasablePlans {
@@ -31,6 +31,7 @@ export const usePurchasablePlansQuery = (
                     yearly
                   }
                 }
+                estimatedSeats
               }
             }
           }

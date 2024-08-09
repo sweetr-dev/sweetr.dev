@@ -20,6 +20,8 @@ export default /* GraphQL */ `
     trial: Trial
     subscription: Subscription
     purchasablePlans: PurchasablePlans
+    "The number of contributors the workspace had in the last 30 days"
+    estimatedSeats: Int!
   }
 
   extend type Workspace {

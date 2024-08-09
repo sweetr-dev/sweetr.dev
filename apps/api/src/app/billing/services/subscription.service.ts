@@ -4,6 +4,7 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { logger } from "../../../lib/logger";
 import { findWorkspaceByIdOrThrow } from "../../workspaces/services/workspace.service";
 import { getStripeSubscription } from "./stripe.service";
+import { subDays } from "date-fns";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findFirst({
@@ -16,6 +17,38 @@ export const findSubscription = (workspaceId: number) => {
 
 export const isSubscriptionActive = (subscription: Subscription) => {
   return subscription.status === "active";
+};
+
+export const countContributors = (workspaceId: number) => {
+  const thirtyDaysAgo = subDays(new Date(), 30);
+
+  return getPrisma(workspaceId).workspaceMembership.count({
+    where: {
+      workspaceId,
+      gitProfile: {
+        OR: [
+          {
+            codeReviews: {
+              some: {
+                createdAt: {
+                  gte: thirtyDaysAgo,
+                },
+              },
+            },
+          },
+          {
+            pullRequests: {
+              some: {
+                createdAt: {
+                  gte: thirtyDaysAgo,
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
 };
 
 export const syncSubscriptionWithStripe = async (subscriptionId: string) => {

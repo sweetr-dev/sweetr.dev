@@ -86,6 +86,8 @@ export enum AutomationSlug {
 
 export type Billing = {
   __typename?: 'Billing';
+  /** The number of contributors the workspace had in the last 30 days */
+  estimatedSeats: Scalars['Int']['output'];
   purchasablePlans?: Maybe<PurchasablePlans>;
   subscription?: Maybe<Subscription>;
   trial?: Maybe<Trial>;
@@ -808,6 +810,7 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type BillingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Billing'] = ResolversParentTypes['Billing']> = {
+  estimatedSeats?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   purchasablePlans?: Resolver<Maybe<ResolversTypes['PurchasablePlans']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType>;
   trial?: Resolver<Maybe<ResolversTypes['Trial']>, ParentType, ContextType>;

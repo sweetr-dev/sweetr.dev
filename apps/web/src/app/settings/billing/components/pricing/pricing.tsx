@@ -21,13 +21,16 @@ interface PricingProps {
     monthly: string;
     yearly: string;
   };
+  currentUsage: number;
   isLoading: boolean;
 }
 
-export const Pricing = ({ plan, isLoading }: PricingProps) => {
-  const currentUsage = 45;
+export const Pricing = ({ plan, isLoading, currentUsage }: PricingProps) => {
+  const max = 100;
   const [period, setPeriod] = useState<SubscriptionPeriod>("monthly");
-  const [contributors, setContributors] = useState(currentUsage);
+  const [contributors, setContributors] = useState(
+    currentUsage < 5 ? 10 : currentUsage,
+  );
 
   if (isLoading) {
     return (
@@ -37,8 +40,8 @@ export const Pricing = ({ plan, isLoading }: PricingProps) => {
           <Skeleton h={57} />
         </Box>
         <Group justify="space-between">
-          <Skeleton h={344} w={342} radius="md" />
-          <Skeleton h={344} w={342} radius="md" />
+          <Skeleton h={333} w={342} radius="md" />
+          <Skeleton h={333} w={342} radius="md" />
         </Group>
         <Skeleton h={151} mt="lg" radius="md" />
       </Stack>
@@ -78,36 +81,50 @@ export const Pricing = ({ plan, isLoading }: PricingProps) => {
             <Text component="span" fw={700} c="white" fz="sm">
               {contributors} contributors
             </Text>
-            {contributors === currentUsage && (
-              <Text fw={600} fz="sm" c="green">
-                Fits your current usage.
-              </Text>
+            {currentUsage > 5 && (
+              <>
+                {contributors === currentUsage && (
+                  <Text fw={600} fz="sm" c="green">
+                    Fits your current usage.
+                  </Text>
+                )}
+                {contributors < currentUsage && (
+                  <Text fw={600} fz="sm" c="red">
+                    You can&apos;t subscribe for less seats than your current
+                    usage.
+                  </Text>
+                )}
+                {contributors > currentUsage && contributors < max && (
+                  <Text fw={600} fz="sm" c="orange.3">
+                    This is more than you need, based on your current usage.
+                  </Text>
+                )}
+              </>
             )}
-            {contributors < currentUsage && (
-              <Text fw={600} fz="sm" c="red">
-                You can&apos;t subscribe for less seats than your current usage.
-              </Text>
-            )}
-            {contributors > currentUsage && (
+            {contributors >= max && (
               <Text fw={600} fz="sm" c="orange.3">
-                This is more than you need, based on your current usage.
+                Contact us for an enterprise plan.
               </Text>
             )}
           </Group>
           <Slider
             mt={4}
             label={null}
-            defaultValue={currentUsage}
-            max={100}
+            defaultValue={Math.max(10, currentUsage)}
+            max={max}
             min={5}
             onChange={setContributors}
             color="dark.2"
-            marks={[
-              {
-                value: currentUsage,
-                label: <IconChevronUp stroke={1} color="#40c057" />,
-              },
-            ]}
+            marks={
+              currentUsage > 5
+                ? [
+                    {
+                      value: currentUsage,
+                      label: <IconChevronUp stroke={1} color="#40c057" />,
+                    },
+                  ]
+                : undefined
+            }
           />
         </Box>
         <Group>

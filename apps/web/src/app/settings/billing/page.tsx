@@ -3,20 +3,20 @@ import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
 import { Pricing } from "./components/pricing";
 import { useWorkspace } from "../../../providers/workspace.provider";
-import { usePurchasablePlansQuery } from "../../../api/billing.api";
+import { useBillingQuery } from "../../../api/billing.api";
 import { CardCustomerPortal } from "./components/card-customer-portal";
 
 export const BillingPage = () => {
   const { workspace } = useWorkspace();
 
-  const { data, isLoading } = usePurchasablePlansQuery(
+  const { data, isLoading } = useBillingQuery(
     {
       workspaceId: workspace.id,
     },
     { enabled: !workspace.billing?.subscription?.isActive },
   );
 
-  const plans = data?.workspace.billing?.purchasablePlans;
+  const billing = data?.workspace.billing;
 
   return (
     <PageContainer>
@@ -26,7 +26,13 @@ export const BillingPage = () => {
           Billing
         </Title>
 
-        {plans && <Pricing plan={plans.cloud} isLoading={isLoading} />}
+        {billing?.purchasablePlans && (
+          <Pricing
+            plan={billing.purchasablePlans?.cloud}
+            currentUsage={billing.estimatedSeats}
+            isLoading={isLoading}
+          />
+        )}
 
         {workspace.billing?.subscription && <CardCustomerPortal />}
       </Box>

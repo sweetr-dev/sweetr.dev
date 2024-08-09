@@ -34,7 +34,10 @@ export const CardCloud = ({
   const { workspace } = useWorkspace();
   const discount = period === "yearly" ? 0.8 : 1;
   const pricePerExtraContributor = 7 * discount;
+  const discountedPrice = price * discount;
   const extraContributors = Math.max(contributors - 5, 0);
+  const totalPrice =
+    discountedPrice + extraContributors * pricePerExtraContributor;
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   return (
@@ -43,14 +46,8 @@ export const CardCloud = ({
         <Title c="green.3" order={4}>
           Cloud
         </Title>
-        <Title order={1} fz="h1" mt="xs">
-          <span style={{ color: "#fff" }}>
-            $
-            {(
-              price * discount +
-              extraContributors * pricePerExtraContributor
-            ).toFixed(2)}
-          </span>
+        <Title order={1} fz="h2" mt="xs" c="dimmed">
+          <span style={{ color: "#fff" }}>${totalPrice.toFixed(2)}</span>
           /mo
         </Title>
         <Text fz="sm">Billed {period}</Text>
@@ -66,7 +63,7 @@ export const CardCloud = ({
           }
         >
           <List.Item>
-            {Math.floor(price * discount)}$ for first 5 contributors
+            {Math.floor(discountedPrice)}$ for first 5 contributors
           </List.Item>
           <List.Item>
             {pricePerExtraContributor.toFixed(2)}$ per extra contributor

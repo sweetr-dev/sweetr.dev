@@ -20,7 +20,7 @@ export const CardEnterprise = () => {
         <Title c="green.3" order={4}>
           Enterprise
         </Title>
-        <Title order={1} fz="h1" c="white" mt="xs">
+        <Title order={1} fz="h2" c="white" mt="xs">
           Contact Us
         </Title>
         <Text fz="sm"> Billed yearly</Text>

@@ -27,7 +27,7 @@ export const Faq = () => {
       <Accordion.Item value="discount">
         <Accordion.Control
           icon={
-            <ThemeIcon variant="light" color="violet">
+            <ThemeIcon variant="light" color="green">
               <IconCurrencyDollar size={20} />
             </ThemeIcon>
           }
@@ -43,7 +43,7 @@ export const Faq = () => {
       <Accordion.Item value="camera">
         <Accordion.Control
           icon={
-            <ThemeIcon variant="light" color="green">
+            <ThemeIcon variant="light" color="violet">
               <IconShield size={20} />
             </ThemeIcon>
           }
