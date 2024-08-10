@@ -9,6 +9,7 @@ import { FC } from "react";
 import { WorkspaceData, useAppStore } from "../../providers/app.provider";
 import { AccountSwitcherItem } from "./workspace-switcher-item";
 import { showInfoNotification } from "../../providers/notification.provider";
+import { cleanNotifications } from "@mantine/notifications";
 
 interface WorkspaceSwitcherProps extends ComboboxProps {
   workspaces: WorkspaceData[];
@@ -40,6 +41,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
           return;
         }
 
+        cleanNotifications();
         setWorkspace(workspace);
 
         showInfoNotification({

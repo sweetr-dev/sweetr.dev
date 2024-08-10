@@ -98,6 +98,12 @@ export const env = envsafe({
   RESEND_API_KEY: str({
     desc: "The API Key for Resend.",
   }),
+  APP_MODE: str({
+    desc: "Whether the application is being self-hosted",
+    choices: ["self-hosted", "saas"],
+    default: "self-hosted",
+    devDefault: "self-hosted",
+  }),
 });
 
 export const isDev = env.APP_ENV === "development";

@@ -5,7 +5,7 @@ import { ResourceNotFoundException } from "../../../errors/exceptions/resource-n
 import {
   findUserWorkspaces,
   findWorkspaceByGitInstallationId,
-  findWorkspaceByIdOrThrow,
+  findWorkspaceById,
 } from "../../services/workspace.service";
 import { transformWorkspace } from "../transformers/workspace.transformer";
 
@@ -13,7 +13,7 @@ export const workspaceQuery = createQueryResolver({
   workspace: async (_, input, context) => {
     logger.info("query.workspace", { input });
 
-    const workspace = await findWorkspaceByIdOrThrow(input.workspaceId);
+    const workspace = await findWorkspaceById(input.workspaceId);
 
     if (!workspace) {
       throw new ResourceNotFoundException("Workspace not found", {

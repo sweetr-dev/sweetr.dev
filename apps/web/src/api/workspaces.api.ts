@@ -40,6 +40,7 @@ export const userWorkspacesQuery = (
                 isActive
               }
             }
+            isActiveCustomer
           }
         }
       `),

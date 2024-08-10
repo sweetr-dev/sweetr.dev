@@ -527,6 +527,8 @@ export type Workspace = {
   id: Scalars['SweetID']['output'];
   /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
   initialSyncProgress: Scalars['Int']['output'];
+  /** Whether the workspace should have access to the dashboard */
+  isActiveCustomer: Scalars['Boolean']['output'];
   me?: Maybe<Person>;
   name: Scalars['String']['output'];
   people: Array<Person>;
@@ -1029,6 +1031,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   people?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType, Partial<WorkspacePeopleArgs>>;

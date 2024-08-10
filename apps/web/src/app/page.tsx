@@ -10,12 +10,20 @@ interface AppProps {
 
 export const AppPage = ({ children }: AppProps) => {
   const { workspace } = useAppStore();
-  usePaywall();
+  const { shouldShowPaywall, goToPaywall, showPaywallNotification } =
+    usePaywall();
+
+  if (shouldShowPaywall) {
+    showPaywallNotification();
+    return goToPaywall();
+  }
 
   return (
     <>
       {workspace && <AppSpotlight workspaceId={workspace.id} />}
-      <AppShell>{children ? children : <Outlet />}</AppShell>
+      <AppShell key={workspace?.id}>
+        {children ? children : <Outlet />}
+      </AppShell>
     </>
   );
 };

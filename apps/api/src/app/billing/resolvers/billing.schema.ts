@@ -26,6 +26,9 @@ export default /* GraphQL */ `
 
   extend type Workspace {
     billing: Billing
+
+    "Whether the workspace should have access to the dashboard"
+    isActiveCustomer: Boolean!
   }
 
   input LoginToStripeInput {

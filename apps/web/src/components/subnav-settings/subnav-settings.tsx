@@ -40,14 +40,16 @@ export const SubnavSettings = () => {
         label="Workspace"
         leftSection={<IconBuildingCommunity stroke={1.5} size={18} />}
       />
-      <NavLink
-        to="/settings/billing"
-        active={pathname === "/settings/billing"}
-        component={Link}
-        style={{ borderRadius: 4 }}
-        label="Billing"
-        leftSection={<IconCash stroke={1.5} size={18} />}
-      />
+      {workspace.billing && (
+        <NavLink
+          to="/settings/billing"
+          active={pathname === "/settings/billing"}
+          component={Link}
+          style={{ borderRadius: 4 }}
+          label="Billing"
+          leftSection={<IconCash stroke={1.5} size={18} />}
+        />
+      )}
       <NavLink
         to="#"
         component={Link}

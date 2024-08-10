@@ -1,14 +1,16 @@
-import { Subscription } from "@prisma/client";
+import { Subscription, Workspace } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { logger } from "../../../lib/logger";
-import { findWorkspaceByIdOrThrow } from "../../workspaces/services/workspace.service";
+import { findWorkspaceById } from "../../workspaces/services/workspace.service";
 import { getStripeSubscription } from "./stripe.service";
-import { startOfDay, subDays } from "date-fns";
+import { isPast, startOfDay, subDays } from "date-fns";
 import { getStripeClient } from "../../../lib/stripe";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { isAppSelfHosted } from "../../../lib/self-host";
 
 export const findSubscription = (workspaceId: number) => {
-  return getPrisma(workspaceId).subscription.findFirst({
+  return getPrisma(workspaceId).subscription.findUnique({
     where: { workspaceId },
     include: {
       workspace: true,
@@ -29,6 +31,33 @@ export const findActiveSubscriptions = () => {
 
 export const isSubscriptionActive = (subscription: Subscription) => {
   return subscription.status === "active";
+};
+
+export const isTrialExpired = (trialEndAt?: Date | null) => {
+  if (!trialEndAt) return false;
+
+  return isPast(trialEndAt);
+};
+
+export const isActiveCustomer = (
+  workspace: Workspace,
+  subscription?: Subscription | null
+) => {
+  if (isAppSelfHosted()) {
+    return true;
+  }
+
+  if (subscription && isSubscriptionActive(subscription)) {
+    return true;
+  }
+
+  if (isTrialExpired(workspace.trialEndAt)) {
+    return false;
+  }
+
+  // No trial + no subscription = active
+  // Allow us to give indefinite active accounts
+  return true;
 };
 
 export const syncSubscriptionQuantity = async (subscription: Subscription) => {
@@ -87,9 +116,13 @@ export const syncSubscriptionWithStripe = async (subscriptionId: string) => {
 
   const subscription = await getStripeSubscription(subscriptionId);
 
-  const workspace = await findWorkspaceByIdOrThrow(
+  const workspace = await findWorkspaceById(
     parseInt(subscription.metadata.workspaceId)
   );
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found");
+  }
 
   const item = subscription.items.data.at(0);
 

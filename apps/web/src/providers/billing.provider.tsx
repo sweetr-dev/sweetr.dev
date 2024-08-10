@@ -1,12 +1,15 @@
 import { parseISO } from "date-fns";
 import { getDaysLeft } from "./date.provider";
 import { useWorkspace } from "./workspace.provider";
-import { showWarningNotification } from "./notification.provider";
+import {
+  showWarningNotification,
+  useNotifications,
+} from "./notification.provider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { cleanNotifications, useNotifications } from "@mantine/notifications";
 import { Button } from "@mantine/core";
 import { useSupportChat } from "../components/navbar/use-support-chat";
+import { cleanNotifications } from "@mantine/notifications";
 
 export const useBilling = () => {
   const { workspace } = useWorkspace();
@@ -37,65 +40,61 @@ export const useTrial = () => {
 };
 
 export const usePaywall = () => {
-  const { hasInactiveSubscription } = useBilling();
-  const { hasActiveTrial } = useTrial();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { notifications } = useNotifications();
+  const { findNotification } = useNotifications();
   const { openChat } = useSupportChat();
+  const { hasInactiveSubscription } = useBilling();
+  const { workspace } = useWorkspace();
+  const shouldShowPaywall =
+    !workspace.isActiveCustomer && pathname != "/settings/billing";
 
-  useEffect(() => {
-    const shouldSeePaywall = hasInactiveSubscription || !hasActiveTrial;
+  const showPaywallNotification = () => {
+    if (findNotification("paywall").length > 0) return;
 
-    if (shouldSeePaywall && pathname != "/settings/billing") {
-      if (notifications.length === 0) {
-        const messages = {
-          trialEnded: {
-            title: "Your trial period has expired.",
-            message: "Please subscribe to continue using Sweetr.",
-          },
-          canceledSubscription: {
-            title: "Your subscription was canceled.",
-            message: "Please reach out to support to subscribe again.",
-          },
-        };
+    const messages = {
+      trialEnded: {
+        title: "Your trial period has expired.",
+        message: "Please subscribe to continue using Sweetr.",
+      },
+      canceledSubscription: {
+        title: "Your subscription was canceled.",
+        message: "Please reach out to support to subscribe again.",
+      },
+    };
 
-        showWarningNotification({
-          title: hasInactiveSubscription
-            ? messages.canceledSubscription.title
-            : messages.trialEnded.title,
-          message: (
-            <>
-              {hasInactiveSubscription
-                ? messages.canceledSubscription.message
-                : messages.trialEnded.message}
-              <Button
-                display="block"
-                mt="xs"
-                variant="default"
-                size="xs"
-                onClick={() => {
-                  cleanNotifications();
-                  openChat();
-                }}
-              >
-                Chat with support
-              </Button>
-            </>
-          ),
-          autoClose: false,
-          withCloseButton: false,
-        });
-      }
+    showWarningNotification({
+      key: "paywall",
+      title: hasInactiveSubscription
+        ? messages.canceledSubscription.title
+        : messages.trialEnded.title,
+      message: (
+        <>
+          {hasInactiveSubscription
+            ? messages.canceledSubscription.message
+            : messages.trialEnded.message}
+          <Button
+            display="block"
+            mt="xs"
+            variant="default"
+            size="xs"
+            onClick={() => {
+              cleanNotifications();
+              openChat();
+            }}
+          >
+            Chat with support
+          </Button>
+        </>
+      ),
+      autoClose: false,
+      withCloseButton: false,
+    });
+  };
 
-      navigate("/settings/billing");
-    }
-  }, [
-    pathname,
-    navigate,
-    hasInactiveSubscription,
-    hasActiveTrial,
-    notifications.length,
-    openChat,
-  ]);
+  return {
+    shouldShowPaywall,
+    showPaywallNotification,
+    goToPaywall: () => navigate("/settings/billing"),
+  };
 };
