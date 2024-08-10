@@ -1,8 +1,14 @@
-import { IconCheck, IconInfoCircle, IconX } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconInfoCircle,
+  IconX,
+} from "@tabler/icons-react";
 import { showNotification, NotificationData } from "@mantine/notifications";
+import { getThemeColor, useMantineTheme } from "@mantine/core";
 
 type Args = Omit<NotificationData, "message"> & {
-  message?: string;
+  message?: string | React.ReactNode;
 };
 
 export const showErrorNotification = (args: Args): void => {
@@ -23,6 +29,16 @@ export const showSuccessNotification = (args: Args): void => {
     withBorder: true,
     message: "",
     icon: <IconCheck stroke={1.5} />,
+    ...args,
+  });
+};
+
+export const showWarningNotification = (args: Args): void => {
+  showNotification({
+    title: "Warning",
+    color: "yellow",
+    withBorder: true,
+    message: "",
     ...args,
   });
 };

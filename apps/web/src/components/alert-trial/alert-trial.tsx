@@ -2,18 +2,17 @@ import { Box, BoxProps, Button, Group, Text } from "@mantine/core";
 import { IconAlertHexagon } from "@tabler/icons-react";
 import classes from "./alert-trial.module.css";
 import { Link } from "react-router-dom";
-import { useWorkspace } from "../../providers/workspace.provider";
-import { parseISO } from "date-fns";
-import { getDaysLeft } from "../../providers/date.provider";
+import { useBilling, useTrial } from "../../providers/billing.provider";
 
 interface AlertTrialProps extends BoxProps {}
 
 export const AlertTrial = ({ ...props }: AlertTrialProps) => {
-  const { workspace } = useWorkspace();
+  const { hasActiveSubscription } = useBilling();
+  const { trial, daysLeft } = useTrial();
 
-  if (!workspace.billing?.trial) return null;
-
-  const daysLeft = getDaysLeft(parseISO(workspace.billing.trial.endAt));
+  if (!trial || hasActiveSubscription) {
+    return null;
+  }
 
   if (daysLeft === null) return null;
 

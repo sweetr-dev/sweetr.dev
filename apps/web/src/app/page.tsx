@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { AppShell } from "../components/app-shell";
 import { AppSpotlight } from "../components/app-spotlight";
 import { useAppStore } from "../providers/app.provider";
+import { usePaywall } from "../providers/billing.provider";
 
 interface AppProps {
   children?: React.ReactElement;
@@ -9,6 +10,7 @@ interface AppProps {
 
 export const AppPage = ({ children }: AppProps) => {
   const { workspace } = useAppStore();
+  usePaywall();
 
   return (
     <>
