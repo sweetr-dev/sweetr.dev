@@ -1,6 +1,6 @@
 import { Subscription, Workspace } from "@prisma/client";
 import { Billing } from "@sweetr/graphql-types/dist/api";
-import { isSubscriptionActive } from "../../services/subscription.service";
+import { isSubscriptionActive } from "../../services/billing.service";
 
 export const transformBilling = (
   workspace: Workspace,

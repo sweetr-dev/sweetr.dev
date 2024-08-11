@@ -4,7 +4,7 @@ import { ResourceNotFoundException } from "../../../errors/exceptions/resource-n
 import { findPullRequestByCodeReviewId } from "../../services/pull-request.service";
 import { transformPullRequest } from "../transformers/pull-request.transformer";
 
-export const teamPullRequestsQuery = createFieldResolver("CodeReview", {
+export const codeReviewPullRequestsQuery = createFieldResolver("CodeReview", {
   pullRequest: async (codeReview) => {
     logger.info("query.pullRequests", { codeReview });
 

@@ -2,7 +2,7 @@ import { isProduction } from "../../../../env";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
-import { findSubscription } from "../../services/subscription.service";
+import { findSubscription } from "../../services/billing.service";
 
 export const purchasePlansQuery = createFieldResolver("Billing", {
   purchasablePlans: async (billing, _, context) => {

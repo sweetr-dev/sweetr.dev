@@ -8,6 +8,7 @@ import { isPast, startOfDay, subDays } from "date-fns";
 import { getStripeClient } from "../../../lib/stripe";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { isAppSelfHosted } from "../../../lib/self-host";
+import { SubscriptionRequiredException } from "../../errors/exceptions/subscription-required.exception";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findUnique({
@@ -155,4 +156,20 @@ export const syncSubscriptionWithStripe = async (subscriptionId: string) => {
     create: data,
     update: data,
   });
+};
+
+export const protectWithPaywall = async (workspaceId: number) => {
+  if (isAppSelfHosted()) return;
+
+  const workspace = await findWorkspaceById(workspaceId);
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found", {
+      extra: { workspaceId },
+    });
+  }
+
+  if (!isActiveCustomer(workspace, workspace.subscription)) {
+    throw new SubscriptionRequiredException();
+  }
 };

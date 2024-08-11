@@ -4,7 +4,7 @@ import { logger } from "../../../lib/logger";
 import {
   findActiveSubscriptions,
   syncSubscriptionQuantity,
-} from "../services/subscription.service";
+} from "../services/billing.service";
 
 export const cronUpdateSeatsWorker = createWorker(
   SweetQueue.CRON_STRIPE_UPDATE_SEATS,
