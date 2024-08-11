@@ -10,7 +10,6 @@ import { captureException } from "../../lib/sentry";
 import { InputValidationException } from "../errors/exceptions/input-validation.exception";
 import { z } from "zod";
 import { decodeId } from "../../lib/hash-id";
-import { ResourceNotFoundException } from "../errors/exceptions/resource-not-found.exception";
 
 export const stripeRouter = Router();
 
@@ -32,7 +31,7 @@ stripeRouter.post(
     } catch (error) {
       captureException(error);
 
-      return res.status(400).send(`Webhook Error: ${error.message}`);
+      return res.status(400).send("Webhook Error");
     }
   })
 );

@@ -4,7 +4,7 @@ import { ResourceNotFoundException } from "../../../errors/exceptions/resource-n
 import { createStripeCustomerPortalSession } from "../../services/stripe.service";
 
 export const loginToStripeMutation = createMutationResolver({
-  loginToStripe: async (_, { input }, context) => {
+  loginToStripe: async (_, { input }) => {
     logger.info("mutation.loginToStripe", {
       workspaceId: input.workspaceId,
     });

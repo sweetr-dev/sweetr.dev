@@ -14,7 +14,7 @@ export const archiveTeamMutation = createMutationResolver({
 
     return transformTeam(team);
   },
-  unarchiveTeam: async (_, { input }, context) => {
+  unarchiveTeam: async (_, { input }) => {
     logger.info("mutation.unarchiveTeam", { input });
 
     await protectWithPaywall(input.workspaceId);
