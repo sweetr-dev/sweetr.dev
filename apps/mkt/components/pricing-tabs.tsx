@@ -1,15 +1,27 @@
 import Tooltip from "@/components/tooltip";
 import Accordion from "@/components/accordion";
 import Link from "next/link";
-import { IconBook, IconBrandGithub } from "@tabler/icons-react";
+import { IconBrandGithub, IconMessage } from "@tabler/icons-react";
+import { Crisp } from "crisp-sdk-web";
+import { ButtonContactUs } from "./ui/button-contact-us";
 
 export default function PricingTabs() {
   const faqs = [
     {
+      title: "What is a contributor?",
+      text: (
+        <>
+          A contributor is anyone who has created or reviewed a Pull Request in
+          the last 30 days.
+        </>
+      ),
+      active: true,
+    },
+    {
       title: "Is my repository code safe?",
       text: (
         <>
-          Absolutely. Sweetr does not require access to your code. We follow
+          Absolutely. Sweetr does not have access to your code. We follow
           stringent security best practices to protect our servers and
           application.{" "}
           <a
@@ -23,6 +35,25 @@ export default function PricingTabs() {
         </>
       ),
       active: true,
+    },
+    {
+      title: "Is self-hosting available?",
+      text: (
+        <>
+          Yes! Self-hosting is free, forever. However, it comes with maintenance
+          and setup hurdles. We recommend the Cloud version unless you have hard
+          requirements to manage your own infrastructure.{" "}
+          <a
+            href="https://docs.sweetr.dev/get-started/self-host"
+            target="_blank"
+            className="text-green-400 underline"
+          >
+            Learn how to self-host
+          </a>
+          .
+        </>
+      ),
+      active: false,
     },
     {
       title: "Is training needed?",
@@ -105,7 +136,7 @@ export default function PricingTabs() {
               Pricing.
             </h2>
             <h3 className="text-lg text-dark-100">
-              Totally free while in beta. No credit card required.
+              No credit card required to get started. Self-host for free.
             </h3>
           </div>
 
@@ -115,24 +146,13 @@ export default function PricingTabs() {
               {/* Pricing tab `1` */}
               <div className="h-full">
                 <div className="relative flex flex-col h-full p-6 rounded-lg bg-dark-700 border border-green-400">
-                  {/* <Image
-                    className="absolute right-6 -top-5 mix-blend-exclusion"
-                    src={PricingDecoration}
-                    alt="Pricing decoration"
-                    width={76}
-                    height={74}
-                    aria-hidden="true"
-                  /> */}
                   <div className="mb-4">
                     <div className="text-lg text-zinc-200 font-semibold mb-1">
                       Cloud
                     </div>
                     <div className="font-inter-tight inline-flex items-baseline mb-2">
                       <div className="text-green-400 font-bold text-2xl">
-                        Free
-                        <span className="text-white font-medium text-lg ml-1">
-                          while on beta
-                        </span>
+                        Starts at 49$/mo
                       </div>
                     </div>
                     <div className="text-dark-100">
@@ -141,9 +161,54 @@ export default function PricingTabs() {
                   </div>
                   <div className="grow">
                     <div className="text-sm text-zinc-200 font-medium mb-4">
-                      Includes:
+                      Details:
                     </div>
                     <ul className="text-dark-100 text-sm space-y-3 grow">
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        5 contributors
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        7$ per extra contributor
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        20% discount on yearly plan
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        <Tooltip
+                          id="15"
+                          content="Sync and mantain historical data up to 1 year."
+                        >
+                          1 year data retention
+                        </Tooltip>
+                      </li>
                       <li className="flex items-center">
                         <svg
                           className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
@@ -157,48 +222,6 @@ export default function PricingTabs() {
                           content="Simplified plan with no feature-gating."
                         >
                           All features
-                        </Tooltip>
-                      </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip id="14" content="Sync all your GitHub users.">
-                          Unlimited users
-                        </Tooltip>
-                      </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip
-                          id="15"
-                          content="Sync all your GitHub repositories."
-                        >
-                          Unlimited repositories
-                        </Tooltip>
-                      </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip
-                          id="16"
-                          content="Sync all your GitHub pull requests."
-                        >
-                          Unlimited pull requests
                         </Tooltip>
                       </li>
                     </ul>
@@ -211,8 +234,8 @@ export default function PricingTabs() {
                       rel="nofollow"
                     >
                       <div className="flex items-center gap-2">
-                        <IconBrandGithub size={18} stroke={1.5} /> Try now -
-                        Connect to GitHub
+                        <IconBrandGithub size={18} stroke={1.5} /> Start 14-day
+                        trial
                       </div>
                     </a>
                   </div>
@@ -224,11 +247,11 @@ export default function PricingTabs() {
                 <div className="relative flex flex-col h-full p-6 rounded-lg border border-dark-400">
                   <div className="mb-4">
                     <div className="text-lg text-dark-100 font-semibold mb-1">
-                      Self-host
+                      Enterprise
                     </div>
                     <div className="font-inter-tight inline-flex items-baseline mb-2">
                       <span className="text-dark-100 font-bold text-2xl">
-                        Free forever
+                        Contact us
                       </span>
                     </div>
                     <div className="text-dark-100">
@@ -237,9 +260,64 @@ export default function PricingTabs() {
                   </div>
                   <div className="grow">
                     <div className="text-sm text-dark-100 font-medium mb-4">
-                      Includes:
+                      Details:
                     </div>
                     <ul className="text-dark-100 text-sm space-y-3 grow">
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        Unlimited contributors
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        <Tooltip
+                          id="14"
+                          content="Option to self-host our application."
+                        >
+                          On-premise supported
+                        </Tooltip>
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        <Tooltip
+                          id="15"
+                          content="Priority technical support for anything you need."
+                        >
+                          Dedicated support
+                        </Tooltip>
+                      </li>
+                      <li className="flex items-center">
+                        <svg
+                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
+                          viewBox="0 0 12 12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                        </svg>
+                        <Tooltip
+                          id="15"
+                          content="Sync and mantain historical data up to 3 years. Customizable to your needs."
+                        >
+                          3+ year data retention
+                        </Tooltip>
+                      </li>
                       <li className="flex items-center">
                         <svg
                           className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
@@ -255,60 +333,10 @@ export default function PricingTabs() {
                           All features
                         </Tooltip>
                       </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip id="14" content="Sync all your GitHub users.">
-                          Unlimited users
-                        </Tooltip>
-                      </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip
-                          id="15"
-                          content="Sync all your GitHub repositories."
-                        >
-                          Unlimited repositories
-                        </Tooltip>
-                      </li>
-                      <li className="flex items-center">
-                        <svg
-                          className="w-3 h-3 fill-emerald-500 mr-3 shrink-0"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                        </svg>
-                        <Tooltip
-                          id="16"
-                          content="Sync all your GitHub pull requests."
-                        >
-                          Unlimited pull requests
-                        </Tooltip>
-                      </li>
                     </ul>
                   </div>
                   <div className="mt-8">
-                    <a
-                      className="btn border border-dark-400  text-dark-100 w-full shadow"
-                      href="https://docs.sweetr.dev/welcome/getting-started"
-                      target="_blank"
-                    >
-                      <div className="flex items-center gap-2">
-                        <IconBook size={18} stroke={1.5} /> Documentation
-                      </div>
-                    </a>
+                    <ButtonContactUs />
                   </div>
                 </div>
               </div>

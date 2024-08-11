@@ -15,7 +15,7 @@ export default function Accordion({
   id,
   active = false,
 }: AccordionpProps) {
-  const [accordionOpen, setAccordionOpen] = useState<boolean>(false);
+  const [accordionOpen, setAccordionOpen] = useState<boolean>(active);
 
   useEffect(() => {
     setAccordionOpen(active);

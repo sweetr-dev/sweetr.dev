@@ -80,6 +80,16 @@ export default function Footer() {
                   Roadmap
                 </a>
               </li>
+              <li>
+                <a
+                  className="text-zinc-500 hover:text-dark-100 transition"
+                  href="https://status.sweetr.dev"
+                  target="_blank"
+                  rel="nofollow"
+                >
+                  System status
+                </a>
+              </li>
             </ul>
           </div>
 

@@ -6,7 +6,6 @@ import {
   isPast,
   parseISO,
 } from "date-fns";
-import { ParseOptions } from "graphql";
 
 export const msToHour = 1000 * 60 * 60;
 

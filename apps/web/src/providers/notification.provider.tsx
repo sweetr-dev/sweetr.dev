@@ -2,7 +2,6 @@ import { IconCheck, IconInfoCircle, IconX } from "@tabler/icons-react";
 import {
   showNotification,
   NotificationData,
-  cleanNotifications as mantineCleanNotifications,
   useNotifications as useMantineNotifications,
 } from "@mantine/notifications";
 

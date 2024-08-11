@@ -169,7 +169,10 @@ export default function FeaturesTraits() {
                     <p className="grow  text-sm text-dark-100">
                       Join our GitHub community to share feedback, report
                       problems or submit contributions.{" "}
-                      <Link href="#" className="text-green-400 underline">
+                      <Link
+                        href="https://github.com/orgs/sweetr-dev/discussions"
+                        className="text-green-400 underline"
+                      >
                         Learn more.
                       </Link>
                     </p>

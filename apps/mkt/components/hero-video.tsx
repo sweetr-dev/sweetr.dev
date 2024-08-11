@@ -23,24 +23,28 @@ import {
 export const HeroVideo = () => {
   const images = [
     Image1,
+    Image10,
+    Image4,
     Image2,
     Image3,
-    Image4,
     Image5,
     Image6,
     Image7,
     Image8,
     Image9,
-    Image10,
   ];
   const docs = [
     null,
-    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
-    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
+    {
+      label: "Code Reviews",
+      href: "https://docs.sweetr.dev/features/code-reviews",
+    },
     {
       label: "Pull Requests",
       href: "https://docs.sweetr.dev/features/pull-requests",
     },
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
     {
       label: "Team Insights",
       href: "https://docs.sweetr.dev/features/team/intro",
@@ -58,10 +62,6 @@ export const HeroVideo = () => {
       href: "https://docs.sweetr.dev/features/team/code-review-distribution",
     },
     { label: "People", href: "https://docs.sweetr.dev/features/people" },
-    {
-      label: "Code Reviews",
-      href: "https://docs.sweetr.dev/features/code-reviews",
-    },
   ];
   const [currentImage, setImage] = useState(0);
   const autoPlay = useRef(true);
@@ -129,13 +129,13 @@ export const HeroVideo = () => {
           quality={100}
           priority
         />
-        {docs[currentImage] && (
+        {docs?.[currentImage] && (
           <a
             href={docs[currentImage]?.href}
             target="_blank"
-            className="absolute flex gap-2 bg-dark-900 border border-dark-400 text-zinc-400 rounded right-0 bottom-0 mr-4 mb-4 items-center p-1 px-2 hover:opacity-100 opacity-70 hover:scale-105 transition"
+            className="absolute flex gap-2 bg-dark-900 shadow-md shadow-green-300/20 border border-green-400 text-green-400 rounded right-0 bottom-0 mr-4 mb-4 items-center p-1 px-2 hover:opacity-100 opacity-80 hover:scale-105 transition"
           >
-            <IconInfoCircle stroke={1.5} size={16} />
+            <IconInfoCircle stroke={1.5} size={16} className="text-green-400" />
             {docs[currentImage].label}
           </a>
         )}

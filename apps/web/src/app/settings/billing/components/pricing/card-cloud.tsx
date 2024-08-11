@@ -34,7 +34,7 @@ export const CardCloud = ({
   const { workspace } = useWorkspace();
   const discount = period === "yearly" ? 0.8 : 1;
   const pricePerExtraContributor = 7 * discount;
-  const discountedPrice = price * discount;
+  const discountedPrice = Math.floor(price * discount);
   const extraContributors = Math.max(contributors - 5, 0);
   const totalPrice =
     discountedPrice + extraContributors * pricePerExtraContributor;
