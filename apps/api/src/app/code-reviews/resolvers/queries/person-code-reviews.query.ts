@@ -1,5 +1,6 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
+import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { paginateCodeReviews } from "../../services/code-review.service";
 import { transformCodeReview } from "../transformers/code-review.transformer";
@@ -15,6 +16,8 @@ export const personCodeReviewsQuery = createFieldResolver("Person", {
     if (!context.workspaceId) {
       throw new ResourceNotFoundException("Workspace not found");
     }
+
+    await protectWithPaywall(context.workspaceId);
 
     const codeReviews = await paginateCodeReviews(
       context.workspaceId,

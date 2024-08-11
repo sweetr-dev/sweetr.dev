@@ -4,6 +4,7 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { paginatePullRequests } from "../../services/pull-request.service";
 import { transformPullRequest } from "../transformers/pull-request.transformer";
+import { protectWithPaywall } from "../../../billing/services/billing.service";
 
 export const pullRequestsQuery = createFieldResolver("Workspace", {
   pullRequests: async (workspace, { input }) => {
@@ -12,6 +13,8 @@ export const pullRequestsQuery = createFieldResolver("Workspace", {
     if (!workspace.id || !input) {
       throw new ResourceNotFoundException("Workspace not found");
     }
+
+    await protectWithPaywall(workspace.id);
 
     const filterBy =
       input.ownerType === PullRequestOwnerType.TEAM

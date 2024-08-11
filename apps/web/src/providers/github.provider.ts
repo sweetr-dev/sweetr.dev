@@ -32,18 +32,17 @@ export const isUrlGithubInstallCallback = (url: URL): boolean => {
   return !!installationId && setupAction === "install";
 };
 
-export const installGitAppIfNoWorkspaces =
-  async (): Promise<Response | null> => {
-    const availableWorkspaces = useAppStore.getState().availableWorkspaces;
+export const installGitAppIfNoWorkspaces = (): Response | null => {
+  const availableWorkspaces = useAppStore.getState().availableWorkspaces;
 
-    if (availableWorkspaces.length === 0) {
-      return new Response("", {
-        status: 302,
-        headers: {
-          Location: installGithubAppUrl,
-        },
-      });
-    }
+  if (availableWorkspaces.length === 0) {
+    return new Response("", {
+      status: 302,
+      headers: {
+        Location: installGithubAppUrl,
+      },
+    });
+  }
 
-    return null;
-  };
+  return null;
+};

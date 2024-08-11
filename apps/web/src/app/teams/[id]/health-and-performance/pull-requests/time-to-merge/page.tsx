@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
-import { ActionIcon, Box, Group, Paper, Skeleton } from "@mantine/core";
+import { Box, Group, Paper, Skeleton } from "@mantine/core";
 import { useChartDrawer } from "../../chart-page.provider";
 import { FilterSelect } from "../../../../../../components/filter-select";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
-import { IconCalendar, IconFilterPlus, IconRefresh } from "@tabler/icons-react";
+import { IconCalendar, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../providers/date.provider";
 import startOfDay from "date-fns/startOfDay";

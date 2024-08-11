@@ -1,5 +1,6 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
+import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
 import {
   authorizeTeamMembersOrThrow,
@@ -20,6 +21,8 @@ export const upsertTeamMutation = createMutationResolver({
       workspaceId: input.workspaceId,
       members: input.members,
     });
+
+    await protectWithPaywall(input.workspaceId);
 
     const team = await upsertTeam({
       ...input,

@@ -48,6 +48,16 @@ export const env = envsafe({
   GITHUB_APP_PRIVATE_KEY: str({
     desc: "The application private key",
   }),
+  STRIPE_API_KEY: str({
+    desc: "The secret API Key for Stripe access",
+    allowEmpty: true,
+    devDefault: "",
+  }),
+  STRIPE_WEBHOOK_SECRET: str({
+    desc: "The secret string used to sign Stripe webhooks",
+    allowEmpty: true,
+    devDefault: "",
+  }),
   JWT_SECRET: str({
     desc: "The secret string used to sign JWT tokens",
   }),
@@ -87,6 +97,12 @@ export const env = envsafe({
   }),
   RESEND_API_KEY: str({
     desc: "The API Key for Resend.",
+  }),
+  APP_MODE: str({
+    desc: "Whether the application is being self-hosted",
+    choices: ["self-hosted", "saas"],
+    default: "self-hosted",
+    devDefault: "self-hosted",
   }),
 });
 

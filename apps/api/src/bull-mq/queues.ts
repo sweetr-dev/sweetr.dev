@@ -9,6 +9,7 @@ export enum SweetQueue {
 
   // Crons - https://docs.bullmq.io/guide/jobs/repeatable
   CRON_GITHUB_RETRY_FAILED_WEBHOOKS = "{cron.github.retry_failed_webhooks}",
+  CRON_STRIPE_UPDATE_SEATS = "{cron.stripe.update_seats}",
 
   // GitHub
   GITHUB_INSTALLATION_SYNC = "{github.installation.sync}",
@@ -19,6 +20,9 @@ export enum SweetQueue {
   GITHUB_SYNC_PULL_REQUEST = "{github.sync.pull_request}",
   GITHUB_SYNC_CODE_REVIEW = "{github.sync.code_review}",
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
+
+  // Stripe
+  STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
 
   // Automations
   AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",

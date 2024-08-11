@@ -1,12 +1,16 @@
-import { Person, Workspace } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  Billing,
+  Person,
+  Workspace,
+} from "@sweetr/graphql-types/frontend/graphql";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 type PersonData = Pick<Person, "id" | "name" | "handle" | "avatar" | "email">;
 export type WorkspaceData = Pick<
   Workspace,
-  "id" | "name" | "avatar" | "handle" | "gitUninstallUrl"
->;
+  "id" | "name" | "avatar" | "handle" | "gitUninstallUrl" | "isActiveCustomer"
+> & { billing?: Partial<Billing> | null };
 
 interface AppStore {
   authenticatedUser?: PersonData;

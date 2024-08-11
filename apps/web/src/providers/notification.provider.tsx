@@ -1,8 +1,13 @@
 import { IconCheck, IconInfoCircle, IconX } from "@tabler/icons-react";
-import { showNotification, NotificationData } from "@mantine/notifications";
+import {
+  showNotification,
+  NotificationData,
+  cleanNotifications as mantineCleanNotifications,
+  useNotifications as useMantineNotifications,
+} from "@mantine/notifications";
 
 type Args = Omit<NotificationData, "message"> & {
-  message?: string;
+  message?: string | React.ReactNode;
 };
 
 export const showErrorNotification = (args: Args): void => {
@@ -27,6 +32,16 @@ export const showSuccessNotification = (args: Args): void => {
   });
 };
 
+export const showWarningNotification = (args: Args): void => {
+  showNotification({
+    title: "Warning",
+    color: "yellow",
+    withBorder: true,
+    message: "",
+    ...args,
+  });
+};
+
 export const showInfoNotification = (args: Args): void => {
   showNotification({
     title: "Info",
@@ -36,4 +51,14 @@ export const showInfoNotification = (args: Args): void => {
     icon: <IconInfoCircle stroke={1.5} />,
     ...args,
   });
+};
+
+export const useNotifications = () => {
+  const store = useMantineNotifications();
+
+  return {
+    ...store,
+    findNotification: (key: string) =>
+      store.notifications.filter((notification) => notification.key === key),
+  };
 };

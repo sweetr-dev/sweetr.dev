@@ -35,7 +35,6 @@ export const getCodeReviewDistributionChartData = async ({
   startDate,
   endDate,
 }: ChartFilters) => {
-  console.log("workspaceid is -----------------", workspaceId);
   const query = Prisma.sql`
   SELECT
     CONCAT('cr-author:', CR_Author."handle") AS source,

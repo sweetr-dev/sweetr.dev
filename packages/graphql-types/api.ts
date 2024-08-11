@@ -84,6 +84,15 @@ export enum AutomationSlug {
   LABEL_PR_SIZE = 'LABEL_PR_SIZE'
 }
 
+export type Billing = {
+  __typename?: 'Billing';
+  /** The number of contributors the workspace had in the last 30 days */
+  estimatedSeats: Scalars['Int']['output'];
+  purchasablePlans?: Maybe<PurchasablePlans>;
+  subscription?: Maybe<Subscription>;
+  trial?: Maybe<Trial>;
+};
+
 export type ChartInput = {
   /** The date range. */
   dateRange: DateTimeRange;
@@ -171,6 +180,10 @@ export type GraphChartLink = {
   value: Scalars['Int']['output'];
 };
 
+export type LoginToStripeInput = {
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type LoginWithGithubInput = {
   code: Scalars['String']['input'];
   state: Scalars['String']['input'];
@@ -185,6 +198,7 @@ export type LoginWithGithubResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   archiveTeam: Team;
+  loginToStripe?: Maybe<Scalars['String']['output']>;
   loginWithGithub: LoginWithGithubResponse;
   unarchiveTeam: Team;
   updateAutomation: Automation;
@@ -194,6 +208,11 @@ export type Mutation = {
 
 export type MutationArchiveTeamArgs = {
   input: ArchiveTeamInput;
+};
+
+
+export type MutationLoginToStripeArgs = {
+  input: LoginToStripeInput;
 };
 
 
@@ -276,6 +295,12 @@ export type PersonalMetrics = {
   __typename?: 'PersonalMetrics';
   codeReviewAmount: NumericPersonalMetric;
   pullRequestSize: NumericPersonalMetric;
+};
+
+export type PlanKeys = {
+  __typename?: 'PlanKeys';
+  monthly: Scalars['String']['output'];
+  yearly: Scalars['String']['output'];
 };
 
 export type PullRequest = {
@@ -366,6 +391,11 @@ export type PullRequestsQueryInput = {
   states?: InputMaybe<Array<PullRequestState>>;
 };
 
+export type PurchasablePlans = {
+  __typename?: 'PurchasablePlans';
+  cloud: PlanKeys;
+};
+
 export type Query = {
   __typename?: 'Query';
   authProvider: AuthProviderResponse;
@@ -403,6 +433,11 @@ export type Repository = {
   fullName: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  isActive: Scalars['Boolean']['output'];
 };
 
 export type Team = {
@@ -446,6 +481,11 @@ export type Token = {
   accessToken: Scalars['String']['output'];
 };
 
+export type Trial = {
+  __typename?: 'Trial';
+  endAt: Scalars['DateTime']['output'];
+};
+
 export type UnarchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -479,6 +519,7 @@ export type Workspace = {
   automation?: Maybe<Automation>;
   automations: Array<Automation>;
   avatar?: Maybe<Scalars['String']['output']>;
+  billing?: Maybe<Billing>;
   charts?: Maybe<Charts>;
   /** The git provider URL to uninstall the sweetr app */
   gitUninstallUrl: Scalars['String']['output'];
@@ -486,6 +527,8 @@ export type Workspace = {
   id: Scalars['SweetID']['output'];
   /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
   initialSyncProgress: Scalars['Int']['output'];
+  /** Whether the workspace should have access to the dashboard */
+  isActiveCustomer: Scalars['Boolean']['output'];
   me?: Maybe<Person>;
   name: Scalars['String']['output'];
   people: Array<Person>;
@@ -617,6 +660,7 @@ export type ResolversTypes = {
   AutomationScope: ResolverTypeWrapper<DeepPartial<AutomationScope>>;
   AutomationSlug: ResolverTypeWrapper<DeepPartial<AutomationSlug>>;
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
+  Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
   ChartInput: ResolverTypeWrapper<DeepPartial<ChartInput>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
@@ -632,6 +676,7 @@ export type ResolversTypes = {
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
+  LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -642,6 +687,7 @@ export type ResolversTypes = {
   Period: ResolverTypeWrapper<DeepPartial<Period>>;
   Person: ResolverTypeWrapper<DeepPartial<Person>>;
   PersonalMetrics: ResolverTypeWrapper<DeepPartial<PersonalMetrics>>;
+  PlanKeys: ResolverTypeWrapper<DeepPartial<PlanKeys>>;
   PullRequest: ResolverTypeWrapper<DeepPartial<PullRequest>>;
   PullRequestOwnerType: ResolverTypeWrapper<DeepPartial<PullRequestOwnerType>>;
   PullRequestSize: ResolverTypeWrapper<DeepPartial<PullRequestSize>>;
@@ -649,16 +695,19 @@ export type ResolversTypes = {
   PullRequestTracking: ResolverTypeWrapper<DeepPartial<PullRequestTracking>>;
   PullRequestTrendInput: ResolverTypeWrapper<DeepPartial<PullRequestTrendInput>>;
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
+  PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
   Query: ResolverTypeWrapper<{}>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
+  Subscription: ResolverTypeWrapper<{}>;
   SweetID: ResolverTypeWrapper<DeepPartial<Scalars['SweetID']['output']>>;
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
+  Trial: ResolverTypeWrapper<DeepPartial<Trial>>;
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
@@ -675,6 +724,7 @@ export type ResolversParentTypes = {
   AutomationBenefits: DeepPartial<AutomationBenefits>;
   AutomationQueryInput: DeepPartial<AutomationQueryInput>;
   BigInt: DeepPartial<Scalars['BigInt']['output']>;
+  Billing: DeepPartial<Billing>;
   Boolean: DeepPartial<Scalars['Boolean']['output']>;
   ChartInput: DeepPartial<ChartInput>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
@@ -689,6 +739,7 @@ export type ResolversParentTypes = {
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
   Int: DeepPartial<Scalars['Int']['output']>;
+  LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
   Mutation: {};
@@ -698,19 +749,23 @@ export type ResolversParentTypes = {
   PeopleQueryInput: DeepPartial<PeopleQueryInput>;
   Person: DeepPartial<Person>;
   PersonalMetrics: DeepPartial<PersonalMetrics>;
+  PlanKeys: DeepPartial<PlanKeys>;
   PullRequest: DeepPartial<PullRequest>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
   PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
+  PurchasablePlans: DeepPartial<PurchasablePlans>;
   Query: {};
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
   String: DeepPartial<Scalars['String']['output']>;
+  Subscription: {};
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
   Token: DeepPartial<Token>;
+  Trial: DeepPartial<Trial>;
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
@@ -755,6 +810,14 @@ export type AutomationBenefitsResolvers<ContextType = GraphQLContext, ParentType
 export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
   name: 'BigInt';
 }
+
+export type BillingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Billing'] = ResolversParentTypes['Billing']> = {
+  estimatedSeats?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchasablePlans?: Resolver<Maybe<ResolversTypes['PurchasablePlans']>, ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType>;
+  trial?: Resolver<Maybe<ResolversTypes['Trial']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type ChartNumericSeriesResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChartNumericSeries'] = ResolversParentTypes['ChartNumericSeries']> = {
   color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
@@ -822,6 +885,7 @@ export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, Paren
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   archiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationArchiveTeamArgs, 'input'>>;
+  loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
@@ -866,6 +930,12 @@ export type PersonalMetricsResolvers<ContextType = GraphQLContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PlanKeysResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PlanKeys'] = ResolversParentTypes['PlanKeys']> = {
+  monthly?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  yearly?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PullRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequest'] = ResolversParentTypes['PullRequest']> = {
   author?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   changedFilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -894,6 +964,11 @@ export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentTyp
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PurchasablePlansResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PurchasablePlans'] = ResolversParentTypes['PurchasablePlans']> = {
+  cloud?: Resolver<ResolversTypes['PlanKeys'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   authProvider?: Resolver<ResolversTypes['AuthProviderResponse'], ParentType, ContextType, RequireFields<QueryAuthProviderArgs, 'input'>>;
   userWorkspaces?: Resolver<Array<ResolversTypes['Workspace']>, ParentType, ContextType>;
@@ -906,6 +981,10 @@ export type RepositoryResolvers<ContextType = GraphQLContext, ParentType extends
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  isActive?: SubscriptionResolver<ResolversTypes['Boolean'], "isActive", ParentType, ContextType>;
 };
 
 export interface SweetIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['SweetID'], any> {
@@ -937,15 +1016,22 @@ export type TokenResolvers<ContextType = GraphQLContext, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TrialResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Trial'] = ResolversParentTypes['Trial']> = {
+  endAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']> = {
   automation?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<WorkspaceAutomationArgs, 'input'>>;
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
   charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   people?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType, Partial<WorkspacePeopleArgs>>;
@@ -962,6 +1048,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Automation?: AutomationResolvers<ContextType>;
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
+  Billing?: BillingResolvers<ContextType>;
   ChartNumericSeries?: ChartNumericSeriesResolvers<ContextType>;
   Charts?: ChartsResolvers<ContextType>;
   CodeReview?: CodeReviewResolvers<ContextType>;
@@ -977,14 +1064,18 @@ export type Resolvers<ContextType = GraphQLContext> = {
   NumericSeriesChartData?: NumericSeriesChartDataResolvers<ContextType>;
   Person?: PersonResolvers<ContextType>;
   PersonalMetrics?: PersonalMetricsResolvers<ContextType>;
+  PlanKeys?: PlanKeysResolvers<ContextType>;
   PullRequest?: PullRequestResolvers<ContextType>;
   PullRequestTracking?: PullRequestTrackingResolvers<ContextType>;
+  PurchasablePlans?: PurchasablePlansResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Repository?: RepositoryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   SweetID?: GraphQLScalarType;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
   Token?: TokenResolvers<ContextType>;
+  Trial?: TrialResolvers<ContextType>;
   Workspace?: WorkspaceResolvers<ContextType>;
 };
 

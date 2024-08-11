@@ -7,7 +7,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconMail, IconUser } from "@tabler/icons-react";
+import { IconExternalLink, IconMail, IconUser } from "@tabler/icons-react";
 import { AvatarUser } from "../../../components/avatar-user";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { IconInfo } from "../../../components/icon-info";
@@ -61,7 +61,7 @@ export const MyAccountPage = () => {
         </Title>
         <Paper mt="xs" p="md" withBorder>
           <Group justify="space-between" wrap="nowrap">
-            <Box>
+            <Box flex="1 1">
               <Group gap={4}>
                 <Title order={5}>Delete my personal account</Title>
                 <IconInfo
@@ -80,6 +80,7 @@ export const MyAccountPage = () => {
               component="a"
               href="https://github.com/settings/apps/authorizations"
               target="_blank"
+              rightSection={<IconExternalLink stroke={1.5} size={16} />}
             >
               Revoke OAuth
             </Button>
