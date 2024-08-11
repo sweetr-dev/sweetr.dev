@@ -136,7 +136,7 @@ export const HeroVideo = () => {
             className="absolute flex gap-2 bg-dark-900 shadow-md shadow-green-300/20 border border-green-400 text-green-400 rounded right-0 bottom-0 mr-4 mb-4 items-center p-1 px-2 hover:opacity-100 opacity-80 hover:scale-105 transition"
           >
             <IconInfoCircle stroke={1.5} size={16} className="text-green-400" />
-            {docs[currentImage].label}
+            {docs[currentImage]?.label}
           </a>
         )}
 
