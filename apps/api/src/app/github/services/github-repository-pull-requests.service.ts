@@ -13,10 +13,12 @@ import {
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
+import { isBefore, parseISO, subDays } from "date-fns";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
-  gitInstallationId: number
+  gitInstallationId: number,
+  sinceDaysAgo: number
 ): Promise<void> => {
   logger.info("syncGitHubRepositoryPullRequests", {
     repositoryName,
@@ -33,7 +35,8 @@ export const syncGitHubRepositoryPullRequests = async (
   const gitHubPullRequests = await fetchGitHubPullRequests(
     repositoryName,
     handle,
-    gitInstallationId
+    gitInstallationId,
+    sinceDaysAgo
   );
 
   if (!gitHubPullRequests.length) return;
@@ -63,7 +66,8 @@ export const syncGitHubRepositoryPullRequests = async (
 const fetchGitHubPullRequests = async (
   repositoryName: string,
   owner: string,
-  gitInstallationId: number
+  gitInstallationId: number,
+  sinceDaysAgo: number
 ) => {
   const fireGraphQLRequest =
     await getInstallationGraphQLOctoKit(gitInstallationId);
@@ -73,7 +77,7 @@ const fetchGitHubPullRequests = async (
   let cursor: string | null = null;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest({
+    const response: any = await fireGraphQLRequest({
       query: `
         query GetRepositoryPullRequests(
           $owner: String!
@@ -90,7 +94,8 @@ const fetchGitHubPullRequests = async (
               nodes {
                 id
                 title
-                body
+                createdAt
+                updatedAt
               }
             }
           }
@@ -108,6 +113,16 @@ const fetchGitHubPullRequests = async (
     const { nodes, pageInfo } = response.repository.pullRequests;
 
     pullRequests.push(...nodes);
+
+    const updatedAt = nodes?.at(-1)?.updatedAt;
+
+    // Stop fetching pages when historical data limit is reached
+    if (
+      updatedAt &&
+      isBefore(parseISO(updatedAt), subDays(new Date(), sinceDaysAgo))
+    ) {
+      break;
+    }
 
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
