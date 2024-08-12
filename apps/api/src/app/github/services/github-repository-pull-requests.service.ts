@@ -14,11 +14,12 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
 import { isBefore, parseISO, subDays } from "date-fns";
+import { isAppSelfHosted } from "../../../lib/self-host";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
   gitInstallationId: number,
-  sinceDaysAgo: number
+  sinceDaysAgo?: number
 ): Promise<void> => {
   logger.info("syncGitHubRepositoryPullRequests", {
     repositoryName,
@@ -36,7 +37,7 @@ export const syncGitHubRepositoryPullRequests = async (
     repositoryName,
     handle,
     gitInstallationId,
-    sinceDaysAgo
+    isAppSelfHosted() ? null : sinceDaysAgo || 365
   );
 
   if (!gitHubPullRequests.length) return;
@@ -67,7 +68,7 @@ const fetchGitHubPullRequests = async (
   repositoryName: string,
   owner: string,
   gitInstallationId: number,
-  sinceDaysAgo: number
+  sinceDaysAgo: number | null
 ) => {
   const fireGraphQLRequest =
     await getInstallationGraphQLOctoKit(gitInstallationId);
@@ -118,6 +119,7 @@ const fetchGitHubPullRequests = async (
 
     // Stop fetching pages when historical data limit is reached
     if (
+      sinceDaysAgo &&
       updatedAt &&
       isBefore(parseISO(updatedAt), subDays(new Date(), sinceDaysAgo))
     ) {

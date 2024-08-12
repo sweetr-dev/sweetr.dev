@@ -27,7 +27,7 @@ export const githubRepositoryPullRequestsSyncWorker = createWorker(
         syncGitHubRepositoryPullRequests(
           job.data.repository.name,
           installationId,
-          job.data.sinceDaysAgo || 365
+          job.data.sinceDaysAgo
         ),
       {
         job,
