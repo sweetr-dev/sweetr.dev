@@ -22,31 +22,14 @@ interface PricingProps {
     yearly: string;
   };
   currentUsage: number;
-  isLoading: boolean;
 }
 
-export const Pricing = ({ plan, isLoading, currentUsage }: PricingProps) => {
+export const Pricing = ({ plan, currentUsage }: PricingProps) => {
   const max = 100;
   const [period, setPeriod] = useState<SubscriptionPeriod>("monthly");
   const [contributors, setContributors] = useState(
     currentUsage < 5 ? 10 : currentUsage,
   );
-
-  if (isLoading) {
-    return (
-      <Stack>
-        <Skeleton h={40} w={196} mx="auto"></Skeleton>
-        <Box mt="lg">
-          <Skeleton h={57} />
-        </Box>
-        <Group justify="space-between">
-          <Skeleton h={333} w={342} radius="md" />
-          <Skeleton h={333} w={342} radius="md" />
-        </Group>
-        <Skeleton h={151} mt="lg" radius="md" />
-      </Stack>
-    );
-  }
 
   return (
     <>
@@ -142,5 +125,21 @@ export const Pricing = ({ plan, isLoading, currentUsage }: PricingProps) => {
         </Paper>
       </Stack>
     </>
+  );
+};
+
+export const PricingSkeleton = () => {
+  return (
+    <Stack>
+      <Skeleton h={40} w={196} mx="auto"></Skeleton>
+      <Box mt="lg">
+        <Skeleton h={57} />
+      </Box>
+      <Group justify="space-between">
+        <Skeleton h={333} w={342} radius="md" />
+        <Skeleton h={333} w={342} radius="md" />
+      </Group>
+      <Skeleton h={151} mt="lg" radius="md" />
+    </Stack>
   );
 };

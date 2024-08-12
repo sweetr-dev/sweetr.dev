@@ -1,7 +1,7 @@
 import { Box, Title } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
-import { Pricing } from "./components/pricing";
+import { Pricing, PricingSkeleton } from "./components/pricing";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { useBillingQuery } from "../../../api/billing.api";
 import { CardCustomerPortal } from "./components/card-customer-portal";
@@ -26,11 +26,12 @@ export const BillingPage = () => {
           Billing
         </Title>
 
+        {isLoading && <PricingSkeleton />}
+
         {billing?.purchasablePlans && (
           <Pricing
             plan={billing.purchasablePlans?.cloud}
             currentUsage={billing.estimatedSeats}
-            isLoading={isLoading}
           />
         )}
 
