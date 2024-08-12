@@ -44,7 +44,6 @@ export const TeamsPage = () => {
           New
         </Button>
       </HeaderActions>
-
       <SimpleGrid cols={{ base: 1, md: 3 }}>
         {isLoading && <PageSkeleton />}
 

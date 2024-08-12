@@ -5,9 +5,11 @@ import { readFileSync } from "fs";
 import { apiUrl, env } from "./env";
 import { expressApp } from "./express";
 import { initBullMQ } from "./bull-mq/init-bull-mq";
-import { captureException } from "./lib/sentry";
+import { captureException, initSentry } from "./lib/sentry";
 import { UnknownException } from "./app/errors/exceptions/unknown.exception";
 import { closeAllQueueWorkers } from "./bull-mq/workers";
+
+initSentry();
 
 const server = env.USE_SSL
   ? createSslServer(

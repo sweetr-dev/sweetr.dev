@@ -11,9 +11,9 @@ import {
 } from "@envelop/core";
 import {
   Scope,
-  configureScope,
+  getCurrentScope,
+  startInactiveSpan,
   withScope,
-  startTransaction as startSentryTransaction,
 } from "@sentry/node";
 import type { TraceparentData } from "@sentry/types";
 import {
@@ -142,10 +142,10 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
         operation: operationType,
       };
 
-      const rootSpan = startSentryTransaction({
+      const rootSpan = startInactiveSpan({
         name: transactionName,
         op,
-        tags,
+        attributes: tags,
         ...traceparentData,
       });
 
@@ -158,9 +158,9 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
         throw new Error(error.join("\n"));
       }
 
-      configureScope((scope) => scope.clearBreadcrumbs().setSpan(rootSpan));
+      getCurrentScope().clearBreadcrumbs();
 
-      rootSpan.setData("document", document);
+      rootSpan.setAttribute("document", document);
 
       return {
         onExecuteDone(payload) {
@@ -168,7 +168,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
             Record<string, unknown>
           > = ({ result, setResult }) => {
             if (includeRawResult) {
-              rootSpan.setData("result", result);
+              rootSpan.setAttribute("result", JSON.stringify(result));
             }
 
             if (result.errors && result.errors.length > 0) {
@@ -229,7 +229,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
               });
             }
 
-            rootSpan.finish();
+            rootSpan.end();
           };
           return handleStreamOrSingleExecutionResult(payload, handleResult);
         },
