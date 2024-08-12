@@ -3,7 +3,7 @@ import { yoga } from "./yoga";
 import { githubRouter } from "./app/github/github.router";
 import { errorHandler } from "./lib/express-helpers";
 import { bullBoardRouter } from "./bull-mq/bull-board.router";
-import { addExpressIntegration } from "./lib/sentry";
+import { setupExpressErrorHandler } from "./lib/sentry";
 import { stripeRouter } from "./app/billing/stripe.router";
 
 export const expressApp = express();
@@ -25,7 +25,6 @@ expressApp.use(bullBoardRouter);
 
 expressApp.use(yoga); // Leave Yoga last
 
-// Error handler
+// Error handler.
+setupExpressErrorHandler(expressApp);
 expressApp.use(errorHandler);
-
-addExpressIntegration(expressApp);
