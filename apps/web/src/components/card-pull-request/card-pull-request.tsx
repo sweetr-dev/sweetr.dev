@@ -100,7 +100,7 @@ export const CardPullRequest = ({
                 <Title order={4} c="dark.3" textWrap="nowrap">
                   {repositoryName}
                 </Title>
-                <Title order={4} lineClamp={1}>
+                <Title order={4} lineClamp={1} title={title}>
                   {title}
                 </Title>
               </Group>
