@@ -5,12 +5,15 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { queryClient } from "./api/clients/query-client";
 import { router } from "./routes";
+import { initSentry } from "./providers/sentry.provider";
 import "@mantine/core/styles.css";
 import "@mantine/spotlight/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";
 import "@mantine/dates/styles.css";
 import "./styles.css";
+
+initSentry();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <MantineProvider

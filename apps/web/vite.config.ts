@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import { resolve } from "path";
 import { readFileSync } from "fs";
@@ -11,7 +12,12 @@ export default defineConfig({
     eslint({
       exclude: ["../../packages/**/*.ts"],
     }),
+    sentryVitePlugin({
+      org: "sweetrdev",
+      project: "web",
+    }),
   ],
+
   server: {
     host: "app.sweetr.local",
     https:
@@ -21,5 +27,9 @@ export default defineConfig({
             cert: readFileSync(resolve(__dirname, "../../certs/tls.cert")),
           }
         : undefined,
+  },
+
+  build: {
+    sourcemap: true,
   },
 });
