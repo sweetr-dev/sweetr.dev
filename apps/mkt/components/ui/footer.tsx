@@ -27,6 +27,7 @@ export default function Footer() {
                   target="_blank"
                   href="https://www.linkedin.com/company/sweetr-dev"
                   className="text-zinc-500 hover:text-blue-600"
+                  aria-label="LinkedIn"
                 >
                   <IconBrandLinkedin stroke={1.5} />
                 </a>
@@ -36,6 +37,7 @@ export default function Footer() {
                   target="_blank"
                   href="https://twitter.com/sweetr_dev"
                   className="text-zinc-500 hover:text-white"
+                  aria-label="X (Twitter)"
                 >
                   <IconBrandX stroke={1.5} />
                 </a>
@@ -48,9 +50,9 @@ export default function Footer() {
 
           {/* 3rd block */}
           <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h6 className="text-sm text-dark-100 font-medium mb-2">
+            <h4 className="text-sm text-dark-100 font-medium mb-2">
               Resources
-            </h6>
+            </h4>
             <ul className="text-sm space-y-2">
               <li>
                 <a
@@ -95,7 +97,7 @@ export default function Footer() {
 
           {/* 4th block */}
           <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h6 className="text-sm text-dark-100 font-medium mb-2">Legal</h6>
+            <h4 className="text-sm text-dark-100 font-medium mb-2">Legal</h4>
             <ul className="text-sm space-y-2">
               <li>
                 <a

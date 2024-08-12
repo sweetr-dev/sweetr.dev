@@ -103,17 +103,17 @@ export const HeroVideo = () => {
   return (
     <>
       <div className="hidden md:flex justify-end gap-1 text-dark-100 mb-1">
-        <button onClick={handleAutoPlay}>
+        <button onClick={handleAutoPlay} aria-label="Auto-play Slider">
           {isAutoPlaying ? (
             <IconPlayerPause stroke={1.5} size={20} />
           ) : (
             <IconPlayerPlay stroke={1.5} size={20} />
           )}
         </button>
-        <button onClick={handlePrevious}>
+        <button onClick={handlePrevious} aria-label="Previous Slide">
           <IconChevronLeft stroke={1.5} size={20} />
         </button>
-        <button onClick={handleNext}>
+        <button onClick={handleNext} aria-label="Next Slide">
           <IconChevronRight stroke={1.5} size={20} />
         </button>
       </div>

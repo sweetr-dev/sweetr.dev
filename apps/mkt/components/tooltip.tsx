@@ -36,6 +36,7 @@ export default function Tooltip({
         id={`tooltip-${id}`}
         role="tooltip"
         className="z-10 absolute top-full left-0"
+        aria-label={content}
       >
         <Transition
           show={open}

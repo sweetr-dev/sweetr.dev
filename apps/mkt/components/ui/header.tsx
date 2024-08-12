@@ -63,6 +63,7 @@ export default function Header() {
                   href="https://github.com/sweetr-dev/sweetr.dev"
                   target="_blank"
                   rel="nofollow"
+                  aria-label="GitHub"
                 >
                   <div className="p-2 hover:scale-110">
                     <IconBrandGithub
