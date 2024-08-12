@@ -13,7 +13,7 @@ import {
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
-import { isBefore, parseISO, subDays } from "date-fns";
+import { isAfter, parseISO, startOfDay, subDays } from "date-fns";
 import { isAppSelfHosted } from "../../../lib/self-host";
 
 export const syncGitHubRepositoryPullRequests = async (
@@ -113,16 +113,18 @@ const fetchGitHubPullRequests = async (
 
     const { nodes, pageInfo } = response.repository.pullRequests;
 
-    pullRequests.push(...nodes);
+    const filteredPullRequests = sinceDaysAgo
+      ? nodes.filter((pullRequest) =>
+          isWithinSyncRange(pullRequest.createdAt, sinceDaysAgo)
+        )
+      : nodes;
 
-    const updatedAt = nodes?.at(-1)?.updatedAt;
+    pullRequests.push(...filteredPullRequests);
+
+    const createdAt = nodes?.at(-1)?.createdAt;
 
     // Stop fetching pages when historical data limit is reached
-    if (
-      sinceDaysAgo &&
-      updatedAt &&
-      isBefore(parseISO(updatedAt), subDays(new Date(), sinceDaysAgo))
-    ) {
+    if (createdAt && !isWithinSyncRange(createdAt, sinceDaysAgo)) {
       break;
     }
 
@@ -132,6 +134,15 @@ const fetchGitHubPullRequests = async (
   }
 
   return pullRequests;
+};
+
+const isWithinSyncRange = (createdAt: string, sinceDaysAgo: number | null) => {
+  if (!sinceDaysAgo) return true;
+
+  return isAfter(
+    parseISO(createdAt),
+    startOfDay(subDays(new Date(), sinceDaysAgo))
+  );
 };
 
 const findWorkspaceOrThrow = async (gitInstallationId: number) => {
