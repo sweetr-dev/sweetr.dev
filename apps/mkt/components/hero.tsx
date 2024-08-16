@@ -38,9 +38,8 @@ export default async function Hero() {
                 </h1>
                 <div className="max-w-2xl mx-auto">
                   <h2 className="text-lg text-dark-100 mb-8">
-                    An open-source solution for your dev teams to find ways to
-                    optimize, speed up development and improve developer
-                    experience & wellbeing.
+                    Enable your software engineering teams to optimize and speed
+                    up development while improving developer experience.
                   </h2>
                 </div>
                 <div className="max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">

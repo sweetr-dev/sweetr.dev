@@ -5,7 +5,7 @@
 </div>
 <h3 align="center">sweetr.dev</h3>
 <p align="center">
-  <i>An open-source solution for your dev teams to find ways to optimize,<br/>speed up development and improve developer experience & wellbeing.</i>
+  <i>Enable your software engineering teams to optimize and speed up development while improving developer experience.</i>
 </p>
 
 <p align="center">
