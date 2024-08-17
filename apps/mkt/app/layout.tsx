@@ -24,8 +24,9 @@ export const metadata: Metadata = {
   description:
     "The dev-first platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
   openGraph: {
-    title: "sweetr.dev",
-    description: "The dev-first platform for continuous improvement.",
+    title: "Sweetr.dev - The dev-first platform for continuous improvement.",
+    description:
+      "Enable your software engineering teams to optimize and speed up development while improving developer experience.",
     url: "https://sweetr.dev",
     siteName: "sweetr.dev",
     images: [
