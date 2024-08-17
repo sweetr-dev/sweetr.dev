@@ -23,28 +23,24 @@ import {
 export const HeroVideo = () => {
   const images = [
     Image1,
-    Image10,
-    Image4,
     Image2,
     Image3,
+    Image4,
     Image5,
     Image6,
     Image7,
     Image8,
     Image9,
+    Image10,
   ];
   const docs = [
     null,
-    {
-      label: "Code Reviews",
-      href: "https://docs.sweetr.dev/features/code-reviews",
-    },
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
+    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
     {
       label: "Pull Requests",
       href: "https://docs.sweetr.dev/features/pull-requests",
     },
-    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
-    { label: "Teams", href: "https://docs.sweetr.dev/features/teams" },
     {
       label: "Team Insights",
       href: "https://docs.sweetr.dev/features/team/intro",
@@ -62,6 +58,10 @@ export const HeroVideo = () => {
       href: "https://docs.sweetr.dev/features/team/code-review-distribution",
     },
     { label: "People", href: "https://docs.sweetr.dev/features/people" },
+    {
+      label: "Code Reviews",
+      href: "https://docs.sweetr.dev/features/code-reviews",
+    },
   ];
   const [currentImage, setImage] = useState(0);
   const autoPlay = useRef(true);

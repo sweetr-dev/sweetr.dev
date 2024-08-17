@@ -255,7 +255,7 @@ export default function PricingTabs() {
                       </span>
                     </div>
                     <div className="text-dark-100">
-                      For organizations that require full control.
+                      For organizations operating at large-scale.
                     </div>
                   </div>
                   <div className="grow">

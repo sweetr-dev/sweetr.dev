@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
 import FeaturePRs from "@/public/images/feature-prs.png";
@@ -13,13 +13,7 @@ import {
   IconClock,
   IconAspectRatio,
   IconEyeDiscount,
-  IconTarget,
-  IconActivityHeartbeat,
   IconEyeCode,
-  IconSteam,
-  IconRefreshDot,
-  IconHeartHandshake,
-  IconHeadphones,
   IconExternalLink,
   IconBrandGithub,
 } from "@tabler/icons-react";
@@ -248,77 +242,6 @@ export default function FeaturesOverview() {
                 })}
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Features blocks */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-24 lg:mt-32">
-          <div className="text-center">
-            <h2 className="font-inter-tight text-2xl md:text-3xl font-bold text-white">
-              A lot more to come.
-            </h2>
-            <p className="text-md text-zinc-400">
-              A sneak peek into our planned features and roadmap.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-16 mt-12">
-            {/* Block #3 */}
-            {[
-              {
-                title: "DX Surveys",
-                description:
-                  "Qualitative data on your engineering organization through automated surveys tailored for developers.",
-                icon: IconSteam,
-              },
-              {
-                title: "CI Insights",
-                description:
-                  "Integration with your CI/CD for insights on failure rates, runtime, and correlation with other metrics.",
-                icon: IconRefreshDot,
-              },
-              {
-                title: "Focus time",
-                description:
-                  "Integration with your calendar provider to give you insights on developers' available focus time.",
-                icon: IconHeadphones,
-              },
-              {
-                title: "Wellbeing",
-                description:
-                  "More wellbeing-focused insights for increased developer satisfaction and wellness.",
-                icon: IconActivityHeartbeat,
-              },
-              {
-                title: "Targets",
-                description:
-                  "Define team improvement targets on relevant metrics and get automated nudges and reports.",
-                icon: IconTarget,
-              },
-              {
-                title: "Onboarding",
-                description:
-                  "A gamified experience to make onboarding more effective and fun.",
-                icon: IconHeartHandshake,
-              },
-            ].map((plannedFeature) => {
-              const Icon = plannedFeature.icon;
-
-              return (
-                <div key={plannedFeature.title}>
-                  <div className="flex items-center mb-1 gap-2">
-                    <div className="border border-dark-300 p-1 rounded-lg">
-                      <Icon stroke={1} className="text-green-400" size={24} />
-                    </div>
-                    <h3 className="font-inter-tight font-semibold text-zinc-200">
-                      {plannedFeature.title}
-                    </h3>
-                  </div>
-                  <p className="text-sm text-dark-100">
-                    {plannedFeature.description}
-                  </p>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>

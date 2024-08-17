@@ -1,22 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/images/logo.svg";
-import { useEffect, useState } from "react";
 import { Lexend } from "next/font/google";
 import { IconBrandGithub } from "@tabler/icons-react";
 
 const lexendFont = Lexend({ subsets: ["latin"] });
 
 export default function Header() {
-  const [offset, setOffset] = useState(0);
-  const onScroll = () => setOffset(window.scrollY);
-
-  useEffect(() => {
-    window.addEventListener("scroll", onScroll);
-
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <header
       className={`fixed top-0 w-full z-50 shadow-[0_1px_0_0_#373a40] backdrop-blur-xl px-4 md:px-0`}

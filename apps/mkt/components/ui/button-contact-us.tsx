@@ -15,7 +15,7 @@ export const ButtonContactUs = ({ className = "" }: ButtonContactUsProps) => {
       }}
     >
       <div className="flex items-center gap-2">
-        <IconMessage size={18} stroke={1.5} /> Contact us
+        <IconMessage size={18} stroke={1.5} /> Book a demo
       </div>
     </button>
   );
