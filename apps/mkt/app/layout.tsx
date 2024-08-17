@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   description:
     "The dev-first platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
   openGraph: {
-    title: "Sweetr.dev - The dev-first platform for continuous improvement.",
+    title: "Sweetr - The dev-first platform for continuous improvement",
     description:
-      "Enable your software engineering teams to optimize and speed up development while improving developer experience.",
+      "Enable your software engineering teams to optimize and speed up development while improving developer experience. Self-host for free or try a 14-day trial.",
     url: "https://sweetr.dev",
     siteName: "sweetr.dev",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "sweetr.dev",
-    description: "The dev-first platform for continuous improvement.",
+    description: "The dev-first platform for continuous improvement",
     images: ["https://sweetr.dev/images/og-image.png"],
   },
 };
