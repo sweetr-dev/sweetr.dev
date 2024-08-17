@@ -29,7 +29,7 @@ export default async function Hero() {
             <div className="mx-auto relative">
               <div className="text-center pb-12 md:pb-16 z-10">
                 <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent text-white pb-4">
-                  The dev-first platform for <br />{" "}
+                  The dev-first platform for
                   <em
                     className={`italic flex relative justify-center items-center text-green-400`}
                   >
