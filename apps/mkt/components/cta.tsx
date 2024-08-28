@@ -20,7 +20,7 @@ export default function Features02() {
             </Link>
           </div>
           <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-            Get started in under 30 seconds.
+            Get started in under 30 seconds
           </h2>
           <p className="text-lg text-dark-100 mb-8 max-w-lg mx-auto">
             Connect your GitHub organization now and start a new cycle of

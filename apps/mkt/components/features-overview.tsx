@@ -132,7 +132,7 @@ export default function FeaturesOverview() {
         <div className="max-w-xl lg:max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
           <div className="relative max-w-3xl mx-auto text-center pb-12 md:pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              Meet the solution.
+              Meet the solution
             </h2>
             <h3 className="text-lg text-green-400">
               Unlock continuous improvement with team-focused data, insights &

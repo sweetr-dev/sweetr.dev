@@ -7,7 +7,7 @@ export default function FeaturesAutomations() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
           <div className="max-w-6xl mx-auto text-center pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              Automate the pain away.
+              Automate the pain away
             </h2>
             <h3 className="text-lg text-dark-100">
               Configurable no-code routines to improve productivity and

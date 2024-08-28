@@ -29,7 +29,7 @@ export default function FeaturesTraits() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
           <div className="relative max-w-3xl mx-auto text-center pb-12 md:pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              Your team will love it.
+              Your team will love it
             </h2>
             <h3 className="text-lg text-green-400">
               Designed for modern software teams.
@@ -236,7 +236,7 @@ export default function FeaturesTraits() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-24 lg:mt-28">
           <div className="text-center">
             <h2 className="font-inter-tight text-2xl md:text-3xl font-bold text-white">
-              A lot more to come.
+              A lot more to come
             </h2>
             <p className="text-md text-zinc-400">
               A sneak peek into our planned features and roadmap.
