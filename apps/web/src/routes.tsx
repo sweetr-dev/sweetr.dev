@@ -40,6 +40,7 @@ import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-pe
 import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { showInfoNotification } from "./providers/notification.provider";
+import { IntegrationsPage } from "./app/settings/integrations/page";
 
 export const router = createBrowserRouter([
   {
@@ -129,6 +130,10 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/my-account",
                 element: <MyAccountPage />,
+              },
+              {
+                path: "/settings/integrations",
+                element: <IntegrationsPage />,
               },
             ],
           },

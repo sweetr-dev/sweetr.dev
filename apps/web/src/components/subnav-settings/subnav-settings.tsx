@@ -1,5 +1,6 @@
 import { Badge, Divider, Stack, Title, NavLink } from "@mantine/core";
 import {
+  IconApps,
   IconAspectRatio,
   IconBuildingCommunity,
   IconCash,
@@ -50,6 +51,14 @@ export const SubnavSettings = () => {
           leftSection={<IconCash stroke={1.5} size={18} />}
         />
       )}
+      <NavLink
+        to="/settings/integrations"
+        active={pathname === "/settings/integrations"}
+        component={Link}
+        style={{ borderRadius: 4 }}
+        label="Integrations"
+        leftSection={<IconApps stroke={1.5} size={18} />}
+      />
       <NavLink
         to="#"
         component={Link}
