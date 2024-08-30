@@ -28,7 +28,7 @@ export const IntegrationsPage = () => {
             <CardIntegration
               available={true}
               description="Send notifications to your Slack workspace."
-              onClick={() => navigate(`/integrations/slack`)}
+              onClick={() => navigate(`/settings/integrations/slack`)}
               title="Slack"
               enabled={false}
               icon={<ImageIntegrationLogo brand="slack" />}
@@ -37,7 +37,7 @@ export const IntegrationsPage = () => {
             <CardIntegration
               available={false}
               description="Send notifications to your MS Teams workspace."
-              onClick={() => navigate(`/integrations/slack`)}
+              onClick={() => navigate(`/settings/integrations/slack`)}
               title="MS Teams"
               enabled={false}
               icon={<ImageIntegrationLogo brand="msteams" />}

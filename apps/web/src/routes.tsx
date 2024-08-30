@@ -41,6 +41,7 @@ import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-an
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { IntegrationsPage } from "./app/settings/integrations/page";
+import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
 
 export const router = createBrowserRouter([
   {
@@ -134,6 +135,10 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/integrations",
                 element: <IntegrationsPage />,
+              },
+              {
+                path: "/settings/integrations/slack",
+                element: <IntegrationSlackPage />,
               },
             ],
           },

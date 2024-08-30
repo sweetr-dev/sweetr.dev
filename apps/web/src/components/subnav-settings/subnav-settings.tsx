@@ -53,7 +53,7 @@ export const SubnavSettings = () => {
       )}
       <NavLink
         to="/settings/integrations"
-        active={pathname === "/settings/integrations"}
+        active={pathname.includes("/settings/integrations")}
         component={Link}
         style={{ borderRadius: 4 }}
         label="Integrations"

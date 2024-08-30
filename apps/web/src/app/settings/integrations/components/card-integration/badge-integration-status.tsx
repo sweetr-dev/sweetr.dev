@@ -11,21 +11,21 @@ export const BadgeIntegrationStatus = ({
 }: BadgeIntegrationStatusProps) => {
   if (!available) {
     return (
-      <Badge size="lg" color="gray" variant="light">
+      <Badge size="lg" color="gray" variant="light" radius="sm">
         Coming Soon
       </Badge>
     );
   }
   if (enabled) {
     return (
-      <Badge size="lg" color="green" variant="light">
+      <Badge size="lg" color="violet" variant="light" radius="sm">
         Installed
       </Badge>
     );
   }
 
   return (
-    <Badge size="lg" color="violet" variant="light">
+    <Badge size="lg" color="green" variant="light" radius="sm">
       Install
     </Badge>
   );

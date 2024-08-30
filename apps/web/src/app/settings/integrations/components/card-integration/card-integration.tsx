@@ -39,15 +39,14 @@ export const CardIntegration = ({
         p="md"
         style={{ borderBottom: "1px solid #303030", flexGrow: 1 }}
       >
-        <Stack gap="xs" h="100%">
-          <BadgeIntegrationStatus enabled={enabled} available={available} />
-
+        <Stack gap="md" h="100%">
           <Box style={{ flexGrow: 1 }}>
             <Title order={2} size="h4">
               {title}
             </Title>
-            <Text mt="xs">{description}</Text>
+            <Text mt={5}>{description}</Text>
           </Box>
+          <BadgeIntegrationStatus enabled={enabled} available={available} />
         </Stack>
       </Card.Section>
     </Card>
