@@ -1,5 +1,6 @@
 import {
   differenceInDays,
+  format,
   formatDistanceToNow,
   formatDuration,
   intervalToDuration,
@@ -31,3 +32,8 @@ export const getDaysLeft = (until: Date) => {
 
   return Math.max(0, differenceInDays(until, new Date()));
 };
+
+export const formatDate = (
+  date: string | null | undefined,
+  token: string,
+): string => (date ? format(parseISO(date), token) : "");

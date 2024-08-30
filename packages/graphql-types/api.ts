@@ -20,6 +20,7 @@ export type Scalars = {
   DateTime: { input: string; output: string; }
   HexColorCode: { input: string; output: string; }
   SweetID: { input: number; output: number; }
+  Void: { input: null; output: null; }
 };
 
 export type ArchiveTeamInput = {
@@ -180,6 +181,26 @@ export type GraphChartLink = {
   value: Scalars['Int']['output'];
 };
 
+export type InstallIntegrationInput = {
+  app: IntegrationApp;
+  code: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type Integration = {
+  __typename?: 'Integration';
+  app: IntegrationApp;
+  enabledAt?: Maybe<Scalars['DateTime']['output']>;
+  installUrl: Scalars['String']['output'];
+  isEnabled: Scalars['Boolean']['output'];
+  target?: Maybe<Scalars['String']['output']>;
+};
+
+export enum IntegrationApp {
+  SLACK = 'SLACK'
+}
+
 export type LoginToStripeInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
@@ -198,8 +219,10 @@ export type LoginWithGithubResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   archiveTeam: Team;
+  installIntegration: Scalars['Void']['output'];
   loginToStripe?: Maybe<Scalars['String']['output']>;
   loginWithGithub: LoginWithGithubResponse;
+  removeIntegration: Scalars['Void']['output'];
   unarchiveTeam: Team;
   updateAutomation: Automation;
   upsertTeam: Team;
@@ -211,6 +234,11 @@ export type MutationArchiveTeamArgs = {
 };
 
 
+export type MutationInstallIntegrationArgs = {
+  input: InstallIntegrationInput;
+};
+
+
 export type MutationLoginToStripeArgs = {
   input: LoginToStripeInput;
 };
@@ -218,6 +246,11 @@ export type MutationLoginToStripeArgs = {
 
 export type MutationLoginWithGithubArgs = {
   input: LoginWithGithubInput;
+};
+
+
+export type MutationRemoveIntegrationArgs = {
+  input: InstallIntegrationInput;
 };
 
 
@@ -527,6 +560,7 @@ export type Workspace = {
   id: Scalars['SweetID']['output'];
   /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
   initialSyncProgress: Scalars['Int']['output'];
+  integrations: Array<Integration>;
   /** Whether the workspace should have access to the dashboard */
   isActiveCustomer: Scalars['Boolean']['output'];
   me?: Maybe<Person>;
@@ -675,7 +709,10 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
+  InstallIntegrationInput: ResolverTypeWrapper<DeepPartial<InstallIntegrationInput>>;
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
+  Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
+  IntegrationApp: ResolverTypeWrapper<DeepPartial<IntegrationApp>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
@@ -712,6 +749,7 @@ export type ResolversTypes = {
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
+  Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
   Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
 };
 
@@ -738,7 +776,9 @@ export type ResolversParentTypes = {
   Float: DeepPartial<Scalars['Float']['output']>;
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
+  InstallIntegrationInput: DeepPartial<InstallIntegrationInput>;
   Int: DeepPartial<Scalars['Int']['output']>;
+  Integration: DeepPartial<Integration>;
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
@@ -770,6 +810,7 @@ export type ResolversParentTypes = {
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
+  Void: DeepPartial<Scalars['Void']['output']>;
   Workspace: DeepPartial<Workspace>;
 };
 
@@ -877,6 +918,15 @@ export interface HexColorCodeScalarConfig extends GraphQLScalarTypeConfig<Resolv
   name: 'HexColorCode';
 }
 
+export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = {
+  app?: Resolver<ResolversTypes['IntegrationApp'], ParentType, ContextType>;
+  enabledAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  installUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
@@ -885,8 +935,10 @@ export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, Paren
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   archiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationArchiveTeamArgs, 'input'>>;
+  installIntegration?: Resolver<ResolversTypes['Void'], ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
+  removeIntegration?: Resolver<ResolversTypes['Void'], ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;
@@ -1021,6 +1073,10 @@ export type TrialResolvers<ContextType = GraphQLContext, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Void'], any> {
+  name: 'Void';
+}
+
 export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']> = {
   automation?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<WorkspaceAutomationArgs, 'input'>>;
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
@@ -1031,6 +1087,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;
   isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1057,6 +1114,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   DateTime?: GraphQLScalarType;
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
+  Integration?: IntegrationResolvers<ContextType>;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NumericChartData?: NumericChartDataResolvers<ContextType>;
@@ -1076,6 +1134,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   TeamMember?: TeamMemberResolvers<ContextType>;
   Token?: TokenResolvers<ContextType>;
   Trial?: TrialResolvers<ContextType>;
+  Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;
 };
 

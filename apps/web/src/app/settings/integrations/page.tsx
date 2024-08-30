@@ -5,22 +5,25 @@ import { LoadableContent } from "../../../components/loadable-content";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { ImageIntegrationLogo } from "./components/image-integration-logo";
+import { useIntegrations } from "./useIntegrations";
 
 export const IntegrationsPage = () => {
   const navigate = useNavigate();
+
+  const { integrations, isLoading } = useIntegrations();
 
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Integrations" }]} />
 
       <LoadableContent
-        isLoading={false}
+        isLoading={isLoading}
         whenLoading={
           <SimpleGrid cols={{ base: 1, md: 3 }}>
-            <Skeleton h={334} />
-            <Skeleton h={334} />
-            <Skeleton h={334} />
-            <Skeleton h={334} />
+            <Skeleton h={338} />
+            <Skeleton h={338} />
+            <Skeleton h={338} />
+            <Skeleton h={338} />
           </SimpleGrid>
         }
         content={
@@ -30,7 +33,7 @@ export const IntegrationsPage = () => {
               description="Send notifications to your Slack workspace."
               onClick={() => navigate(`/settings/integrations/slack`)}
               title="Slack"
-              enabled={false}
+              enabled={integrations?.SLACK?.isEnabled || false}
               icon={<ImageIntegrationLogo brand="slack" />}
               color={"dark.6"}
             />

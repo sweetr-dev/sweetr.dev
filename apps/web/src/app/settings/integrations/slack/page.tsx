@@ -10,7 +10,6 @@ import {
   rem,
   ThemeIcon,
   Paper,
-  Badge,
 } from "@mantine/core";
 import {
   IconBook2,
@@ -21,17 +20,19 @@ import { ImageIntegrationLogo } from "../components/image-integration-logo";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { PageContainer } from "../../../../components/page-container";
 import { PageTitle } from "../../../../components/page-title";
-import { useWorkspace } from "../../../../providers/workspace.provider";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { ListScopes } from "../components/list-scopes";
 import { Link, useSearchParams } from "react-router-dom";
+import { useIntegrations } from "../useIntegrations";
+import { format, parseISO } from "date-fns";
+import { formatDate } from "../../../../providers/date.provider";
 
 export const IntegrationSlackPage = () => {
-  const { workspace } = useWorkspace();
   const [searchParams] = useSearchParams();
+  const { integrations, isLoading } = useIntegrations();
 
   const code = searchParams.get("code");
-  const isInstalled = true && !code;
+  const integration = integrations?.SLACK;
 
   return (
     <PageContainer>
@@ -47,12 +48,12 @@ export const IntegrationSlackPage = () => {
           whenLoading={
             <>
               <Skeleton h={50} />
-              <Skeleton h={250} mt={26} />
-              <Skeleton h={70} mt="lg" />
-              <Skeleton h={70} mt="lg" />
+              <Skeleton h={175} mt={24} />
+              <Skeleton h={232} mt="lg" />
+              <Skeleton h={36} mt="lg" />
             </>
           }
-          isLoading={false}
+          isLoading={isLoading && !code}
           content={
             <>
               <PageTitle
@@ -80,7 +81,7 @@ export const IntegrationSlackPage = () => {
                 </Anchor>
               </PageTitle>
 
-              {isInstalled && (
+              {integration?.isEnabled && (
                 <>
                   <Title order={5} mb="xs">
                     Status
@@ -90,7 +91,8 @@ export const IntegrationSlackPage = () => {
                       <ThemeIcon color="green" variant="outline" bd="none">
                         <IconCircleCheckFilled size={24} stroke={1.5} />
                       </ThemeIcon>
-                      Connected to WorkspaceName on May 24th, 2024
+                      Connected to {integration.target} on{" "}
+                      {formatDate(integration.enabledAt, "MMMM do, yyyy")}
                     </Group>
                   </Paper>
                 </>
@@ -126,7 +128,7 @@ export const IntegrationSlackPage = () => {
                     Remind developers about their stale PRs.
                   </List.Item>
                   <List.Item>
-                    Send weekly digest of teams' relevant metrics.
+                    Send weekly digest of teams&apos; relevant metrics.
                   </List.Item>
                 </List>
               </Paper>
@@ -136,7 +138,8 @@ export const IntegrationSlackPage = () => {
               </Title>
               <Paper withBorder p="md">
                 <Text>
-                  Review the {isInstalled ? "granted" : "requested"} access:
+                  Review the {integration?.isEnabled ? "granted" : "requested"}{" "}
+                  access:
                 </Text>
                 <ListScopes
                   scopes={[
@@ -165,19 +168,19 @@ export const IntegrationSlackPage = () => {
                 />
               </Paper>
 
-              {!isInstalled && (
+              {integration && !integration?.isEnabled && (
                 <Button
                   mt="lg"
                   fullWidth
                   component={Link}
-                  to="https://slack.com/oauth/v2/authorize?client_id=5240948949014.7590067125669&scope=app_mentions:read,channels:join,users.profile:read,users:read,users:read.email&user_scope="
+                  to={integration.installUrl}
                   loading={!!code}
                 >
                   Install
                 </Button>
               )}
 
-              {isInstalled && (
+              {integration?.isEnabled && (
                 <Button mt="lg" fullWidth color="red" variant="outline">
                   Uninstall
                 </Button>
