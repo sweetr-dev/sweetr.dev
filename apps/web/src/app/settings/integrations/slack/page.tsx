@@ -22,17 +22,57 @@ import { PageContainer } from "../../../../components/page-container";
 import { PageTitle } from "../../../../components/page-title";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { ListScopes } from "../components/list-scopes";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useIntegrations } from "../useIntegrations";
-import { format, parseISO } from "date-fns";
 import { formatDate } from "../../../../providers/date.provider";
+import { useInstallIntegrationMutation } from "../../../../api/integrations.api";
+import { useEffect } from "react";
+import { IntegrationApp } from "@sweetr/graphql-types/frontend/graphql";
+import { useWorkspace } from "../../../../providers/workspace.provider";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../providers/notification.provider";
 
 export const IntegrationSlackPage = () => {
   const [searchParams] = useSearchParams();
   const { integrations, isLoading } = useIntegrations();
-
+  const { workspace } = useWorkspace();
+  const { mutate } = useInstallIntegrationMutation();
+  const navigate = useNavigate();
   const code = searchParams.get("code");
+  const state = searchParams.get("state");
   const integration = integrations?.SLACK;
+
+  useEffect(() => {
+    if (!code || !state) return;
+
+    mutate(
+      {
+        input: {
+          workspaceId: workspace.id,
+          app: IntegrationApp.SLACK,
+          code,
+          state,
+        },
+      },
+      {
+        onSuccess: () => {
+          showSuccessNotification({
+            message: "Slack successfully integrated.",
+          });
+        },
+        onError: () => {
+          showErrorNotification({
+            message: "Something went wrong. Please re-install the app.",
+          });
+        },
+        onSettled: () => {
+          navigate("/settings/integrations/slack");
+        },
+      },
+    );
+  }, [code, mutate, state, workspace.id]);
 
   return (
     <PageContainer>
@@ -168,17 +208,19 @@ export const IntegrationSlackPage = () => {
                 />
               </Paper>
 
-              {integration && !integration?.isEnabled && (
-                <Button
-                  mt="lg"
-                  fullWidth
-                  component={Link}
-                  to={integration.installUrl}
-                  loading={!!code}
-                >
-                  Install
-                </Button>
-              )}
+              {integration &&
+                !integration?.isEnabled &&
+                integration.installUrl && (
+                  <Button
+                    mt="lg"
+                    fullWidth
+                    component={Link}
+                    to={integration.installUrl}
+                    loading={!!code}
+                  >
+                    Install
+                  </Button>
+                )}
 
               {integration?.isEnabled && (
                 <Button mt="lg" fullWidth color="red" variant="outline">

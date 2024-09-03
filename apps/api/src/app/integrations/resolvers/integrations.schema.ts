@@ -6,7 +6,7 @@ export default /* GraphQL */ `
   type Integration {
     app: IntegrationApp!
     isEnabled: Boolean!
-    installUrl: String!
+    installUrl: String
     enabledAt: DateTime
     target: String
   }
@@ -23,7 +23,7 @@ export default /* GraphQL */ `
   }
 
   type Mutation {
-    installIntegration(input: InstallIntegrationInput!): Void!
-    removeIntegration(input: InstallIntegrationInput!): Void!
+    installIntegration(input: InstallIntegrationInput!): Void
+    removeIntegration(input: InstallIntegrationInput!): Void
   }
 `;

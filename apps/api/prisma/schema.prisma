@@ -51,6 +51,10 @@ enum TeamMemberRole {
   QA
 }
 
+enum IntegrationApp {
+  SLACK
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -153,9 +157,10 @@ model Workspace {
   TeamMember          TeamMember[]
   subscription        Subscription?
 
-  trialEndAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
+  trialEndAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  Integration Integration[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -420,4 +425,19 @@ model AutomationSetting {
   @@index([automationId])
   @@index([repositoryId])
   @@index([teamId])
+}
+
+model Integration {
+  id          Int            @id @default(autoincrement())
+  workspaceId Int
+  app         IntegrationApp
+  data        Json
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([workspaceId, app])
+  @@index([workspaceId, app])
 }

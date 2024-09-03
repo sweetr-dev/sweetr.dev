@@ -18,8 +18,10 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { DataAccessException } from "../../errors/exceptions/data-access.exception";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { UnknownException } from "../../errors/exceptions/unknown.exception";
-import { redisConnection } from "../../../bull-mq/redis-connection";
-import { getRandomString } from "../../../lib/crypto";
+import {
+  getTemporaryNonce,
+  preventCSRFAttack,
+} from "../../workspace-authorization.service";
 
 export const loginWithGithub = async (
   code: string,
@@ -71,30 +73,8 @@ const signJwtToken = (payload: JWTPayload): Token => {
   };
 };
 
-const preventCSRFAttack = async (state: string) => {
-  const nonce = state.split(":::").at(-1);
-
-  const keyValue = await redisConnection.get(`oauth:state:${nonce}`);
-
-  if (!keyValue) {
-    throw new BusinessRuleException("Could not validate state", {
-      severity: "info",
-    });
-  }
-
-  redisConnection.del(`oauth:state:${nonce}`);
-};
-
 const getLoginState = (redirectTo: string = "/") => {
   return `${redirectTo}:::${getTemporaryNonce()}`;
-};
-
-const getTemporaryNonce = () => {
-  const nonce = getRandomString(16);
-
-  redisConnection.setex(`oauth:state:${nonce}`, 60 * 5, nonce);
-
-  return nonce;
 };
 
 export const createOrSyncProfile = async (

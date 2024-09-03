@@ -192,7 +192,7 @@ export type Integration = {
   __typename?: 'Integration';
   app: IntegrationApp;
   enabledAt?: Maybe<Scalars['DateTime']['output']>;
-  installUrl: Scalars['String']['output'];
+  installUrl?: Maybe<Scalars['String']['output']>;
   isEnabled: Scalars['Boolean']['output'];
   target?: Maybe<Scalars['String']['output']>;
 };
@@ -219,10 +219,10 @@ export type LoginWithGithubResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   archiveTeam: Team;
-  installIntegration: Scalars['Void']['output'];
+  installIntegration?: Maybe<Scalars['Void']['output']>;
   loginToStripe?: Maybe<Scalars['String']['output']>;
   loginWithGithub: LoginWithGithubResponse;
-  removeIntegration: Scalars['Void']['output'];
+  removeIntegration?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
   updateAutomation: Automation;
   upsertTeam: Team;
@@ -921,7 +921,7 @@ export interface HexColorCodeScalarConfig extends GraphQLScalarTypeConfig<Resolv
 export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = {
   app?: Resolver<ResolversTypes['IntegrationApp'], ParentType, ContextType>;
   enabledAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  installUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  installUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -935,10 +935,10 @@ export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, Paren
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   archiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationArchiveTeamArgs, 'input'>>;
-  installIntegration?: Resolver<ResolversTypes['Void'], ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
+  installIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
-  removeIntegration?: Resolver<ResolversTypes['Void'], ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
+  removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;

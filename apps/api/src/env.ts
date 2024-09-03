@@ -58,6 +58,21 @@ export const env = envsafe({
     allowEmpty: true,
     devDefault: "",
   }),
+  SLACK_CLIENT_ID: str({
+    desc: "The public Slack Client ID",
+    allowEmpty: true,
+    devDefault: "",
+  }),
+  SLACK_CLIENT_SECRET: str({
+    desc: "The secret API Key for Slack access",
+    allowEmpty: true,
+    devDefault: "",
+  }),
+  SLACK_WEBHOOK_SECRET: str({
+    desc: "The secret string used to sign Slack webhooks",
+    allowEmpty: true,
+    devDefault: "",
+  }),
   JWT_SECRET: str({
     desc: "The secret string used to sign JWT tokens",
   }),

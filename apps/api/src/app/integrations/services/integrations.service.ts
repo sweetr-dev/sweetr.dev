@@ -1,5 +1,31 @@
-import { getSlackIntegration } from "./slack.service";
+import {
+  InstallIntegrationArgs,
+  IntegrationService,
+} from "./integrations.types";
+import { IntegrationApp } from "@prisma/client";
+import * as slackService from "./slack.service";
 
-export const getWorkspaceIntegrations = (workspaceId: number) => {
-  return [getSlackIntegration(workspaceId)];
+const integrationServices: Record<IntegrationApp, IntegrationService> = {
+  [IntegrationApp.SLACK]: slackService,
+};
+
+export const installIntegration = ({
+  workspace,
+  app,
+  code,
+  state,
+}: InstallIntegrationArgs) => {
+  return integrationServices[app].installIntegration(workspace, code, state);
+};
+
+export const getIntegrationInstallUrl = async (app: IntegrationApp) => {
+  return integrationServices[app].getInstallUrl();
+};
+
+export const getWorkspaceIntegrations = async (workspaceId: number) => {
+  const integrations = Object.values(integrationServices).map((service) =>
+    service.getIntegration(workspaceId)
+  );
+
+  return (await Promise.all(integrations)).filter((i) => i !== null);
 };

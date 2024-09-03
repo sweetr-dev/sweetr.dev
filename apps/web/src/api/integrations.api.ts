@@ -1,10 +1,18 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import {
+  InstallIntegrationMutation,
+  MutationInstallIntegrationArgs,
   WorkspaceIntegrationsQuery,
   WorkspaceIntegrationsQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
+import { queryClient } from "./clients/query-client";
 
 export const useIntegrationsQuery = (
   args: WorkspaceIntegrationsQueryVariables,
@@ -29,5 +37,31 @@ export const useIntegrationsQuery = (
         `),
         args,
       ),
+    ...options,
+  });
+
+export const useInstallIntegrationMutation = (
+  options?: UseMutationOptions<
+    InstallIntegrationMutation,
+    unknown,
+    MutationInstallIntegrationArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation InstallIntegration($input: InstallIntegrationInput!) {
+            installIntegration(input: $input)
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["integrations"],
+      });
+    },
     ...options,
   });
