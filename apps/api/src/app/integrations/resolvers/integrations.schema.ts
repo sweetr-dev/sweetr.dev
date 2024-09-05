@@ -18,12 +18,17 @@ export default /* GraphQL */ `
     state: String!
   }
 
+  input RemoveIntegrationInput {
+    workspaceId: SweetID!
+    app: IntegrationApp!
+  }
+
   extend type Workspace {
     integrations: [Integration!]!
   }
 
   type Mutation {
     installIntegration(input: InstallIntegrationInput!): Void
-    removeIntegration(input: InstallIntegrationInput!): Void
+    removeIntegration(input: RemoveIntegrationInput!): Void
   }
 `;

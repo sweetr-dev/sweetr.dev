@@ -4,6 +4,7 @@ import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
 import { findWorkspaceById } from "../../../workspaces/services/workspace.service";
+import { removeIntegration } from "../../services/integrations.service";
 
 export const removeIntegrationMUtation = createMutationResolver({
   removeIntegration: async (_, { input }, context) => {
@@ -21,6 +22,11 @@ export const removeIntegrationMUtation = createMutationResolver({
     if (!workspace) {
       throw new ResourceNotFoundException("Workspace not found");
     }
+
+    await removeIntegration({
+      workspace,
+      app: input.app,
+    });
 
     return null;
   },

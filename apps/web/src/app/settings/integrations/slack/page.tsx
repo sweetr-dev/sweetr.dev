@@ -53,7 +53,7 @@ export const IntegrationSlackPage = () => {
           workspaceId: workspace.id,
           app: IntegrationApp.SLACK,
           code,
-          state,
+          state: decodeURIComponent(state),
         },
       },
       {
@@ -72,7 +72,7 @@ export const IntegrationSlackPage = () => {
         },
       },
     );
-  }, [code, mutate, state, workspace.id]);
+  }, [code, mutate, navigate, state, workspace.id]);
 
   return (
     <PageContainer>

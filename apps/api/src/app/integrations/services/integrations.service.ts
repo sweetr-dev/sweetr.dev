@@ -1,6 +1,7 @@
 import {
   InstallIntegrationArgs,
   IntegrationService,
+  RemoveIntegrationArgs,
 } from "./integrations.types";
 import { IntegrationApp } from "@prisma/client";
 import * as slackService from "./slack.service";
@@ -13,9 +14,15 @@ export const installIntegration = ({
   workspace,
   app,
   code,
-  state,
 }: InstallIntegrationArgs) => {
-  return integrationServices[app].installIntegration(workspace, code, state);
+  return integrationServices[app].installIntegration(workspace, code);
+};
+
+export const removeIntegration = ({
+  workspace,
+  app,
+}: RemoveIntegrationArgs) => {
+  return integrationServices[app].removeIntegration(workspace);
 };
 
 export const getIntegrationInstallUrl = async (app: IntegrationApp) => {

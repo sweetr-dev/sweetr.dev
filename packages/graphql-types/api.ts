@@ -250,7 +250,7 @@ export type MutationLoginWithGithubArgs = {
 
 
 export type MutationRemoveIntegrationArgs = {
-  input: InstallIntegrationInput;
+  input: RemoveIntegrationInput;
 };
 
 
@@ -450,6 +450,11 @@ export type QueryWorkspaceArgs = {
 
 export type QueryWorkspaceByInstallationIdArgs = {
   gitInstallationId: Scalars['String']['input'];
+};
+
+export type RemoveIntegrationInput = {
+  app: IntegrationApp;
+  workspaceId: Scalars['SweetID']['input'];
 };
 
 export type RepositoriesQueryInput = {
@@ -734,6 +739,7 @@ export type ResolversTypes = {
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
   Query: ResolverTypeWrapper<{}>;
+  RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
@@ -796,6 +802,7 @@ export type ResolversParentTypes = {
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
   Query: {};
+  RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
   String: DeepPartial<Scalars['String']['output']>;

@@ -32,7 +32,6 @@ export const installIntegrationMUtation = createMutationResolver({
       workspace,
       app: input.app,
       code: input.code,
-      state: input.state,
     });
 
     return null;

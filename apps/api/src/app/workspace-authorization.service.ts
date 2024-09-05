@@ -25,9 +25,7 @@ export const authorizeWorkspaceOrThrow = async ({
   }
 };
 
-export const preventCSRFAttack = async (state: string) => {
-  const nonce = state.split(":::").at(-1);
-
+export const preventCSRFAttack = async (nonce: string) => {
   const keyValue = await redisConnection.get(`oauth:state:${nonce}`);
 
   if (!keyValue) {

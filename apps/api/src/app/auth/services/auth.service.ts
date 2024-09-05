@@ -27,7 +27,7 @@ export const loginWithGithub = async (
   code: string,
   state: string
 ): Promise<Token> => {
-  await preventCSRFAttack(state);
+  await preventCSRFAttack(state.split(":::").at(-1) || "");
 
   const githubToken = await github.authorize(code);
 
