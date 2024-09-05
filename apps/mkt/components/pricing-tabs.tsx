@@ -152,7 +152,7 @@ export default function PricingTabs() {
                     </div>
                     <div className="font-inter-tight inline-flex items-baseline mb-2">
                       <div className="text-green-400 font-bold text-2xl">
-                        Starts at 49$/mo
+                        Starts at $49/mo
                       </div>
                     </div>
                     <div className="text-dark-100">
@@ -182,7 +182,7 @@ export default function PricingTabs() {
                         >
                           <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                         </svg>
-                        7$ per extra contributor
+                        $7 per extra contributor
                       </li>
                       <li className="flex items-center">
                         <svg
