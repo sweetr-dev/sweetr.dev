@@ -22,57 +22,17 @@ import { PageContainer } from "../../../../components/page-container";
 import { PageTitle } from "../../../../components/page-title";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { ListScopes } from "../components/list-scopes";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useIntegrations } from "../useIntegrations";
 import { formatDate } from "../../../../providers/date.provider";
-import { useInstallIntegrationMutation } from "../../../../api/integrations.api";
-import { useEffect } from "react";
-import { IntegrationApp } from "@sweetr/graphql-types/frontend/graphql";
-import { useWorkspace } from "../../../../providers/workspace.provider";
-import {
-  showErrorNotification,
-  showSuccessNotification,
-} from "../../../../providers/notification.provider";
+import { useConfirmationModal } from "../../../../providers/modal.provider";
+import { useSlackIntegration } from "./use-slack-integration";
 
 export const IntegrationSlackPage = () => {
-  const [searchParams] = useSearchParams();
   const { integrations, isLoading } = useIntegrations();
-  const { workspace } = useWorkspace();
-  const { mutate } = useInstallIntegrationMutation();
-  const navigate = useNavigate();
-  const code = searchParams.get("code");
-  const state = searchParams.get("state");
   const integration = integrations?.SLACK;
-
-  useEffect(() => {
-    if (!code || !state) return;
-
-    mutate(
-      {
-        input: {
-          workspaceId: workspace.id,
-          app: IntegrationApp.SLACK,
-          code,
-          state: decodeURIComponent(state),
-        },
-      },
-      {
-        onSuccess: () => {
-          showSuccessNotification({
-            message: "Slack successfully integrated.",
-          });
-        },
-        onError: () => {
-          showErrorNotification({
-            message: "Something went wrong. Please re-install the app.",
-          });
-        },
-        onSettled: () => {
-          navigate("/settings/integrations/slack");
-        },
-      },
-    );
-  }, [code, mutate, navigate, state, workspace.id]);
+  const { openConfirmationModal } = useConfirmationModal();
+  const { isIntegrating, handleUninstall } = useSlackIntegration();
 
   return (
     <PageContainer>
@@ -93,7 +53,7 @@ export const IntegrationSlackPage = () => {
               <Skeleton h={36} mt="lg" />
             </>
           }
-          isLoading={isLoading && !code}
+          isLoading={isLoading && !isIntegrating}
           content={
             <>
               <PageTitle
@@ -216,16 +176,35 @@ export const IntegrationSlackPage = () => {
                     fullWidth
                     component={Link}
                     to={integration.installUrl}
-                    loading={!!code}
+                    loading={isIntegrating}
                   >
                     Install
                   </Button>
                 )}
 
               {integration?.isEnabled && (
-                <Button mt="lg" fullWidth color="red" variant="outline">
-                  Uninstall
-                </Button>
+                <>
+                  <Button
+                    mt="lg"
+                    fullWidth
+                    color="red"
+                    variant="outline"
+                    onClick={() =>
+                      openConfirmationModal({
+                        title: "Uninstall Slack App",
+                        label: (
+                          <>
+                            This action <strong>cannot be reversed</strong>. You
+                            can reinstall our Slack app anytime.
+                          </>
+                        ),
+                        onConfirm: handleUninstall,
+                      })
+                    }
+                  >
+                    Uninstall
+                  </Button>
+                </>
               )}
             </>
           }

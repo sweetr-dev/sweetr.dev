@@ -9,6 +9,8 @@ import { graphQLClient } from "./clients/graphql-client";
 import {
   InstallIntegrationMutation,
   MutationInstallIntegrationArgs,
+  MutationRemoveIntegrationArgs,
+  RemoveIntegrationMutation,
   WorkspaceIntegrationsQuery,
   WorkspaceIntegrationsQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
@@ -54,6 +56,32 @@ export const useInstallIntegrationMutation = (
         graphql(/* GraphQL */ `
           mutation InstallIntegration($input: InstallIntegrationInput!) {
             installIntegration(input: $input)
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["integrations"],
+      });
+    },
+    ...options,
+  });
+
+export const useRemoveIntegrationMutation = (
+  options?: UseMutationOptions<
+    RemoveIntegrationMutation,
+    unknown,
+    MutationRemoveIntegrationArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation RemoveIntegration($input: RemoveIntegrationInput!) {
+            removeIntegration(input: $input)
           }
         `),
         args,

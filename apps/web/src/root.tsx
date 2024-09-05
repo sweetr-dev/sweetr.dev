@@ -1,5 +1,6 @@
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 import { QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
@@ -39,9 +40,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       },
     })}
   >
-    <QueryClientProvider client={queryClient}>
-      <Notifications />
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <ModalsProvider modalProps={{ centered: true }}>
+      <QueryClientProvider client={queryClient}>
+        <Notifications />
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ModalsProvider>
   </MantineProvider>,
 );
