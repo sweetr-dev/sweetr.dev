@@ -58,7 +58,7 @@ export const IntegrationSlackPage = () => {
             <>
               <PageTitle
                 title={
-                  <Group gap="md">
+                  <Group gap="md" mb="md">
                     <ImageIntegrationLogo brand="slack" h={40} />
                     <Title mb={0} order={2}>
                       Slack

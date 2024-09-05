@@ -22,7 +22,6 @@ export const PageTitle: FC<PageTitleProps> = ({ title, children }) => {
         {titleElement}
         {children}
       </Group>
-      <Space h="md" />
     </>
   );
 };
