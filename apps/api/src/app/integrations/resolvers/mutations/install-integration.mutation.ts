@@ -9,7 +9,7 @@ import {
 import { findWorkspaceById } from "../../../workspaces/services/workspace.service";
 import { installIntegration } from "../../services/integrations.service";
 
-export const installIntegrationMUtation = createMutationResolver({
+export const installIntegrationMutation = createMutationResolver({
   installIntegration: async (_, { input }, context) => {
     logger.info("mutation.installIntegration", { input });
 

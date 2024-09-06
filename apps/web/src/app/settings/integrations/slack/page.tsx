@@ -23,7 +23,7 @@ import { PageTitle } from "../../../../components/page-title";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { ListScopes } from "../components/list-scopes";
 import { Link } from "react-router-dom";
-import { useIntegrations } from "../useIntegrations";
+import { useIntegrations } from "../use-integrations";
 import { formatDate } from "../../../../providers/date.provider";
 import { useConfirmationModal } from "../../../../providers/modal.provider";
 import { useSlackIntegration } from "./use-slack-integration";

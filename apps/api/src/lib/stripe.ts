@@ -8,5 +8,5 @@ export const getStripeClient = (): Stripe => {
 
   stripeClient = new Stripe(env.STRIPE_API_KEY);
 
-  return new Stripe(env.STRIPE_API_KEY);
+  return stripeClient;
 };

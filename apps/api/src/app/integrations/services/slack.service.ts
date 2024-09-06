@@ -121,6 +121,7 @@ const getSlackClient = (integration?: Integration) => {
     integration ? getIntegrationData(integration).access_token : undefined
   );
 };
+
 const getIntegrationData = (integration: Integration): SlackIntegrationData => {
   return isObject(integration.data)
     ? integration.data

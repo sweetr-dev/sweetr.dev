@@ -5,7 +5,7 @@ import { LoadableContent } from "../../../components/loadable-content";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { ImageIntegrationLogo } from "./components/image-integration-logo";
-import { useIntegrations } from "./useIntegrations";
+import { useIntegrations } from "./use-integrations";
 
 export const IntegrationsPage = () => {
   const navigate = useNavigate();
