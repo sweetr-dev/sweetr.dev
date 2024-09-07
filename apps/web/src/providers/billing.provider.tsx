@@ -46,7 +46,12 @@ export const usePaywall = () => {
   const { hasInactiveSubscription } = useBilling();
   const { workspace } = useWorkspace();
   const shouldShowPaywall =
-    !workspace.isActiveCustomer && pathname != "/settings/billing";
+    !workspace.isActiveCustomer &&
+    ![
+      "/settings/billing",
+      "/settings/workspace",
+      "/settings/my-account",
+    ].includes(pathname);
 
   const showPaywallNotification = () => {
     if (findNotification("paywall").length > 0) return;
