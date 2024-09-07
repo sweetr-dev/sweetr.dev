@@ -10,6 +10,7 @@ export const initSentry = () => {
   Sentry.init({
     dsn,
     environment: import.meta.env.VITE_ENV,
+    enabled: import.meta.env.VITE_ENV !== "development",
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration(),
