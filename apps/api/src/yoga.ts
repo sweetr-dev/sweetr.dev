@@ -27,5 +27,7 @@ export const yoga = createYoga<GraphQLContext>({
   logging: false,
   cors: {
     origin: env.FRONTEND_URL,
+    methods: ["*"],
+    credentials: true,
   },
 });
