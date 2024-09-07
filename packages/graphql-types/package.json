@@ -1,7 +1,38 @@
 {
   "name": "@sweetr/graphql-types",
-  "main": "index.ts",
-  "types": "index.ts",
+  "exports": {
+    "./index": {
+      "types": "./src/index.tsx",
+      "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./src/api.tsx",
+      "default": "./dist/api.js"
+    },
+    "./shared": {
+      "types": "./src/shared.tsx",
+      "default": "./dist/shared.js"
+    },
+    "./frontend": {
+      "types": "./src/frontend/index.tsx",
+      "default": "./dist/frontend/index.js"
+    },
+    "./frontend/gql": {
+      "types": "./src/frontend/gql.tsx",
+      "default": "./dist/frontend/gql.js"
+    },
+    "./frontend/graphql": {
+      "types": "./src/frontend/graphql.tsx",
+      "default": "./dist/frontend/graphql.js"
+    },
+    "./frontend/fragment-masking": {
+      "types": "./src/frontend/fragment-masking.tsx",
+      "default": "./dist/frontend/fragment-masking.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "typescript": "^4.9.3"
   }
