@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "dev": "concurrently --names \"API,GQL\" -c \"bgGreen.bold,bgMagenta.bold\" \"npm run dev:api\" \"npm run graphql:generate -- --watch\"",
     "dev:api": "tsx watch src/index.ts | pino-pretty --I msg,payload",

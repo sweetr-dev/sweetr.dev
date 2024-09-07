@@ -2,7 +2,7 @@ import { PullRequest as DatabasePullRequest, GitProfile } from "@prisma/client";
 import {
   PullRequest as ApiPullRequest,
   PullRequestState,
-} from "@sweetr/graphql-types/dist/api";
+} from "@sweetr/graphql-types/api";
 
 export const transformPullRequest = (
   pullRequest: DatabasePullRequest & {

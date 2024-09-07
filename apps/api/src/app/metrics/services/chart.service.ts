@@ -1,4 +1,4 @@
-import { Period } from "@sweetr/graphql-types/dist/api";
+import { Period } from "@sweetr/graphql-types/api";
 
 export const periodToDateTrunc = (period: Period): string => {
   const dateTruncMap: Record<Period, string> = {

@@ -1,5 +1,5 @@
 import { Repository as DatabaseRepository } from "@prisma/client";
-import { Repository as ApiRepository } from "@sweetr/graphql-types/dist/api";
+import { Repository as ApiRepository } from "@sweetr/graphql-types/api";
 
 export const transformRepository = (
   repository: DatabaseRepository

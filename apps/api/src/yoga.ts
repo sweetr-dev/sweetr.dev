@@ -1,6 +1,6 @@
 import { loadFilesSync } from "@graphql-tools/load-files";
 import { mergeTypeDefs, mergeResolvers } from "@graphql-tools/merge";
-import { GraphQLContext } from "@sweetr/graphql-types/dist/shared";
+import { GraphQLContext } from "@sweetr/graphql-types/shared";
 import { createSchema, createYoga } from "graphql-yoga";
 import { join } from "path";
 import { authPlugin } from "./app/auth/resolvers/plugins/auth.plugin";

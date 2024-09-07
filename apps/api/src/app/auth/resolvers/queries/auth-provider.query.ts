@@ -1,4 +1,4 @@
-import { AuthProvider } from "@sweetr/graphql-types/dist/api";
+import { AuthProvider } from "@sweetr/graphql-types/api";
 import { GraphQLError } from "graphql";
 import { createQueryResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";

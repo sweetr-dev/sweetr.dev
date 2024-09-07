@@ -1,7 +1,7 @@
 import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { periodToDateTrunc } from "./chart.service";
-import { Period } from "@sweetr/graphql-types/dist/api";
+import { Period } from "@sweetr/graphql-types/api";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 
 interface ChartFilters {

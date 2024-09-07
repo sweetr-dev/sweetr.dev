@@ -1,7 +1,7 @@
 import { GraphQLError, GraphQLErrorOptions } from "graphql";
-import { ErrorCode } from "@sweetr/graphql-types/dist/shared";
+import { ErrorCode } from "@sweetr/graphql-types/shared";
 import { ExceptionSeverity } from "../../../lib/sentry";
-export { ErrorCode } from "@sweetr/graphql-types/dist/shared";
+export { ErrorCode } from "@sweetr/graphql-types/shared";
 
 export interface BaseExceptionOptions {
   code: ErrorCode;

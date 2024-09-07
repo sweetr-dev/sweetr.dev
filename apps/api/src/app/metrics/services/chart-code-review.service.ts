@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
-import { Period } from "@sweetr/graphql-types/dist/api";
+import { Period } from "@sweetr/graphql-types/api";
 import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
 

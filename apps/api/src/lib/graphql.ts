@@ -2,7 +2,7 @@ import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-} from "@sweetr/graphql-types/dist/api";
+} from "@sweetr/graphql-types/api";
 
 export const createQueryResolver = (resolvers: QueryResolvers): Resolvers => {
   return {

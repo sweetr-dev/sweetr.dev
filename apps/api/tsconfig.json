@@ -24,6 +24,5 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "references": [{ "path": "../../packages/graphql-types" }],
   "include": ["src/**/*", "__tests__/**/*"]
 }

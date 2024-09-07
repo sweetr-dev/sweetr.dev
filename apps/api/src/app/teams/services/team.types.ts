@@ -1,4 +1,4 @@
-import { TeamMemberRole } from "@sweetr/graphql-types/dist/api";
+import { TeamMemberRole } from "@sweetr/graphql-types/api";
 
 export interface FindTeamByIdInput {
   workspaceId: number;

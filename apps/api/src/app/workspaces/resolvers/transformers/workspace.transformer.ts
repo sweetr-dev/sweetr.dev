@@ -4,7 +4,7 @@ import {
   Installation,
   Organization,
 } from "@prisma/client";
-import { Workspace as ApiWorkspace } from "@sweetr/graphql-types/dist/api";
+import { Workspace as ApiWorkspace } from "@sweetr/graphql-types/api";
 import {
   getWorkspaceAvatar,
   getWorkspaceHandle,
