@@ -1,8 +1,12 @@
 {
   "name": "@sweetr/graphql-types",
   "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
     "./index": {
-      "types": "./src/index.tsx",
+      "types": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./api": {
@@ -14,19 +18,19 @@
       "default": "./dist/shared.js"
     },
     "./frontend": {
-      "types": "./src/frontend/index.tsx",
+      "types": "./src/frontend/index.ts",
       "default": "./dist/frontend/index.js"
     },
     "./frontend/gql": {
-      "types": "./src/frontend/gql.tsx",
+      "types": "./src/frontend/gql.ts",
       "default": "./dist/frontend/gql.js"
     },
     "./frontend/graphql": {
-      "types": "./src/frontend/graphql.tsx",
+      "types": "./src/frontend/graphql.ts",
       "default": "./dist/frontend/graphql.js"
     },
     "./frontend/fragment-masking": {
-      "types": "./src/frontend/fragment-masking.tsx",
+      "types": "./src/frontend/fragment-masking.ts",
       "default": "./dist/frontend/fragment-masking.js"
     }
   },

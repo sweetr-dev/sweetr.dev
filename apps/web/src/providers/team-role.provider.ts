@@ -1,4 +1,4 @@
-import { TeamMemberRole } from "@sweetr/graphql-types/dist/api";
+import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 
 export const teamRoleColorMap: Record<TeamMemberRole, string> = {
   ENGINEER: "green",
