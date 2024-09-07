@@ -2,7 +2,14 @@
   "name": "@sweetr/graphql-types",
   "main": "index.ts",
   "types": "index.ts",
+  "scripts": {
+    "generate": "graphql-codegen -c=./codegen.ts",
+    "dev": "npm run generate -- --watch \"../../apps/api/src/**/*.schema.ts\" \"../../apps/web/src/**/*.api.{ts,.tsx}\""
+  },
   "dependencies": {
     "typescript": "^4.9.3"
+  },
+  "devDependencies": {
+    "@parcel/watcher": "^2.4.1"
   }
 }

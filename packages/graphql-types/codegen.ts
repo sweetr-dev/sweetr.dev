@@ -37,10 +37,7 @@ const config: CodegenConfig = {
       plugins: [],
     },
   },
-  documents: [
-    "./../../apps/web/**/*.api.ts",
-    "./../../apps/api/**/*.schema.ts",
-  ],
+  documents: ["../../apps/web/**/*.api.ts", "../../apps/api/**/*.schema.ts"],
   config: {
     strictScalars: true,
     namingConvention: {

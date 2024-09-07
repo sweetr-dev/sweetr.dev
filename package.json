@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev --parallel --filter api --filter web --filter @sweetr/graphql-types",
+    "graphql:generate": "npm run generate --workspace @sweetr/graphql-types",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:up": "docker-compose up -d",
@@ -23,7 +24,6 @@
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
     "prettier": "latest",
     "turbo": "latest"
   },
