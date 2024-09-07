@@ -21,7 +21,14 @@ expressApp
       },
     })
   )
-  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }));
+  .use(
+    cors({
+      origin: "*",
+      credentials: true,
+      methods: ["*"],
+      allowedHeaders: ["*"],
+    })
+  );
 
 // Route handlers
 expressApp.use(githubRouter);
