@@ -25,4 +25,7 @@ export const yoga = createYoga<GraphQLContext>({
   graphiql: env.NODE_ENV === "development",
   landingPage: false,
   logging: false,
+  cors: {
+    origin: env.FRONTEND_URL,
+  },
 });
