@@ -24,6 +24,9 @@ export enum SweetQueue {
   // Stripe
   STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
 
+  // Slack
+  SLACK_APP_UNINSTALLED = "{slack.app.uninstalled}",
+
   // Automations
   AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",
 }

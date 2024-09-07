@@ -19,7 +19,8 @@
     "prisma:format": "prisma format",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
-    "prisma:migrate:new": "prisma migrate dev --create-only --name"
+    "prisma:migrate:new": "prisma migrate dev --create-only --name",
+    "prisma:migrate:production": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed/run-seeder.ts"
@@ -36,6 +37,7 @@
     "@prisma/client": "^5.5.2",
     "@sentry/node": "^8.25.0",
     "@sentry/profiling-node": "^8.25.0",
+    "@slack/web-api": "^7.3.4",
     "@sweetr/email-templates": "*",
     "@sweetr/graphql-types": "*",
     "@yarnpkg/lockfile": "^1.1.0",

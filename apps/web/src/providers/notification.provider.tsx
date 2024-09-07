@@ -9,29 +9,35 @@ type Args = Omit<NotificationData, "message"> & {
   message?: string | React.ReactNode;
 };
 
-export const showErrorNotification = (args: Args): void => {
-  showNotification({
-    title: "Error",
-    color: "red",
-    withBorder: true,
-    message: "",
-    icon: <IconX stroke={1.5} />,
-    ...args,
-  });
+export const errorNotificationProps = {
+  title: "Error",
+  color: "red",
+  withBorder: true,
+  message: "",
+  icon: <IconX stroke={1.5} />,
 };
 
-export const showSuccessNotification = (args: Args): void => {
+export const showErrorNotification = (args: Args) =>
   showNotification({
-    title: "Success",
-    color: "green",
-    withBorder: true,
-    message: "",
-    icon: <IconCheck stroke={1.5} />,
+    ...errorNotificationProps,
     ...args,
   });
+
+export const successNotificationProps = {
+  title: "Success",
+  color: "green",
+  withBorder: true,
+  message: "",
+  icon: <IconCheck stroke={1.5} />,
 };
 
-export const showWarningNotification = (args: Args): void => {
+export const showSuccessNotification = (args: Args) =>
+  showNotification({
+    ...successNotificationProps,
+    ...args,
+  });
+
+export const showWarningNotification = (args: Args) =>
   showNotification({
     title: "Warning",
     color: "yellow",
@@ -39,9 +45,8 @@ export const showWarningNotification = (args: Args): void => {
     message: "",
     ...args,
   });
-};
 
-export const showInfoNotification = (args: Args): void => {
+export const showInfoNotification = (args: Args) =>
   showNotification({
     title: "Info",
     color: "gray",
@@ -50,7 +55,6 @@ export const showInfoNotification = (args: Args): void => {
     icon: <IconInfoCircle stroke={1.5} />,
     ...args,
   });
-};
 
 export const useNotifications = () => {
   const store = useMantineNotifications();

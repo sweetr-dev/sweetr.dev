@@ -104,6 +104,7 @@ export const TeamPage = () => {
           <Stack
             gap="xs"
             pl="lg"
+            mb="xs"
             py={4}
             className={classes.header}
             style={{

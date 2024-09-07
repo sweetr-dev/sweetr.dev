@@ -91,9 +91,14 @@ const fetchWebhookDeliveriesSince = async (fetchSince: number) => {
   const deliveries: GitHubAppWebhook[] = [];
 
   for await (const { data } of iterator) {
+    const lastDelivery = data[data.length - 1];
+
+    if (!lastDelivery) break;
+
     const oldestDeliveryTimestamp = new Date(
-      data[data.length - 1].delivered_at
+      lastDelivery.delivered_at
     ).getTime();
+
     if (oldestDeliveryTimestamp < fetchSince) {
       for (const delivery of data) {
         if (new Date(delivery.delivered_at).getTime() > fetchSince) {

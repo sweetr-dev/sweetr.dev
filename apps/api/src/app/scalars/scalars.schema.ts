@@ -3,4 +3,5 @@ export default /* GraphQL */ `
   scalar BigInt
   scalar DateTime
   scalar HexColorCode
+  scalar Void
 `;

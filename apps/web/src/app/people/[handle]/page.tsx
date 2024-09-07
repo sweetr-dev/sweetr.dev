@@ -64,7 +64,7 @@ export const PersonPage = () => {
 
       <PageTitle
         title={
-          <Group>
+          <Group mb="xs">
             <Avatar src={person.avatar} radius="50%" size={80} />
 
             <Stack gap={2}>

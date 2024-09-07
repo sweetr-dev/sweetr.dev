@@ -2,6 +2,7 @@ import {
   DateTimeResolver,
   BigIntResolver,
   HexColorCodeResolver,
+  VoidResolver,
 } from "graphql-scalars";
 import { sweetIdResolver } from "./sweet-id.scalar";
 
@@ -10,4 +11,5 @@ export const scalarsResolver = {
   SweetID: sweetIdResolver,
   BigInt: BigIntResolver,
   HexColorCode: HexColorCodeResolver,
+  Void: VoidResolver,
 };

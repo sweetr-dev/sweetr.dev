@@ -1,9 +1,11 @@
-import appConfig from "./app.config";
-import authConfig from "./auth.config";
-import githubConfig from "./github.config";
+import app from "./app.config";
+import auth from "./auth.config";
+import github from "./github.config";
+import slack from "./slack.config";
 
 export const config = {
-  app: appConfig,
-  auth: authConfig,
-  github: githubConfig,
+  app,
+  auth,
+  github,
+  slack,
 };
