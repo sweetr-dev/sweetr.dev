@@ -23,6 +23,7 @@ export const installIntegration = async (
     response = await getSlackClient().oauth.v2.access({
       client_id: config.slack.clientId,
       client_secret: config.slack.clientSecret,
+      redirect_uri: config.slack.redirectUrl,
       code,
     });
   } catch (error) {
@@ -142,6 +143,13 @@ const getIntegrationData = (integration: Integration): SlackIntegrationData => {
     : JSON.parse(integration.data as string);
 };
 
-export const getInstallUrl = () => {
-  return `https://slack.com/oauth/v2/authorize?client_id=${config.slack.clientId}&state=${encodeURIComponent(getTemporaryNonce())}&scope=${config.slack.scope}&user_scope=`;
+export const getInstallUrl = (): string => {
+  const url = new URL("https://slack.com/oauth/v2/authorize");
+
+  url.searchParams.append("client_id", config.slack.clientId);
+  url.searchParams.append("state", encodeURIComponent(getTemporaryNonce()));
+  url.searchParams.append("redirect_uri", config.slack.redirectUrl);
+  url.searchParams.append("scope", config.slack.scope);
+
+  return url.toString();
 };

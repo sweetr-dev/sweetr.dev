@@ -6,4 +6,5 @@ export default {
   webhookSecret: env.SLACK_WEBHOOK_SECRET,
   scope:
     "app_mentions:read,channels:join,users.profile:read,users:read,users:read.email,chat:write,im:write",
+  redirectUrl: env.FRONTEND_URL + "/settings/integrations/slack",
 };
