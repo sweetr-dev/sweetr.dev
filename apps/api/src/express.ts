@@ -24,9 +24,6 @@ expressApp
   .use(
     cors({
       origin: "*",
-      credentials: true,
-      methods: ["*"],
-      allowedHeaders: ["*"],
     })
   );
 
