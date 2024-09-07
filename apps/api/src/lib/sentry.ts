@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { env } from "../env";
+import { env, isDev } from "../env";
 import { ScopeContext } from "@sentry/types";
 import { BaseException } from "../app/errors/exceptions/base.exception";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
@@ -11,7 +11,7 @@ export const initSentry = () => {
   Sentry.init({
     dsn: env.SENTRY_DSN,
     environment: env.APP_ENV,
-    enabled: !isAppSelfHosted(),
+    enabled: !isAppSelfHosted() && !isDev,
     beforeBreadcrumb(breadcrumb) {
       if (breadcrumb.category === "console") {
         return null;
