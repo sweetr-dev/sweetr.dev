@@ -1,10 +1,10 @@
 import { Integration, Workspace } from "@prisma/client";
 import { IntegrationApp } from "@sweetr/graphql-types/api";
-import { getPrisma } from "../../../prisma";
-import { config } from "../../../config";
-import { getTemporaryNonce } from "../../workspace-authorization.service";
-import { getSlackWebClient } from "../../../lib/slack";
-import { IntegrationException } from "../../errors/exceptions/integration.exception";
+import { getPrisma } from "../../../../prisma";
+import { config } from "../../../../config";
+import { getTemporaryNonce } from "../../../workspace-authorization.service";
+import { getSlackWebClient } from "../../../../lib/slack";
+import { IntegrationException } from "../../../errors/exceptions/integration.exception";
 import { OauthV2AccessResponse } from "@slack/web-api";
 import { isObject, omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
@@ -88,6 +88,17 @@ export const removeIntegration = async (workspace: Workspace) => {
   await getPrisma(workspace.id).integration.delete({
     where: {
       id: integration.id,
+    },
+  });
+};
+
+export const removeIntegrationByTeamId = async (teamId: string) => {
+  return getPrisma().integration.deleteMany({
+    where: {
+      data: {
+        path: ["team", "id"],
+        equals: teamId,
+      },
     },
   });
 };

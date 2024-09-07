@@ -4,7 +4,11 @@ import { OpenConfirmModal } from "@mantine/modals/lib/context";
 import { ReactNode } from "react";
 
 type ConfirmationModalArgs =
-  | (OpenConfirmModal & { label?: string | ReactNode; title?: string })
+  | (OpenConfirmModal & {
+      label?: string | ReactNode;
+      title?: string;
+      confirmLabel?: string;
+    })
   | undefined;
 
 export const useConfirmationModal = () => {
@@ -31,10 +35,11 @@ export const useConfirmationModal = () => {
           style: { borderTop: `1px solid ${theme.colors.dark[4]}` },
         },
         size: "sm",
-        labels: { confirm: "Confirm", cancel: "Cancel" },
+        labels: {
+          confirm: payload?.confirmLabel || "Confirm",
+          cancel: "Cancel",
+        },
         confirmProps: { color: "red" },
-        onCancel: () => console.log("Cancel"),
-        onConfirm: () => console.log("Confirmed"),
         ...payload,
       }),
   };

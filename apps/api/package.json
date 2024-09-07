@@ -19,7 +19,8 @@
     "prisma:format": "prisma format",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
-    "prisma:migrate:new": "prisma migrate dev --create-only --name"
+    "prisma:migrate:new": "prisma migrate dev --create-only --name",
+    "prisma:migrate:production": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed/run-seeder.ts"

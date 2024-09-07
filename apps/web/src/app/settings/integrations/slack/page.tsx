@@ -194,10 +194,12 @@ export const IntegrationSlackPage = () => {
                         title: "Uninstall Slack App",
                         label: (
                           <>
-                            This action <strong>cannot be reversed</strong>. You
-                            can reinstall our Slack app anytime.
+                            Your automation settings will not be removed. You
+                            can reinstall Slack anytime to re-enable
+                            notifications.
                           </>
                         ),
+                        confirmLabel: "Uninstall Slack",
                         onConfirm: handleUninstall,
                       })
                     }

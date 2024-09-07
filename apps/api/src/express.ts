@@ -5,6 +5,7 @@ import { errorHandler } from "./lib/express-helpers";
 import { bullBoardRouter } from "./bull-mq/bull-board.router";
 import { setupExpressErrorHandler } from "./lib/sentry";
 import { stripeRouter } from "./app/billing/stripe.router";
+import { slackRouter } from "./app/integrations/slack/slack.router";
 
 export const expressApp = express();
 
@@ -21,6 +22,7 @@ expressApp.use(
 // Route handlers
 expressApp.use(githubRouter);
 expressApp.use(stripeRouter);
+expressApp.use(slackRouter);
 expressApp.use(bullBoardRouter);
 
 expressApp.use(yoga); // Leave Yoga last
