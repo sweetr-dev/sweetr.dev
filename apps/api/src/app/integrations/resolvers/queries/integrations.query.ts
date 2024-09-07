@@ -1,4 +1,4 @@
-import { Integration } from "@sweetr/graphql-types/api";
+import { Integration } from "@sweetr/graphql-types/dist/api";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";

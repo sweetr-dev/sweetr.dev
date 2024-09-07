@@ -8,10 +8,7 @@ import { OauthV2AccessResponse } from "@slack/web-api";
 import { isObject, omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
-
-enum IntegrationApp {
-  SLACK = "SLACK",
-}
+import { IntegrationApp } from "@sweetr/graphql-types/dist/api";
 
 export const installIntegration = async (
   workspace: Workspace,

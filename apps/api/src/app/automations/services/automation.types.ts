@@ -1,4 +1,4 @@
-import { AutomationSlug } from "@sweetr/graphql-types/api";
+import { AutomationSlug } from "@sweetr/graphql-types/dist/api";
 
 export interface FindAutomationBySlug {
   workspaceId: number;

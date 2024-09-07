@@ -4,7 +4,7 @@ import {
   AutomationBenefits,
   AutomationScope,
   AutomationSlug,
-} from "@sweetr/graphql-types/api";
+} from "@sweetr/graphql-types/dist/api";
 
 export const transformAutomation = (
   automation: DbAutomation & { settings: AutomationSetting[] }
