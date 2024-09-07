@@ -1,3 +1,4 @@
+import { Integration } from "@sweetr/graphql-types/api";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
@@ -11,6 +12,8 @@ export const workspaceIntegrationsQuery = createFieldResolver("Workspace", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return getWorkspaceIntegrations(workspaceId);
+    const integrations = await getWorkspaceIntegrations(workspaceId);
+
+    return integrations as Integration[];
   },
 });
