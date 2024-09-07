@@ -1,5 +1,4 @@
 import { Integration, Workspace } from "@prisma/client";
-import { IntegrationApp } from "@sweetr/graphql-types/api";
 import { getPrisma } from "../../../../prisma";
 import { config } from "../../../../config";
 import { getTemporaryNonce } from "../../../workspace-authorization.service";
@@ -9,6 +8,10 @@ import { OauthV2AccessResponse } from "@slack/web-api";
 import { isObject, omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
+
+enum IntegrationApp {
+  SLACK = "SLACK",
+}
 
 export const installIntegration = async (
   workspace: Workspace,
