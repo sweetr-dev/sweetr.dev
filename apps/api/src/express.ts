@@ -6,18 +6,22 @@ import { bullBoardRouter } from "./bull-mq/bull-board.router";
 import { setupExpressErrorHandler } from "./lib/sentry";
 import { stripeRouter } from "./app/billing/stripe.router";
 import { slackRouter } from "./app/integrations/slack/slack.router";
+import cors from "cors";
+import { env } from "./env";
 
 export const expressApp = express();
 
 // Middlewares
-expressApp.use(
-  express.json({
-    limit: "50mb",
-    verify: (req, _res, buf) => {
-      req.rawBody = buf.toString();
-    },
-  })
-);
+expressApp
+  .use(
+    express.json({
+      limit: "50mb",
+      verify: (req, _res, buf) => {
+        req.rawBody = buf.toString();
+      },
+    })
+  )
+  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }));
 
 // Route handlers
 expressApp.use(githubRouter);
