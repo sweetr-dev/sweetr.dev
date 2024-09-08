@@ -13,9 +13,11 @@ import {
 } from "@octokit/webhooks-types";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
-import { octokit } from "../../../lib/octokit";
+import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
 import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
 import { addDays, endOfDay } from "date-fns";
+import { JsonObject } from "@prisma/client/runtime/library";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -196,5 +198,29 @@ const connectUserToWorkspace = async (
       // TO-DO: Role = ADMIN
     },
     update: {},
+  });
+};
+
+export const syncInstallationConfig = async (gitInstallationId: number) => {
+  const { data, status } = await getInstallationOctoKit(
+    gitInstallationId
+  ).rest.apps.getInstallation({
+    installation_id: gitInstallationId,
+  });
+
+  if (status !== 200) {
+    throw new ResourceNotFoundException("GitHub Installation not found");
+  }
+
+  return getBypassRlsPrisma().installation.update({
+    where: {
+      gitInstallationId: gitInstallationId.toString(),
+    },
+    data: {
+      permissions: data.permissions,
+      events: data.events,
+      repositorySelection: data.repository_selection,
+      suspendedAt: data.suspended_at ? new Date(data.suspended_at) : null,
+    },
   });
 };
