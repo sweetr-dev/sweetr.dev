@@ -17,6 +17,7 @@ export type Scalars = {
   BigInt: { input: number; output: number; }
   DateTime: { input: string; output: string; }
   HexColorCode: { input: string; output: string; }
+  JSONObject: { input: object; output: object; }
   SweetID: { input: string; output: string; }
   Void: { input: null; output: null; }
 };
@@ -529,6 +530,7 @@ export type UnarchiveTeamInput = {
 
 export type UpdateAutomationInput = {
   enabled: Scalars['Boolean']['input'];
+  settings?: InputMaybe<Scalars['JSONObject']['input']>;
   slug: AutomationSlug;
   workspaceId: Scalars['SweetID']['input'];
 };

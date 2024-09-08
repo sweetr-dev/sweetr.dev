@@ -19,6 +19,7 @@ export type Scalars = {
   BigInt: { input: bigint; output: bigint; }
   DateTime: { input: string; output: string; }
   HexColorCode: { input: string; output: string; }
+  JSONObject: { input: object; output: object; }
   SweetID: { input: number; output: number; }
   Void: { input: null; output: null; }
 };
@@ -531,6 +532,7 @@ export type UnarchiveTeamInput = {
 
 export type UpdateAutomationInput = {
   enabled: Scalars['Boolean']['input'];
+  settings?: InputMaybe<Scalars['JSONObject']['input']>;
   slug: AutomationSlug;
   workspaceId: Scalars['SweetID']['input'];
 };
@@ -718,6 +720,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
   Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
   IntegrationApp: ResolverTypeWrapper<DeepPartial<IntegrationApp>>;
+  JSONObject: ResolverTypeWrapper<DeepPartial<Scalars['JSONObject']['output']>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
@@ -785,6 +788,7 @@ export type ResolversParentTypes = {
   InstallIntegrationInput: DeepPartial<InstallIntegrationInput>;
   Int: DeepPartial<Scalars['Int']['output']>;
   Integration: DeepPartial<Integration>;
+  JSONObject: DeepPartial<Scalars['JSONObject']['output']>;
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
@@ -933,6 +937,10 @@ export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extend
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
 
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1122,6 +1130,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
   Integration?: IntegrationResolvers<ContextType>;
+  JSONObject?: GraphQLScalarType;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NumericChartData?: NumericChartDataResolvers<ContextType>;

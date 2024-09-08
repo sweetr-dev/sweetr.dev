@@ -51,6 +51,6 @@ export default /* GraphQL */ `
     workspaceId: SweetID!
     slug: AutomationSlug!
     enabled: Boolean!
-    settings: JSON
+    settings: JSONObject
   }
 `;

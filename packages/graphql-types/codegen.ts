@@ -8,6 +8,7 @@ const scalars = {
   DateTime: "string",
   BigInt: "bigint",
   HexColorCode: "string",
+  JSONObject: "object",
   Void: "null",
 };
 
