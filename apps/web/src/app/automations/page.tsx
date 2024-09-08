@@ -1,7 +1,7 @@
-import { SimpleGrid, Skeleton } from "@mantine/core";
+import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { CardAutomation } from "./components/card-automation";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PageContainer } from "../../components/page-container";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { useWorkspaceAutomationsQuery } from "../../api/automation.api";
@@ -42,17 +42,6 @@ const futureAutomations = [
       failureRate: "1",
     },
   },
-  {
-    title: "PR Title Requirements",
-    shortDescription:
-      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
-    status: "soon" as const,
-    color: "red.1",
-    icon: "✍️",
-    benefits: {
-      compliance: "1",
-    },
-  },
 ];
 
 export const AutomationsPage = () => {
@@ -82,13 +71,18 @@ export const AutomationsPage = () => {
         content={
           <SimpleGrid cols={{ base: 1, md: 3 }}>
             {automations.map((automation) => (
-              <CardAutomation
-                {...automation}
+              <Anchor
                 key={automation.slug}
-                available={true}
-                description={automation.shortDescription}
-                onClick={() => navigate(`/automations/${automation.slug}`)}
-              />
+                component={Link}
+                to={`/automations/${automation.slug}`}
+                underline="never"
+              >
+                <CardAutomation
+                  {...automation}
+                  available={true}
+                  description={automation.shortDescription}
+                />
+              </Anchor>
             ))}
             {futureAutomations.map((automation) => (
               <CardAutomation

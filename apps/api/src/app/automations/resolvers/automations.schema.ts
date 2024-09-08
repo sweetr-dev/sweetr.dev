@@ -1,6 +1,6 @@
 export default /* GraphQL */ `
   enum AutomationSlug {
-    LABEL_PR_SIZE
+    PR_TITLE_CHECK
   }
 
   enum AutomationScope {
@@ -51,5 +51,6 @@ export default /* GraphQL */ `
     workspaceId: SweetID!
     slug: AutomationSlug!
     enabled: Boolean!
+    settings: JSON
   }
 `;

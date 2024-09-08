@@ -11,21 +11,21 @@ export const BadgeAutomationStatus = ({
 }: BadgeAutomationStatusProps) => {
   if (!available) {
     return (
-      <Badge size="lg" color="gray" variant="light">
+      <Badge size="lg" color="gray" variant="light" radius="sm">
         Coming Soon
       </Badge>
     );
   }
   if (enabled) {
     return (
-      <Badge size="lg" color="green" variant="light">
+      <Badge size="lg" color="green" variant="light" radius="sm">
         On
       </Badge>
     );
   }
 
   return (
-    <Badge size="lg" color="red" variant="light">
+    <Badge size="lg" color="red" variant="light" radius="sm">
       Off
     </Badge>
   );

@@ -4,7 +4,6 @@ import {
   Group,
   Paper,
   Stack,
-  Switch,
   Text,
   Title,
   Button,
@@ -19,21 +18,16 @@ import {
 } from "../components/icon-automation-benefit";
 import { IconBook2 } from "@tabler/icons-react";
 import { PageContainer } from "../../../components/page-container";
-import {
-  useUpdateAutomationMutation,
-  useWorkspaceAutomationQuery,
-} from "../../../api/automation.api";
+import { useWorkspaceAutomationQuery } from "../../../api/automation.api";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { useParams } from "react-router-dom";
 import { ResourceNotFound } from "../../../exceptions/resource-not-found.exception";
 import { AutomationSlug } from "@sweetr/graphql-types/frontend/graphql";
 import { LoadableContent } from "../../../components/loadable-content";
-import {
-  showErrorNotification,
-  showSuccessNotification,
-} from "../../../providers/notification.provider";
 import { benefitLabels } from "../../../providers/automation.provider";
 import { ImageDemo } from "./components/image-demo";
+import { SettingEnabled } from "./components/form-automation-settings";
+import { FormAutomationSettings } from "./components/form-automation-settings/form-automation-settings";
 
 export const AutomationPage = () => {
   const { workspace } = useWorkspace();
@@ -48,31 +42,6 @@ export const AutomationPage = () => {
 
   const automation = data?.workspace.automation;
 
-  const { mutate, isPending } = useUpdateAutomationMutation({
-    onSuccess: (automation) => {
-      showSuccessNotification({
-        message: `Automation ${
-          automation.updateAutomation.enabled ? "enabled" : "disabled"
-        }.`,
-      });
-    },
-    onError: () => {
-      showErrorNotification({
-        message: "Something went wrong. Please try again.",
-      });
-    },
-  });
-
-  const handleChange = (isEnabled: boolean) => {
-    mutate({
-      input: {
-        workspaceId: workspace.id,
-        slug,
-        enabled: isEnabled,
-      },
-    });
-  };
-
   return (
     <PageContainer>
       <Breadcrumbs
@@ -82,7 +51,7 @@ export const AutomationPage = () => {
         ]}
       />
 
-      <Box maw={700}>
+      <Box maw={650}>
         <LoadableContent
           whenLoading={
             <>
@@ -126,36 +95,23 @@ export const AutomationPage = () => {
                 <ImageDemo title={automation.title} src={automation.demoUrl} />
               )}
               <Text mt="sm">{automation?.description}</Text>
-              <Divider label="Setup" labelPosition="left" mt="lg" mb="sm" />
+              <Divider my="lg" />
+              <Title order={5} mb="sm">
+                Setup
+              </Title>
               <Stack>
-                <Paper withBorder p="sm">
-                  <Group wrap="nowrap" justify="space-between">
-                    <Text fw={500} fz="lg">
-                      Enabled
-                    </Text>{" "}
-                    <Switch
-                      size="lg"
-                      color="green.7"
-                      onLabel="ON"
-                      offLabel="OFF"
-                      checked={automation?.enabled || false}
-                      onChange={(event) =>
-                        handleChange(event.currentTarget.checked)
-                      }
-                      disabled={isPending}
-                    />
-                  </Group>
+                <Paper withBorder py="sm">
+                  {automation && (
+                    <FormAutomationSettings automation={automation} />
+                  )}
                 </Paper>
               </Stack>
 
               {automation?.benefits && (
                 <>
-                  <Divider
-                    label="Benefits"
-                    labelPosition="left"
-                    mt="lg"
-                    mb="sm"
-                  />
+                  <Title order={5} mt="lg" mb="sm">
+                    Benefits
+                  </Title>
                   <Stack gap="xs">
                     {Object.entries(automation.benefits).map(
                       ([key, value]) =>
@@ -168,13 +124,14 @@ export const AutomationPage = () => {
                                   size: "xl",
                                   variant: "light",
                                 }}
+                                showTooltip={false}
                                 iconProps={{ size: "24" }}
                               />
                               <div>
                                 <strong>
                                   {benefitLabels[key as AutomationBenefit]}:
                                 </strong>{" "}
-                                {value}.
+                                {value}
                               </div>
                             </Group>
                           </Paper>

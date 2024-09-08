@@ -2,21 +2,19 @@ import { Automation, Prisma, PrismaClient } from "@prisma/client";
 
 const automations: Omit<Automation, "id">[] = [
   {
-    slug: "LABEL_PR_SIZE",
-    title: "Label PR Size",
+    slug: "PR_TITLE_CHECK",
+    title: "PR Title Requirements",
     description:
-      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
+      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
     shortDescription:
-      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
+      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
     demoUrl: "https://google.com",
     docsUrl: "https://docs.sweetr.dev",
     available: true,
     color: "red.1",
-    icon: "📦",
+    icon: "✍️",
     benefits: {
-      cycleTime:
-        "Helps encouraing smaller PRs and getting them reviewed faster.",
-      failureRate: "Lower risks with smaller changesets.",
+      compliance: "Standardize Pull Request titles across the organization.",
     },
     createdAt: new Date(),
     updatedAt: new Date(),

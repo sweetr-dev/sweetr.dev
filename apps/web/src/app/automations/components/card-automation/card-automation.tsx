@@ -45,16 +45,7 @@ export const CardAutomation = ({
         p="md"
         style={{ borderBottom: "1px solid #303030", flexGrow: 1 }}
       >
-        <Stack gap="xs" h="100%">
-          <BadgeAutomationStatus enabled={enabled} available={available} />
-
-          <Box style={{ flexGrow: 1 }}>
-            <Title order={2} size="h4">
-              {title}
-            </Title>
-            <Text mt="xs">{description}</Text>
-          </Box>
-
+        <Stack gap="md" h="100%">
           <Group gap={4}>
             {benefits &&
               Object.entries(benefits).map(
@@ -67,6 +58,14 @@ export const CardAutomation = ({
                   ),
               )}
           </Group>
+          <Box style={{ flexGrow: 1 }}>
+            <Title order={2} size="h4">
+              {title}
+            </Title>
+            <Text mt={5}>{description}</Text>
+          </Box>
+
+          <BadgeAutomationStatus enabled={enabled} available={available} />
         </Stack>
       </Card.Section>
     </Card>

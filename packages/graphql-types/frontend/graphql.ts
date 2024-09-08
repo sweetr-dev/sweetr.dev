@@ -80,7 +80,7 @@ export enum AutomationScope {
 }
 
 export enum AutomationSlug {
-  LABEL_PR_SIZE = 'LABEL_PR_SIZE'
+  PR_TITLE_CHECK = 'PR_TITLE_CHECK'
 }
 
 export type Billing = {

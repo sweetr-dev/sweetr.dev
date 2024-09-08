@@ -28,7 +28,7 @@ export enum SweetQueue {
   SLACK_APP_UNINSTALLED = "{slack.app.uninstalled}",
 
   // Automations
-  AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",
+  AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
 }
 
 export enum JobPriority {
