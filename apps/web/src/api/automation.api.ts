@@ -16,12 +16,12 @@ import {
 } from "@sweetr/graphql-types/frontend/graphql";
 import { queryClient } from "./clients/query-client";
 
-export const useWorkspaceAutomationQuery = (
+export const useAutomationQuery = (
   args: WorkspaceAutomationQueryVariables,
   options?: Partial<UseQueryOptions<WorkspaceAutomationQuery>>,
 ) =>
   useQuery({
-    queryKey: ["automations", args.input.slug, args.workspaceId],
+    queryKey: ["automations", args.input.type, args.workspaceId],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
@@ -31,22 +31,9 @@ export const useWorkspaceAutomationQuery = (
           ) {
             workspace(workspaceId: $workspaceId) {
               automation(input: $input) {
-                slug
-                scope
+                type
                 enabled
-                title
-                description
-                demoUrl
-                docsUrl
-                color
-                icon
-                benefits {
-                  techDebt
-                  failureRate
-                  security
-                  cycleTime
-                  compliance
-                }
+                settings
               }
             }
           }
@@ -56,7 +43,7 @@ export const useWorkspaceAutomationQuery = (
     ...options,
   });
 
-export const useWorkspaceAutomationsQuery = (
+export const useAutomationsQuery = (
   args: WorkspaceAutomationsQueryVariables,
   options?: Partial<UseQueryOptions<WorkspaceAutomationsQuery>>,
 ) =>
@@ -68,23 +55,8 @@ export const useWorkspaceAutomationsQuery = (
           query WorkspaceAutomations($workspaceId: SweetID!) {
             workspace(workspaceId: $workspaceId) {
               automations {
-                slug
-                scope
+                type
                 enabled
-                title
-                description
-                shortDescription
-                demoUrl
-                docsUrl
-                color
-                icon
-                benefits {
-                  techDebt
-                  failureRate
-                  security
-                  cycleTime
-                  compliance
-                }
               }
             }
           }
@@ -108,8 +80,9 @@ export const useUpdateAutomationMutation = (
         graphql(/* GraphQL */ `
           mutation UpdateAutomation($input: UpdateAutomationInput!) {
             updateAutomation(input: $input) {
-              slug
+              type
               enabled
+              settings
             }
           }
         `),

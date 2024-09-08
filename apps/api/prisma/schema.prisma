@@ -55,6 +55,10 @@ enum IntegrationApp {
   SLACK
 }
 
+enum AutomationType {
+  PR_TITLE_CHECK
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -113,25 +117,6 @@ model Organization {
   @@unique([gitProvider, gitOrganizationId])
 }
 
-model Automation {
-  id               Int     @id @default(autoincrement())
-  slug             String  @unique
-  title            String
-  description      String
-  shortDescription String
-  demoUrl          String
-  color            String
-  icon             String
-  benefits         Json
-  available        Boolean @default(true)
-  docsUrl          String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  settings AutomationSetting[]
-}
-
 model Workspace {
   id Int @id @default(autoincrement())
 
@@ -148,9 +133,10 @@ model Workspace {
 
   // A personal workspace can become orphan when an user revokes their OAuth
   // Re-authenticating creates a new user and reconnects 
-  gitProfile          GitProfile?           @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
-  gitProfileId        Int?
-  AutomationSetting   AutomationSetting[]
+  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
+  gitProfileId Int?
+
+  Automation          Automation[]
   CodeReview          CodeReview[]
   PullRequestTracking PullRequestTracking[]
   PullRequest         PullRequest[]
@@ -252,9 +238,8 @@ model Repository {
 
   pullRequests PullRequest[]
 
-  workspace         Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  workspaceId       Int
-  AutomationSetting AutomationSetting[]
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
 
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -370,8 +355,6 @@ model Team {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  AutomationSetting AutomationSetting[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -399,32 +382,20 @@ model TeamMember {
   @@index([teamId])
 }
 
-model AutomationSetting {
-  id       Int     @id @default(autoincrement())
+model Automation {
+  id       Int            @id @default(autoincrement())
+  type     AutomationType
   enabled  Boolean
   settings Json
 
-  automationId Int
-  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
-
-  // Setting scope (Workspace | Repository | Team)
-  workspaceId  Int
-  repositoryId Int?
-  teamId       Int?
-  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  repository   Repository? @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
-  team         Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  @@unique([automationId, workspaceId])
-  @@unique([automationId, repositoryId])
-  @@unique([automationId, teamId])
-  @@index([workspaceId])
-  @@index([automationId])
-  @@index([repositoryId])
-  @@index([teamId])
+  @@unique([workspaceId, type])
+  @@index([workspaceId, type])
 }
 
 model Integration {

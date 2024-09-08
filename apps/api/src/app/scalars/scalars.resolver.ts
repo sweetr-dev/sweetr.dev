@@ -2,7 +2,7 @@ import {
   DateTimeResolver,
   BigIntResolver,
   HexColorCodeResolver,
-  JSONObjectResolver
+  JSONObjectResolver,
   VoidResolver,
 } from "graphql-scalars";
 import { sweetIdResolver } from "./sweet-id.scalar";

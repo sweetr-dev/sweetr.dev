@@ -1,10 +1,10 @@
 import { Card, Group, Stack, Box, Title, Text } from "@mantine/core";
-import { BadgeAutomationStatus } from "./badge-automation-status";
 import {
   AutomationBenefit,
   IconAutomationBenefit,
 } from "../icon-automation-benefit";
 import { AutomationBenefits } from "@sweetr/graphql-types/frontend/graphql";
+import { BadgeStoreStatus } from "../../../../components/badge-store-status";
 
 interface CardAutomationProps {
   title: string;
@@ -65,7 +65,7 @@ export const CardAutomation = ({
             <Text mt={5}>{description}</Text>
           </Box>
 
-          <BadgeAutomationStatus enabled={enabled} available={available} />
+          <BadgeStoreStatus enabled={enabled} available={available} />
         </Stack>
       </Card.Section>
     </Card>

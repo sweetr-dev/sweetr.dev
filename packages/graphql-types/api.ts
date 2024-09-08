@@ -49,18 +49,9 @@ export type AuthProviderResponse = {
 
 export type Automation = {
   __typename?: 'Automation';
-  benefits?: Maybe<AutomationBenefits>;
-  color: Scalars['String']['output'];
-  demoUrl: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  docsUrl?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
-  icon: Scalars['String']['output'];
-  overrides: Array<Automation>;
-  scope: AutomationScope;
-  shortDescription: Scalars['String']['output'];
-  slug: AutomationSlug;
-  title: Scalars['String']['output'];
+  settings?: Maybe<Scalars['JSONObject']['output']>;
+  type: AutomationType;
 };
 
 export type AutomationBenefits = {
@@ -73,16 +64,10 @@ export type AutomationBenefits = {
 };
 
 export type AutomationQueryInput = {
-  slug: AutomationSlug;
+  type: AutomationType;
 };
 
-export enum AutomationScope {
-  REPOSITORY = 'REPOSITORY',
-  TEAM = 'TEAM',
-  WORKSPACE = 'WORKSPACE'
-}
-
-export enum AutomationSlug {
+export enum AutomationType {
   PR_TITLE_CHECK = 'PR_TITLE_CHECK'
 }
 
@@ -533,7 +518,7 @@ export type UnarchiveTeamInput = {
 export type UpdateAutomationInput = {
   enabled: Scalars['Boolean']['input'];
   settings?: InputMaybe<Scalars['JSONObject']['input']>;
-  slug: AutomationSlug;
+  type: AutomationType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -698,8 +683,7 @@ export type ResolversTypes = {
   Automation: ResolverTypeWrapper<DeepPartial<Automation>>;
   AutomationBenefits: ResolverTypeWrapper<DeepPartial<AutomationBenefits>>;
   AutomationQueryInput: ResolverTypeWrapper<DeepPartial<AutomationQueryInput>>;
-  AutomationScope: ResolverTypeWrapper<DeepPartial<AutomationScope>>;
-  AutomationSlug: ResolverTypeWrapper<DeepPartial<AutomationSlug>>;
+  AutomationType: ResolverTypeWrapper<DeepPartial<AutomationType>>;
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
   Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
@@ -835,18 +819,9 @@ export type AuthProviderResponseResolvers<ContextType = GraphQLContext, ParentTy
 };
 
 export type AutomationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Automation'] = ResolversParentTypes['Automation']> = {
-  benefits?: Resolver<Maybe<ResolversTypes['AutomationBenefits']>, ParentType, ContextType>;
-  color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  demoUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  docsUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  icon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  overrides?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
-  scope?: Resolver<ResolversTypes['AutomationScope'], ParentType, ContextType>;
-  shortDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  slug?: Resolver<ResolversTypes['AutomationSlug'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  settings?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['AutomationType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

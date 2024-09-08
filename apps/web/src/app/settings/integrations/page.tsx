@@ -1,6 +1,6 @@
 import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { CardIntegration } from "./components/card-integration";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LoadableContent } from "../../../components/loadable-content";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
@@ -8,8 +8,6 @@ import { ImageIntegrationLogo } from "./components/image-integration-logo";
 import { useIntegrations } from "./use-integrations";
 
 export const IntegrationsPage = () => {
-  const navigate = useNavigate();
-
   const { integrations, isLoading } = useIntegrations();
 
   return (

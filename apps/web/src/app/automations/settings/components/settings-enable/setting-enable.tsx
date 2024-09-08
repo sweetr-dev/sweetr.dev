@@ -1,18 +1,22 @@
 import { Switch } from "@mantine/core";
-import { BoxSetting } from "./box-setting";
+import { BoxSetting } from "../box-setting";
 import { useUpdateAutomationMutation } from "../../../../../api/automation.api";
 import {
   showSuccessNotification,
   showErrorNotification,
 } from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
-import { Automation } from "@sweetr/graphql-types/frontend/graphql";
+import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
 
 interface SettingEnableProps {
-  automation: Pick<Automation, "slug" | "enabled">;
+  type: AutomationType;
+  enabled?: boolean;
 }
 
-export const SettingEnable = ({ automation }: SettingEnableProps) => {
+export const SettingEnable = ({
+  type,
+  enabled = false,
+}: SettingEnableProps) => {
   const { workspace } = useWorkspace();
   const { mutate, isPending } = useUpdateAutomationMutation({
     onSuccess: (automation) => {
@@ -33,20 +37,20 @@ export const SettingEnable = ({ automation }: SettingEnableProps) => {
     mutate({
       input: {
         workspaceId: workspace.id,
-        slug: automation.slug,
+        type,
         enabled: isEnabled,
       },
     });
   };
 
   return (
-    <BoxSetting label="Enabled">
+    <BoxSetting left="Enabled">
       <Switch
         size="lg"
         color="green.7"
         onLabel="ON"
         offLabel="OFF"
-        checked={automation.enabled}
+        checked={enabled}
         onChange={(event) => handleChange(event.currentTarget.checked)}
         disabled={isPending}
       />

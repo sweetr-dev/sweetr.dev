@@ -45,8 +45,6 @@ export const syncGitHubInstallation = async (
       installation: { id: parseInt(installation.gitInstallationId) },
     });
   }
-
-  await createWorkspaceDefaultAutomationSettings(workspace);
 };
 
 const getTargetType = (targetType: string) => {
@@ -157,34 +155,6 @@ const upsertWorkspace = async (
       gitProfile: true,
     },
   });
-};
-
-const createWorkspaceDefaultAutomationSettings = async (
-  workspace: Workspace
-) => {
-  const automations = await getPrisma(workspace.id).automation.findMany({
-    where: { available: true },
-  });
-
-  await Promise.all(
-    automations.map((automation) => {
-      return getPrisma(workspace.id).automationSetting.upsert({
-        where: {
-          automationId_workspaceId: {
-            automationId: automation.id,
-            workspaceId: workspace.id,
-          },
-        },
-        create: {
-          enabled: true,
-          workspaceId: workspace.id,
-          automationId: automation.id,
-          settings: {},
-        },
-        update: {},
-      });
-    })
-  );
 };
 
 const upsertGitProfile = async (gitUser: GitHubUser): Promise<GitProfile> => {

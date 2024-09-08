@@ -1,29 +1,12 @@
 export default /* GraphQL */ `
-  enum AutomationSlug {
+  enum AutomationType {
     PR_TITLE_CHECK
   }
 
-  enum AutomationScope {
-    WORKSPACE
-    TEAM
-    REPOSITORY
-  }
-
   type Automation {
-    slug: AutomationSlug!
-    scope: AutomationScope!
+    type: AutomationType!
     enabled: Boolean!
-    title: String!
-    description: String!
-    shortDescription: String!
-    demoUrl: String!
-    color: String!
-    icon: String!
-    benefits: AutomationBenefits
-    docsUrl: String
-
-    # TO-DO: Support overrides once repository settings is launched
-    overrides: [Automation!]!
+    settings: JSONObject
   }
 
   type AutomationBenefits {
@@ -44,12 +27,12 @@ export default /* GraphQL */ `
   }
 
   input AutomationQueryInput {
-    slug: AutomationSlug!
+    type: AutomationType!
   }
 
   input UpdateAutomationInput {
     workspaceId: SweetID!
-    slug: AutomationSlug!
+    type: AutomationType!
     enabled: Boolean!
     settings: JSONObject
   }

@@ -1,14 +1,14 @@
 import { Badge } from "@mantine/core";
 
-interface BadgeIntegrationStatusProps {
+interface BadgeStoreStatusProps {
   enabled: boolean;
   available: boolean;
 }
 
-export const BadgeIntegrationStatus = ({
+export const BadgeStoreStatus = ({
   enabled,
   available,
-}: BadgeIntegrationStatusProps) => {
+}: BadgeStoreStatusProps) => {
   if (!available) {
     return (
       <Badge size="lg" color="gray" variant="light" radius="sm">
@@ -16,17 +16,18 @@ export const BadgeIntegrationStatus = ({
       </Badge>
     );
   }
+
   if (enabled) {
     return (
-      <Badge size="lg" color="violet" variant="light" radius="sm">
-        Installed
+      <Badge size="lg" color="green" variant="light" radius="sm">
+        Enabled
       </Badge>
     );
   }
 
   return (
-    <Badge size="lg" color="green" variant="light" radius="sm">
-      Install
+    <Badge size="lg" color="violet" variant="light" radius="sm">
+      Available
     </Badge>
   );
 };
