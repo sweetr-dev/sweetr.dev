@@ -1,0 +1,32 @@
+---
+title: PR Title Requirements
+description: Enforce PR title standards across your organization.
+---
+
+## Demo
+
+<Frame>
+  <img src="/images/automations/pr-title-check.png" />
+</Frame>
+
+## How it works
+
+Define a regular expression to validate Pull Request title across your organization. You can make it blocking by adding <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging" target="_blank" rel="noreferrer">branch protection rules</a>.
+
+## Popular Patterns
+
+<CodeGroup>
+
+```js [KEY-100] Foo
+^\[([A-Za-z]+-\d+)\]\s+.+$
+```
+
+```js feat: Foo
+^(feat|fix|chore|refactor|docs|test):\s+.+$
+```
+
+```js [KEY-100] feat: Foo
+^\[([A-Za-z]+-\d+)\]\s+(feat|fix|chore|refactor|docs|test):\s+.+$
+```
+
+</CodeGroup>

@@ -84,12 +84,12 @@ export const AutomationPrTitleCheckPage = () => {
                       fz="sm"
                       ml="auto"
                       target="_blank"
-                      href="https://regex101.com/r/8q8q0L"
+                      href="https://docs.sweetr.dev/features/automations/pr-title-check#popular-patterns"
                       rel="noreferrer"
                       w="fit-content"
                     >
                       <Group gap={5} align="center">
-                        See popular RegEx patterns in our docs
+                        RegEx for popular title patterns
                         <IconExternalLink stroke={1.5} size={16} />
                       </Group>
                     </Anchor>
