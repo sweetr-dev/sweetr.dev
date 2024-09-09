@@ -20,9 +20,7 @@ export const runPrTitleCheckAutomation = async (
 
   if (!automation) return;
 
-  const regex = automation.settings
-    ? new RegExp(automation.settings["regex"])
-    : null;
+  const regex = getRegExp(automation.settings?.["regex"]);
 
   if (!regex) return;
 
@@ -41,6 +39,15 @@ export const runPrTitleCheckAutomation = async (
         : "Checks whether the PR title meets the requirements.",
     }
   );
+};
+
+const getRegExp = (regex?: string) => {
+  if (!regex) return null;
+  try {
+    return new RegExp(regex);
+  } catch {
+    return null;
+  }
 };
 
 const getAutomation = async (gitInstallationId: number) => {

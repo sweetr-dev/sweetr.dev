@@ -1,5 +1,4 @@
 import {
-  Automation,
   AutomationType,
   MutationUpdateAutomationArgs,
 } from "@sweetr/graphql-types/frontend/graphql";
