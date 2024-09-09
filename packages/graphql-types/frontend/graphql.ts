@@ -514,7 +514,7 @@ export type UnarchiveTeamInput = {
 };
 
 export type UpdateAutomationInput = {
-  enabled: Scalars['Boolean']['input'];
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   settings?: InputMaybe<Scalars['JSONObject']['input']>;
   type: AutomationType;
   workspaceId: Scalars['SweetID']['input'];

@@ -4,7 +4,6 @@ import {
   Stack,
   Title,
   Skeleton,
-  Input,
   Loader,
   Group,
   Anchor,
@@ -18,91 +17,15 @@ import { useAutomationCards } from "../../use-automation-cards";
 import { SettingEnable } from "../components/settings-enable/setting-enable";
 import { HeaderAutomation } from "../components/header-automation";
 import { SectionBenefits } from "../components/section-benefits/section-benefits";
-import { BoxSetting } from "../components/box-setting";
-import { useDebouncedCallback } from "@mantine/hooks";
-import {
-  IconCircleCheck,
-  IconExclamationCircle,
-  IconExternalLink,
-} from "@tabler/icons-react";
-import { useState } from "react";
-import { showErrorNotification } from "../../../../providers/notification.provider";
+import { IconExternalLink } from "@tabler/icons-react";
+import { FormPrTitleCheckSettings } from "./components/form-pr-title-check-settings";
 
 export const AutomationPrTitleCheckPage = () => {
-  const { automationSettings, isLoading, mutate, isMutating } =
-    useAutomationSettings(AutomationType.PR_TITLE_CHECK);
+  const { automationSettings, isLoading, isMutating } = useAutomationSettings(
+    AutomationType.PR_TITLE_CHECK,
+  );
   const { automationCards } = useAutomationCards();
   const automation = automationCards.PR_TITLE_CHECK;
-  const [isValidRegEx, setIsValidRegEx] = useState<boolean | null>(null);
-  const [isValidExample, setIsValidExample] = useState<boolean | null>(null);
-
-  const getInputIcon = (isValid: boolean | null) => {
-    if (isValid === null) return <Box w={14}></Box>;
-
-    if (isValid)
-      return (
-        <IconCircleCheck
-          size={14}
-          stroke={1.5}
-          color="var(--mantine-color-green-5)"
-        />
-      );
-
-    return (
-      <IconExclamationCircle
-        size={14}
-        stroke={1.5}
-        color="var(--mantine-color-red-5)"
-      />
-    );
-  };
-
-  const validateRegEx = (updatedSettings: Record<string, any>) => {
-    if (!updatedSettings.regex) return true;
-
-    try {
-      const regex = new RegExp(updatedSettings.regex);
-
-      setIsValidRegEx(true);
-
-      if (updatedSettings.regex && updatedSettings.regexExample) {
-        const isValidExample = regex.test(updatedSettings.regexExample);
-
-        setIsValidExample(isValidExample);
-
-        if (!isValidExample) {
-          showErrorNotification({
-            message: "This example doesn't match the RegEx pattern",
-          });
-          return false;
-        }
-      }
-    } catch {
-      setIsValidRegEx(false);
-
-      showErrorNotification({
-        message: "Invalid Regular Expression",
-      });
-
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleUpdate = useDebouncedCallback(
-    (settings: Record<string, unknown>) => {
-      const updatedSettings = {
-        ...(automationSettings ? (automationSettings.settings as any) : {}),
-        ...settings,
-      };
-
-      if (validateRegEx(updatedSettings)) {
-        mutate(automationSettings!.enabled, updatedSettings);
-      }
-    },
-    500,
-  );
 
   return (
     <PageContainer>
@@ -153,46 +76,9 @@ export const AutomationPrTitleCheckPage = () => {
 
                 {automationSettings && (
                   <>
-                    <BoxSetting
-                      left="Title Pattern"
-                      description="Set the regular expression which PR titles must match."
-                    >
-                      <Input
-                        maw={200}
-                        placeholder="^\[[A-Za-z]+-\d+\] .+$"
-                        defaultValue={
-                          (automationSettings.settings as any).regex || ""
-                        }
-                        rightSection={getInputIcon(isValidRegEx)}
-                        onChange={(e) =>
-                          handleUpdate({ regex: e.target.value })
-                        }
-                        maxLength={100}
-                      ></Input>
-                    </BoxSetting>
-
-                    <BoxSetting
-                      left="Example Value"
-                      description="This will show in GitHub for developers to understand what the pattern is."
-                    >
-                      <Input
-                        maw={200}
-                        placeholder="[KEY-100] Title"
-                        color="red"
-                        c="red"
-                        rightSection={getInputIcon(isValidExample)}
-                        defaultValue={
-                          (automationSettings.settings as any).regexExample ||
-                          ""
-                        }
-                        onChange={(e) =>
-                          handleUpdate({
-                            regexExample: e.target.value,
-                          })
-                        }
-                        maxLength={100}
-                      ></Input>
-                    </BoxSetting>
+                    <FormPrTitleCheckSettings
+                      settings={automationSettings.settings as any}
+                    />
 
                     <Anchor
                       fz="sm"

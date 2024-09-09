@@ -8,7 +8,7 @@ export interface FindAutomationBySlugArgs {
 export interface UpsertAutomationArgs {
   workspaceId: number;
   type: AutomationType;
-  enabled: boolean;
+  enabled?: boolean;
   settings?: object;
 }
 

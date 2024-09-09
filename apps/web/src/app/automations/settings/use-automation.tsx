@@ -1,6 +1,7 @@
 import {
   Automation,
   AutomationType,
+  MutationUpdateAutomationArgs,
 } from "@sweetr/graphql-types/frontend/graphql";
 import {
   useAutomationQuery,
@@ -12,14 +13,7 @@ import {
   showErrorNotification,
 } from "../../../providers/notification.provider";
 
-interface UseAutomations {
-  automationSettings: Automation | undefined;
-  isLoading: boolean;
-  mutate: (isEnabled: boolean, settings: object) => void;
-  isMutating: boolean;
-}
-
-export const useAutomationSettings = (type: AutomationType): UseAutomations => {
+export const useAutomationSettings = (type: AutomationType) => {
   const { workspace } = useWorkspace();
   const { mutate: triggerMutation, isPending } = useUpdateAutomationMutation({
     onSuccess: () => {
@@ -34,13 +28,17 @@ export const useAutomationSettings = (type: AutomationType): UseAutomations => {
     },
   });
 
-  const mutate = (isEnabled: boolean, settings: object) => {
+  const mutate = (
+    payload: Pick<
+      MutationUpdateAutomationArgs["input"],
+      "enabled" | "settings"
+    >,
+  ) => {
     triggerMutation({
       input: {
         workspaceId: workspace.id,
         type,
-        enabled: isEnabled,
-        settings,
+        ...payload,
       },
     });
   };

@@ -33,7 +33,7 @@ export default /* GraphQL */ `
   input UpdateAutomationInput {
     workspaceId: SweetID!
     type: AutomationType!
-    enabled: Boolean!
+    enabled: Boolean
     settings: JSONObject
   }
 `;

@@ -55,7 +55,7 @@ export const upsertAutomationSettings = async ({
     create: {
       workspaceId,
       type,
-      enabled,
+      enabled: enabled || false,
       settings: isObject(settings) ? (settings as JsonObject) : {},
     },
     update: {
