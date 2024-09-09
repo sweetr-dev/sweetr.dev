@@ -5,6 +5,7 @@ import {
   UpsertAutomationArgs,
 } from "./automation.types";
 import { isObject } from "radash";
+import { AutomationType, Workspace } from "@prisma/client";
 
 export const findAutomationByType = async ({
   workspaceId,
@@ -24,6 +25,18 @@ export const findAutomationsByWorkspace = async (workspaceId: number) => {
       workspaceId,
     },
   });
+};
+
+export const isAutomationActive = async (
+  workspaceId: number,
+  type: AutomationType
+): Promise<boolean> => {
+  const automation = await findAutomationByType({
+    workspaceId,
+    type,
+  });
+
+  return automation?.enabled || false;
 };
 
 export const upsertAutomationSettings = async ({

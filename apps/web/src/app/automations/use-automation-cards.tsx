@@ -8,7 +8,7 @@ const automationCards = {
       "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
     shortDescription:
       "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
-    demoUrl: "https://google.com",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
     docsUrl: "https://docs.sweetr.dev",
     color: "red.1",
     icon: "✍️",

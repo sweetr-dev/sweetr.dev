@@ -1,4 +1,4 @@
-import { Group, Paper, Stack, Text } from "@mantine/core";
+import { Group, Input, Paper, Stack, Text } from "@mantine/core";
 import { isString } from "radash";
 import { ReactNode } from "react";
 
@@ -17,17 +17,19 @@ export const BoxSetting = ({
 
   return (
     <Paper withBorder p="sm">
-      <Group wrap="nowrap" justify="space-between" align="center">
-        <Stack gap={5} justify="center">
-          {leftElement}
-          {description && (
-            <Text fz="sm" c="dimmed">
-              {description}
-            </Text>
-          )}
-        </Stack>
-        {children}
-      </Group>
+      <Input.Label w="100%">
+        <Group gap="xl" wrap="nowrap" justify="space-between" align="center">
+          <Stack gap={5} justify="center">
+            {leftElement}
+            {description && (
+              <Text fz="sm" c="dimmed">
+                {description}
+              </Text>
+            )}
+          </Stack>
+          {children}
+        </Group>
+      </Input.Label>
     </Paper>
   );
 };

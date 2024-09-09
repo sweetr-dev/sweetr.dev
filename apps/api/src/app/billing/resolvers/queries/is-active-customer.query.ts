@@ -1,8 +1,8 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
+import { isActiveCustomer } from "../../../workspace-authorization.service";
 import { findWorkspaceById } from "../../../workspaces/services/workspace.service";
-import { isActiveCustomer } from "../../services/billing.service";
 
 export const isActiveCustomerQuery = createFieldResolver("Workspace", {
   isActiveCustomer: async ({ id: workspaceId }) => {

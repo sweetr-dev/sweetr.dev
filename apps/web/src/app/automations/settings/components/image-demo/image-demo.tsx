@@ -16,8 +16,9 @@ export const ImageDemo = ({ height = 200, src, title }: ImageDemoProps) => {
         <Image
           src={src}
           height={height}
+          width={702}
           onClick={() => modalControl.open()}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", objectPosition: "top" }}
           radius="md"
           fallbackSrc="https://placehold.co/500x100?text=img"
         />

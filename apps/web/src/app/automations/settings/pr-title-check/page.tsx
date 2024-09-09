@@ -7,7 +7,7 @@ import {
   Input,
   Loader,
   Group,
-  Button,
+  Anchor,
 } from "@mantine/core";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { PageContainer } from "../../../../components/page-container";
@@ -20,22 +20,89 @@ import { HeaderAutomation } from "../components/header-automation";
 import { SectionBenefits } from "../components/section-benefits/section-benefits";
 import { BoxSetting } from "../components/box-setting";
 import { useDebouncedCallback } from "@mantine/hooks";
-import { IconExternalLink } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import {
+  IconCircleCheck,
+  IconExclamationCircle,
+  IconExternalLink,
+} from "@tabler/icons-react";
+import { useState } from "react";
+import { showErrorNotification } from "../../../../providers/notification.provider";
 
 export const AutomationPrTitleCheckPage = () => {
   const { automationSettings, isLoading, mutate, isMutating } =
     useAutomationSettings(AutomationType.PR_TITLE_CHECK);
-
   const { automationCards } = useAutomationCards();
-
   const automation = automationCards.PR_TITLE_CHECK;
+  const [isValidRegEx, setIsValidRegEx] = useState<boolean | null>(null);
+  const [isValidExample, setIsValidExample] = useState<boolean | null>(null);
 
-  const handleUpdate = useDebouncedCallback((pattern) => {
-    mutate(automationSettings!.enabled, {
-      pattern,
-    });
-  }, 500);
+  const getInputIcon = (isValid: boolean | null) => {
+    if (isValid === null) return <Box w={14}></Box>;
+
+    if (isValid)
+      return (
+        <IconCircleCheck
+          size={14}
+          stroke={1.5}
+          color="var(--mantine-color-green-5)"
+        />
+      );
+
+    return (
+      <IconExclamationCircle
+        size={14}
+        stroke={1.5}
+        color="var(--mantine-color-red-5)"
+      />
+    );
+  };
+
+  const validateRegEx = (updatedSettings: Record<string, any>) => {
+    if (!updatedSettings.regex) return true;
+
+    try {
+      const regex = new RegExp(updatedSettings.regex);
+
+      setIsValidRegEx(true);
+
+      if (updatedSettings.regex && updatedSettings.regexExample) {
+        const isValidExample = regex.test(updatedSettings.regexExample);
+
+        setIsValidExample(isValidExample);
+
+        if (!isValidExample) {
+          showErrorNotification({
+            message: "This example doesn't match the RegEx pattern",
+          });
+          return false;
+        }
+      }
+    } catch {
+      setIsValidRegEx(false);
+
+      showErrorNotification({
+        message: "Invalid Regular Expression",
+      });
+
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleUpdate = useDebouncedCallback(
+    (settings: Record<string, unknown>) => {
+      const updatedSettings = {
+        ...(automationSettings ? (automationSettings.settings as any) : {}),
+        ...settings,
+      };
+
+      if (validateRegEx(updatedSettings)) {
+        mutate(automationSettings!.enabled, updatedSettings);
+      }
+    },
+    500,
+  );
 
   return (
     <PageContainer>
@@ -91,31 +158,55 @@ export const AutomationPrTitleCheckPage = () => {
                       description="Set the regular expression which PR titles must match."
                     >
                       <Input
-                        placeholder="/^\[[A-Z]+-\d+\] .+$/"
+                        maw={200}
+                        placeholder="^\[[A-Za-z]+-\d+\] .+$"
                         defaultValue={
-                          (automationSettings.settings as any).pattern || ""
+                          (automationSettings.settings as any).regex || ""
                         }
-                        onChange={(e) => handleUpdate(e.target.value)}
+                        rightSection={getInputIcon(isValidRegEx)}
+                        onChange={(e) =>
+                          handleUpdate({ regex: e.target.value })
+                        }
                         maxLength={100}
                       ></Input>
                     </BoxSetting>
 
-                    <BoxSetting left="Popular Patterns">
-                      {" "}
-                      <Button
-                        variant="light"
-                        color="green"
-                        component={Link}
-                        target="_blank"
-                        to="https://regex101.com/r/8q8q0L"
-                        rel="noreferrer"
-                        rightSection={
-                          <IconExternalLink stroke={1.5} size={16} />
+                    <BoxSetting
+                      left="Example Value"
+                      description="This will show in GitHub for developers to understand what the pattern is."
+                    >
+                      <Input
+                        maw={200}
+                        placeholder="[KEY-100] Title"
+                        color="red"
+                        c="red"
+                        rightSection={getInputIcon(isValidExample)}
+                        defaultValue={
+                          (automationSettings.settings as any).regexExample ||
+                          ""
                         }
-                      >
-                        See Examples
-                      </Button>
+                        onChange={(e) =>
+                          handleUpdate({
+                            regexExample: e.target.value,
+                          })
+                        }
+                        maxLength={100}
+                      ></Input>
                     </BoxSetting>
+
+                    <Anchor
+                      fz="sm"
+                      ml="auto"
+                      target="_blank"
+                      href="https://regex101.com/r/8q8q0L"
+                      rel="noreferrer"
+                      w="fit-content"
+                    >
+                      <Group gap={5} align="center">
+                        See popular RegEx patterns in our docs
+                        <IconExternalLink stroke={1.5} size={16} />
+                      </Group>
+                    </Anchor>
                   </>
                 )}
               </Stack>

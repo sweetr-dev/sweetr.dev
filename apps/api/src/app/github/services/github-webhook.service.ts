@@ -22,7 +22,10 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
   // Pull Request
   "pull_request.opened": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.synchronize": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.edited": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
+  "pull_request.edited": [
+    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
+    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+  ],
   "pull_request.closed": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.converted_to_draft": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.ready_for_review": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
