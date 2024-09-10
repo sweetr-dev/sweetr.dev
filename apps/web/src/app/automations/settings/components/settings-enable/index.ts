@@ -1,1 +1,1 @@
-export { SettingEnable as SettingEnabled } from "./setting-enable";
+export { SettingEnable } from "./setting-enable";

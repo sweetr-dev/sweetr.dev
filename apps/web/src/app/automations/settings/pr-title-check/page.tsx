@@ -14,7 +14,7 @@ import { LoadableContent } from "../../../../components/loadable-content";
 import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
 import { useAutomationSettings } from "../use-automation";
 import { useAutomationCards } from "../../use-automation-cards";
-import { SettingEnable } from "../components/settings-enable/setting-enable";
+import { SettingEnable } from "../components/settings-enable";
 import { HeaderAutomation } from "../components/header-automation";
 import { SectionBenefits } from "../components/section-benefits/section-benefits";
 import { IconExternalLink } from "@tabler/icons-react";
