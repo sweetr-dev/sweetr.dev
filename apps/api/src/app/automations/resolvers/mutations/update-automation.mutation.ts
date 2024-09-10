@@ -19,8 +19,8 @@ export const updateAutomationMutation = createMutationResolver({
     const automation = await upsertAutomationSettings({
       workspaceId: input.workspaceId,
       type: input.type,
-      enabled: input.enabled || undefined,
-      settings: input.settings || undefined,
+      enabled: input.enabled ?? undefined,
+      settings: input.settings ?? undefined,
     });
 
     return transformAutomation(automation);
