@@ -17,9 +17,9 @@ export const updateAutomationMutation = createMutationResolver({
     await protectWithPaywall(input.workspaceId);
 
     const automation = await upsertAutomationSettings({
-      enabled: input.enabled,
       workspaceId: input.workspaceId,
       type: input.type,
+      enabled: input.enabled || undefined,
       settings: input.settings || undefined,
     });
 
