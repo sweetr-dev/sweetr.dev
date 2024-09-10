@@ -9,16 +9,26 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
   // Installation
   "installation.created": [SweetQueue.GITHUB_INSTALLATION_SYNC],
   "installation_target.renamed": [SweetQueue.GITHUB_INSTALLATION_SYNC],
+  "installation.new_permissions_accepted": [
+    SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC,
+  ],
+  "installation.suspend": [SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC],
+  "installation.unsuspend": [SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC],
   "installation_repositories.added": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
   "installation_repositories.removed": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
   "installation.deleted": [SweetQueue.GITHUB_INSTALLATION_DELETED],
-  "installation.new_permissions_accepted": [],
   "github_app_authorization.revoked": [SweetQueue.GITHUB_OAUTH_REVOKED],
 
   // Pull Request
   "pull_request.opened": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.synchronize": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.edited": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
+  "pull_request.synchronize": [
+    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
+    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+  ],
+  "pull_request.edited": [
+    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
+    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+  ],
   "pull_request.closed": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.converted_to_draft": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.ready_for_review": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],

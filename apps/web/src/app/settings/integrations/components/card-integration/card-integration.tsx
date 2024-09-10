@@ -1,6 +1,6 @@
 import { Card, Group, Stack, Box, Title, Text } from "@mantine/core";
-import { BadgeIntegrationStatus } from "./badge-integration-status";
 import { ReactNode } from "react";
+import { BadgeStoreStatus } from "../../../../../components/badge-store-status";
 
 interface CardIntegrationProps {
   title: string;
@@ -46,7 +46,7 @@ export const CardIntegration = ({
             </Title>
             <Text mt={5}>{description}</Text>
           </Box>
-          <BadgeIntegrationStatus enabled={enabled} available={available} />
+          <BadgeStoreStatus enabled={enabled} available={available} />
         </Stack>
       </Card.Section>
     </Card>

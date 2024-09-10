@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { seedAutomations } from "./automations";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await seedAutomations(prisma);
+  console.log("No seed");
 }
 main()
   .then(async () => {

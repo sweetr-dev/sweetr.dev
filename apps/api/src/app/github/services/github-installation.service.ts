@@ -13,9 +13,11 @@ import {
 } from "@octokit/webhooks-types";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
-import { octokit } from "../../../lib/octokit";
+import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
 import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
 import { addDays, endOfDay } from "date-fns";
+import { JsonObject } from "@prisma/client/runtime/library";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -45,8 +47,6 @@ export const syncGitHubInstallation = async (
       installation: { id: parseInt(installation.gitInstallationId) },
     });
   }
-
-  await createWorkspaceDefaultAutomationSettings(workspace);
 };
 
 const getTargetType = (targetType: string) => {
@@ -159,34 +159,6 @@ const upsertWorkspace = async (
   });
 };
 
-const createWorkspaceDefaultAutomationSettings = async (
-  workspace: Workspace
-) => {
-  const automations = await getPrisma(workspace.id).automation.findMany({
-    where: { available: true },
-  });
-
-  await Promise.all(
-    automations.map((automation) => {
-      return getPrisma(workspace.id).automationSetting.upsert({
-        where: {
-          automationId_workspaceId: {
-            automationId: automation.id,
-            workspaceId: workspace.id,
-          },
-        },
-        create: {
-          enabled: true,
-          workspaceId: workspace.id,
-          automationId: automation.id,
-          settings: {},
-        },
-        update: {},
-      });
-    })
-  );
-};
-
 const upsertGitProfile = async (gitUser: GitHubUser): Promise<GitProfile> => {
   const gitUserId = gitUser.node_id.toString();
 
@@ -226,5 +198,29 @@ const connectUserToWorkspace = async (
       // TO-DO: Role = ADMIN
     },
     update: {},
+  });
+};
+
+export const syncInstallationConfig = async (gitInstallationId: number) => {
+  const { data, status } = await getInstallationOctoKit(
+    gitInstallationId
+  ).rest.apps.getInstallation({
+    installation_id: gitInstallationId,
+  });
+
+  if (status !== 200) {
+    throw new ResourceNotFoundException("GitHub Installation not found");
+  }
+
+  return getBypassRlsPrisma().installation.update({
+    where: {
+      gitInstallationId: gitInstallationId.toString(),
+    },
+    data: {
+      permissions: data.permissions,
+      events: data.events,
+      repositorySelection: data.repository_selection,
+      suspendedAt: data.suspended_at ? new Date(data.suspended_at) : null,
+    },
   });
 };

@@ -9,6 +9,7 @@ import { getStripeClient } from "../../../lib/stripe";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { isAppSelfHosted } from "../../../lib/self-host";
 import { SubscriptionRequiredException } from "../../errors/exceptions/subscription-required.exception";
+import { isActiveCustomer } from "../../workspace-authorization.service";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findUnique({
@@ -38,27 +39,6 @@ export const isTrialExpired = (trialEndAt?: Date | null) => {
   if (!trialEndAt) return false;
 
   return isPast(trialEndAt);
-};
-
-export const isActiveCustomer = (
-  workspace: Workspace,
-  subscription?: Subscription | null
-) => {
-  if (isAppSelfHosted()) {
-    return true;
-  }
-
-  if (subscription && isSubscriptionActive(subscription)) {
-    return true;
-  }
-
-  if (isTrialExpired(workspace.trialEndAt)) {
-    return false;
-  }
-
-  // No trial + no subscription = active
-  // Allow us to give indefinite active accounts
-  return true;
 };
 
 export const syncSubscriptionQuantity = async (subscription: Subscription) => {

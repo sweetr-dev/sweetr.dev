@@ -1,69 +1,16 @@
-import { SimpleGrid, Skeleton } from "@mantine/core";
+import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { CardAutomation } from "./components/card-automation";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PageContainer } from "../../components/page-container";
-import { useWorkspace } from "../../providers/workspace.provider";
-import { useWorkspaceAutomationsQuery } from "../../api/automation.api";
 import { LoadableContent } from "../../components/loadable-content";
-
-const futureAutomations = [
-  {
-    title: "Label PR Size",
-    shortDescription:
-      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
-    status: "soon" as const,
-    color: "green.1",
-    icon: "📏",
-    benefits: {
-      cycleTime: "1",
-      failureRate: "1",
-    },
-  },
-  {
-    title: "Notify Stale PRs",
-    shortDescription:
-      "Send a Slack message when a Pull Request hasn't been reviewed or has been open for too long.",
-    status: "soon" as const,
-    color: "blue.1",
-    icon: "🕵️‍♀️",
-    benefits: {
-      cycleTime: "1",
-    },
-  },
-  {
-    title: "Code Freeze",
-    shortDescription:
-      "Big migration? Xmas break? Schedule a period where no PRs can be merged in selected repositories.",
-    status: "soon" as const,
-    color: "blue.1",
-    icon: "🧊",
-    benefits: {
-      failureRate: "1",
-    },
-  },
-  {
-    title: "PR Title Requirements",
-    shortDescription:
-      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
-    status: "soon" as const,
-    color: "red.1",
-    icon: "✍️",
-    benefits: {
-      compliance: "1",
-    },
-  },
-];
+import { useAutomationSettings } from "./use-automations";
+import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
+import { useAutomationCards } from "./use-automation-cards";
 
 export const AutomationsPage = () => {
-  const navigate = useNavigate();
-  const { workspace } = useWorkspace();
-
-  const { data, isLoading } = useWorkspaceAutomationsQuery({
-    workspaceId: workspace.id,
-  });
-
-  const automations = data?.workspace.automations || [];
+  const { automationSettings, isLoading } = useAutomationSettings();
+  const { automationCards, futureAutomations } = useAutomationCards();
 
   return (
     <PageContainer>
@@ -81,15 +28,19 @@ export const AutomationsPage = () => {
         }
         content={
           <SimpleGrid cols={{ base: 1, md: 3 }}>
-            {automations.map((automation) => (
-              <CardAutomation
-                {...automation}
-                key={automation.slug}
-                available={true}
-                description={automation.shortDescription}
-                onClick={() => navigate(`/automations/${automation.slug}`)}
-              />
-            ))}
+            <>
+              <Anchor
+                key={AutomationType.PR_TITLE_CHECK}
+                component={Link}
+                to={`/automations/${AutomationType.PR_TITLE_CHECK}`}
+                underline="never"
+              >
+                <CardAutomation
+                  {...automationCards.PR_TITLE_CHECK}
+                  {...automationSettings?.PR_TITLE_CHECK}
+                />
+              </Anchor>
+            </>
             {futureAutomations.map((automation) => (
               <CardAutomation
                 {...automation}

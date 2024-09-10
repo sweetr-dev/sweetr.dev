@@ -30,7 +30,7 @@ import { PersonOverviewPage } from "./app/people/[handle]/overview/page";
 import { PersonCodeReviewsPage } from "./app/people/[handle]/code-reviews/page";
 import { PersonPullRequestsPage } from "./app/people/[handle]/pull-requests/page";
 import { AutomationsPage } from "./app/automations/page";
-import { AutomationPage } from "./app/automations/[id]/page";
+import { AutomationPrTitleCheckPage } from "./app/automations/settings/pr-title-check/page";
 import { TeamHealthAndPerformancePage } from "./app/teams/[id]/health-and-performance/page";
 import { TeamHealthCodeReviewDistributionPage } from "./app/teams/[id]/health-and-performance/health/code-review-distribution/page";
 import { TeamPullRequestsCycleTimePage } from "./app/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
@@ -217,8 +217,8 @@ export const router = createBrowserRouter([
             element: <AutomationsPage />,
           },
           {
-            path: "automations/:slug",
-            element: <AutomationPage />,
+            path: "automations/PR_TITLE_CHECK",
+            element: <AutomationPrTitleCheckPage />,
           },
         ],
       },

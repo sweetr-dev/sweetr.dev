@@ -2,7 +2,7 @@ import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
-  findAutomationBySlug,
+  findAutomationByType,
   findAutomationsByWorkspace,
 } from "../../services/automation.service";
 import { transformAutomation } from "../transformers/automation.transformer";
@@ -15,9 +15,9 @@ export const workspaceAutomationsQuery = createFieldResolver("Workspace", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const automation = await findAutomationBySlug({
+    const automation = await findAutomationByType({
       workspaceId: workspace.id,
-      slug: input.slug,
+      type: input.type,
     });
 
     if (!automation) return null;

@@ -16,13 +16,13 @@ export const updateAutomationMutation = createMutationResolver({
 
     await protectWithPaywall(input.workspaceId);
 
-    const automationSetting = await upsertAutomationSettings({
-      ...input,
+    const automation = await upsertAutomationSettings({
+      workspaceId: input.workspaceId,
+      type: input.type,
+      enabled: input.enabled || undefined,
+      settings: input.settings || undefined,
     });
 
-    return transformAutomation({
-      ...automationSetting.automation,
-      settings: [automationSetting],
-    });
+    return transformAutomation(automation);
   },
 });

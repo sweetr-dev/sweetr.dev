@@ -19,6 +19,7 @@ export type Scalars = {
   BigInt: { input: bigint; output: bigint; }
   DateTime: { input: string; output: string; }
   HexColorCode: { input: string; output: string; }
+  JSONObject: { input: object; output: object; }
   SweetID: { input: number; output: number; }
   Void: { input: null; output: null; }
 };
@@ -48,18 +49,9 @@ export type AuthProviderResponse = {
 
 export type Automation = {
   __typename?: 'Automation';
-  benefits?: Maybe<AutomationBenefits>;
-  color: Scalars['String']['output'];
-  demoUrl: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  docsUrl?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
-  icon: Scalars['String']['output'];
-  overrides: Array<Automation>;
-  scope: AutomationScope;
-  shortDescription: Scalars['String']['output'];
-  slug: AutomationSlug;
-  title: Scalars['String']['output'];
+  settings?: Maybe<Scalars['JSONObject']['output']>;
+  type: AutomationType;
 };
 
 export type AutomationBenefits = {
@@ -72,17 +64,11 @@ export type AutomationBenefits = {
 };
 
 export type AutomationQueryInput = {
-  slug: AutomationSlug;
+  type: AutomationType;
 };
 
-export enum AutomationScope {
-  REPOSITORY = 'REPOSITORY',
-  TEAM = 'TEAM',
-  WORKSPACE = 'WORKSPACE'
-}
-
-export enum AutomationSlug {
-  LABEL_PR_SIZE = 'LABEL_PR_SIZE'
+export enum AutomationType {
+  PR_TITLE_CHECK = 'PR_TITLE_CHECK'
 }
 
 export type Billing = {
@@ -530,8 +516,9 @@ export type UnarchiveTeamInput = {
 };
 
 export type UpdateAutomationInput = {
-  enabled: Scalars['Boolean']['input'];
-  slug: AutomationSlug;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  settings?: InputMaybe<Scalars['JSONObject']['input']>;
+  type: AutomationType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -696,8 +683,7 @@ export type ResolversTypes = {
   Automation: ResolverTypeWrapper<DeepPartial<Automation>>;
   AutomationBenefits: ResolverTypeWrapper<DeepPartial<AutomationBenefits>>;
   AutomationQueryInput: ResolverTypeWrapper<DeepPartial<AutomationQueryInput>>;
-  AutomationScope: ResolverTypeWrapper<DeepPartial<AutomationScope>>;
-  AutomationSlug: ResolverTypeWrapper<DeepPartial<AutomationSlug>>;
+  AutomationType: ResolverTypeWrapper<DeepPartial<AutomationType>>;
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
   Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
@@ -718,6 +704,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
   Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
   IntegrationApp: ResolverTypeWrapper<DeepPartial<IntegrationApp>>;
+  JSONObject: ResolverTypeWrapper<DeepPartial<Scalars['JSONObject']['output']>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
@@ -785,6 +772,7 @@ export type ResolversParentTypes = {
   InstallIntegrationInput: DeepPartial<InstallIntegrationInput>;
   Int: DeepPartial<Scalars['Int']['output']>;
   Integration: DeepPartial<Integration>;
+  JSONObject: DeepPartial<Scalars['JSONObject']['output']>;
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
@@ -831,18 +819,9 @@ export type AuthProviderResponseResolvers<ContextType = GraphQLContext, ParentTy
 };
 
 export type AutomationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Automation'] = ResolversParentTypes['Automation']> = {
-  benefits?: Resolver<Maybe<ResolversTypes['AutomationBenefits']>, ParentType, ContextType>;
-  color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  demoUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  docsUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  icon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  overrides?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
-  scope?: Resolver<ResolversTypes['AutomationScope'], ParentType, ContextType>;
-  shortDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  slug?: Resolver<ResolversTypes['AutomationSlug'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  settings?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['AutomationType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -933,6 +912,10 @@ export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extend
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
 
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1122,6 +1105,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
   Integration?: IntegrationResolvers<ContextType>;
+  JSONObject?: GraphQLScalarType;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NumericChartData?: NumericChartDataResolvers<ContextType>;

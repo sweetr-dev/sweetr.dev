@@ -1,6 +1,6 @@
-import { SimpleGrid, Skeleton } from "@mantine/core";
+import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { CardIntegration } from "./components/card-integration";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LoadableContent } from "../../../components/loadable-content";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
@@ -8,8 +8,6 @@ import { ImageIntegrationLogo } from "./components/image-integration-logo";
 import { useIntegrations } from "./use-integrations";
 
 export const IntegrationsPage = () => {
-  const navigate = useNavigate();
-
   const { integrations, isLoading } = useIntegrations();
 
   return (
@@ -28,19 +26,23 @@ export const IntegrationsPage = () => {
         }
         content={
           <SimpleGrid cols={{ base: 1, md: 3 }}>
-            <CardIntegration
-              available={true}
-              description="Send notifications to your Slack workspace."
-              onClick={() => navigate(`/settings/integrations/slack`)}
-              title="Slack"
-              enabled={integrations?.SLACK?.isEnabled || false}
-              icon={<ImageIntegrationLogo brand="slack" />}
-              color={"dark.6"}
-            />
+            <Anchor
+              component={Link}
+              to={`/settings/integrations/slack`}
+              underline="never"
+            >
+              <CardIntegration
+                available={true}
+                description="Send notifications to your Slack workspace."
+                title="Slack"
+                enabled={integrations?.SLACK?.isEnabled || false}
+                icon={<ImageIntegrationLogo brand="slack" />}
+                color={"dark.6"}
+              />
+            </Anchor>
             <CardIntegration
               available={false}
               description="Send notifications to your MS Teams workspace."
-              onClick={() => navigate(`/settings/integrations/slack`)}
               title="MS Teams"
               enabled={false}
               icon={<ImageIntegrationLogo brand="msteams" />}

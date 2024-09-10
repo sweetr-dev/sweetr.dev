@@ -1,6 +1,13 @@
-import { AutomationSlug } from "@sweetr/graphql-types/dist/api";
+import { AutomationType } from "@prisma/client";
 
-export interface FindAutomationBySlug {
+export interface FindAutomationByTypeArgs {
   workspaceId: number;
-  slug: AutomationSlug;
+  type: AutomationType;
+}
+
+export interface UpsertAutomationArgs {
+  workspaceId: number;
+  type: AutomationType;
+  enabled?: boolean;
+  settings?: object;
 }

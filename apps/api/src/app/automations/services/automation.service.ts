@@ -1,21 +1,19 @@
+import { JsonObject } from "@prisma/client/runtime/library";
 import { getPrisma } from "../../../prisma";
-import { FindAutomationBySlug } from "./automation.types";
+import {
+  FindAutomationByTypeArgs,
+  UpsertAutomationArgs,
+} from "./automation.types";
+import { isObject } from "radash";
 
-export const findAutomationBySlug = async ({
+export const findAutomationByType = async ({
   workspaceId,
-  slug,
-}: FindAutomationBySlug) => {
+  type,
+}: FindAutomationByTypeArgs) => {
   return getPrisma(workspaceId).automation.findFirst({
     where: {
-      available: true,
-      slug,
-    },
-    include: {
-      settings: {
-        where: {
-          workspaceId,
-        },
-      },
+      workspaceId,
+      type,
     },
   });
 };
@@ -23,48 +21,33 @@ export const findAutomationBySlug = async ({
 export const findAutomationsByWorkspace = async (workspaceId: number) => {
   return getPrisma(workspaceId).automation.findMany({
     where: {
-      available: true,
-    },
-    include: {
-      settings: {
-        where: {
-          workspaceId,
-        },
-      },
+      workspaceId,
     },
   });
 };
 
 export const upsertAutomationSettings = async ({
   workspaceId,
-  slug,
+  type,
   enabled,
-}) => {
-  const automation = await getPrisma(workspaceId).automation.findFirstOrThrow({
-    where: { slug },
-  });
-
-  return getPrisma(workspaceId).automationSetting.upsert({
+  settings,
+}: UpsertAutomationArgs) => {
+  return getPrisma(workspaceId).automation.upsert({
     where: {
-      automationId_workspaceId: {
-        automationId: automation.id,
+      workspaceId_type: {
         workspaceId,
-      },
-      automation: {
-        slug,
+        type,
       },
     },
     create: {
-      automationId: automation.id,
       workspaceId,
-      enabled,
-      settings: {},
+      type,
+      enabled: enabled || false,
+      settings: isObject(settings) ? (settings as JsonObject) : {},
     },
     update: {
       enabled,
-    },
-    include: {
-      automation: true,
+      settings: isObject(settings) ? (settings as JsonObject) : undefined,
     },
   });
 };

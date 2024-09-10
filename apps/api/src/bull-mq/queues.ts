@@ -13,6 +13,7 @@ export enum SweetQueue {
 
   // GitHub
   GITHUB_INSTALLATION_SYNC = "{github.installation.sync}",
+  GITHUB_INSTALLATION_CONFIG_SYNC = "{github.installation.config.sync}",
   GITHUB_MEMBERS_SYNC = "{github.members.sync}",
   GITHUB_REPOSITORIES_SYNC = "{github.repositories.sync}",
   GITHUB_OAUTH_REVOKED = "{github.oauth.revoked}",
@@ -28,7 +29,7 @@ export enum SweetQueue {
   SLACK_APP_UNINSTALLED = "{slack.app.uninstalled}",
 
   // Automations
-  AUTOMATION_LABEL_PR_SIZE = "{automation.label_pr_size}",
+  AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
 }
 
 export enum JobPriority {

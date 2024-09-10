@@ -4,4 +4,5 @@ export default /* GraphQL */ `
   scalar DateTime
   scalar HexColorCode
   scalar Void
+  scalar JSONObject
 `;

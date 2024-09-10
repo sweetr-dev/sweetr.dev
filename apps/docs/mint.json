@@ -81,7 +81,10 @@
         {
           "group": "Automations",
           "icon": "robot",
-          "pages": ["features/automations/intro"]
+          "pages": [
+            "features/automations/intro",
+            "features/automations/pr-title-check"
+          ]
         }
       ]
     },
