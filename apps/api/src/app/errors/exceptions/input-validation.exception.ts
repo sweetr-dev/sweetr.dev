@@ -16,7 +16,7 @@ export class InputValidationException extends BaseException {
     options?: Partial<InputValidationOptions>
   ) {
     super(message, {
-      code: ErrorCode.RESOURCE_NOT_FOUND,
+      code: ErrorCode.INPUT_VALIDATION_FAILED,
       userFacingMessage: "Validation error, please fix the input.",
       severity: "log",
       ...options,
