@@ -5,6 +5,7 @@ import { isActiveCustomer } from "../../../workspace-authorization.service";
 import { findAutomationByType } from "../../services/automation.service";
 import { PullRequest } from "@octokit/webhooks-types";
 import { getInstallationOctoKit } from "../../../../lib/octokit";
+import { getPullRequestSize } from "../../../github/services/github-pull-request-tracking.service";
 
 export const runPrSizeLabelerAutomation = async (
   gitInstallationId: number,
@@ -19,11 +20,16 @@ export const runPrSizeLabelerAutomation = async (
 
   if (!automation) return;
 
+  const size = getPullRequestSize({
+    linesAddedCount: gitPullRequest.additions,
+    linesDeletedCount: gitPullRequest.deletions,
+  });
+
   await getInstallationOctoKit(gitInstallationId).rest.issues.addLabels({
     owner: gitPullRequest.base.repo.owner.login,
     repo: gitPullRequest.base.repo.name,
     issue_number: gitPullRequest.number,
-    labels: ["Huge", "Large", "Medium", "Small", "Tiny"],
+    labels: [size.toString().toLowerCase()],
   });
 };
 

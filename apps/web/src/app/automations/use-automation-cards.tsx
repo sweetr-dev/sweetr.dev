@@ -1,3 +1,5 @@
+import { fork, listify } from "radash";
+
 const automationCards = {
   PR_TITLE_CHECK: {
     type: "PR_TITLE_CHECK",
@@ -19,16 +21,20 @@ const automationCards = {
   PR_SIZE_LABELER: {
     type: "PR_SIZE_LABELER",
     enabled: false,
-    available: false,
+    available: true,
     title: "Label PR Size",
     shortDescription:
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
-    status: "soon" as const,
+    description:
+      "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    docsUrl: "https://docs.sweetr.dev/",
     color: "green.1",
     icon: "📏",
     benefits: {
       cycleTime: "Encourage faster reviews on smaller PRs.",
-      failureRate: "Encourage smaller PRs.",
+      failureRate:
+        "Reduce risk by mitigating reviewer fatigue with smaller PRs.",
     },
   },
   NOTIFY_STALE_PRS: {
@@ -38,7 +44,10 @@ const automationCards = {
     title: "Notify Stale PRs",
     shortDescription:
       "Send a Slack message when a Pull Request hasn't been reviewed or has been open for too long.",
-    status: "soon" as const,
+    description:
+      "Send a Slack message when a Pull Request hasn't been reviewed or has been open for too long.",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    docsUrl: "https://docs.sweetr.dev/",
     color: "blue.1",
     icon: "🕵️‍♀️",
     benefits: {
@@ -52,7 +61,10 @@ const automationCards = {
     title: "Code Freeze",
     shortDescription:
       "Big migration? Xmas break? Schedule a period where no PRs can be merged in selected repositories.",
-    status: "soon" as const,
+    description:
+      "Big migration? Xmas break? Schedule a period where no PRs can be merged in selected repositories.",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    docsUrl: "https://docs.sweetr.dev/",
     color: "blue.1",
     icon: "🧊",
     benefits: {
@@ -61,16 +73,22 @@ const automationCards = {
   },
 };
 
+type AutomationCard = (typeof automationCards)[keyof typeof automationCards];
+
 interface UseAutomationCards {
   automationCards: typeof automationCards;
-  futureAutomations: (typeof automationCards)[keyof typeof automationCards][];
+  availableAutomations: AutomationCard[];
+  futureAutomations: AutomationCard[];
 }
 
 export const useAutomationCards = (): UseAutomationCards => {
+  const [availableAutomations, futureAutomations] = fork(
+    Object.values(automationCards),
+    (automation) => automation.available,
+  );
   return {
     automationCards,
-    futureAutomations: Object.values(automationCards).filter(
-      (automation) => !automation.available,
-    ),
+    availableAutomations,
+    futureAutomations,
   };
 };

@@ -7,10 +7,11 @@ import { LoadableContent } from "../../components/loadable-content";
 import { useAutomationSettings } from "./use-automations";
 import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
 import { useAutomationCards } from "./use-automation-cards";
+import { dash } from "radash";
 
 export const AutomationsPage = () => {
   const { automationSettings, isLoading } = useAutomationSettings();
-  const { automationCards, futureAutomations } = useAutomationCards();
+  const { availableAutomations, futureAutomations } = useAutomationCards();
 
   return (
     <PageContainer>
@@ -28,19 +29,19 @@ export const AutomationsPage = () => {
         }
         content={
           <SimpleGrid cols={{ base: 1, md: 3 }}>
-            <>
+            {availableAutomations.map((automation) => (
               <Anchor
-                key={AutomationType.PR_TITLE_CHECK}
+                key={automation.type}
                 component={Link}
-                to={`/automations/${AutomationType.PR_TITLE_CHECK}`}
+                to={`/automations/${dash(automation.type)}`}
                 underline="never"
               >
                 <CardAutomation
-                  {...automationCards.PR_TITLE_CHECK}
-                  {...automationSettings?.PR_TITLE_CHECK}
+                  {...automation}
+                  {...automationSettings?.[automation.type as AutomationType]}
                 />
               </Anchor>
-            </>
+            ))}
             {futureAutomations.map((automation) => (
               <CardAutomation
                 {...automation}

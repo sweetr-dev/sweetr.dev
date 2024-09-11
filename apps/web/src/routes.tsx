@@ -42,6 +42,7 @@ import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { IntegrationsPage } from "./app/settings/integrations/page";
 import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
+import { AutomationPrSizeLabelerPage } from "./app/automations/settings/pr-size-labeler/page";
 
 export const router = createBrowserRouter([
   {
@@ -217,8 +218,12 @@ export const router = createBrowserRouter([
             element: <AutomationsPage />,
           },
           {
-            path: "automations/PR_TITLE_CHECK",
+            path: "automations/pr-title-check",
             element: <AutomationPrTitleCheckPage />,
+          },
+          {
+            path: "automations/pr-size-labeler",
+            element: <AutomationPrSizeLabelerPage />,
           },
         ],
       },
