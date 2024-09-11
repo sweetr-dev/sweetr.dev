@@ -1,5 +1,4 @@
 import {
-  PullRequestEditedEvent,
   PullRequestOpenedEvent,
   PullRequestSynchronizeEvent,
 } from "@octokit/webhooks-types";
@@ -8,16 +7,12 @@ import { SweetQueue } from "../../../../bull-mq/queues";
 import { createWorker } from "../../../../bull-mq/workers";
 import { InputValidationException } from "../../../errors/exceptions/input-validation.exception";
 import { withDelayedRetryOnRateLimit } from "../../../github/services/github-rate-limit.service";
-import { runPrTitleCheckAutomation } from "./pr-title-check.service";
+import { runPrSizeLabelerAutomation } from "./pr-size-labeler.service";
 
 export const prTitleCheckWorker = createWorker(
-  SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+  SweetQueue.AUTOMATION_PR_SIZE_LABELER,
   async (
-    job: Job<
-      | PullRequestOpenedEvent
-      | PullRequestSynchronizeEvent
-      | PullRequestEditedEvent
-    >,
+    job: Job<PullRequestOpenedEvent | PullRequestSynchronizeEvent>,
     token?: string
   ) => {
     if (!job.data.installation?.id) {
@@ -37,7 +32,7 @@ export const prTitleCheckWorker = createWorker(
     const installationId = job.data.installation.id;
 
     await withDelayedRetryOnRateLimit(
-      () => runPrTitleCheckAutomation(installationId, job.data.pull_request),
+      () => runPrSizeLabelerAutomation(installationId, job.data.pull_request),
       {
         job,
         jobToken: token,

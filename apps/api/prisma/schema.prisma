@@ -57,6 +57,7 @@ enum IntegrationApp {
 
 enum AutomationType {
   PR_TITLE_CHECK
+  PR_SIZE_LABELER
 }
 
 // User git profiles. Public data. May not have an associated user. 

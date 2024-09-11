@@ -30,6 +30,7 @@ export enum SweetQueue {
 
   // Automations
   AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
+  AUTOMATION_PR_SIZE_LABELER = "{automation.pr_size_labeler}",
 }
 
 export enum JobPriority {

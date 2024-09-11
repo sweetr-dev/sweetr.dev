@@ -68,6 +68,7 @@ export type AutomationQueryInput = {
 };
 
 export enum AutomationType {
+  PR_SIZE_LABELER = 'PR_SIZE_LABELER',
   PR_TITLE_CHECK = 'PR_TITLE_CHECK'
 }
 
