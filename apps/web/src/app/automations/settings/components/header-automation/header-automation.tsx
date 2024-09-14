@@ -1,7 +1,8 @@
-import { Group, Text, Title, Button, Anchor } from "@mantine/core";
+import { Group, Text, Title, Button, Anchor, Box } from "@mantine/core";
 import { PageTitle } from "../../../../../components/page-title";
 import { IconBook2 } from "@tabler/icons-react";
 import { ImageDemo } from "../image-demo";
+import { ReactNode } from "react";
 
 interface HeaderAutomationProps {
   icon: string;
@@ -9,6 +10,8 @@ interface HeaderAutomationProps {
   docsUrl: string;
   demoUrl: string;
   description: string;
+  demoImgHeight?: number;
+  benefits: ReactNode;
 }
 
 export const HeaderAutomation = ({
@@ -17,34 +20,40 @@ export const HeaderAutomation = ({
   docsUrl,
   demoUrl,
   description,
+  demoImgHeight,
+  benefits,
 }: HeaderAutomationProps) => {
   return (
     <>
-      <PageTitle
-        title={
-          <Group gap="xs">
-            <Text fz={32}>{icon}</Text>
-            <Title mb={0} order={2}>
-              {title}
-            </Title>
-          </Group>
-        }
-      >
-        {docsUrl && (
-          <Anchor underline="never" target="_blank" href={docsUrl}>
-            <Button
-              variant="subtle"
-              color="dark.1"
-              leftSection={<IconBook2 stroke={1.5} size={20} />}
-            >
-              Docs
-            </Button>
-          </Anchor>
-        )}
-      </PageTitle>
+      <ImageDemo title={title} src={demoUrl} height={demoImgHeight} />
 
-      <ImageDemo title={title} src={demoUrl} />
-      <Text mt="sm">{description}</Text>
+      <Box mt="xl" bg="dark.8">
+        <PageTitle
+          title={
+            <Group gap="xs">
+              <Text fz={32}>{icon}</Text>
+              <Title mb={0} order={2}>
+                {title}
+              </Title>
+            </Group>
+          }
+        >
+          {docsUrl && (
+            <Anchor underline="never" target="_blank" href={docsUrl}>
+              <Button
+                variant="subtle"
+                color="dark.1"
+                leftSection={<IconBook2 stroke={1.5} size={20} />}
+              >
+                Docs
+              </Button>
+            </Anchor>
+          )}
+        </PageTitle>
+
+        <Text mt="md">{description}</Text>
+        <Box mt="md">{benefits}</Box>
+      </Box>
     </>
   );
 };

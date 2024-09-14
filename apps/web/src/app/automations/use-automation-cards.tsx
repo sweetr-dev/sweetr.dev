@@ -27,7 +27,7 @@ const automationCards = {
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     description:
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
-    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    demoUrl: "/images/automations/pr-size-labeler.webp",
     docsUrl: "https://docs.sweetr.dev/",
     color: "green.1",
     icon: "📏",

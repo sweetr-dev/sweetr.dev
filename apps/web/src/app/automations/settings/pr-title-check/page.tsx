@@ -55,12 +55,14 @@ export const AutomationPrTitleCheckPage = () => {
                 docsUrl={automation?.docsUrl}
                 demoUrl={automation?.demoUrl}
                 description={automation?.description}
+                benefits={
+                  automation && (
+                    <SectionBenefits benefits={automation.benefits} />
+                  )
+                }
               />
 
-              {automation && <SectionBenefits benefits={automation.benefits} />}
-              <Divider my="lg" />
-
-              <Group justify="space-between" align="center">
+              <Group justify="space-between" align="center" mt="xl">
                 <Title order={5} mb="sm">
                   Setup
                 </Title>

@@ -1,12 +1,4 @@
-import {
-  Box,
-  Divider,
-  Stack,
-  Title,
-  Skeleton,
-  Loader,
-  Group,
-} from "@mantine/core";
+import { Box, Stack, Title, Skeleton, Loader, Group } from "@mantine/core";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { PageContainer } from "../../../../components/page-container";
 import { LoadableContent } from "../../../../components/loadable-content";
@@ -52,13 +44,16 @@ export const AutomationPrSizeLabelerPage = () => {
                 title={automation?.title}
                 docsUrl={automation?.docsUrl}
                 demoUrl={automation?.demoUrl}
+                demoImgHeight={136}
                 description={automation?.description}
+                benefits={
+                  automation && (
+                    <SectionBenefits benefits={automation.benefits} />
+                  )
+                }
               />
 
-              {automation && <SectionBenefits benefits={automation.benefits} />}
-              <Divider my="lg" />
-
-              <Group justify="space-between" align="center">
+              <Group justify="space-between" align="center" mt="xl">
                 <Title order={5} mb="sm">
                   Setup
                 </Title>

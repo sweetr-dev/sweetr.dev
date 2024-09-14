@@ -1,4 +1,4 @@
-import { Title, Stack, Paper, Group } from "@mantine/core";
+import { Stack, Paper, Group, Text } from "@mantine/core";
 import { benefitLabels } from "../../../../../providers/automation.provider";
 import {
   IconAutomationBenefit,
@@ -11,25 +11,26 @@ interface SectionBenefitsProps {
 export const SectionBenefits = ({ benefits }: SectionBenefitsProps) => {
   return (
     <>
-      <Stack gap="xs" mt="md">
+      <Stack gap="xs">
         {Object.entries(benefits).map(
           ([key, value]) =>
             value && (
-              <Paper withBorder p="sm" key={key}>
+              <Paper withBorder p="xs" key={key}>
                 <Group wrap="nowrap">
                   <IconAutomationBenefit
                     benefit={key as AutomationBenefit}
+                    enabled={true}
                     themeIconProps={{
-                      size: "xl",
+                      size: "lg",
                       variant: "light",
                     }}
                     showTooltip={false}
-                    iconProps={{ size: "24" }}
+                    iconProps={{ size: "20" }}
                   />
-                  <div>
+                  <Text size="sm">
                     <strong>{benefitLabels[key as AutomationBenefit]}:</strong>{" "}
                     {value}
-                  </div>
+                  </Text>
                 </Group>
               </Paper>
             ),
