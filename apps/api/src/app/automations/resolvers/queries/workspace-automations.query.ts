@@ -5,6 +5,7 @@ import {
   findAutomationByType,
   findAutomationsByWorkspace,
 } from "../../services/automation.service";
+import { Automation } from "../../services/automation.types";
 import { transformAutomation } from "../transformers/automation.transformer";
 
 export const workspaceAutomationsQuery = createFieldResolver("Workspace", {
@@ -22,7 +23,7 @@ export const workspaceAutomationsQuery = createFieldResolver("Workspace", {
 
     if (!automation) return null;
 
-    return transformAutomation(automation);
+    return transformAutomation(automation as Automation);
   },
   automations: async (workspace) => {
     logger.info("query.workspace.automations", { workspace });

@@ -1,6 +1,7 @@
 export default /* GraphQL */ `
   enum AutomationType {
     PR_TITLE_CHECK
+    PR_SIZE_LABELER
   }
 
   type Automation {

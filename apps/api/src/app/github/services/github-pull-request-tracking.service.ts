@@ -128,7 +128,9 @@ export const getReviewCompareTime = (
   return prCreatedAt;
 };
 
-export const getPullRequestSize = (pullRequest: PullRequest) => {
+export const getPullRequestSize = (
+  pullRequest: Pick<PullRequest, "linesAddedCount" | "linesDeletedCount">
+) => {
   const totalChanges =
     pullRequest.linesAddedCount + pullRequest.linesDeletedCount;
 

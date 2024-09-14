@@ -83,7 +83,8 @@
           "icon": "robot",
           "pages": [
             "features/automations/intro",
-            "features/automations/pr-title-check"
+            "features/automations/pr-title-check",
+            "features/automations/pr-size-labeler"
           ]
         }
       ]

@@ -1,4 +1,4 @@
-import { Group, Space, Title } from "@mantine/core";
+import { Group, Title } from "@mantine/core";
 import type { FC, ReactNode } from "react";
 
 interface PageTitleProps {

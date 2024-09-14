@@ -1,13 +1,4 @@
-import {
-  Box,
-  Divider,
-  Stack,
-  Title,
-  Skeleton,
-  Loader,
-  Group,
-  Anchor,
-} from "@mantine/core";
+import { Box, Stack, Title, Skeleton, Loader, Group } from "@mantine/core";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { PageContainer } from "../../../../components/page-container";
 import { LoadableContent } from "../../../../components/loadable-content";
@@ -17,15 +8,14 @@ import { useAutomationCards } from "../../use-automation-cards";
 import { SettingEnable } from "../components/settings-enable";
 import { HeaderAutomation } from "../components/header-automation";
 import { SectionBenefits } from "../components/section-benefits/section-benefits";
-import { IconExternalLink } from "@tabler/icons-react";
-import { FormPrTitleCheckSettings } from "./components/form-pr-title-check-settings";
+import { FormPrSizeLabelerSettings } from "./components/form-pr-size-labeler-settings";
 
-export const AutomationPrTitleCheckPage = () => {
+export const AutomationPrSizeLabelerPage = () => {
   const { automationSettings, isLoading, isMutating } = useAutomationSettings(
-    AutomationType.PR_TITLE_CHECK,
+    AutomationType.PR_SIZE_LABELER,
   );
   const { automationCards } = useAutomationCards();
-  const automation = automationCards.PR_TITLE_CHECK;
+  const automation = automationCards.PR_SIZE_LABELER;
 
   return (
     <PageContainer>
@@ -54,6 +44,7 @@ export const AutomationPrTitleCheckPage = () => {
                 title={automation?.title}
                 docsUrl={automation?.docsUrl}
                 demoUrl={automation?.demoUrl}
+                demoImgHeight={136}
                 description={automation?.description}
                 benefits={
                   automation && (
@@ -70,31 +61,15 @@ export const AutomationPrTitleCheckPage = () => {
               </Group>
               <Stack>
                 {automation && (
-                  <SettingEnable
-                    enabled={automationSettings?.enabled}
-                    type={AutomationType.PR_TITLE_CHECK}
-                  />
-                )}
-
-                {automationSettings && (
                   <>
-                    <FormPrTitleCheckSettings
-                      settings={automationSettings.settings as any}
+                    <SettingEnable
+                      enabled={automationSettings?.enabled}
+                      type={AutomationType.PR_SIZE_LABELER}
                     />
 
-                    <Anchor
-                      fz="sm"
-                      ml="auto"
-                      target="_blank"
-                      href="https://docs.sweetr.dev/features/automations/pr-title-check#popular-patterns"
-                      rel="noreferrer"
-                      w="fit-content"
-                    >
-                      <Group gap={5} align="center">
-                        RegEx for popular title patterns
-                        <IconExternalLink stroke={1.5} size={16} />
-                      </Group>
-                    </Anchor>
+                    <FormPrSizeLabelerSettings
+                      settings={automationSettings?.settings || {}}
+                    />
                   </>
                 )}
               </Stack>
