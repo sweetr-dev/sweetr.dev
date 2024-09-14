@@ -34,13 +34,13 @@ type PrSizeLabelerSettings = {
 
 type FormValues = Required<PrSizeLabelerSettings>["labels"];
 
-interface FormPrTitleCheckSettingsProps {
+interface FormPrSizeLabelerSettingsProps {
   settings: PrSizeLabelerSettings;
 }
 
 export const FormPrSizeLabelerSettings = ({
   settings,
-}: FormPrTitleCheckSettingsProps) => {
+}: FormPrSizeLabelerSettingsProps) => {
   const { mutate } = useAutomationSettings(AutomationType.PR_SIZE_LABELER);
 
   const onValuesChange = useDebouncedCallback((values) => {

@@ -9,7 +9,7 @@ import { InputValidationException } from "../../../errors/exceptions/input-valid
 import { withDelayedRetryOnRateLimit } from "../../../github/services/github-rate-limit.service";
 import { runPrSizeLabelerAutomation } from "./pr-size-labeler.service";
 
-export const prTitleCheckWorker = createWorker(
+export const prSizeLabelerWorker = createWorker(
   SweetQueue.AUTOMATION_PR_SIZE_LABELER,
   async (
     job: Job<PullRequestOpenedEvent | PullRequestSynchronizeEvent>,
@@ -17,14 +17,14 @@ export const prTitleCheckWorker = createWorker(
   ) => {
     if (!job.data.installation?.id) {
       throw new InputValidationException(
-        "Received Pull Request webhook without installation",
+        "[Automation][PR Size Labeler] Received webhook without installation",
         { extra: { jobData: job.data }, severity: "error" }
       );
     }
 
     if (!job.data.pull_request?.node_id) {
       throw new InputValidationException(
-        "Received Pull Request webhook without Pull Request",
+        "[Automation][PR Size Labeler] Received webhook without Pull Request",
         { extra: { jobData: job.data }, severity: "error" }
       );
     }

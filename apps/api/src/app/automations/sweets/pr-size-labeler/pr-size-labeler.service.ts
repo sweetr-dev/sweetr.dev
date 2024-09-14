@@ -18,7 +18,7 @@ export const runPrSizeLabelerAutomation = async (
   gitInstallationId: number,
   gitPullRequest: PullRequest
 ) => {
-  logger.info("[Automation] PR Title Check", {
+  logger.info("[Automation] PR Size Labeler", {
     installationId: gitInstallationId,
     pullRequestId: gitPullRequest.node_id,
   });
@@ -110,7 +110,9 @@ const maybeCreateLabels = async (
         await octokit.rest.issues.createLabel({
           owner,
           repo,
-          ...label,
+          name: label.name,
+          color: label.color.replaceAll("#", ""),
+          description: label.description,
         });
       }
     } catch (error) {
@@ -177,27 +179,27 @@ const getSettings = (automation: AutomationPrSizeLabeler) => {
     labels: {
       [PullRequestSize.HUGE]: {
         label: labels?.huge?.label || "huge",
-        color: (labels?.huge?.color || "#ff8787").replaceAll("#", ""),
+        color: labels?.huge?.color || "#ff8787",
         description: `Huge PR - High risk of reviewer fatigue`,
       },
       [PullRequestSize.LARGE]: {
         label: labels?.large?.label || "large",
-        color: (labels?.large?.color || "#ff8787").replaceAll("#", ""),
+        color: labels?.large?.color || "#ff8787",
         description: `Large PR - Consider splitting up into smaller PRs to reduce risk and review time`,
       },
       [PullRequestSize.MEDIUM]: {
         label: labels?.medium?.label || "medium",
-        color: (labels?.medium?.color || "#a6a7ab").replaceAll("#", ""),
+        color: labels?.medium?.color || "#a6a7ab",
         description: `Medium PR - Strive for smaller PRs to reduce risk and review time`,
       },
       [PullRequestSize.SMALL]: {
         label: labels?.small?.label || "small",
-        color: (labels?.small?.color || "#69db7c").replaceAll("#", ""),
+        color: labels?.small?.color || "#69db7c",
         description: `Small PR - Quick and easy to review`,
       },
       [PullRequestSize.TINY]: {
         label: labels?.tiny?.label || "tiny",
-        color: (labels?.tiny?.color || "#69db7c").replaceAll("#", ""),
+        color: labels?.tiny?.color || "#69db7c",
         description: `Tiny PR - Quick and easy to review`,
       },
     },
