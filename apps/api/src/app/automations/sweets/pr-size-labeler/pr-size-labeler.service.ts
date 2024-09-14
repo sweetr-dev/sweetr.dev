@@ -1,4 +1,4 @@
-import { AutomationType } from "@prisma/client";
+import { AutomationType, PullRequestSize } from "@prisma/client";
 import { logger } from "../../../../lib/logger";
 import { getBypassRlsPrisma } from "../../../../prisma";
 import {
@@ -49,12 +49,28 @@ export const runPrSizeLabelerAutomation = async (
 
   await maybeCreateLabels(gitInstallationId, automation, gitPullRequest);
 
-  await getInstallationOctoKit(gitInstallationId).rest.issues.addLabels({
+  const labels = await getLabels(automation, gitPullRequest, size);
+
+  await getInstallationOctoKit(gitInstallationId).rest.issues.setLabels({
     owner: gitPullRequest.base.repo.owner.login,
     repo: gitPullRequest.base.repo.name,
     issue_number: gitPullRequest.number,
-    labels: [size.toString().toLowerCase()],
+    labels,
   });
+};
+
+// Returns the existing PR labels plus the new size label minus any other size label
+const getLabels = async (
+  automation: AutomationPrSizeLabeler,
+  gitPullRequest: PullRequest,
+  prSize: PullRequestSize
+): Promise<string[]> => {
+  const prLabels = gitPullRequest.labels.map((label) => label.name);
+  const settings = getSettings(automation);
+  const addLabel = settings.labels[prSize].label;
+  const sizeLabels = Object.values(settings.labels).map((label) => label.label);
+
+  return [addLabel, ...prLabels.filter((label) => !sizeLabels.includes(label))];
 };
 
 const maybeCreateLabels = async (
@@ -159,23 +175,23 @@ const getSettings = (automation: AutomationPrSizeLabeler) => {
   return {
     repositories: repositories || [],
     labels: {
-      huge: {
+      [PullRequestSize.HUGE]: {
         label: labels?.huge?.label || "huge",
         color: labels?.huge?.color || "ff8787",
       },
-      large: {
+      [PullRequestSize.LARGE]: {
         label: labels?.large?.label || "large",
         color: labels?.large?.color || "ff8787",
       },
-      medium: {
+      [PullRequestSize.MEDIUM]: {
         label: labels?.medium?.label || "medium",
         color: labels?.medium?.color || "a6a7ab",
       },
-      small: {
+      [PullRequestSize.SMALL]: {
         label: labels?.small?.label || "small",
         color: labels?.small?.color || "69db7c",
       },
-      tiny: {
+      [PullRequestSize.TINY]: {
         label: labels?.tiny?.label || "tiny",
         color: labels?.tiny?.color || "69db7c",
       },
