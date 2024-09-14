@@ -178,27 +178,27 @@ const getSettings = (automation: AutomationPrSizeLabeler) => {
       [PullRequestSize.HUGE]: {
         label: labels?.huge?.label || "huge",
         color: (labels?.huge?.color || "#ff8787").replaceAll("#", ""),
-        description: `Huge PR - High risk of reviewer fatigue!`,
+        description: `Huge PR - High risk of reviewer fatigue`,
       },
       [PullRequestSize.LARGE]: {
         label: labels?.large?.label || "large",
         color: (labels?.large?.color || "#ff8787").replaceAll("#", ""),
-        description: `Large PR - Consider splitting up into smaller PRs to reduce risk and review time!`,
+        description: `Large PR - Consider splitting up into smaller PRs to reduce risk and review time`,
       },
       [PullRequestSize.MEDIUM]: {
         label: labels?.medium?.label || "medium",
         color: (labels?.medium?.color || "#a6a7ab").replaceAll("#", ""),
-        description: `Medium PR - Strive for smaller PRs to reduce risk and review time!`,
+        description: `Medium PR - Strive for smaller PRs to reduce risk and review time`,
       },
       [PullRequestSize.SMALL]: {
         label: labels?.small?.label || "small",
         color: (labels?.small?.color || "#69db7c").replaceAll("#", ""),
-        description: `Small PR - Quick and easy to review!`,
+        description: `Small PR - Quick and easy to review`,
       },
       [PullRequestSize.TINY]: {
         label: labels?.tiny?.label || "tiny",
         color: (labels?.tiny?.color || "#69db7c").replaceAll("#", ""),
-        description: `Tiny PR - Quick and easy to review!`,
+        description: `Tiny PR - Quick and easy to review`,
       },
     },
   };

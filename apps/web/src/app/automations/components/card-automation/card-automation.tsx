@@ -53,6 +53,7 @@ export const CardAutomation = ({
                   value && (
                     <IconAutomationBenefit
                       key={key}
+                      enabled={enabled}
                       benefit={key as AutomationBenefit}
                     />
                   ),

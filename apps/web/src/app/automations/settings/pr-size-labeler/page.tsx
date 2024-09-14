@@ -16,6 +16,7 @@ import { useAutomationCards } from "../../use-automation-cards";
 import { SettingEnable } from "../components/settings-enable";
 import { HeaderAutomation } from "../components/header-automation";
 import { SectionBenefits } from "../components/section-benefits/section-benefits";
+import { FormPrSizeLabelerSettings } from "./components/form-pr-size-labeler-settings";
 
 export const AutomationPrSizeLabelerPage = () => {
   const { automationSettings, isLoading, isMutating } = useAutomationSettings(
@@ -65,10 +66,16 @@ export const AutomationPrSizeLabelerPage = () => {
               </Group>
               <Stack>
                 {automation && (
-                  <SettingEnable
-                    enabled={automationSettings?.enabled}
-                    type={AutomationType.PR_SIZE_LABELER}
-                  />
+                  <>
+                    <SettingEnable
+                      enabled={automationSettings?.enabled}
+                      type={AutomationType.PR_SIZE_LABELER}
+                    />
+
+                    <FormPrSizeLabelerSettings
+                      settings={automationSettings?.settings || {}}
+                    />
+                  </>
                 )}
               </Stack>
             </>

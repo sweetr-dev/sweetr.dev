@@ -15,6 +15,7 @@ export type AutomationBenefit = keyof Omit<AutomationBenefits, "__typename">;
 
 interface IconAutomationBenefitProps {
   benefit: AutomationBenefit;
+  enabled: boolean;
   showTooltip?: boolean;
   themeIconProps?: ThemeIconProps;
   iconProps?: TablerIconsProps;
@@ -34,6 +35,7 @@ const getIcon = (benefit: AutomationBenefit, iconProps?: TablerIconsProps) => {
 
 export const IconAutomationBenefit = ({
   benefit,
+  enabled,
   showTooltip = true,
   themeIconProps,
   iconProps,
@@ -44,7 +46,15 @@ export const IconAutomationBenefit = ({
       position="bottom"
       disabled={!showTooltip}
     >
-      <ThemeIcon variant="default" {...themeIconProps}>
+      <ThemeIcon
+        variant={enabled ? "light" : "default"}
+        {...themeIconProps}
+        bd={
+          enabled
+            ? "1px solid var(--mantine-color-green-light-hover)"
+            : undefined
+        }
+      >
         {getIcon(benefit, iconProps)()}
       </ThemeIcon>
     </Tooltip>

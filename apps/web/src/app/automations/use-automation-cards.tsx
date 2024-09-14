@@ -33,8 +33,7 @@ const automationCards = {
     icon: "📏",
     benefits: {
       cycleTime: "Encourage faster reviews on smaller PRs.",
-      failureRate:
-        "Reduce risk by mitigating reviewer fatigue with smaller PRs.",
+      failureRate: "Mitigate reviewer fatigue with smaller PRs.",
     },
   },
   NOTIFY_STALE_PRS: {
