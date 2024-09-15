@@ -5,7 +5,7 @@ import Particles from "./automation-carousel/particles";
 
 export default function Features02() {
   return (
-    <section className="bg-dark-800 relative border-b border-dark-400 py-12 md:pt-20 px-4">
+    <section className="bg-dark-800 relative py-12 md:pt-20 px-4">
       <Particles
         className="absolute inset-0 z-0 opacity-40 group-hover/slide:opacity-100"
         quantity={30}
