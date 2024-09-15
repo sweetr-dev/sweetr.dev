@@ -22,7 +22,7 @@ export const CategoryNav = () => {
   }, [searchParams]);
 
   return (
-    <div className="mt-8 p-1 flex w-fit mx-auto text-dark-100 gap-3 border border-dark-400 rounded-md">
+    <div className="mt-8 bg-dark-800 p-1 flex w-fit mx-auto text-dark-100 gap-3 border border-dark-400 rounded-md flex-wrap justify-center">
       <CategoryNavItem
         category=""
         active={selectedCategory === ""}
@@ -86,7 +86,7 @@ const CategoryNavItem = ({
   ...props
 }: CategoryNavItemProps) => {
   return (
-    <Link href={category ? `?category=${category}` : "/blog"}>
+    <Link href={category ? `?category=${category}` : "/blog"} scroll={false}>
       <div
         {...props}
         className={`font-medium hover:text-green-400 transition-all p-2 rounded-md cursor-pointer ${active ? "bg-green-400/10 text-green-400 " : "hover:scale-105 "}`}
