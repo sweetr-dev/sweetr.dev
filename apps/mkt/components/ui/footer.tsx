@@ -5,7 +5,7 @@ import { IconBrandLinkedin, IconBrandX } from "@tabler/icons-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-dark-800">
+    <footer className="bg-dark-800 border-t border-dark-400 ">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
         {/* Top area: Blocks */}
         <div className="grid sm:grid-cols-12 gap-8 py-8 md:py-12">
@@ -61,6 +61,14 @@ export default function Footer() {
                   target="_blank"
                 >
                   Documentation
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-zinc-500 hover:text-dark-100 transition"
+                  href="/blog"
+                >
+                  Blog
                 </a>
               </li>
               <li>
