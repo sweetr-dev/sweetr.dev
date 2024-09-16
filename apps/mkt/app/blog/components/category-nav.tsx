@@ -5,8 +5,8 @@ import {
   IconHeartCode,
   IconRocket,
   IconCompass,
-  IconChartAreaLine,
   IconBoxMultiple,
+  IconCode,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -59,11 +59,11 @@ export const CategoryNav = () => {
         Developer Experience
       </CategoryNavItem>
       <CategoryNavItem
-        category="metrics"
-        active={selectedCategory === "metrics"}
-        icon={IconChartAreaLine}
+        category="tech"
+        active={selectedCategory === "tech"}
+        icon={IconCode}
       >
-        Metrics
+        Tech
       </CategoryNavItem>
     </div>
   );
