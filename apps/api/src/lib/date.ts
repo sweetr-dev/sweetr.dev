@@ -21,9 +21,8 @@ export const differenceInBusinessMilliseconds = (
   if (isSameDay(startDate, endDate)) {
     return differenceInMilliseconds(endDate, startDate);
   }
-
   const businessDays = differenceInBusinessDays(endDate, startDate);
-  const fixDifference = isWeekend(startDate) || isWeekend(endDate) ? 0 : 1;
+  const fixDifference = isWeekend(endDate) ? 0 : 1;
   let difference = (businessDays + fixDifference) * msInADay;
 
   if (!isWeekend(startDate)) {
