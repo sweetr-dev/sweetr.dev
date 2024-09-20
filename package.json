@@ -17,7 +17,8 @@
     "ssl:generate": "node ./certs/devcert.js",
     "heroku-postbuild": "turbo run build --filter api",
     "start": "cd apps/api && npm run start",
-    "ngrok": "ngrok http https://api.sweetr.local:8000 --domain weekly-flying-primate.ngrok-free.app"
+    "ngrok": "ngrok http https://api.sweetr.local:8000 --domain weekly-flying-primate.ngrok-free.app",
+    "test": "vitest run"
   },
   "dependencies": {
     "devcert": "^1.2.2",
@@ -25,7 +26,8 @@
   },
   "devDependencies": {
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "vitest": "^2.1.1"
   },
   "engines": {
     "node": ">=20"
