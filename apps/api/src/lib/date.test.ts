@@ -4,7 +4,7 @@ import { differenceInBusinessMilliseconds } from "./date";
 describe("differenceInBusinessMilliseconds", () => {
   const hour = 60 * 60 * 1000;
 
-  // endOfDay is at 23:59:59.999, so we need to subtract 1ms to assert the correct time when
+  // endOfDay is at 23:59:59.999, so we need to subtract 1ms to assert the correct time
   const oneMsOffset = 1;
 
   it("should return correct difference for same day", () => {
@@ -12,7 +12,7 @@ describe("differenceInBusinessMilliseconds", () => {
     const endDate = new Date("2023-05-15T19:00:00");
     const result = differenceInBusinessMilliseconds(startDate, endDate);
 
-    expect(result).toBe(10 * hour); // 8 hours in milliseconds
+    expect(result).toBe(10 * hour); // 10 hours in milliseconds
   });
 
   it("should return correct difference for consecutive business days", () => {
@@ -20,7 +20,7 @@ describe("differenceInBusinessMilliseconds", () => {
     const endDate = new Date("2023-05-16T10:00:00"); // Tuesday
     const result = differenceInBusinessMilliseconds(startDate, endDate);
 
-    expect(result).toBe((10 + 10) * hour - oneMsOffset); // 20 hours in milliseconds
+    expect(result).toBe((10 + 10) * hour - oneMsOffset);
   });
 
   it("should skip weekends", () => {
@@ -28,7 +28,7 @@ describe("differenceInBusinessMilliseconds", () => {
     const endDate = new Date("2023-05-22T09:00:00"); // Monday
     const result = differenceInBusinessMilliseconds(startDate, endDate);
 
-    expect(result).toBe((7 + 9) * hour - oneMsOffset); // 16 hours in milliseconds
+    expect(result).toBe((7 + 9) * hour - oneMsOffset);
   });
 
   it("should handle start date on weekend", () => {
@@ -36,7 +36,7 @@ describe("differenceInBusinessMilliseconds", () => {
     const endDate = new Date("2023-05-22T17:00:00"); // Monday
     const result = differenceInBusinessMilliseconds(startDate, endDate);
 
-    expect(result).toBe(17 * hour); // 17 hours in milliseconds
+    expect(result).toBe(17 * hour);
   });
 
   it("should handle end date on weekend", () => {
@@ -44,7 +44,7 @@ describe("differenceInBusinessMilliseconds", () => {
     const endDate = new Date("2023-05-21T10:00:00"); // Sunday
     const result = differenceInBusinessMilliseconds(startDate, endDate);
 
-    expect(result).toBe(10 * hour - oneMsOffset); // 10 hours in milliseconds
+    expect(result).toBe(10 * hour - oneMsOffset);
   });
 
   it("should return zero for weekend to weekend", () => {
