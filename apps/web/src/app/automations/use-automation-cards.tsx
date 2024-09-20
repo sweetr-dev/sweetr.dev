@@ -36,6 +36,22 @@ const automationCards = {
       failureRate: "Mitigate reviewer fatigue with smaller PRs.",
     },
   },
+  ENV_DRIFT: {
+    type: "ENV_DRIFT",
+    enabled: false,
+    available: false,
+    title: "Environment Drift Alert",
+    shortDescription: "Get notified when multiple changes are pending release.",
+    description: "Get notified when multiple changes are pending release.",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    docsUrl: "https://docs.sweetr.dev/",
+    color: "yellow.1",
+    icon: "🏗️",
+    benefits: {
+      cycleTime: "Encourage faster deployments.",
+      failureRate: "Reduce incident risk by releasing smaller changesets.",
+    },
+  },
   NOTIFY_STALE_PRS: {
     type: "NOTIFY_STALE_PRS",
     enabled: false,
