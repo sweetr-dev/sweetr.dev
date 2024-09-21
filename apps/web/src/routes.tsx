@@ -137,10 +137,12 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/integrations",
                 element: <IntegrationsPage />,
-              },
-              {
-                path: "/settings/integrations/slack",
-                element: <IntegrationSlackPage />,
+                children: [
+                  {
+                    path: "/settings/integrations/slack",
+                    element: <IntegrationSlackPage />,
+                  },
+                ],
               },
             ],
           },

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { Avatar, Box, Group, Paper, Skeleton, Table } from "@mantine/core";
-import { useChartDrawer } from "../../chart-page.provider";
+import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
 import { IconCalendar } from "@tabler/icons-react";
@@ -23,7 +23,7 @@ import { ButtonDocs } from "../../../../../../components/button-docs";
 export const TeamHealthCodeReviewDistributionPage = () => {
   const { teamId } = useParams();
   const { workspace } = useWorkspace();
-  const drawerProps = useChartDrawer({
+  const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/health-and-performance/`,
   });
   const searchParams = useFilterSearchParameters();
