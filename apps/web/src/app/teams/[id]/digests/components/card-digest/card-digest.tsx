@@ -39,10 +39,7 @@ export const CardDigest = ({
           {image}
         </Group>
       </Card.Section>
-      <Card.Section
-        p="md"
-        style={{ borderBottom: "1px solid #303030", flexGrow: 1 }}
-      >
+      <Card.Section p="md">
         <Stack gap="md" h="100%">
           <Box style={{ flexGrow: 1 }}>
             <Title order={2} size="h4">
