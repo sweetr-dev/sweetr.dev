@@ -1,5 +1,6 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
+  IconBell,
   IconChartArcs,
   IconForms,
   IconGitPullRequest,
@@ -71,13 +72,20 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
         active={pathname.startsWith(getLink("digests"))}
         component={Link}
         label="Digests"
+        leftSection={<IconMessage stroke={1.5} size={18} />}
+      />
+      <NavLink
+        to={getLink("alerts")}
+        active={pathname.startsWith(getLink("alerts"))}
+        component={Link}
+        label="Alerts"
         disabled
         rightSection={
           <Badge size="xs" variant="default">
             Soon
           </Badge>
         }
-        leftSection={<IconMessage stroke={1.5} size={18} />}
+        leftSection={<IconBell stroke={1.5} size={18} />}
       />
       <NavLink
         to={getLink("targets")}

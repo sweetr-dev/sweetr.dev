@@ -12,7 +12,7 @@ export const IntegrationsPage = () => {
 
   return (
     <PageContainer>
-      <Breadcrumbs items={[{ label: "Integrations" }]} />
+      <Breadcrumbs items={[{ label: "Settings" }, { label: "Integrations" }]} />
 
       <LoadableContent
         isLoading={isLoading}
@@ -37,7 +37,6 @@ export const IntegrationsPage = () => {
                 title="Slack"
                 enabled={integrations?.SLACK?.isEnabled || false}
                 icon={<ImageIntegrationLogo brand="slack" />}
-                color={"dark.6"}
               />
             </Anchor>
             <CardIntegration
@@ -46,7 +45,6 @@ export const IntegrationsPage = () => {
               title="MS Teams"
               enabled={false}
               icon={<ImageIntegrationLogo brand="msteams" />}
-              color={"dark.6"}
             />
           </SimpleGrid>
         }

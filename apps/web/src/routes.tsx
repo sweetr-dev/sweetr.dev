@@ -1,48 +1,49 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
+import { PageNotFound } from "./app/404";
+import { ErrorPage } from "./app/500";
+import { LoginPage } from "./app/auth/login/page";
+import { AutomationsPage } from "./app/automations/page";
+import { AutomationPrSizeLabelerPage } from "./app/automations/settings/pr-size-labeler/page";
+import { AutomationPrTitleCheckPage } from "./app/automations/settings/pr-title-check/page";
+import { GithubInstallPage } from "./app/github/install/page";
+import { OAuthGithubPage } from "./app/github/oauth/page";
+import { HomePage } from "./app/home/page";
+import { AppPage } from "./app/page";
+import { PersonCodeReviewsPage } from "./app/people/[handle]/code-reviews/page";
+import { PersonOverviewPage } from "./app/people/[handle]/overview/page";
+import { PersonPage } from "./app/people/[handle]/page";
+import { PersonPullRequestsPage } from "./app/people/[handle]/pull-requests/page";
+import { PeoplePage } from "./app/people/page";
+import { RepositoriesPage } from "./app/repositories/page";
+import { BillingPage } from "./app/settings/billing/page";
+import { IntegrationsPage } from "./app/settings/integrations/page";
+import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
+import { MyAccountPage } from "./app/settings/my-account/page";
+import { SettingsPage } from "./app/settings/page";
+import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
+import { TeamDigestsPage } from "./app/teams/[id]/digests/page";
+import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
+import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
+import { TeamHealthCodeReviewDistributionPage } from "./app/teams/[id]/health-and-performance/health/code-review-distribution/page";
+import { TeamHealthAndPerformancePage } from "./app/teams/[id]/health-and-performance/page";
+import { TeamPullRequestsCycleTimePage } from "./app/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
+import { TeamPullRequestsSizeDistribution } from "./app/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
+import { TeamPullRequestsTimeToMergePage } from "./app/teams/[id]/health-and-performance/pull-requests/time-to-merge/page";
+import { TeamMembersPage } from "./app/teams/[id]/members/page";
+import { TeamPage } from "./app/teams/[id]/page";
+import { TeamPullRequestsPage } from "./app/teams/[id]/pull-requests/page";
+import { TeamsPage } from "./app/teams/page";
 import {
   isAuthError,
   redirectIfCredentials,
   redirectIfNoCredentials,
 } from "./providers/auth.provider";
-import { PageNotFound } from "./app/404";
-import { ErrorPage } from "./app/500";
-import { GithubInstallPage } from "./app/github/install/page";
 import {
   installGitAppIfNoWorkspaces,
   skipOAuthIfAuthenticated,
 } from "./providers/github.provider";
-import { LoginPage } from "./app/auth/login/page";
-import { OAuthGithubPage } from "./app/github/oauth/page";
-import { HomePage } from "./app/home/page";
-import { AppPage } from "./app/page";
-import { RepositoriesPage } from "./app/repositories/page";
-import { SettingsPage } from "./app/settings/page";
-import { MyAccountPage } from "./app/settings/my-account/page";
-import { BillingPage } from "./app/settings/billing/page";
-import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
-import { TeamsPage } from "./app/teams/page";
-import { TeamPage } from "./app/teams/[id]/page";
-import { TeamMembersPage } from "./app/teams/[id]/members/page";
-import { TeamPullRequestsPage } from "./app/teams/[id]/pull-requests/page";
-import { PeoplePage } from "./app/people/page";
-import { PersonPage } from "./app/people/[handle]/page";
-import { PersonOverviewPage } from "./app/people/[handle]/overview/page";
-import { PersonCodeReviewsPage } from "./app/people/[handle]/code-reviews/page";
-import { PersonPullRequestsPage } from "./app/people/[handle]/pull-requests/page";
-import { AutomationsPage } from "./app/automations/page";
-import { AutomationPrTitleCheckPage } from "./app/automations/settings/pr-title-check/page";
-import { TeamHealthAndPerformancePage } from "./app/teams/[id]/health-and-performance/page";
-import { TeamHealthCodeReviewDistributionPage } from "./app/teams/[id]/health-and-performance/health/code-review-distribution/page";
-import { TeamPullRequestsCycleTimePage } from "./app/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
-import { TeamPullRequestsSizeDistribution } from "./app/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
-import { TeamPullRequestsTimeToMergePage } from "./app/teams/[id]/health-and-performance/pull-requests/time-to-merge/page";
-import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
-import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
-import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { showInfoNotification } from "./providers/notification.provider";
-import { IntegrationsPage } from "./app/settings/integrations/page";
-import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
-import { AutomationPrSizeLabelerPage } from "./app/automations/settings/pr-size-labeler/page";
+import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 
 export const router = createBrowserRouter([
   {
@@ -158,6 +159,10 @@ export const router = createBrowserRouter([
               {
                 path: "/teams/:teamId/pull-requests",
                 element: <TeamPullRequestsPage />,
+              },
+              {
+                path: "/teams/:teamId/digests",
+                element: <TeamDigestsPage />,
               },
               {
                 path: "/teams/:teamId/health-and-performance",
