@@ -1,24 +1,24 @@
 import { Card, Group, Stack, Box, Title, Text } from "@mantine/core";
 import { ReactNode } from "react";
-import { BadgeStoreStatus } from "../../../../../components/badge-store-status";
+import { BadgeStoreStatus } from "../../../../../../components/badge-store-status";
 
-interface CardIntegrationProps {
+interface CardDigestProps {
   title: string;
   enabled: boolean;
   available: boolean;
   description: string;
-  icon: ReactNode;
+  image: ReactNode;
   onClick?: () => void;
 }
 
-export const CardIntegration = ({
+export const CardDigest = ({
   title,
   enabled,
   available,
   description,
-  icon,
+  image,
   onClick,
-}: CardIntegrationProps) => {
+}: CardDigestProps) => {
   return (
     <Card
       withBorder
@@ -29,7 +29,6 @@ export const CardIntegration = ({
       onClick={onClick}
     >
       <Card.Section
-        h={180}
         style={{
           background:
             "radial-gradient(circle, var(--mantine-color-dark-5) 20%, rgba(0, 0, 0, 0.15) 95%)",
@@ -37,7 +36,7 @@ export const CardIntegration = ({
         }}
       >
         <Group align="center" justify="center" h="100%">
-          {icon}
+          {image}
         </Group>
       </Card.Section>
       <Card.Section
