@@ -1,19 +1,18 @@
 import {
   Grid,
   Group,
-  Paper,
   Stack,
   Title,
   Text,
   Skeleton,
   Badge,
-  Tabs,
   Box,
+  Portal,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { DrawerUpsertTeam } from "../components/drawer-upsert-team";
 import { PageTitle } from "../../../components/page-title";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { useTeamQuery } from "../../../api/teams.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { HeaderActions } from "../../../components/header-actions";
@@ -21,22 +20,16 @@ import { MenuTeam } from "./components/menu-team";
 import classes from "./page.module.css";
 import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../providers/workspace.provider";
-import {
-  IconChartArcs,
-  IconGitPullRequest,
-  IconPencil,
-  IconUsers,
-} from "@tabler/icons-react";
+import { IconPencil } from "@tabler/icons-react";
 import { PageContainer } from "../../../components/page-container";
 import { ResourceNotFound } from "../../../exceptions/resource-not-found.exception";
 import { useContextualActions } from "../../../providers/contextual-actions.provider";
+import { SubnavTeam } from "./components/subnav-team";
 
 export const TeamPage = () => {
   const [isDrawerOpen, drawerControl] = useDisclosure(false);
   const { teamId } = useParams();
   const { workspace } = useWorkspace();
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   if (!teamId) throw new ResourceNotFound();
 
@@ -67,24 +60,6 @@ export const TeamPage = () => {
 
   const isArchived = !!team.archivedAt;
 
-  const getActiveTab = () => {
-    const basePath = `/teams/${teamId}/`;
-
-    if (pathname === basePath) return "members";
-
-    return [`pull-requests`, `code-reviews`, `health-and-performance`].find(
-      (path) => pathname.includes(basePath + path),
-    );
-  };
-
-  const navigateTo = (path: string) => navigate(`/teams/${team.id}/${path}`);
-
-  const handleChangeTab = (tab: string | null) => {
-    if (!tab || tab === "members") return navigateTo("");
-
-    return navigateTo(tab);
-  };
-
   return (
     <PageContainer>
       <Breadcrumbs
@@ -98,6 +73,10 @@ export const TeamPage = () => {
           upsertDrawerControl={drawerControl}
         />
       </HeaderActions>
+
+      <Portal target="#subnav">
+        <SubnavTeam team={team} />
+      </Portal>
 
       <PageTitle
         title={
@@ -134,41 +113,7 @@ export const TeamPage = () => {
         }
       />
 
-      <Paper radius="sm">
-        <Tabs
-          value={getActiveTab()}
-          defaultValue="members"
-          radius="none"
-          variant="default"
-          onChange={handleChangeTab}
-        >
-          <Tabs.List>
-            <Tabs.Tab
-              value="members"
-              onClick={() => navigateTo("")}
-              leftSection={<IconUsers size={24} stroke={1.5} />}
-            >
-              Members
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="pull-requests"
-              onClick={() => navigateTo("pull-requests")}
-              leftSection={<IconGitPullRequest size={24} stroke={1.5} />}
-            >
-              Pull Requests
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="health-and-performance"
-              onClick={() => navigateTo("health-and-performance")}
-              leftSection={<IconChartArcs size={24} stroke={1.5} />}
-            >
-              Health & Performance
-            </Tabs.Tab>
-          </Tabs.List>
-        </Tabs>
-      </Paper>
-
-      <Box mt="xl">
+      <Box mt="md">
         <Outlet context={{ drawerControl }} />
       </Box>
 

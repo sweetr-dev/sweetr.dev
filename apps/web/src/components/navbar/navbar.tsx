@@ -17,7 +17,7 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
   return (
     <AppShell.Navbar bg="dark.8">
       <AppShellSection grow>
-        <Group h={"100%"} gap={0}>
+        <Group h={"100%"} gap={0} wrap="nowrap">
           <Stack
             h={"100%"}
             style={{
