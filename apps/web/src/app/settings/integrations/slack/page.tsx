@@ -3,7 +3,6 @@ import {
   Text,
   Title,
   Button,
-  Anchor,
   Skeleton,
   List,
   rem,
@@ -12,11 +11,7 @@ import {
   Stack,
   Divider,
 } from "@mantine/core";
-import {
-  IconBook2,
-  IconCheck,
-  IconCircleCheckFilled,
-} from "@tabler/icons-react";
+import { IconCheck, IconCircleCheckFilled } from "@tabler/icons-react";
 import { ImageIntegrationLogo } from "../components/image-integration-logo";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { ListScopes } from "../components/list-scopes";
@@ -72,8 +67,8 @@ export const IntegrationSlackPage = () => {
                     title: "Uninstall Slack App",
                     label: (
                       <>
-                        Your automation settings will not be removed. You can
-                        reinstall Slack anytime to re-enable notifications.
+                        Your digest and alert settings will not be removed. You
+                        can reinstall Slack anytime to re-enable notifications.
                       </>
                     ),
                     confirmLabel: "Uninstall Slack",
@@ -101,9 +96,9 @@ export const IntegrationSlackPage = () => {
         isLoading={isLoading && !isIntegrating}
         content={
           <>
-            <Stack p="md">
-              {integration?.isEnabled && (
-                <>
+            {integration?.isEnabled && (
+              <>
+                <Stack p="md">
                   <Title order={5}>Status</Title>
                   <Paper p="md" radius="md" withBorder>
                     <Group>
@@ -114,11 +109,11 @@ export const IntegrationSlackPage = () => {
                       {formatDate(integration.enabledAt, "MMMM do, yyyy")}
                     </Group>
                   </Paper>
-                </>
-              )}
-            </Stack>
+                </Stack>
 
-            <Divider my="sm" />
+                <Divider my="sm" />
+              </>
+            )}
             <Stack p="md">
               <Title order={5}>Description</Title>
               <Paper withBorder p="md">
