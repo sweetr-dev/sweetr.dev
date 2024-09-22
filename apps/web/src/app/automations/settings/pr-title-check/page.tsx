@@ -9,11 +9,9 @@ import { ButtonDocs } from "../../../../components/button-docs";
 import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler, useEffect, useMemo } from "react";
 import { FormPrTitleCheck } from "./types";
-import { useNavigate } from "react-router-dom";
 import { HeaderAutomation } from "../components/header-automation";
 
 export const AutomationPrTitleCheckPage = () => {
-  const navigate = useNavigate();
   const { automation, automationSettings, query, mutation, mutate } =
     useAutomationSettings(AutomationType.PR_TITLE_CHECK);
 
@@ -26,11 +24,16 @@ export const AutomationPrTitleCheckPage = () => {
   });
 
   useEffect(() => {
+    const settings = automationSettings?.settings as
+      | FormPrTitleCheck["settings"]
+      | undefined
+      | null;
+
     form.setValues({
       enabled: automationSettings?.enabled || false,
       settings: {
-        regex: (automationSettings?.settings as any)?.regex || "",
-        regexExample: (automationSettings?.settings as any)?.regexExample || "",
+        regex: settings?.regex || "",
+        regexExample: settings?.regexExample || "",
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,8 +51,6 @@ export const AutomationPrTitleCheckPage = () => {
       settings: form.values.settings,
       enabled: form.values.enabled,
     });
-
-    navigate("/automations");
   };
 
   return (
@@ -67,9 +68,7 @@ export const AutomationPrTitleCheckPage = () => {
           </Title>
         </Group>
       }
-      toolbar={
-        <>{automation.docsUrl && <ButtonDocs href={automation.docsUrl} />}</>
-      }
+      toolbar={automation.docsUrl && <ButtonDocs href={automation.docsUrl} />}
       actions={
         <Button
           type="submit"

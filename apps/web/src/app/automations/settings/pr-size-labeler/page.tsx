@@ -10,10 +10,8 @@ import { useForm, zodResolver } from "@mantine/form";
 import { useEffect, useMemo, FormEventHandler } from "react";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 import { FormPrSizeLabeler } from "./types";
-import { useNavigate } from "react-router-dom";
 
 export const AutomationPrSizeLabelerPage = () => {
-  const navigate = useNavigate();
   const { automation, automationSettings, query, mutation, mutate } =
     useAutomationSettings(AutomationType.PR_SIZE_LABELER);
 
@@ -26,29 +24,35 @@ export const AutomationPrSizeLabelerPage = () => {
   });
 
   useEffect(() => {
-    const settings = automationSettings?.settings as any;
+    const settings = automationSettings?.settings as
+      | FormPrSizeLabeler["settings"]
+      | undefined
+      | null;
+
     form.setValues({
       enabled: automationSettings?.enabled || false,
       settings: {
-        tiny: {
-          label: settings?.labels?.tiny?.label || "tiny",
-          color: settings?.labels?.tiny?.color || "#69db7c",
-        },
-        small: {
-          label: settings?.labels?.small?.label || "small",
-          color: settings?.labels?.small?.color || "#69db7c",
-        },
-        medium: {
-          label: settings?.labels?.medium?.label || "medium",
-          color: settings?.labels?.medium?.color || "#a6a7ab",
-        },
-        large: {
-          label: settings?.labels?.large?.label || "large",
-          color: settings?.labels?.large?.color || "#ff8787",
-        },
-        huge: {
-          label: settings?.labels?.huge?.label || "huge",
-          color: settings?.labels?.huge?.color || "#ff8787",
+        labels: {
+          tiny: {
+            label: settings?.labels?.tiny?.label || "tiny",
+            color: settings?.labels?.tiny?.color || "#69db7c",
+          },
+          small: {
+            label: settings?.labels?.small?.label || "small",
+            color: settings?.labels?.small?.color || "#69db7c",
+          },
+          medium: {
+            label: settings?.labels?.medium?.label || "medium",
+            color: settings?.labels?.medium?.color || "#a6a7ab",
+          },
+          large: {
+            label: settings?.labels?.large?.label || "large",
+            color: settings?.labels?.large?.color || "#ff8787",
+          },
+          huge: {
+            label: settings?.labels?.huge?.label || "huge",
+            color: settings?.labels?.huge?.color || "#ff8787",
+          },
         },
       },
     });
@@ -67,8 +71,6 @@ export const AutomationPrSizeLabelerPage = () => {
       settings: form.values.settings,
       enabled: form.values.enabled,
     });
-
-    navigate("/automations");
   };
 
   return (
@@ -86,9 +88,7 @@ export const AutomationPrSizeLabelerPage = () => {
           </Title>
         </Group>
       }
-      toolbar={
-        <>{automation.docsUrl && <ButtonDocs href={automation.docsUrl} />}</>
-      }
+      toolbar={automation.docsUrl && <ButtonDocs href={automation.docsUrl} />}
       actions={
         <Button
           type="submit"

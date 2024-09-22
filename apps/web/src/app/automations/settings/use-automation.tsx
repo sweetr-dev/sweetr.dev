@@ -12,8 +12,10 @@ import {
   showErrorNotification,
 } from "../../../providers/notification.provider";
 import { useAutomationCards } from "../use-automation-cards";
+import { useNavigate } from "react-router-dom";
 
 export const useAutomationSettings = (type: AutomationType) => {
+  const navigate = useNavigate();
   const { workspace } = useWorkspace();
   const { automationCards } = useAutomationCards();
   const automation = automationCards[type];
@@ -22,6 +24,8 @@ export const useAutomationSettings = (type: AutomationType) => {
       showSuccessNotification({
         message: `Automation settings updated.`,
       });
+
+      navigate("/automations");
     },
     onError: () => {
       showErrorNotification({

@@ -28,8 +28,8 @@ export const FormPrSizeLabelerSettings = ({
 
       {form.values.enabled &&
         (
-          Object.keys(form.values.settings) as Array<
-            keyof typeof form.values.settings
+          Object.keys(form.values.settings.labels) as Array<
+            keyof typeof form.values.settings.labels
           >
         ).map((size) => (
           <BoxSetting
@@ -41,7 +41,7 @@ export const FormPrSizeLabelerSettings = ({
               <Input
                 maw={140}
                 placeholder={size}
-                {...form.getInputProps(`settings.${size}.label`)}
+                {...form.getInputProps(`settings.labels.${size}.label`)}
                 maxLength={100}
               ></Input>
               <ColorInput
@@ -49,7 +49,7 @@ export const FormPrSizeLabelerSettings = ({
                 error={false}
                 swatches={colorPickerSwatches}
                 swatchesPerRow={7}
-                {...form.getInputProps(`settings.${size}.color`)}
+                {...form.getInputProps(`settings.labels.${size}.color`)}
                 maw={120}
                 withEyeDropper={false}
               />

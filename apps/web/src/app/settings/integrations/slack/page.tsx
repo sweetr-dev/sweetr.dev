@@ -48,21 +48,6 @@ export const IntegrationSlackPage = () => {
           </Title>
         </Group>
       }
-      toolbar={
-        <Anchor
-          underline="never"
-          target="_blank"
-          href="https://docs.sweetr.dev"
-        >
-          <Button
-            variant="subtle"
-            color="dark.1"
-            leftSection={<IconBook2 stroke={1.5} size={20} />}
-          >
-            Docs
-          </Button>
-        </Anchor>
-      }
       actions={
         <>
           {integration && !integration?.isEnabled && integration.installUrl && (
