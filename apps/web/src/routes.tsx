@@ -137,10 +137,12 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/integrations",
                 element: <IntegrationsPage />,
-              },
-              {
-                path: "/settings/integrations/slack",
-                element: <IntegrationSlackPage />,
+                children: [
+                  {
+                    path: "/settings/integrations/slack",
+                    element: <IntegrationSlackPage />,
+                  },
+                ],
               },
             ],
           },
@@ -221,14 +223,16 @@ export const router = createBrowserRouter([
           {
             path: "automations",
             element: <AutomationsPage />,
-          },
-          {
-            path: "automations/pr-title-check",
-            element: <AutomationPrTitleCheckPage />,
-          },
-          {
-            path: "automations/pr-size-labeler",
-            element: <AutomationPrSizeLabelerPage />,
+            children: [
+              {
+                path: "/automations/pr-title-check",
+                element: <AutomationPrTitleCheckPage />,
+              },
+              {
+                path: "/automations/pr-size-labeler",
+                element: <AutomationPrSizeLabelerPage />,
+              },
+            ],
           },
         ],
       },

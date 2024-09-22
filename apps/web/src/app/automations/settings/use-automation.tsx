@@ -11,14 +11,21 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from "../../../providers/notification.provider";
+import { useAutomationCards } from "../use-automation-cards";
+import { useNavigate } from "react-router-dom";
 
 export const useAutomationSettings = (type: AutomationType) => {
+  const navigate = useNavigate();
   const { workspace } = useWorkspace();
-  const { mutate: triggerMutation, isPending } = useUpdateAutomationMutation({
+  const { automationCards } = useAutomationCards();
+  const automation = automationCards[type];
+  const { mutate: triggerMutation, ...mutation } = useUpdateAutomationMutation({
     onSuccess: () => {
       showSuccessNotification({
         message: `Automation settings updated.`,
       });
+
+      navigate("/automations");
     },
     onError: () => {
       showErrorNotification({
@@ -42,7 +49,7 @@ export const useAutomationSettings = (type: AutomationType) => {
     });
   };
 
-  const { data, isLoading } = useAutomationQuery({
+  const { data, ...query } = useAutomationQuery({
     workspaceId: workspace.id,
     input: {
       type,
@@ -50,9 +57,10 @@ export const useAutomationSettings = (type: AutomationType) => {
   });
 
   return {
+    automation,
     automationSettings: data?.workspace.automation || undefined,
-    isLoading,
+    query,
     mutate,
-    isMutating: isPending,
+    mutation,
   };
 };
