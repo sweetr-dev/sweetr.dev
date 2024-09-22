@@ -28,7 +28,7 @@ const automationCards = {
     description:
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     demoUrl: "/images/automations/pr-size-labeler.webp",
-    docsUrl: "https://docs.sweetr.dev/",
+    docsUrl: "https://docs.sweetr.dev/features/automations/pr-size-labeler",
     color: "green.1",
     icon: "📏",
     benefits: {
@@ -88,7 +88,8 @@ const automationCards = {
   },
 };
 
-type AutomationCard = (typeof automationCards)[keyof typeof automationCards];
+export type AutomationCard =
+  (typeof automationCards)[keyof typeof automationCards];
 
 interface UseAutomationCards {
   automationCards: typeof automationCards;

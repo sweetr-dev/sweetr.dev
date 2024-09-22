@@ -1,25 +1,16 @@
-import {
-  Stack,
-  Title,
-  Skeleton,
-  Group,
-  Text,
-  Divider,
-  Button,
-} from "@mantine/core";
+import { Stack, Title, Skeleton, Group, Text, Button } from "@mantine/core";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
 import { useAutomationSettings } from "../use-automation";
-import { SectionBenefits } from "../components/section-benefits/section-benefits";
 import { FormPrTitleCheckSettings } from "./components/form-pr-title-check-settings";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { ButtonDocs } from "../../../../components/button-docs";
-import { ImageDemo } from "../components/image-demo";
 import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler, useEffect, useMemo } from "react";
 import { FormPrTitleCheck } from "./types";
 import { useNavigate } from "react-router-dom";
+import { HeaderAutomation } from "../components/header-automation";
 
 export const AutomationPrTitleCheckPage = () => {
   const navigate = useNavigate();
@@ -102,17 +93,7 @@ export const AutomationPrTitleCheckPage = () => {
         isLoading={query.isLoading}
         content={
           <>
-            <Stack p="md">
-              <ImageDemo
-                title={automation.title}
-                src={automation.demoUrl}
-                height={200}
-              />
-
-              <Text>{automation.description}</Text>
-              <SectionBenefits benefits={automation.benefits} />
-            </Stack>
-            <Divider my="md" />
+            <HeaderAutomation automation={automation} />
 
             {automationSettings && <FormPrTitleCheckSettings form={form} />}
           </>
