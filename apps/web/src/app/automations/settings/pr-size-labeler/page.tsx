@@ -95,7 +95,7 @@ export const AutomationPrSizeLabelerPage = () => {
           loading={mutation.isPending}
           disabled={!isFormValid}
         >
-          Save
+          Update automation
         </Button>
       }
       onSubmit={handleSave}
