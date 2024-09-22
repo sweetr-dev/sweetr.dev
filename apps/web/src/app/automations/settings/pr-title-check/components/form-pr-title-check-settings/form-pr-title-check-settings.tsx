@@ -1,73 +1,66 @@
-import { Input } from "@mantine/core";
+import { Anchor, Group, Stack, Switch, TextInput, Title } from "@mantine/core";
 import { BoxSetting } from "../../../components/box-setting";
-import { useForm } from "@mantine/form";
-import { AutomationType } from "@sweetr/graphql-types/api";
-import { useAutomationSettings } from "../../../use-automation";
-import { IconInputValidation } from "../../../../../../components/icon-input-validation/icon-input-validation";
-import { useDebouncedCallback } from "@mantine/hooks";
-import { useRegExValidation } from "./use-regex-validation";
+import { UseFormReturnType } from "@mantine/form";
+import { FormPrTitleCheck } from "../../types";
+import { IconExternalLink } from "@tabler/icons-react";
 
 interface FormPrTitleCheckSettingsProps {
-  settings: {
-    regex: string;
-    regexExample: string;
-  };
+  form: UseFormReturnType<FormPrTitleCheck>;
 }
-
 export const FormPrTitleCheckSettings = ({
-  settings,
+  form,
 }: FormPrTitleCheckSettingsProps) => {
-  const { mutate } = useAutomationSettings(AutomationType.PR_TITLE_CHECK);
-  const { validateRegEx, isValidExample, isValidRegEx } = useRegExValidation();
-
-  const onValuesChange = useDebouncedCallback((values) => {
-    if (!validateRegEx(values)) return;
-
-    mutate({ settings: values });
-  }, 500);
-
-  const form = useForm<{
-    regex: string;
-    regexExample: string;
-  }>({
-    initialValues: {
-      regex: settings.regex || "",
-      regexExample: settings.regexExample || "",
-    },
-    onValuesChange,
-  });
-
   return (
     <>
-      <BoxSetting
-        left="Title Pattern"
-        description="Set the regular expression which PR titles must match."
-      >
-        <Input
-          maw={200}
-          placeholder="^\[[A-Za-z]+-\d+\] .+$"
-          rightSection={<IconInputValidation isValid={isValidRegEx} />}
-          value={form.values.regex}
-          onChange={(e) => form.setFieldValue("regex", e.target.value)}
-          maxLength={100}
-        ></Input>
-      </BoxSetting>
+      <Stack p="md">
+        <Title order={5}>Settings</Title>
 
-      <BoxSetting
-        left="Example Value"
-        description="This will show in GitHub for developers to understand what the pattern is."
-      >
-        <Input
-          maw={200}
-          placeholder="[KEY-100] Title"
-          color="red"
-          c="red"
-          rightSection={<IconInputValidation isValid={isValidExample} />}
-          value={form.values.regexExample}
-          onChange={(e) => form.setFieldValue("regexExample", e.target.value)}
-          maxLength={100}
-        ></Input>
-      </BoxSetting>
+        <BoxSetting left="Enabled">
+          <Switch
+            size="lg"
+            color="green.7"
+            onLabel="ON"
+            offLabel="OFF"
+            {...form.getInputProps("enabled", { type: "checkbox" })}
+          />
+        </BoxSetting>
+
+        {form.values.enabled && (
+          <>
+            <TextInput
+              label="Title Pattern"
+              withAsterisk
+              description="Set the regular expression which PR titles must match."
+              placeholder="^\[[A-Za-z]+-\d+\] .+$"
+              maxLength={100}
+              {...form.getInputProps("settings.regex")}
+            />
+
+            <TextInput
+              label="Example Value"
+              withAsterisk
+              description="Displayed in GitHub for developers to understand how to comply to the pattern."
+              placeholder="[KEY-100] Title"
+              maxLength={100}
+              {...form.getInputProps("settings.regexExample")}
+            />
+
+            <Anchor
+              fz="sm"
+              ml="auto"
+              target="_blank"
+              href="https://docs.sweetr.dev/features/automations/pr-title-check#popular-patterns"
+              rel="noreferrer"
+              w="fit-content"
+            >
+              <Group gap={5} align="center">
+                RegEx for popular title patterns
+                <IconExternalLink stroke={1.5} size={16} />
+              </Group>
+            </Anchor>
+          </>
+        )}
+      </Stack>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { CardAutomation } from "./components/card-automation";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { PageContainer } from "../../components/page-container";
 import { LoadableContent } from "../../components/loadable-content";
 import { useAutomationSettings } from "./use-automations";
@@ -54,6 +54,7 @@ export const AutomationsPage = () => {
           </SimpleGrid>
         }
       />
+      <Outlet />
     </PageContainer>
   );
 };

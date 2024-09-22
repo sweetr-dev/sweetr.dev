@@ -16,8 +16,8 @@ export const BoxSetting = ({
   const leftElement = isString(left) ? <Text fz="lg">{left}</Text> : left;
 
   return (
-    <Paper withBorder p="sm">
-      <Input.Label w="100%">
+    <Input.Label w="100%">
+      <Paper withBorder p="sm" bg="dark.6">
         <Group gap="xl" wrap="nowrap" justify="space-between" align="center">
           <Stack gap={5} justify="center">
             {leftElement}
@@ -29,7 +29,7 @@ export const BoxSetting = ({
           </Stack>
           {children}
         </Group>
-      </Input.Label>
-    </Paper>
+      </Paper>
+    </Input.Label>
   );
 };

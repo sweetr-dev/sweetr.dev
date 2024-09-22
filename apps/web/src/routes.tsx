@@ -223,14 +223,16 @@ export const router = createBrowserRouter([
           {
             path: "automations",
             element: <AutomationsPage />,
-          },
-          {
-            path: "automations/pr-title-check",
-            element: <AutomationPrTitleCheckPage />,
-          },
-          {
-            path: "automations/pr-size-labeler",
-            element: <AutomationPrSizeLabelerPage />,
+            children: [
+              {
+                path: "/automations/pr-title-check",
+                element: <AutomationPrTitleCheckPage />,
+              },
+              {
+                path: "/automations/pr-size-labeler",
+                element: <AutomationPrSizeLabelerPage />,
+              },
+            ],
           },
         ],
       },
