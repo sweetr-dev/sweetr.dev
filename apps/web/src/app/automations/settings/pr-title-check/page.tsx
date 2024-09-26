@@ -93,8 +93,7 @@ export const AutomationPrTitleCheckPage = () => {
         content={
           <>
             <HeaderAutomation automation={automation} />
-
-            {automationSettings && <FormPrTitleCheckSettings form={form} />}
+            <FormPrTitleCheckSettings form={form} />
           </>
         }
       />

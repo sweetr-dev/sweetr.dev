@@ -113,7 +113,7 @@ export const AutomationPrSizeLabelerPage = () => {
         content={
           <>
             <HeaderAutomation automation={automation} />
-            {automationSettings && <FormPrSizeLabelerSettings form={form} />}
+            <FormPrSizeLabelerSettings form={form} />
           </>
         }
       />
