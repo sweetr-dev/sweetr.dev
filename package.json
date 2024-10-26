@@ -22,11 +22,11 @@
     "ngrok": "dotenv -e ./apps/api/.env -- npm run _ngrok"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.19.0",
     "devcert": "^1.2.2",
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
+    "dotenv-cli": "^7.4.2",
     "prettier": "latest",
     "turbo": "latest",
     "vitest": "^2.1.1"
