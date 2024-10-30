@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Particles from "./particles";
 import Highlighter from "./highlighter";
-
-// Import Swiper
 import Swiper, { Navigation } from "swiper";
 import "swiper/swiper.min.css";
+import { IconBug, IconClock, IconGavel } from "@tabler/icons-react";
+
 Swiper.use([Navigation]);
 
 export const AutomationCarousel = () => {
@@ -40,18 +40,15 @@ export const AutomationCarousel = () => {
 
   return (
     <div>
-      {/* Carousel built with Swiper.js [https://swiperjs.com/] */}
-      {/* * Custom styles in src/css/additional-styles/theme.scss */}
       <div className="relative before:absolute before:inset-0 before:-translate-x-full before:z-20 before:bg-gradient-to-l before:from-transparent before:to-dark-800 before:to-20% after:absolute after:inset-0 after:translate-x-full after:z-20 after:bg-gradient-to-r after:from-transparent after:to-dark-800 after:to-20%">
         <div id="automation-carousel" className="swiper-container group h-full">
           <Highlighter
             className="swiper-wrapper w-fit"
             refresh={swiperInitialized}
           >
-            {/* Carousel items */}
-            <div className="rounded-[4px] swiper-slide  h-full group/slide">
+            <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
+                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   📏
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -65,43 +62,26 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       Label PR Size
                     </div>
-                    <div className="text-dark-200 mb-3">
+                    <div className="text-dark-200 mb-2">
                       Automatically label a Pull Request on GitHub with its
                       size. Increase awareness about creating small PRs.
                     </div>
                   </div>
-                  <div className="font-bold text-dark-100">Coming Soon</div>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[4px] swiper-slide  h-full group/slide">
-              <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-green-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
-                  🕵️‍♀️
-                  <Particles
-                    className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
-                    quantity={4}
-                    refresh={swiperInitialized}
-                    rgb="23, 25, 25"
-                  />
-                </div>
-                <div className="flex flex-col p-4 h-full">
-                  <div className="grow">
-                    <div className="font-bold text-lg mb-1 text-zinc-200">
-                      Notify Stale PRs
+                  <div className="flex space-x-1 mb-2">
+                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
+                      <IconClock color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
-                    <div className="text-dark-200 mb-3">
-                      Send a Slack message when a Pull Request hasn't been
-                      reviewed or has been open for too long.
+                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
+                      <IconBug color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
                   </div>
-                  <div className="font-bold text-dark-100">Coming Soon</div>
+                  <div className="font-bold text-green-400">Available</div>
                 </div>
               </div>
             </div>
-            <div className="rounded-[4px] swiper-slide  h-full group/slide">
+            <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-red-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
+                <div className="bg-green-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   ✍️
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -115,18 +95,53 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       PR Title Requirements
                     </div>
-                    <div className="text-dark-200 mb-3">
+                    <div className="text-dark-200 mb-2">
                       Enforce standards on Pull Request titles. Ticket code,
                       specific prefix, or something else? You pick it.
+                    </div>
+                  </div>
+                  <div className="flex space-x-1 mb-2">
+                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
+                      <IconGavel color="#fff" stroke={2} className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <div className="font-bold text-green-400">Available</div>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[4px] swiper-slide h-full group/slide">
+              <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
+                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
+                  🕵️‍♀️
+                  <Particles
+                    className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
+                    quantity={4}
+                    refresh={swiperInitialized}
+                    rgb="23, 25, 25"
+                  />
+                </div>
+                <div className="flex flex-col p-4 h-full">
+                  <div className="grow">
+                    <div className="font-bold text-lg mb-1 text-zinc-200">
+                      Notify Stale PRs
+                    </div>
+                    <div className="text-dark-200 mb-2">
+                      Send a Slack message when a Pull Request hasn't been
+                      reviewed or has been open for too long.
+                    </div>
+                  </div>
+                  <div className="flex space-x-1 mb-2">
+                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
+                      <IconClock color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
               </div>
             </div>
-            <div className="rounded-[4px] swiper-slide  h-full group/slide">
+            <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative ">
+                <div className="bg-red-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   🧊
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -140,17 +155,22 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       Code Freeze
                     </div>
-                    <div className="text-dark-200 mb-3">
+                    <div className="text-dark-200 mb-2">
                       Big migration? Xmas break? Schedule a period where no PRs
                       can be merged in selected repositories.
+                    </div>
+                  </div>
+                  <div className="flex space-x-1 mb-2">
+                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
+                      <IconBug color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
               </div>
             </div>
-            <div className="rounded-[4px] swiper-slide  h-full group/slide border-[2px] border-dashed border-dark-300">
-              <div className="relative h-[355px] bg-dark-800 rounded-[inherit]z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
+            <div className="rounded-[4px] swiper-slide h-full group/slide border-[2px] border-dashed border-dark-300">
+              <div className="relative h-[355px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
                 More coming soon
               </div>
             </div>
@@ -158,7 +178,6 @@ export const AutomationCarousel = () => {
         </div>
       </div>
 
-      {/* Arrows */}
       <div className="flex mt-8 justify-end">
         <button className="carousel-prev relative z-20 w-12 h-12 flex items-center justify-center group">
           <span className="sr-only">Previous</span>
@@ -167,7 +186,7 @@ export const AutomationCarousel = () => {
             viewBox="0 0 16 16"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path d="M6.7 14.7l1.4-1.4L3.8 9H16V7H3.8l4.3-4.3-1.4-1.4L0 8z" />
+            <path d="M6.7 14.7l1.4-1.4L3.4 9H16V7H3.4l4.7-4.7L6.7.9.9 8l5.8 5.8z" />
           </svg>
         </button>
         <button className="carousel-next relative z-20 w-12 h-12 flex items-center justify-center group">
@@ -177,7 +196,7 @@ export const AutomationCarousel = () => {
             viewBox="0 0 16 16"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path d="M9.3 14.7l-1.4-1.4L12.2 9H0V7h12.2L7.9 2.7l1.4-1.4L16 8z" />
+            <path d="M9.3 14.7L7.9 13.3 12.6 9H0V7h12.6l-4.7-4.7L9.3.9l5.8 5.8-5.8 5.8z" />
           </svg>
         </button>
       </div>
