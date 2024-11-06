@@ -1,4 +1,5 @@
 import {
+  addDays,
   differenceInDays,
   format,
   formatDistanceToNow,
@@ -6,9 +7,20 @@ import {
   intervalToDuration,
   isPast,
   parseISO,
+  startOfWeek,
 } from "date-fns";
 
 export const msToHour = 1000 * 60 * 60;
+
+export enum WeekDay {
+  SUNDAY = 0,
+  MONDAY = 1,
+  TUESDAY = 2,
+  WEDNESDAY = 3,
+  THURSDAY = 4,
+  FRIDAY = 5,
+  SATURDAY = 6,
+}
 
 export const humanizeDuration = (durationInMs: number) => {
   return formatDistanceToNow(new Date(Date.now() - durationInMs));
@@ -37,3 +49,10 @@ export const formatDate = (
   date: string | null | undefined,
   token: string,
 ): string => (date ? format(parseISO(date), token) : "");
+
+export const getWeekDayName = (dayNumber: number) => {
+  const startDate = startOfWeek(new Date(), { weekStartsOn: 0 });
+  const dayDate = addDays(startDate, dayNumber);
+
+  return format(dayDate, "EEEE");
+};

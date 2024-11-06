@@ -1,19 +1,19 @@
-import { Group, Input, Paper, Stack, Text } from "@mantine/core";
+import { Group, Input, Paper, PaperProps, Stack, Text } from "@mantine/core";
 import { isString } from "radash";
 import { ReactNode } from "react";
 
-interface BoxSettingProps {
-  left: string | ReactNode;
+interface BoxSettingProps extends PaperProps {
+  label: string | ReactNode;
   description?: string;
   children: ReactNode;
 }
 
 export const BoxSetting = ({
-  left,
+  label,
   description,
   children,
 }: BoxSettingProps) => {
-  const leftElement = isString(left) ? <Text fz="lg">{left}</Text> : left;
+  const leftElement = isString(label) ? <Text fz="lg">{label}</Text> : label;
 
   return (
     <Input.Label w="100%">

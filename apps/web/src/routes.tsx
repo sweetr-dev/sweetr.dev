@@ -21,6 +21,7 @@ import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
 import { MyAccountPage } from "./app/settings/my-account/page";
 import { SettingsPage } from "./app/settings/page";
 import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
+import { TeamDigestMetricsPage } from "./app/teams/[id]/digests/metrics/page";
 import { TeamDigestsPage } from "./app/teams/[id]/digests/page";
 import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
 import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
@@ -165,6 +166,12 @@ export const router = createBrowserRouter([
               {
                 path: "/teams/:teamId/digests",
                 element: <TeamDigestsPage />,
+                children: [
+                  {
+                    path: "/teams/:teamId/digests/metrics",
+                    element: <TeamDigestMetricsPage />,
+                  },
+                ],
               },
               {
                 path: "/teams/:teamId/health-and-performance",
