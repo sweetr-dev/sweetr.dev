@@ -1,0 +1,133 @@
+import { JsonObject } from "@prisma/client/runtime/library";
+import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import {
+  DigestTypeMap,
+  CanSendDigestArgs,
+  FindDigestByTypeArgs,
+  UpsertDigest,
+  Digest,
+} from "./digest.types";
+import { assign, isObject } from "radash";
+import { DigestType, GitProvider } from "@prisma/client";
+import { isActiveCustomer } from "../../workspace-authorization.service";
+
+export const findDigestByType = async <T extends DigestType>({
+  workspaceId,
+  teamId,
+  type,
+}: FindDigestByTypeArgs<T>): Promise<DigestTypeMap[T] | null> => {
+  const digest = await getPrisma(workspaceId).digest.findFirst({
+    where: {
+      teamId,
+      type,
+    },
+  });
+
+  if (!digest) return null;
+
+  // JSON types in Prisma is bad
+  return digest as unknown as DigestTypeMap[T];
+};
+
+export const findDigestsByTeam = async (
+  workspaceId: number,
+  teamId: number
+) => {
+  const digests = await getPrisma(workspaceId).digest.findMany({
+    where: {
+      teamId,
+    },
+  });
+
+  // JSON types in Prisma is bad
+  return digests as unknown as Digest[];
+};
+
+export const upsertDigest = async ({
+  workspaceId,
+  teamId,
+  type,
+  enabled,
+  frequency,
+  dayOfTheWeek,
+  timezone,
+  settings,
+}: UpsertDigest) => {
+  const digest = await getPrisma(workspaceId).digest.findUnique({
+    where: {
+      teamId_type: {
+        teamId,
+        type,
+      },
+    },
+  });
+
+  if (!digest) {
+    const newDigest = await getPrisma(workspaceId).digest.create({
+      data: {
+        workspaceId,
+        teamId,
+        type,
+        frequency,
+        dayOfTheWeek,
+        timezone,
+        enabled: enabled ?? false,
+        settings: isObject(settings) ? (settings as JsonObject) : {},
+      },
+    });
+
+    return newDigest as unknown as Digest;
+  }
+
+  const updatedSettings = settings
+    ? assign(digest.settings as object, settings)
+    : digest.settings;
+
+  const updatedDigest = await getPrisma(workspaceId).digest.update({
+    where: {
+      id: digest.id,
+    },
+    data: {
+      enabled,
+      settings: updatedSettings as JsonObject,
+    },
+  });
+
+  return updatedDigest as unknown as Digest;
+};
+
+export const canSendDigest = async ({
+  digest,
+  workspace,
+}: CanSendDigestArgs): Promise<boolean> => {
+  if (!digest?.enabled) return false;
+  if (!isActiveCustomer(workspace)) return false;
+  if (!workspace.installation) return false;
+
+  return true;
+};
+
+export const findWorkspaceByInstallationId = async (
+  gitInstallationId: number
+) => {
+  const workspace = await getBypassRlsPrisma().workspace.findFirst({
+    where: {
+      installation: {
+        gitInstallationId: gitInstallationId.toString(),
+        gitProvider: GitProvider.GITHUB,
+      },
+    },
+    include: {
+      organization: true,
+      gitProfile: true,
+      subscription: true,
+      installation: true,
+    },
+  });
+
+  if (!workspace) return null;
+
+  if (!workspace.gitProfile && !workspace.organization) return null;
+
+  return workspace;
+};

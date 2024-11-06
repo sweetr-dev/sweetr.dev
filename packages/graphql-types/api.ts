@@ -21,6 +21,7 @@ export type Scalars = {
   HexColorCode: { input: string; output: string; }
   JSONObject: { input: object; output: object; }
   SweetID: { input: number; output: number; }
+  TimeZone: { input: string; output: string; }
   Void: { input: null; output: null; }
 };
 
@@ -161,6 +162,30 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type Digest = {
+  __typename?: 'Digest';
+  dayOfTheWeek: Scalars['Int']['output'];
+  enabled: Scalars['Boolean']['output'];
+  frequency: Frequency;
+  settings: Scalars['JSONObject']['output'];
+  timezone: Scalars['TimeZone']['output'];
+  type: DigestType;
+};
+
+export type DigestQueryInput = {
+  type: DigestType;
+};
+
+export enum DigestType {
+  TEAM_METRICS = 'TEAM_METRICS',
+  TEAM_WIP = 'TEAM_WIP'
+}
+
+export enum Frequency {
+  MONTHLY = 'MONTHLY',
+  WEEKLY = 'WEEKLY'
+}
+
 export type GraphChartLink = {
   __typename?: 'GraphChartLink';
   source: Scalars['String']['output'];
@@ -212,6 +237,7 @@ export type Mutation = {
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
   updateAutomation: Automation;
+  updateDigest: Digest;
   upsertTeam: Team;
 };
 
@@ -248,6 +274,11 @@ export type MutationUnarchiveTeamArgs = {
 
 export type MutationUpdateAutomationArgs = {
   input: UpdateAutomationInput;
+};
+
+
+export type MutationUpdateDigestArgs = {
+  input: UpdateDigestInput;
 };
 
 
@@ -469,12 +500,19 @@ export type Team = {
   __typename?: 'Team';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  digest?: Maybe<Digest>;
+  digests: Array<Digest>;
   endColor: Scalars['String']['output'];
   icon: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   members: Array<TeamMember>;
   name: Scalars['String']['output'];
   startColor: Scalars['String']['output'];
+};
+
+
+export type TeamDigestArgs = {
+  input: DigestQueryInput;
 };
 
 export type TeamMember = {
@@ -520,6 +558,17 @@ export type UpdateAutomationInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   settings?: InputMaybe<Scalars['JSONObject']['input']>;
   type: AutomationType;
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UpdateDigestInput = {
+  dayOfTheWeek: Scalars['Int']['input'];
+  enabled: Scalars['Boolean']['input'];
+  frequency: Frequency;
+  settings: Scalars['JSONObject']['input'];
+  teamId: Scalars['SweetID']['input'];
+  timezone: Scalars['TimeZone']['input'];
+  type: DigestType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -698,7 +747,11 @@ export type ResolversTypes = {
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
+  Digest: ResolverTypeWrapper<DeepPartial<Digest>>;
+  DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
+  DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
+  Frequency: ResolverTypeWrapper<DeepPartial<Frequency>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
   InstallIntegrationInput: ResolverTypeWrapper<DeepPartial<InstallIntegrationInput>>;
@@ -737,10 +790,12 @@ export type ResolversTypes = {
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
+  TimeZone: ResolverTypeWrapper<DeepPartial<Scalars['TimeZone']['output']>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
   Trial: ResolverTypeWrapper<DeepPartial<Trial>>;
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
+  UpdateDigestInput: ResolverTypeWrapper<DeepPartial<UpdateDigestInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
@@ -767,6 +822,8 @@ export type ResolversParentTypes = {
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
+  Digest: DeepPartial<Digest>;
+  DigestQueryInput: DeepPartial<DigestQueryInput>;
   Float: DeepPartial<Scalars['Float']['output']>;
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
@@ -800,10 +857,12 @@ export type ResolversParentTypes = {
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
+  TimeZone: DeepPartial<Scalars['TimeZone']['output']>;
   Token: DeepPartial<Token>;
   Trial: DeepPartial<Trial>;
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
+  UpdateDigestInput: DeepPartial<UpdateDigestInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
@@ -894,6 +953,16 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DigestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Digest'] = ResolversParentTypes['Digest']> = {
+  dayOfTheWeek?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  frequency?: Resolver<ResolversTypes['Frequency'], ParentType, ContextType>;
+  settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['DigestType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type GraphChartLinkResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GraphChartLink'] = ResolversParentTypes['GraphChartLink']> = {
   source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -932,6 +1001,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
+  updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;
 };
 
@@ -1037,6 +1107,8 @@ export interface SweetIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
 export type TeamResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  digest?: Resolver<Maybe<ResolversTypes['Digest']>, ParentType, ContextType, RequireFields<TeamDigestArgs, 'input'>>;
+  digests?: Resolver<Array<ResolversTypes['Digest']>, ParentType, ContextType>;
   endColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   icon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
@@ -1053,6 +1125,10 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface TimeZoneScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['TimeZone'], any> {
+  name: 'TimeZone';
+}
 
 export type TokenResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1103,6 +1179,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  Digest?: DigestResolvers<ContextType>;
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
   Integration?: IntegrationResolvers<ContextType>;
@@ -1124,6 +1201,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   SweetID?: GraphQLScalarType;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TimeZone?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;
   Trial?: TrialResolvers<ContextType>;
   Void?: GraphQLScalarType;

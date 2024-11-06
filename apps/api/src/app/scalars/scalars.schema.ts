@@ -5,4 +5,5 @@ export default /* GraphQL */ `
   scalar HexColorCode
   scalar Void
   scalar JSONObject
+  scalar TimeZone
 `;

@@ -60,6 +60,11 @@ enum AutomationType {
   PR_SIZE_LABELER
 }
 
+enum DigestType {
+  TEAM_METRICS
+  TEAM_WIP
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -148,6 +153,7 @@ model Workspace {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now()) @updatedAt
   Integration Integration[]
+  Digest      Digest[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -358,6 +364,7 @@ model Team {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  Digest    Digest[]
 
   @@index([workspaceId])
 }
@@ -380,6 +387,31 @@ model TeamMember {
 
   @@index([workspaceId])
   @@index([gitProfileId])
+  @@index([teamId])
+}
+
+model Digest {
+  id      Int        @id @default(autoincrement())
+  type    DigestType
+  enabled Boolean
+
+  frequency    String
+  dayOfTheWeek Int
+  timezone     String
+
+  settings Json
+
+  teamId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([teamId, type])
+  @@index([workspaceId])
   @@index([teamId])
 }
 

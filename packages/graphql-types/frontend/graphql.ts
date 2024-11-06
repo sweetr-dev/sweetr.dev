@@ -19,6 +19,7 @@ export type Scalars = {
   HexColorCode: { input: string; output: string; }
   JSONObject: { input: object; output: object; }
   SweetID: { input: string; output: string; }
+  TimeZone: { input: string; output: string; }
   Void: { input: null; output: null; }
 };
 
@@ -159,6 +160,30 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type Digest = {
+  __typename?: 'Digest';
+  dayOfTheWeek: Scalars['Int']['output'];
+  enabled: Scalars['Boolean']['output'];
+  frequency: Frequency;
+  settings: Scalars['JSONObject']['output'];
+  timezone: Scalars['TimeZone']['output'];
+  type: DigestType;
+};
+
+export type DigestQueryInput = {
+  type: DigestType;
+};
+
+export enum DigestType {
+  TEAM_METRICS = 'TEAM_METRICS',
+  TEAM_WIP = 'TEAM_WIP'
+}
+
+export enum Frequency {
+  MONTHLY = 'MONTHLY',
+  WEEKLY = 'WEEKLY'
+}
+
 export type GraphChartLink = {
   __typename?: 'GraphChartLink';
   source: Scalars['String']['output'];
@@ -210,6 +235,7 @@ export type Mutation = {
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
   updateAutomation: Automation;
+  updateDigest: Digest;
   upsertTeam: Team;
 };
 
@@ -246,6 +272,11 @@ export type MutationUnarchiveTeamArgs = {
 
 export type MutationUpdateAutomationArgs = {
   input: UpdateAutomationInput;
+};
+
+
+export type MutationUpdateDigestArgs = {
+  input: UpdateDigestInput;
 };
 
 
@@ -467,12 +498,19 @@ export type Team = {
   __typename?: 'Team';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  digest?: Maybe<Digest>;
+  digests: Array<Digest>;
   endColor: Scalars['String']['output'];
   icon: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   members: Array<TeamMember>;
   name: Scalars['String']['output'];
   startColor: Scalars['String']['output'];
+};
+
+
+export type TeamDigestArgs = {
+  input: DigestQueryInput;
 };
 
 export type TeamMember = {
@@ -518,6 +556,17 @@ export type UpdateAutomationInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   settings?: InputMaybe<Scalars['JSONObject']['input']>;
   type: AutomationType;
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UpdateDigestInput = {
+  dayOfTheWeek: Scalars['Int']['input'];
+  enabled: Scalars['Boolean']['input'];
+  frequency: Frequency;
+  settings: Scalars['JSONObject']['input'];
+  teamId: Scalars['SweetID']['input'];
+  timezone: Scalars['TimeZone']['input'];
+  type: DigestType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
