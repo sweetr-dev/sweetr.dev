@@ -20,9 +20,11 @@ export const updateDigest = createMutationResolver({
       workspaceId: input.workspaceId,
       teamId: input.teamId,
       type: input.type,
+      channel: input.channel,
       enabled: input.enabled,
       frequency: input.frequency,
       dayOfTheWeek: input.dayOfTheWeek,
+      timeOfDay: input.timeOfDay,
       timezone: input.timezone,
       settings: input.settings,
     });

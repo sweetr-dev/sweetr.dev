@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Skeleton,
   Image,
@@ -7,13 +6,7 @@ import {
   Divider,
   Text,
   Stack,
-  Title,
-  Switch,
-  TextInput,
   Alert,
-  Chip,
-  InputLabel,
-  Select,
 } from "@mantine/core";
 import { Link, useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../components/drawer-scrollable";
@@ -22,27 +15,14 @@ import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.e
 import { useDrawerPage } from "../../../../../providers/drawer-page.provider";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
 import ImageMetrics from "../assets/metrics.webp";
-import { BoxSetting } from "../../../../../components/box-setting";
-import {
-  IconAlertHexagon,
-  IconBrandSlack,
-  IconClock,
-  IconExternalLink,
-  IconWorld,
-} from "@tabler/icons-react";
-import { SelectHour } from "../../../../../components/select-hour";
-import { SelectTimezone } from "../../../../../components/select-timezone/select-timezone";
-import { useState } from "react";
-import { WeekDay } from "../../../../../providers/date.provider";
+import { IconAlertHexagon, IconExternalLink } from "@tabler/icons-react";
+import { FormDigestMetrics } from "./components";
 export const TeamDigestMetricsPage = () => {
   const { teamId } = useParams();
   const { integration, query } = useMessagingIntegration();
   const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/digests`,
   });
-  const [selectedDay, setSelectedDay] = useState<
-    string | string[] | undefined
-  >();
 
   if (!teamId) throw new ResourceNotFound();
 
@@ -108,88 +88,7 @@ export const TeamDigestMetricsPage = () => {
               </Stack>
             )}
 
-            {integration && (
-              <>
-                <Stack p="md">
-                  <Title order={5}>Settings</Title>
-
-                  <BoxSetting label="Enabled">
-                    <Switch
-                      size="lg"
-                      color="green.7"
-                      onLabel="ON"
-                      offLabel="OFF"
-                    />
-                  </BoxSetting>
-
-                  <TextInput
-                    label="Channel"
-                    leftSection={<IconBrandSlack stroke={1.5} />}
-                    placeholder="#team"
-                  />
-                </Stack>
-
-                <Divider my="md" />
-
-                <Stack p="md" pb="xl">
-                  <Title order={5}>Schedule</Title>
-
-                  <Select
-                    label="Frequency"
-                    data={[
-                      { value: "weekly", label: "Every week" },
-                      {
-                        value: "monthly",
-                        label: `First of the month`,
-                      },
-                    ]}
-                  />
-                  <Box>
-                    <InputLabel>Day of the week</InputLabel>
-                    <Chip.Group
-                      value={selectedDay}
-                      onChange={(value) => {
-                        setSelectedDay(value);
-                      }}
-                    >
-                      <Group>
-                        <Chip value={`${WeekDay.MONDAY}`} size="xs">
-                          Monday
-                        </Chip>
-                        <Chip value={`${WeekDay.TUESDAY}`} size="xs">
-                          Tuesday
-                        </Chip>
-                        <Chip value={`${WeekDay.WEDNESDAY}`} size="xs">
-                          Wednesday
-                        </Chip>
-                        <Chip value={`${WeekDay.THURSDAY}`} size="xs">
-                          Thursday
-                        </Chip>
-                        <Chip value={`${WeekDay.FRIDAY}`} size="xs">
-                          Friday
-                        </Chip>
-                        <Chip value={`${WeekDay.SATURDAY}`} size="xs">
-                          Saturday
-                        </Chip>
-                        <Chip value={`${WeekDay.SUNDAY}`} size="xs">
-                          Sunday
-                        </Chip>
-                      </Group>
-                    </Chip.Group>
-                  </Box>
-                  <Group grow>
-                    <SelectHour
-                      label="Time"
-                      leftSection={<IconClock size={16} stroke={1.5} />}
-                    />
-                    <SelectTimezone
-                      label="Timezone"
-                      leftSection={<IconWorld size={16} stroke={1.5} />}
-                    />
-                  </Group>
-                </Stack>
-              </>
-            )}
+            {integration && <FormDigestMetrics />}
           </>
         }
       />

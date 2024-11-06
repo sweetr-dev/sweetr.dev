@@ -22,8 +22,10 @@ export interface UpsertDigest {
   teamId: number;
   type: DigestType;
   enabled: boolean;
+  channel: string;
   frequency: string;
   dayOfTheWeek: number;
+  timeOfDay: string;
   timezone: string;
   settings: object;
 }

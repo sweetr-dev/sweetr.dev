@@ -12,8 +12,10 @@ export default /* GraphQL */ `
   type Digest {
     type: DigestType!
     enabled: Boolean!
+    channel: String!
     frequency: Frequency!
     dayOfTheWeek: Int!
+    timeOfDay: String!
     timezone: TimeZone!
     settings: JSONObject!
   }
@@ -36,8 +38,10 @@ export default /* GraphQL */ `
     teamId: SweetID!
     type: DigestType!
     enabled: Boolean!
+    channel: String!
     frequency: Frequency!
     dayOfTheWeek: Int!
+    timeOfDay: String!
     timezone: TimeZone!
     settings: JSONObject!
   }

@@ -395,8 +395,11 @@ model Digest {
   type    DigestType
   enabled Boolean
 
+  channel String
+
   frequency    String
   dayOfTheWeek Int
+  timeOfDay    String
   timezone     String
 
   settings Json

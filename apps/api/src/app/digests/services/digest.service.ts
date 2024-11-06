@@ -48,8 +48,10 @@ export const upsertDigest = async ({
   teamId,
   type,
   enabled,
+  channel,
   frequency,
   dayOfTheWeek,
+  timeOfDay,
   timezone,
   settings,
 }: UpsertDigest) => {
@@ -68,8 +70,10 @@ export const upsertDigest = async ({
         workspaceId,
         teamId,
         type,
+        channel,
         frequency,
         dayOfTheWeek,
+        timeOfDay,
         timezone,
         enabled: enabled ?? false,
         settings: isObject(settings) ? (settings as JsonObject) : {},
@@ -89,6 +93,11 @@ export const upsertDigest = async ({
     },
     data: {
       enabled,
+      channel,
+      frequency,
+      dayOfTheWeek,
+      timeOfDay,
+      timezone,
       settings: updatedSettings as JsonObject,
     },
   });

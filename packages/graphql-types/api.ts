@@ -164,10 +164,12 @@ export type DateTimeRange = {
 
 export type Digest = {
   __typename?: 'Digest';
+  channel: Scalars['String']['output'];
   dayOfTheWeek: Scalars['Int']['output'];
   enabled: Scalars['Boolean']['output'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['output'];
+  timeOfDay: Scalars['String']['output'];
   timezone: Scalars['TimeZone']['output'];
   type: DigestType;
 };
@@ -562,11 +564,13 @@ export type UpdateAutomationInput = {
 };
 
 export type UpdateDigestInput = {
+  channel: Scalars['String']['input'];
   dayOfTheWeek: Scalars['Int']['input'];
   enabled: Scalars['Boolean']['input'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['input'];
   teamId: Scalars['SweetID']['input'];
+  timeOfDay: Scalars['String']['input'];
   timezone: Scalars['TimeZone']['input'];
   type: DigestType;
   workspaceId: Scalars['SweetID']['input'];
@@ -954,10 +958,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type DigestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Digest'] = ResolversParentTypes['Digest']> = {
+  channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   dayOfTheWeek?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   frequency?: Resolver<ResolversTypes['Frequency'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  timeOfDay?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DigestType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
