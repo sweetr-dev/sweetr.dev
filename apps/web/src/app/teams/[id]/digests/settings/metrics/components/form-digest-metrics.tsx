@@ -11,25 +11,39 @@ import {
   Group,
 } from "@mantine/core";
 import { IconBrandSlack, IconClock, IconWorld } from "@tabler/icons-react";
-import { BoxSetting } from "../../../../../../components/box-setting";
-import { SelectHour } from "../../../../../../components/select-hour";
-import { SelectTimezone } from "../../../../../../components/select-timezone/select-timezone";
-import { WeekDay } from "../../../../../../providers/date.provider";
+import { BoxSetting } from "../../../../../../../components/box-setting";
+import { SelectHour } from "../../../../../../../components/select-hour";
+import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
+import { WeekDay } from "../../../../../../../providers/date.provider";
+import { FormMetricsDigest } from "../types";
+import { UseFormReturnType } from "@mantine/form";
+import { Frequency } from "@sweetr/graphql-types/frontend/graphql";
 
-export const FormDigestMetrics = () => {
+interface FormDigestMetricsProps {
+  form: UseFormReturnType<FormMetricsDigest>;
+}
+
+export const FormDigestMetrics = ({ form }: FormDigestMetricsProps) => {
   return (
     <>
       <Stack p="md">
         <Title order={5}>Settings</Title>
 
         <BoxSetting label="Enabled">
-          <Switch size="lg" color="green.7" onLabel="ON" offLabel="OFF" />
+          <Switch
+            size="lg"
+            color="green.7"
+            onLabel="ON"
+            offLabel="OFF"
+            {...form.getInputProps("enabled", { type: "checkbox" })}
+          />
         </BoxSetting>
 
         <TextInput
           label="Channel"
-          leftSection={<IconBrandSlack stroke={1.5} />}
+          leftSection={<IconBrandSlack stroke={1} />}
           placeholder="#team"
+          {...form.getInputProps("channel")}
         />
       </Stack>
 
@@ -41,16 +55,22 @@ export const FormDigestMetrics = () => {
         <Select
           label="Frequency"
           data={[
-            { value: "weekly", label: "Every week" },
+            { value: Frequency.WEEKLY, label: "Every week" },
             {
-              value: "monthly",
+              value: Frequency.MONTHLY,
               label: `First of the month`,
             },
           ]}
+          {...form.getInputProps("frequency")}
         />
         <Box>
           <InputLabel>Day of the week</InputLabel>
-          <Chip.Group>
+          <Chip.Group
+            value={`${form.values.dayOfTheWeek}`}
+            onChange={(value) => {
+              form.setFieldValue("dayOfTheWeek", parseInt(value as string));
+            }}
+          >
             <Group>
               <Chip value={`${WeekDay.MONDAY}`} size="xs">
                 Monday
@@ -78,10 +98,12 @@ export const FormDigestMetrics = () => {
         </Box>
         <Group grow>
           <SelectHour
+            {...form.getInputProps("timeOfDay")}
             label="Time"
             leftSection={<IconClock size={16} stroke={1.5} />}
           />
           <SelectTimezone
+            {...form.getInputProps("timezone", { type: "input" })}
             label="Timezone"
             leftSection={<IconWorld size={16} stroke={1.5} />}
           />

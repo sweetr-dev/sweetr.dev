@@ -8,7 +8,7 @@ export const SelectTimezone = (props: SelectProps) => {
     checked,
   }) => (
     <Group justify="space-between" grow w="100%">
-      <Group flex="1" gap="xs" grow justify="flex-start">
+      <Group flex="1" gap="xs" grow justify="flex-start" wrap="nowrap">
         {checked && (
           <IconCheck
             stroke={4}
@@ -32,11 +32,10 @@ export const SelectTimezone = (props: SelectProps) => {
   return (
     <Select
       label="Timezone"
-      {...props}
       searchable
       renderOption={renderSelectOption}
       data={timezones}
-      defaultValue={Intl.DateTimeFormat().resolvedOptions().timeZone}
+      {...props}
     />
   );
 };
