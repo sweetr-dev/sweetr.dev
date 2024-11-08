@@ -1,3 +1,5 @@
+import { UseFormReturnType } from "@mantine/form";
+import { FormDigest } from "../../types";
 import {
   Stack,
   Title,
@@ -10,20 +12,18 @@ import {
   Chip,
   Group,
 } from "@mantine/core";
+import { Frequency } from "@sweetr/graphql-types/api";
 import { IconBrandSlack, IconClock, IconWorld } from "@tabler/icons-react";
 import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
 import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
 import { WeekDay } from "../../../../../../../providers/date.provider";
-import { FormMetricsDigest } from "../types";
-import { UseFormReturnType } from "@mantine/form";
-import { Frequency } from "@sweetr/graphql-types/frontend/graphql";
 
-interface FormDigestMetricsProps {
-  form: UseFormReturnType<FormMetricsDigest>;
+interface DigestBaseFieldsProps {
+  form: UseFormReturnType<FormDigest>;
 }
 
-export const FormDigestMetrics = ({ form }: FormDigestMetricsProps) => {
+export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
   return (
     <>
       <Stack p="md">

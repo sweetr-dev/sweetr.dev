@@ -25,7 +25,7 @@ const digestCards: Record<DigestType, DigestCardData> = {
     getRoute: (teamId) => `/teams/${teamId}/digests/metrics`,
   },
   [DigestType.TEAM_WIP]: {
-    available: false,
+    available: true,
     type: DigestType.TEAM_WIP,
     enabled: false,
     title: "Work In Progress Digest",
