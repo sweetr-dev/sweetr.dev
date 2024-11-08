@@ -1,5 +1,5 @@
 import { SimpleGrid } from "@mantine/core";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import {
   IconAspectRatio,
   IconClock,
@@ -10,12 +10,10 @@ import {
 } from "@tabler/icons-react";
 import { PaperTitle } from "../../../../components/paper-title";
 import { CardChart } from "./components/card-chart/card-chart";
-import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
+import { useTeamId } from "../use-team";
 
 export const TeamHealthAndPerformancePage = () => {
-  const { teamId } = useParams();
-
-  if (!teamId) throw new ResourceNotFound();
+  const teamId = useTeamId();
 
   return (
     <>

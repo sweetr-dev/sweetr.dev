@@ -1,4 +1,5 @@
 import {
+  addDays,
   differenceInDays,
   format,
   formatDistanceToNow,
@@ -6,6 +7,7 @@ import {
   intervalToDuration,
   isPast,
   parseISO,
+  startOfWeek,
 } from "date-fns";
 
 export const msToHour = 1000 * 60 * 60;
@@ -37,3 +39,7 @@ export const formatDate = (
   date: string | null | undefined,
   token: string,
 ): string => (date ? format(parseISO(date), token) : "");
+
+export const getBrowserTimezone = () => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+};

@@ -1,5 +1,5 @@
 import { ColorInput, Group, Input, Stack, Switch, Title } from "@mantine/core";
-import { BoxSetting } from "../../../components/box-setting";
+import { BoxSetting } from "../../../../../../components/box-setting";
 import { UseFormReturnType } from "@mantine/form";
 import { colorPickerSwatches } from "../../../../../../providers/color.provider";
 import { capitalize } from "radash";
@@ -16,7 +16,7 @@ export const FormPrSizeLabelerSettings = ({
     <Stack p="md">
       <Title order={5}>Settings</Title>
 
-      <BoxSetting left="Enabled">
+      <BoxSetting label="Enabled">
         <Switch
           size="lg"
           color="green.7"
@@ -34,7 +34,7 @@ export const FormPrSizeLabelerSettings = ({
         ).map((size) => (
           <BoxSetting
             key={size}
-            left={capitalize(size)}
+            label={capitalize(size)}
             description={`Customize the "${size}" label`}
           >
             <Group gap={5}>

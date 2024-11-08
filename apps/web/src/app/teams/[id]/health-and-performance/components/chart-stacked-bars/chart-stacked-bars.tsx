@@ -40,7 +40,7 @@ export const ChartStackedBars = ({
         },
         formatter: function (params: Arrayable<CallbackDataParams>) {
           let total = 0;
-          let tooltipContent = `<div style="padding: 0 15px; ">${params[0].axisValueLabel}</div>`;
+          let tooltipContent = `<div style="padding: 0 15px; ">${(params as any)[0].axisValueLabel}</div>`;
 
           (params as Array<CallbackDataParams>).forEach(function (item) {
             total += item.value as number;

@@ -17,7 +17,9 @@ export const AppPage = ({ children }: AppProps) => {
 
   if (shouldShowPaywall) {
     showPaywallNotification();
-    return goToPaywall();
+    goToPaywall();
+
+    return <></>;
   }
 
   return (

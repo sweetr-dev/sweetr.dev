@@ -16,7 +16,7 @@ import { ImageIntegrationLogo } from "../components/image-integration-logo";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { ListScopes } from "../components/list-scopes";
 import { Link } from "react-router-dom";
-import { useIntegrations } from "../use-integrations";
+import { useIntegrations } from "../../../../providers/integration.provider";
 import { formatDate } from "../../../../providers/date.provider";
 import { useConfirmationModal } from "../../../../providers/modal.provider";
 import { useSlackIntegration } from "./use-slack-integration";
@@ -24,7 +24,7 @@ import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 
 export const IntegrationSlackPage = () => {
-  const { integrations, isLoading } = useIntegrations();
+  const { integrations, query } = useIntegrations();
   const integration = integrations?.SLACK;
   const { openConfirmationModal } = useConfirmationModal();
   const { isIntegrating, handleUninstall } = useSlackIntegration();
@@ -93,7 +93,7 @@ export const IntegrationSlackPage = () => {
             <Skeleton h={36} mt="lg" />
           </>
         }
-        isLoading={isLoading && !isIntegrating}
+        isLoading={query.isLoading && !isIntegrating}
         content={
           <>
             {integration?.isEnabled && (

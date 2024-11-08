@@ -4,6 +4,7 @@ import {
   HexColorCodeResolver,
   JSONObjectResolver,
   VoidResolver,
+  TimeZoneResolver,
 } from "graphql-scalars";
 import { sweetIdResolver } from "./sweet-id.scalar";
 
@@ -14,4 +15,5 @@ export const scalarsResolver = {
   HexColorCode: HexColorCodeResolver,
   JSONObject: JSONObjectResolver,
   Void: VoidResolver,
+  TimeZone: TimeZoneResolver,
 };

@@ -10,6 +10,7 @@ const scalars = {
   HexColorCode: "string",
   JSONObject: "object",
   Void: "null",
+  TimeZone: "string",
 };
 
 const config: CodegenConfig = {

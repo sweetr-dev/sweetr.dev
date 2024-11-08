@@ -1,4 +1,3 @@
-import React from "react";
 import { Image, ImageProps } from "@mantine/core";
 
 interface ImageIntegrationLogoProps extends ImageProps {

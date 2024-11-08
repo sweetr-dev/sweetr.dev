@@ -13,7 +13,7 @@ import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../components/subnav";
 
 interface SubnavTeamProps {
-  team: Omit<Team, "members">;
+  team: Pick<Team, "id" | "name" | "icon">;
 }
 
 export const SubnavTeam = ({ team }: SubnavTeamProps) => {

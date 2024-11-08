@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { DrawerUpsertTeam } from "../components/drawer-upsert-team";
 import { PageTitle } from "../../../components/page-title";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useTeamQuery } from "../../../api/teams.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { HeaderActions } from "../../../components/header-actions";
@@ -22,16 +22,14 @@ import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { IconPencil } from "@tabler/icons-react";
 import { PageContainer } from "../../../components/page-container";
-import { ResourceNotFound } from "../../../exceptions/resource-not-found.exception";
 import { useContextualActions } from "../../../providers/contextual-actions.provider";
 import { SubnavTeam } from "./components/subnav-team";
+import { useTeamId } from "./use-team";
 
 export const TeamPage = () => {
   const [isDrawerOpen, drawerControl] = useDisclosure(false);
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
-
-  if (!teamId) throw new ResourceNotFound();
 
   useContextualActions({
     editTeam: {

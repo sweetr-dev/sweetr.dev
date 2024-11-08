@@ -1,4 +1,3 @@
-import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { Box, Group, Paper, Skeleton } from "@mantine/core";
 import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
@@ -18,11 +17,11 @@ import { useWorkspace } from "../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../components/page-empty-state";
-import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { ButtonDocs } from "../../../../../../components/button-docs";
+import { useTeamId } from "../../../use-team";
 
 export const TeamPullRequestsCycleTimePage = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
   const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/health-and-performance/`,
@@ -41,8 +40,6 @@ export const TeamPullRequestsCycleTimePage = () => {
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
-
-  if (!teamId) throw new ResourceNotFound();
 
   const { data, isLoading } = useChartCycleTimeQuery({
     workspaceId: workspace.id,

@@ -70,6 +70,7 @@ export const useWorkspaceByInstallationIdQuery = (
               avatar
               handle
               gitUninstallUrl
+              isActiveCustomer
               repositories {
                 id
               }
