@@ -31,11 +31,6 @@ export interface UpsertDigest {
   settings: object;
 }
 
-export interface GetDigestDataArgs {
-  gitInstallationId: number;
-  type: DigestType;
-}
-
 export interface CanSendDigestArgs {
   digest: Pick<Digest, "enabled">;
   workspace: Workspace & {

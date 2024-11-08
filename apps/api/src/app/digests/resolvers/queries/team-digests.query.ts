@@ -10,21 +10,19 @@ import { Digest } from "../../services/digest.types";
 import { transformDigest } from "../../transformers/digest.transformer";
 
 export const teamDigestsQuery = createFieldResolver("Team", {
-  digest: async (team, { input }) => {
+  digest: async (team, { input }, context) => {
     logger.info("query.team.digest", { team });
 
     if (!team.id) {
       throw new ResourceNotFoundException("Team not found");
     }
 
-    const workspaceId = "workspaceId" in team && (team.workspaceId as number);
-
-    if (!workspaceId) {
+    if (!context.workspaceId) {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
     const digest = await findDigestByType({
-      workspaceId,
+      workspaceId: context.workspaceId,
       teamId: team.id,
       type: input.type,
     });
@@ -33,20 +31,18 @@ export const teamDigestsQuery = createFieldResolver("Team", {
 
     return transformDigest(digest as Digest);
   },
-  digests: async (team) => {
+  digests: async (team, _, context) => {
     logger.info("query.team.digests", { team });
 
     if (!team.id) {
       throw new ResourceNotFoundException("Team not found");
     }
 
-    const workspaceId = "workspaceId" in team && (team.workspaceId as number);
-
-    if (!workspaceId) {
+    if (!context.workspaceId) {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const digests = await findDigestsByTeam(workspaceId, team.id);
+    const digests = await findDigestsByTeam(context.workspaceId, team.id);
 
     return digests.map(transformDigest);
   },

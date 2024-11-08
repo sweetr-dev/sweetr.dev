@@ -1,18 +1,16 @@
 import { Box, SimpleGrid, Skeleton } from "@mantine/core";
 import { CardPerson } from "../../../../components/card-person";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { useTeamQuery } from "../../../../api/teams.api";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { TeamOutletContext } from "../types";
 import { useWorkspace } from "../../../../providers/workspace.provider";
-import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
+import { useTeamId } from "../use-team";
 
 export const TeamMembersPage = () => {
   const { workspace } = useWorkspace();
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { drawerControl } = useOutletContext<TeamOutletContext>();
-
-  if (!teamId) throw new ResourceNotFound();
 
   const { data, isLoading } = useTeamQuery(
     {

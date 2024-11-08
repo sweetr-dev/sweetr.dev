@@ -1,8 +1,6 @@
 import { Button, Image, Group, Divider, Text, Stack } from "@mantine/core";
-import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { LoadableContent } from "../../../../../../components/loadable-content";
-import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
 import { useMessagingIntegration } from "../../../../../../providers/integration.provider";
 import { useDigest } from "../use-digest";
@@ -20,12 +18,11 @@ import {
   DigestLoadingSkeleton,
 } from "../components/digest-base-fields";
 import { AlertEnableSlack } from "../components/alert-enable-slack";
+import { useTeamId } from "../../../use-team";
 
 export const TeamMetricsDigestPage = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
-
-  if (!teamId) throw new ResourceNotFound();
 
   const { integration, query: integrationQuery } = useMessagingIntegration();
   const {

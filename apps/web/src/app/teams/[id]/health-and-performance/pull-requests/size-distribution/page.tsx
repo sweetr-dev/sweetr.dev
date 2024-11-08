@@ -1,4 +1,3 @@
-import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { Box, Group, Paper, Skeleton } from "@mantine/core";
 import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
@@ -20,9 +19,10 @@ import { PageEmptyState } from "../../../../../../components/page-empty-state";
 import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { ChartStackedBars } from "../../components/chart-stacked-bars";
 import { ButtonDocs } from "../../../../../../components/button-docs";
+import { useTeamId } from "../../../use-team";
 
 export const TeamPullRequestsSizeDistribution = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
   const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/health-and-performance/`,

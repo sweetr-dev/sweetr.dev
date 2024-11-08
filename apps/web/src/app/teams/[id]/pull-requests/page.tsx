@@ -1,6 +1,5 @@
 import { Stack, Divider, Skeleton, Box, Group } from "@mantine/core";
 import { CardPullRequest } from "../../../../components/card-pull-request";
-import { useParams } from "react-router-dom";
 import { parseISO } from "date-fns";
 import {
   useInfiniteLoading,
@@ -30,9 +29,10 @@ import { useForm } from "@mantine/form";
 import { LoadableContent } from "../../../../components/loadable-content/loadable-content";
 import { FilterDate } from "../../../../components/filter-date";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
+import { useTeamId } from "../use-team";
 
 export const TeamPullRequestsPage = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
   const filters = useForm<{
@@ -48,8 +48,6 @@ export const TeamPullRequestsPage = () => {
       createdAtTo: searchParams.get("createdAtTo"),
     },
   });
-
-  if (!teamId) throw new ResourceNotFound();
 
   const {
     data,

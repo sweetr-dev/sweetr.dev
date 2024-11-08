@@ -1,5 +1,5 @@
 import { JsonObject } from "@prisma/client/runtime/library";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import {
   DigestTypeMap,
   CanSendDigestArgs,
@@ -8,7 +8,7 @@ import {
   Digest,
 } from "./digest.types";
 import { assign, isObject } from "radash";
-import { DigestType, GitProvider } from "@prisma/client";
+import { DigestType } from "@prisma/client";
 import { isActiveCustomer } from "../../workspace-authorization.service";
 
 export const findDigestByType = async <T extends DigestType>({
@@ -114,29 +114,4 @@ export const canSendDigest = async ({
   if (!workspace.installation) return false;
 
   return true;
-};
-
-export const findWorkspaceByInstallationId = async (
-  gitInstallationId: number
-) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
-      subscription: true,
-      installation: true,
-    },
-  });
-
-  if (!workspace) return null;
-
-  if (!workspace.gitProfile && !workspace.organization) return null;
-
-  return workspace;
 };
