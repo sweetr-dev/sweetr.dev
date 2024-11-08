@@ -25,8 +25,7 @@ export const findDigestByType = async <T extends DigestType>({
 
   if (!digest) return null;
 
-  // JSON types in Prisma is bad
-  return digest as unknown as DigestTypeMap[T];
+  return digest as DigestTypeMap[T];
 };
 
 export const findDigestsByTeam = async (
@@ -39,8 +38,7 @@ export const findDigestsByTeam = async (
     },
   });
 
-  // JSON types in Prisma is bad
-  return digests as unknown as Digest[];
+  return digests;
 };
 
 export const upsertDigest = async ({

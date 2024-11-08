@@ -75,6 +75,11 @@ enum DayOfTheWeek {
   SATURDAY
 }
 
+enum Frequency {
+  WEEKLY
+  MONTHLY
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -407,7 +412,7 @@ model Digest {
 
   channel String
 
-  frequency    String
+  frequency    Frequency
   dayOfTheWeek DayOfTheWeek[]
   timeOfDay    String
   timezone     String

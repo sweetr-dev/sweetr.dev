@@ -1,4 +1,4 @@
-import { Anchor, Image, SimpleGrid, Skeleton, Space } from "@mantine/core";
+import { Anchor, Image, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link, Outlet } from "react-router-dom";
 import { CardDigest } from "./components/card-digest";
 import { useDigestsCards } from "./use-digest-cards";

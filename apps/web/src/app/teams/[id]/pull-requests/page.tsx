@@ -17,7 +17,6 @@ import { format } from "date-fns";
 import { usePullRequestsInfiniteQuery } from "../../../../api/pull-request.api";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { useWorkspace } from "../../../../providers/workspace.provider";
-import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
 import { parseNullableISO } from "../../../../providers/date.provider";
 import {
   IconAspectRatio,

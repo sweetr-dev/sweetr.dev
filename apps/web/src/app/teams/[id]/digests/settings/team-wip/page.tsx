@@ -19,6 +19,7 @@ import {
 } from "../components/digest-base-fields";
 import { AlertEnableSlack } from "../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
+import { getBrowserTimezone } from "../../../../../../providers/date.provider";
 
 export const TeamWipDigestPage = () => {
   const teamId = useTeamId();
@@ -39,16 +40,24 @@ export const TeamWipDigestPage = () => {
     closeUrl: `/teams/${teamId}/digests`,
   });
 
+  const weekDays = [
+    DayOfTheWeek.MONDAY,
+    DayOfTheWeek.TUESDAY,
+    DayOfTheWeek.WEDNESDAY,
+    DayOfTheWeek.THURSDAY,
+    DayOfTheWeek.FRIDAY,
+  ];
+
   const form = useForm<FormWipDigest>({
     mode: "controlled",
     validate: zodResolver(FormWipDigest),
     initialValues: {
       enabled: false,
       channel: "",
-      frequency: "",
-      dayOfTheWeek: [DayOfTheWeek.MONDAY],
-      timeOfDay: "",
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      frequency: Frequency.WEEKLY,
+      dayOfTheWeek: weekDays,
+      timeOfDay: "09:00",
+      timezone: getBrowserTimezone(),
     },
   });
 
@@ -58,11 +67,10 @@ export const TeamWipDigestPage = () => {
     const values = {
       enabled: digest.enabled,
       channel: digest.channel ?? "",
-      frequency: digest.frequency ?? "",
-      dayOfTheWeek: digest.dayOfTheWeek ?? [DayOfTheWeek.MONDAY],
-      timeOfDay: digest.timeOfDay ?? "",
-      timezone:
-        digest.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+      frequency: digest.frequency ?? Frequency.WEEKLY,
+      dayOfTheWeek: digest.dayOfTheWeek ?? weekDays,
+      timeOfDay: digest.timeOfDay ?? "09:00",
+      timezone: digest.timezone ?? getBrowserTimezone(),
     };
     form.setInitialValues(values);
     form.setValues(values);

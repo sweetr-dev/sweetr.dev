@@ -48,7 +48,7 @@ interface UseDigestCards {
 export const useDigestsCards = (): UseDigestCards => {
   const [availableDigests, futureDigests] = fork(
     Object.values(digestCards),
-    (automation) => automation.available,
+    (digestCard) => digestCard.available,
   );
 
   return {

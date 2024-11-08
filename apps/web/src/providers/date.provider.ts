@@ -40,9 +40,6 @@ export const formatDate = (
   token: string,
 ): string => (date ? format(parseISO(date), token) : "");
 
-export const getWeekDayName = (dayNumber: number) => {
-  const startDate = startOfWeek(new Date(), { weekStartsOn: 0 });
-  const dayDate = addDays(startDate, dayNumber);
-
-  return format(dayDate, "EEEE");
+export const getBrowserTimezone = () => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };

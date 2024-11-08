@@ -1,6 +1,7 @@
 -- CreateEnum
 CREATE TYPE "DigestType" AS ENUM ('TEAM_METRICS', 'TEAM_WIP');
 CREATE TYPE "DayOfTheWeek" AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
+CREATE TYPE "Frequency" AS ENUM ('WEEKLY', 'MONTHLY');
 
 -- CreateTable
 CREATE TABLE "Digest" (
@@ -8,7 +9,7 @@ CREATE TABLE "Digest" (
     "type" "DigestType" NOT NULL,
     "enabled" BOOLEAN NOT NULL,
     "channel" TEXT NOT NULL,
-    "frequency" TEXT NOT NULL,
+    "frequency" "Frequency" NOT NULL,
     "dayOfTheWeek" "DayOfTheWeek"[] NOT NULL,
     "timeOfDay" TEXT NOT NULL,
     "timezone" TEXT NOT NULL,

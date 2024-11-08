@@ -18,6 +18,7 @@ import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
 import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
 import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
+import { useEffect, useRef } from "react";
 
 interface DigestBaseFieldsProps {
   form: UseFormReturnType<FormDigest>;
@@ -25,6 +26,14 @@ interface DigestBaseFieldsProps {
 
 export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
   const isEnabled = form.values.enabled;
+
+  const channelRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEnabled && !form.values.channel) {
+      channelRef.current?.focus();
+    }
+  }, [isEnabled, form.values.channel]);
 
   return (
     <>
@@ -43,6 +52,7 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
 
         {isEnabled && (
           <TextInput
+            ref={channelRef}
             label="Channel"
             leftSection={<IconBrandSlack stroke={1} />}
             placeholder="#team"
@@ -67,16 +77,35 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
                   label: `First of the month`,
                 },
               ]}
-              {...form.getInputProps("frequency")}
+              value={form.values.frequency}
+              onChange={(value) => {
+                form.setFieldValue("frequency", value as Frequency);
+
+                if (
+                  value === Frequency.MONTHLY &&
+                  form.values.dayOfTheWeek.length > 1
+                ) {
+                  form.setFieldValue(
+                    "dayOfTheWeek",
+                    form.values.dayOfTheWeek.slice(-1),
+                  );
+                }
+              }}
             />
             <Box>
               <InputLabel>Day of the week</InputLabel>
               <Chip.Group
                 value={form.values.dayOfTheWeek}
                 onChange={(value) => {
-                  form.setFieldValue("dayOfTheWeek", value as DayOfTheWeek[]);
+                  if (form.values.frequency === Frequency.WEEKLY) {
+                    form.setFieldValue("dayOfTheWeek", value as DayOfTheWeek[]);
+                  } else if (value) {
+                    form.setFieldValue("dayOfTheWeek", [
+                      (value as string[]).pop() as DayOfTheWeek,
+                    ]);
+                  }
                 }}
-                multiple
+                multiple={form.values.frequency === Frequency.WEEKLY}
               >
                 <Group>
                   <Chip value={`${DayOfTheWeek.MONDAY}`} size="xs">

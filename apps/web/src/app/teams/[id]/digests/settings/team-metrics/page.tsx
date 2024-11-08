@@ -19,6 +19,7 @@ import {
 } from "../components/digest-base-fields";
 import { AlertEnableSlack } from "../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
+import { getBrowserTimezone } from "../../../../../../providers/date.provider";
 
 export const TeamMetricsDigestPage = () => {
   const teamId = useTeamId();
@@ -45,10 +46,10 @@ export const TeamMetricsDigestPage = () => {
     initialValues: {
       enabled: false,
       channel: "",
-      frequency: "",
+      frequency: Frequency.MONTHLY,
       dayOfTheWeek: [DayOfTheWeek.MONDAY],
-      timeOfDay: "",
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timeOfDay: "09:00",
+      timezone: getBrowserTimezone(),
     },
   });
 
@@ -58,11 +59,10 @@ export const TeamMetricsDigestPage = () => {
     const values = {
       enabled: digest.enabled,
       channel: digest.channel ?? "",
-      frequency: digest.frequency ?? "",
+      frequency: digest.frequency ?? Frequency.MONTHLY,
       dayOfTheWeek: digest.dayOfTheWeek ?? [DayOfTheWeek.MONDAY],
-      timeOfDay: digest.timeOfDay ?? "",
-      timezone:
-        digest.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timeOfDay: digest.timeOfDay ?? "09:00",
+      timezone: digest.timezone ?? getBrowserTimezone(),
     };
     form.setInitialValues(values);
     form.setValues(values);
