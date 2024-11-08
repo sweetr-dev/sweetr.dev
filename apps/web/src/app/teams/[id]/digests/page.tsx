@@ -40,7 +40,10 @@ export const TeamDigestsPage = () => {
                     available={true}
                     description={digest.description}
                     title={digest.title}
-                    enabled={digests?.[digest.type]?.enabled || false}
+                    enabled={
+                      (digests?.[digest.type]?.enabled && !!integration) ||
+                      false
+                    }
                     image={<Image src={digest.imageUrl} />}
                   />
                 </Anchor>

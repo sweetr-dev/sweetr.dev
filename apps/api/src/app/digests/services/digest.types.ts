@@ -5,6 +5,7 @@ import {
   Digest as DbDigest,
   DigestType,
   Prisma,
+  DayOfTheWeek,
 } from "@prisma/client";
 
 export type Digest = Omit<DbDigest, "settings"> & {
@@ -24,7 +25,7 @@ export interface UpsertDigest {
   enabled: boolean;
   channel: string;
   frequency: string;
-  dayOfTheWeek: number;
+  dayOfTheWeek: DayOfTheWeek[];
   timeOfDay: string;
   timezone: string;
   settings: object;

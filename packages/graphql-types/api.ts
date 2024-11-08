@@ -162,10 +162,20 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export enum DayOfTheWeek {
+  FRIDAY = 'FRIDAY',
+  MONDAY = 'MONDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
+  THURSDAY = 'THURSDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY'
+}
+
 export type Digest = {
   __typename?: 'Digest';
   channel: Scalars['String']['output'];
-  dayOfTheWeek: Scalars['Int']['output'];
+  dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['output'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['output'];
@@ -565,7 +575,7 @@ export type UpdateAutomationInput = {
 
 export type UpdateDigestInput = {
   channel: Scalars['String']['input'];
-  dayOfTheWeek: Scalars['Int']['input'];
+  dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['input'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['input'];
@@ -751,6 +761,7 @@ export type ResolversTypes = {
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
+  DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
   Digest: ResolverTypeWrapper<DeepPartial<Digest>>;
   DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
   DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
@@ -959,7 +970,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type DigestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Digest'] = ResolversParentTypes['Digest']> = {
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  dayOfTheWeek?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  dayOfTheWeek?: Resolver<Array<ResolversTypes['DayOfTheWeek']>, ParentType, ContextType>;
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   frequency?: Resolver<ResolversTypes['Frequency'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;

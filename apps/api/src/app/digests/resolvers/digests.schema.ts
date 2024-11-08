@@ -9,12 +9,22 @@ export default /* GraphQL */ `
     MONTHLY
   }
 
+  enum DayOfTheWeek {
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+  }
+
   type Digest {
     type: DigestType!
     enabled: Boolean!
     channel: String!
     frequency: Frequency!
-    dayOfTheWeek: Int!
+    dayOfTheWeek: [DayOfTheWeek!]!
     timeOfDay: String!
     timezone: TimeZone!
     settings: JSONObject!
@@ -40,7 +50,7 @@ export default /* GraphQL */ `
     enabled: Boolean!
     channel: String!
     frequency: Frequency!
-    dayOfTheWeek: Int!
+    dayOfTheWeek: [DayOfTheWeek!]!
     timeOfDay: String!
     timezone: TimeZone!
     settings: JSONObject!

@@ -9,7 +9,11 @@ import { useDigest } from "../use-digest";
 import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler, useEffect, useMemo } from "react";
 import { FormWipDigest } from "../types";
-import { DigestType, Frequency } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  DayOfTheWeek,
+  DigestType,
+  Frequency,
+} from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
 import {
   DigestBaseFields,
@@ -45,7 +49,7 @@ export const TeamWipDigestPage = () => {
       enabled: false,
       channel: "",
       frequency: "",
-      dayOfTheWeek: 1,
+      dayOfTheWeek: [DayOfTheWeek.MONDAY],
       timeOfDay: "",
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
@@ -58,7 +62,7 @@ export const TeamWipDigestPage = () => {
       enabled: digest.enabled,
       channel: digest.channel ?? "",
       frequency: digest.frequency ?? "",
-      dayOfTheWeek: digest.dayOfTheWeek ?? 1,
+      dayOfTheWeek: digest.dayOfTheWeek ?? [DayOfTheWeek.MONDAY],
       timeOfDay: digest.timeOfDay ?? "",
       timezone:
         digest.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,

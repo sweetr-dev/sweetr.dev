@@ -160,10 +160,20 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export enum DayOfTheWeek {
+  FRIDAY = 'FRIDAY',
+  MONDAY = 'MONDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
+  THURSDAY = 'THURSDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY'
+}
+
 export type Digest = {
   __typename?: 'Digest';
   channel: Scalars['String']['output'];
-  dayOfTheWeek: Scalars['Int']['output'];
+  dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['output'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['output'];
@@ -563,7 +573,7 @@ export type UpdateAutomationInput = {
 
 export type UpdateDigestInput = {
   channel: Scalars['String']['input'];
-  dayOfTheWeek: Scalars['Int']['input'];
+  dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['input'];
   frequency: Frequency;
   settings: Scalars['JSONObject']['input'];
@@ -779,7 +789,7 @@ export type TeamDigestQueryVariables = Exact<{
 }>;
 
 
-export type TeamDigestQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', digest?: { __typename?: 'Digest', type: DigestType, enabled: boolean, channel: string, frequency: Frequency, dayOfTheWeek: number, timeOfDay: string, timezone: string, settings: object } | null } | null } };
+export type TeamDigestQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', digest?: { __typename?: 'Digest', type: DigestType, enabled: boolean, channel: string, frequency: Frequency, dayOfTheWeek: Array<DayOfTheWeek>, timeOfDay: string, timezone: string, settings: object } | null } | null } };
 
 export type UpdateDigestMutationVariables = Exact<{
   input: UpdateDigestInput;
