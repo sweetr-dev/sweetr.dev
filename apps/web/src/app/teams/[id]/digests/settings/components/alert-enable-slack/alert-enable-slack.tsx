@@ -1,8 +1,8 @@
-import { Alert, Group, Button, Text } from "@mantine/core";
+import { Alert, Group, Button, Text, AlertProps } from "@mantine/core";
 import { IconAlertHexagon, IconExternalLink } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-export const AlertEnableSlack = () => {
+export const AlertEnableSlack = (props: AlertProps) => {
   return (
     <Alert
       variant="light"
@@ -13,6 +13,7 @@ export const AlertEnableSlack = () => {
         },
       }}
       icon={<IconAlertHexagon stroke={1.5} />}
+      {...props}
     >
       <Group justify="space-between">
         <Text>Setup integration with Slack to enable this feature.</Text>

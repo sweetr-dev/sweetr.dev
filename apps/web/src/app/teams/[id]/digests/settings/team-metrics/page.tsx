@@ -95,7 +95,7 @@ export const TeamMetricsDigestPage = () => {
         <Button
           type="submit"
           loading={mutation.isPending}
-          disabled={!isFormValid}
+          disabled={!isFormValid || !integration}
         >
           Update digest
         </Button>
