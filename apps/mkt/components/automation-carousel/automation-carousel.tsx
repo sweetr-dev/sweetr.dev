@@ -170,7 +170,7 @@ export const AutomationCarousel = () => {
               </div>
             </div>
             <div className="rounded-[4px] swiper-slide h-full group/slide border-[2px] border-dashed border-dark-300">
-              <div className="relative h-[355px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
+              <div className="relative h-[357px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg my-3.5">
                 More coming soon
               </div>
             </div>
