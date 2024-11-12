@@ -2,14 +2,12 @@ import { JsonObject } from "@prisma/client/runtime/library";
 import { getPrisma } from "../../../prisma";
 import {
   DigestTypeMap,
-  CanSendDigestArgs,
   FindDigestByTypeArgs,
   UpsertDigest,
   Digest,
 } from "./digest.types";
 import { assign, isObject } from "radash";
 import { DigestType } from "@prisma/client";
-import { isActiveCustomer } from "../../workspace-authorization.service";
 
 export const findDigestByType = async <T extends DigestType>({
   workspaceId,
@@ -101,15 +99,4 @@ export const upsertDigest = async ({
   });
 
   return updatedDigest as unknown as Digest;
-};
-
-export const canSendDigest = async ({
-  digest,
-  workspace,
-}: CanSendDigestArgs): Promise<boolean> => {
-  if (!digest?.enabled) return false;
-  if (!isActiveCustomer(workspace)) return false;
-  if (!workspace.installation) return false;
-
-  return true;
 };

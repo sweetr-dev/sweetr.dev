@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { isObject } from "radash";
 
 const prisma = new PrismaClient();
 
@@ -48,4 +50,10 @@ export const getPrisma = (workspaceId?: number) => {
 
 export const take = (limit: number = 50) => {
   return Math.min(100, limit);
+};
+
+export const jsonObject = <T extends Record<string, any>>(
+  value: string | object | JsonValue
+): T => {
+  return isObject(value) ? value : JSON.parse(value as string);
 };

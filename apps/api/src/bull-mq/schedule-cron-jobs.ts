@@ -17,4 +17,10 @@ export const scheduleCronJobs = async () => {
       every: hoursToMilliseconds(24),
     },
   });
+
+  await addJob(SweetQueue.CRON_SCHEDULE_DIGESTS, null, {
+    repeat: {
+      pattern: "0 * * * *",
+    },
+  });
 };

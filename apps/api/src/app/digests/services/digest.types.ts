@@ -56,3 +56,10 @@ export interface DigestTeamWip extends Omit<Digest, "settings"> {
 }
 
 export type DigestSettings = Prisma.JsonObject;
+
+export type DigestWithWorkspace = Digest & {
+  workspace: Workspace & {
+    subscription: Subscription;
+    installation: Installation;
+  };
+};

@@ -2,7 +2,7 @@ import { Job } from "bullmq";
 import { SweetQueue } from "../../../../bull-mq/queues";
 import { createWorker } from "../../../../bull-mq/workers";
 import { logger } from "../../../../lib/logger";
-import { removeIntegrationByTeamId } from "../services/slack.service";
+import { removeIntegrationByTeamId } from "../services/slack-integration.service";
 
 export const slackAppUninstalledWorker = createWorker(
   SweetQueue.SLACK_APP_UNINSTALLED,
