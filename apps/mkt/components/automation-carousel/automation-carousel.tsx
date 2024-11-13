@@ -69,10 +69,14 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClock color="#fff" stroke={2} className="w-5 h-5" />
+                      <IconClock
+                        color="#fff"
+                        stroke={1.5}
+                        className="w-5 h-5"
+                      />
                     </div>
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconBug color="#fff" stroke={2} className="w-5 h-5" />
+                      <IconBug color="#fff" stroke={1.5} className="w-5 h-5" />
                     </div>
                   </div>
                   <div className="font-bold text-green-400">Available</div>
@@ -102,7 +106,11 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconGavel color="#fff" stroke={2} className="w-5 h-5" />
+                      <IconGavel
+                        color="#fff"
+                        stroke={1.5}
+                        className="w-5 h-5"
+                      />
                     </div>
                   </div>
                   <div className="font-bold text-green-400">Available</div>
@@ -132,7 +140,11 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClock color="#fff" stroke={2} className="w-5 h-5" />
+                      <IconClock
+                        color="#fff"
+                        stroke={1.5}
+                        className="w-5 h-5"
+                      />
                     </div>
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
@@ -162,7 +174,7 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconBug color="#fff" stroke={2} className="w-5 h-5" />
+                      <IconBug color="#fff" stroke={1.5} className="w-5 h-5" />
                     </div>
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
