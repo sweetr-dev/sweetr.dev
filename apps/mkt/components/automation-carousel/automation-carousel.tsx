@@ -62,12 +62,12 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       Label PR Size
                     </div>
-                    <div className="text-dark-200 mb-2">
+                    <div className="text-dark-200 mb-3">
                       Automatically label a Pull Request on GitHub with its
                       size. Increase awareness about creating small PRs.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-2">
+                  <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
                       <IconClock color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
@@ -95,12 +95,12 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       PR Title Requirements
                     </div>
-                    <div className="text-dark-200 mb-2">
+                    <div className="text-dark-200 mb-3">
                       Enforce standards on Pull Request titles. Ticket code,
                       specific prefix, or something else? You pick it.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-2">
+                  <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
                       <IconGavel color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
@@ -125,12 +125,12 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       Notify Stale PRs
                     </div>
-                    <div className="text-dark-200 mb-2">
+                    <div className="text-dark-200 mb-3">
                       Send a Slack message when a Pull Request hasn't been
                       reviewed or has been open for too long.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-2">
+                  <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
                       <IconClock color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
@@ -155,12 +155,12 @@ export const AutomationCarousel = () => {
                     <div className="font-bold text-lg mb-1 text-zinc-200">
                       Code Freeze
                     </div>
-                    <div className="text-dark-200 mb-2">
+                    <div className="text-dark-200 mb-3">
                       Big migration? Xmas break? Schedule a period where no PRs
                       can be merged in selected repositories.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-2">
+                  <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
                       <IconBug color="#fff" stroke={2} className="w-5 h-5" />
                     </div>
