@@ -5,7 +5,7 @@ import Particles from "./particles";
 import Highlighter from "./highlighter";
 import Swiper, { Navigation } from "swiper";
 import "swiper/swiper.min.css";
-import { IconBug, IconClock, IconGavel } from "@tabler/icons-react";
+import { IconBug, IconClockBolt, IconGavel } from "@tabler/icons-react";
 
 Swiper.use([Navigation]);
 
@@ -69,7 +69,7 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClock
+                      <IconClockBolt
                         color="#fff"
                         stroke={1.5}
                         className="w-5 h-5"
@@ -140,7 +140,7 @@ export const AutomationCarousel = () => {
                   </div>
                   <div className="flex space-x-1 mb-1">
                     <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClock
+                      <IconClockBolt
                         color="#fff"
                         stroke={1.5}
                         className="w-5 h-5"
