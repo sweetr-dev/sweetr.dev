@@ -170,7 +170,7 @@ export const AutomationCarousel = () => {
               </div>
             </div>
             <div className="rounded-[4px] swiper-slide h-full group/slide border-[2px] border-dashed border-dark-300">
-              <div className="relative h-[357px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg my-3.5">
+              <div className="relative h-[385px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
                 More coming soon
               </div>
             </div>
@@ -186,7 +186,7 @@ export const AutomationCarousel = () => {
             viewBox="0 0 16 16"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path d="M6.7 14.7l1.4-1.4L3.4 9H16V7H3.4l4.7-4.7L6.7.9.9 8l5.8 5.8z" />
+            <path d="M6.7 14.7l1.4-1.4L3.8 9H16V7H3.8l4.3-4.3-1.4-1.4L0 8z" />
           </svg>
         </button>
         <button className="carousel-next relative z-20 w-12 h-12 flex items-center justify-center group">
@@ -196,7 +196,7 @@ export const AutomationCarousel = () => {
             viewBox="0 0 16 16"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path d="M9.3 14.7L7.9 13.3 12.6 9H0V7h12.6l-4.7-4.7L9.3.9l5.8 5.8-5.8 5.8z" />
+            <path d="M9.3 14.7l-1.4-1.4L12.2 9H0V7h12.2L7.9 2.7l1.4-1.4L16 8z" />
           </svg>
         </button>
       </div>
