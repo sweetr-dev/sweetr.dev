@@ -69,9 +69,7 @@ const getDayOfTheWeek = (weekDay: number): DayOfTheWeek => {
   ][weekDay];
 };
 
-export const canSendDigest = async (
-  digest: DigestWithWorkspace
-): Promise<boolean> => {
+export const canSendDigest = (digest: DigestWithWorkspace): boolean => {
   if (!isActiveCustomer(digest.workspace)) return false;
 
   if (!digest.workspace.installation) return false;

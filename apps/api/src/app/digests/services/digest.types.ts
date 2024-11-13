@@ -59,7 +59,7 @@ export type DigestSettings = Prisma.JsonObject;
 
 export type DigestWithWorkspace = Digest & {
   workspace: Workspace & {
-    subscription: Subscription;
-    installation: Installation;
+    subscription: Subscription | null;
+    installation: Installation | null;
   };
 };

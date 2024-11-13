@@ -1,5 +1,5 @@
 import { CodeReviewState, PullRequestState } from "@prisma/client";
-import { getPrisma } from "../../../prisma";
+import { getBypassRlsPrisma, getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
@@ -12,6 +12,7 @@ import { getPersonGitUrl } from "../../people/services/people.service";
 import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
+import { subMonths } from "date-fns/subMonths";
 
 export const sendTeamWipDigest = async (digest: DigestWithWorkspace) => {
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
@@ -87,6 +88,9 @@ const getPullRequestSectionBlock = (
     return [];
   }
 
+  const limit = 10;
+  const hasMoreThanLimit = pullRequests.length > limit;
+
   return [
     {
       type: "rich_text",
@@ -103,34 +107,49 @@ const getPullRequestSectionBlock = (
         },
         {
           type: "rich_text_list",
-          elements: pullRequests.map((pullRequest) => ({
-            type: "rich_text_section",
-            elements: [
-              ...(pullRequest.tracking?.size
-                ? [
-                    {
-                      type: "text",
-                      text: capitalize(pullRequest.tracking?.size),
-                      style: { code: true },
-                    },
-                  ]
-                : []),
-              {
-                type: "link",
-                text: ` ${pullRequest.title}`,
-                url: pullRequest.gitUrl,
-              },
-              {
-                type: "text",
-                text: " | ",
-              },
-              {
-                type: "link",
-                text: `@${pullRequest.author.name}`,
-                url: getPersonGitUrl(pullRequest.author),
-              },
-            ],
-          })),
+          elements: [
+            ...pullRequests.slice(0, limit - 1).map((pullRequest) => ({
+              type: "rich_text_section",
+              elements: [
+                ...(pullRequest.tracking?.size
+                  ? [
+                      {
+                        type: "text",
+                        text: capitalize(pullRequest.tracking?.size),
+                        style: { code: true },
+                      },
+                    ]
+                  : []),
+                {
+                  type: "link",
+                  text: ` ${pullRequest.title}`,
+                  url: pullRequest.gitUrl,
+                },
+                {
+                  type: "text",
+                  text: " | ",
+                },
+                {
+                  type: "link",
+                  text: `@${pullRequest.author.name}`,
+                  url: getPersonGitUrl(pullRequest.author),
+                },
+              ],
+            })),
+            ...(hasMoreThanLimit
+              ? [
+                  {
+                    type: "rich_text_section",
+                    elements: [
+                      {
+                        type: "text",
+                        text: `${pullRequests.length - limit} more...`,
+                      },
+                    ],
+                  },
+                ]
+              : []),
+          ],
           style: "bullet",
           indent: 1,
         },
@@ -156,7 +175,11 @@ const getPullRequestsGroupedByState = async (
         },
       },
       mergedAt: null,
+      createdAt: {
+        gte: subMonths(new Date(), 3),
+      },
     },
+    take: take(100),
     include: {
       codeReviews: true,
       author: true,

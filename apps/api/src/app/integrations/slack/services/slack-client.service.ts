@@ -3,6 +3,7 @@ import { ChatPostMessageArguments, WebClient } from "@slack/web-api";
 import { getPrisma, jsonObject } from "../../../../prisma";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { config } from "../../../../config";
+import { IntegrationException } from "../../../errors/exceptions/integration.exception";
 
 export const getSlackClient = () => new WebClient();
 
@@ -15,11 +16,18 @@ export const getWorkspaceSlackClient = async (workspaceId: number) => {
     throw new ResourceNotFoundException("Slack integration not found");
   }
 
+  const accessToken = jsonObject(integration.data).access_token;
+
+  if (!accessToken || typeof accessToken !== "string") {
+    throw new IntegrationException(
+      "Invalid Slack integration: missing or invalid access token",
+      { extra: integration }
+    );
+  }
+
   return {
     integration,
-    slackClient: new WebClient(
-      jsonObject(integration.data).access_token as string
-    ),
+    slackClient: new WebClient(accessToken),
   };
 };
 
@@ -46,7 +54,8 @@ export const findSlackChannel = async (
   slackClient: WebClient,
   channelName: string
 ) => {
-  const channels = await slackClient?.conversations.list();
+  // TO-DO: Paginate
+  const channels = await slackClient?.conversations.list({ limit: 1000 });
 
   return channels?.channels?.find((ch) => ch.name === channelName);
 };
