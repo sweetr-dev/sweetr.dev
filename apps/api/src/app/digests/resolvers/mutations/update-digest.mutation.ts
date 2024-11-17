@@ -1,13 +1,22 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
+import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
 import { upsertDigest } from "../../services/digest.service";
 import { transformDigest } from "../../transformers/digest.transformer";
+import { z } from "zod";
 
 export const updateDigest = createMutationResolver({
   updateDigest: async (_, { input }, context) => {
     logger.info("mutation.updateDigest", { input });
+
+    validateInputOrThrow(
+      z.object({
+        channel: z.string().max(80),
+      }),
+      input
+    );
 
     await authorizeWorkspaceOrThrow({
       workspaceId: input.workspaceId,

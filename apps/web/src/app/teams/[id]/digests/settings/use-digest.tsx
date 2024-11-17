@@ -13,6 +13,7 @@ import {
   showErrorNotification,
 } from "../../../../../providers/notification.provider";
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 
 interface UseDigestsProps {
   teamId: string;
@@ -33,9 +34,9 @@ export const useDigest = ({ teamId, type }: UseDigestsProps) => {
 
       navigate(`/teams/${teamId}/digests`);
     },
-    onError: () => {
+    onError: (error) => {
       showErrorNotification({
-        message: "Something went wrong. Please try again.",
+        message: getErrorMessage(error),
       });
     },
   });
