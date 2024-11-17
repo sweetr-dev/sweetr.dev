@@ -1,5 +1,5 @@
 import { CodeReviewState, PullRequestState } from "@prisma/client";
-import { getBypassRlsPrisma, getPrisma, take } from "../../../prisma";
+import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
