@@ -18,7 +18,7 @@
     "heroku-postbuild": "turbo run build --filter api",
     "start": "cd apps/api && npm run start",
     "test": "vitest run",
-    "_ngrok": "ngrok http 8000 --domain $NGROK_DOMAIN",
+    "_ngrok": "ngrok http https://api.sweetr.local:8000 --domain $NGROK_DOMAIN",
     "ngrok": "dotenv -e ./apps/api/.env -- npm run _ngrok"
   },
   "dependencies": {
