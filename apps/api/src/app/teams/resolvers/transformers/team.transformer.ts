@@ -7,5 +7,6 @@ export const transformTeam = (team: DatabaseTeam): ApiTeam => {
     id: team.id,
     archivedAt: team.archivedAt?.toISOString(),
     members: [],
+    digests: [],
   };
 };

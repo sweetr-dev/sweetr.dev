@@ -1,5 +1,5 @@
 import { Anchor, Group, Stack, Switch, TextInput, Title } from "@mantine/core";
-import { BoxSetting } from "../../../components/box-setting";
+import { BoxSetting } from "../../../../../../components/box-setting";
 import { UseFormReturnType } from "@mantine/form";
 import { FormPrTitleCheck } from "../../types";
 import { IconExternalLink } from "@tabler/icons-react";
@@ -15,7 +15,7 @@ export const FormPrTitleCheckSettings = ({
       <Stack p="md">
         <Title order={5}>Settings</Title>
 
-        <BoxSetting left="Enabled">
+        <BoxSetting label="Enabled">
           <Switch
             size="lg"
             color="green.7"

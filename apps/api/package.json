@@ -42,6 +42,7 @@
     "basic-auth": "^2.0.1",
     "bullmq": "^5.2.0",
     "date-fns": "^3.3.1",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^16.3.1",
     "envsafe": "^2.0.3",
     "express": "^4.18.2",

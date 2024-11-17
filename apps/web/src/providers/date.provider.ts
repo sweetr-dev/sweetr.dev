@@ -37,3 +37,7 @@ export const formatDate = (
   date: string | null | undefined,
   token: string,
 ): string => (date ? format(parseISO(date), token) : "");
+
+export const getBrowserTimezone = () => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+};

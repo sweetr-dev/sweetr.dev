@@ -1,4 +1,4 @@
-import { fork, listify } from "radash";
+import { fork } from "radash";
 
 const automationCards = {
   PR_TITLE_CHECK: {

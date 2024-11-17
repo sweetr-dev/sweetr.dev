@@ -1,14 +1,19 @@
-import { Integration, Workspace } from "@prisma/client";
-import { getPrisma } from "../../../../prisma";
+import { Workspace } from "@prisma/client";
+import { getPrisma, jsonObject } from "../../../../prisma";
 import { config } from "../../../../config";
 import { getTemporaryNonce } from "../../../workspace-authorization.service";
-import { getSlackWebClient } from "../../../../lib/slack";
 import { IntegrationException } from "../../../errors/exceptions/integration.exception";
 import { OauthV2AccessResponse } from "@slack/web-api";
-import { isObject, omit } from "radash";
+import { omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
 import { IntegrationApp } from "@sweetr/graphql-types/dist/api";
+import {
+  authorizeSlackWorkspace,
+  getSlackClient,
+  getWorkspaceSlackClient,
+  uninstallSlackWorkspace,
+} from "./slack-client.service";
 
 export const installIntegration = async (
   workspace: Workspace,
@@ -17,12 +22,7 @@ export const installIntegration = async (
   let response: OauthV2AccessResponse;
 
   try {
-    response = await getSlackClient().oauth.v2.access({
-      client_id: config.slack.clientId,
-      client_secret: config.slack.clientSecret,
-      redirect_uri: config.slack.redirectUrl,
-      code,
-    });
+    response = await authorizeSlackWorkspace(getSlackClient(), code);
   } catch (error) {
     throw new IntegrationException("Integration failed. Please try again.", {
       originalError: error,
@@ -60,22 +60,17 @@ export const installIntegration = async (
 };
 
 export const removeIntegration = async (workspace: Workspace) => {
-  const integration = await getPrisma(workspace.id).integration.findFirst({
-    where: { workspaceId: workspace.id, app: IntegrationApp.SLACK },
-  });
-
-  if (!integration) return;
-
-  const data = getIntegrationData(integration);
-
-  if (!data.app_id) {
-    throw new IntegrationException("Slack integration is missing app_id");
-  }
-
   try {
-    await getSlackClient(integration).apps.uninstall({
-      client_id: config.slack.clientId,
-      client_secret: config.slack.clientSecret,
+    const { slackClient, integration } = await getWorkspaceSlackClient(
+      workspace.id
+    );
+
+    await uninstallSlackWorkspace(slackClient);
+
+    await getPrisma(workspace.id).integration.delete({
+      where: {
+        id: integration.id,
+      },
     });
   } catch (error) {
     throw new IntegrationException(
@@ -85,12 +80,6 @@ export const removeIntegration = async (workspace: Workspace) => {
       }
     );
   }
-
-  await getPrisma(workspace.id).integration.delete({
-    where: {
-      id: integration.id,
-    },
-  });
 };
 
 export const removeIntegrationByTeamId = async (teamId: string) => {
@@ -124,20 +113,8 @@ export const getIntegration = async (workspaceId: number) => {
     app: IntegrationApp.SLACK,
     isEnabled: true,
     enabledAt: integration.createdAt.toISOString(),
-    target: getIntegrationData(integration).team?.name,
+    target: jsonObject(integration.data).team?.name,
   };
-};
-
-const getSlackClient = (integration?: Integration) => {
-  return getSlackWebClient(
-    integration ? getIntegrationData(integration).access_token : undefined
-  );
-};
-
-const getIntegrationData = (integration: Integration): SlackIntegrationData => {
-  return isObject(integration.data)
-    ? integration.data
-    : JSON.parse(integration.data as string);
 };
 
 export const getInstallUrl = (): string => {

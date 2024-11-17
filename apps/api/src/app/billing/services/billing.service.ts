@@ -1,4 +1,4 @@
-import { Subscription, Workspace } from "@prisma/client";
+import { Subscription } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { logger } from "../../../lib/logger";
