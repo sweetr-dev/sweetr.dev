@@ -1,6 +1,7 @@
 import {
   getInstallationGraphQLOctoKit,
   getInstallationOctoKit,
+  GITHUB_MAX_PAGE_LIMIT,
 } from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
@@ -184,6 +185,20 @@ const fetchPullRequest = async (
               createdAt
             }
 
+            files(first: 20) {
+              nodes {
+                __typename
+                changeType
+                path
+                additions
+                deletions
+              }
+              pageInfo {
+                hasNextPage
+                endCursor 
+              }
+            }
+
             timelineItems(itemTypes: [READY_FOR_REVIEW_EVENT, CONVERT_TO_DRAFT_EVENT], last: 100) {
               nodes {
                 __typename
@@ -204,7 +219,63 @@ const fetchPullRequest = async (
     }
   );
 
-  return response.node;
+  return {
+    ...response.node,
+    files: await getPullRequestFiles(
+      installationId,
+      pullRequestId,
+      response.node.files
+    ),
+  };
+};
+
+const getPullRequestFiles = async (
+  installationId: number,
+  pullRequestId: string,
+  files: any
+) => {
+  if (!files.pageInfo.hasNextPage) {
+    return files;
+  }
+
+  while (files.pageInfo.hasNextPage) {
+    const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
+    const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
+      `
+      query PullRequestFilesQuery(
+        $nodeId: ID!
+        $cursor: String
+      ) {
+        node(id: $nodeId) {
+          ... on PullRequest {
+            id
+            files(first: ${GITHUB_MAX_PAGE_LIMIT}, after: $cursor) {
+              nodes {
+                changeType
+                path
+                additions
+                deletions
+              }
+              pageInfo {
+                hasNextPage
+                endCursor 
+              }
+            }
+          }
+        }
+      }
+    `,
+      {
+        nodeId: pullRequestId,
+        cursor: files.pageInfo.endCursor,
+      }
+    );
+
+    files.nodes.push(...response.node.files.nodes);
+    files.pageInfo = response.node.files.pageInfo;
+  }
+
+  return files;
 };
 
 const upsertPullRequest = async (
