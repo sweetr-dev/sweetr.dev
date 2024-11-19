@@ -53,7 +53,10 @@ export const runPrSizeLabelerAutomation = async (
     captureException(
       new ResourceNotFoundException(
         "[Automation] PR Size Labeler: Pull Request tracking not found",
-        { extra: { gitInstallationId, gitPullRequest, pullRequest } }
+        {
+          extra: { gitInstallationId, gitPullRequest, pullRequest },
+          severity: "error",
+        }
       )
     );
     return;

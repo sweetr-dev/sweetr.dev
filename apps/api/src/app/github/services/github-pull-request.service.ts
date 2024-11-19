@@ -187,7 +187,7 @@ const fetchPullRequest = async (
               createdAt
             }
 
-            files(first: 20) {
+            files(first: ${GITHUB_MAX_PAGE_LIMIT}) {
               nodes {
                 __typename
                 changeType
