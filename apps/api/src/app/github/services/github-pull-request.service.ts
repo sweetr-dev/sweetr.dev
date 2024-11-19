@@ -8,6 +8,7 @@ import { logger } from "../../../lib/logger";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import {
   GitProvider,
+  Prisma,
   PullRequest,
   PullRequestState,
   Repository,
@@ -17,6 +18,7 @@ import { JobPriority, SweetQueue, addJob } from "../../../bull-mq/queues";
 import {
   getCycleTime,
   getFirstDraftAndReadyDates,
+  getPullRequestLinesTracked,
   getPullRequestSize,
   getTimeToCode,
   getTimeToMerge,
@@ -232,13 +234,15 @@ const fetchPullRequest = async (
 const getPullRequestFiles = async (
   installationId: number,
   pullRequestId: string,
-  files: any
+  fileQuery: any
 ) => {
-  if (!files.pageInfo.hasNextPage) {
-    return files;
+  if (!fileQuery.pageInfo.hasNextPage) {
+    return fileQuery.nodes || [];
   }
 
-  while (files.pageInfo.hasNextPage) {
+  const files: object[] = [];
+
+  while (fileQuery.pageInfo.hasNextPage) {
     const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
     const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
       `
@@ -267,12 +271,12 @@ const getPullRequestFiles = async (
     `,
       {
         nodeId: pullRequestId,
-        cursor: files.pageInfo.endCursor,
+        cursor: fileQuery.pageInfo.endCursor,
       }
     );
 
-    files.nodes.push(...response.node.files.nodes);
-    files.pageInfo = response.node.files.pageInfo;
+    files.push(...response.node.files.nodes);
+    fileQuery.pageInfo = response.node.files.pageInfo;
   }
 
   return files;
@@ -284,7 +288,7 @@ const upsertPullRequest = async (
   repository: Repository,
   gitPrData: any
 ) => {
-  const data: Omit<PullRequest, "id"> = {
+  const data: Prisma.PullRequestUncheckedCreateInput = {
     gitProvider: GitProvider.GITHUB,
     gitPullRequestId: gitPrData.id,
     gitUrl: gitPrData.url,
@@ -302,6 +306,7 @@ const upsertPullRequest = async (
     repositoryId: repository.id,
     workspaceId: repository.workspaceId,
     authorId: gitProfileId,
+    files: gitPrData.files,
   };
 
   const pullRequest = await getPrisma(
@@ -352,7 +357,8 @@ const upsertPullRequestTracking = async (
     },
   });
 
-  const size = getPullRequestSize(pullRequest);
+  const linesTracked = getPullRequestLinesTracked(pullRequest);
+  const size = getPullRequestSize(linesTracked);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
   const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);
@@ -366,6 +372,7 @@ const upsertPullRequestTracking = async (
     create: {
       pullRequestId: pullRequest.id,
       workspaceId: pullRequest.workspaceId,
+      linesTracked,
       size,
       firstCommitAt,
       firstDraftedAt,
@@ -375,6 +382,7 @@ const upsertPullRequestTracking = async (
       cycleTime,
     },
     update: {
+      linesTracked,
       size,
       firstCommitAt,
       firstDraftedAt,

@@ -279,6 +279,7 @@ model PullRequest {
   title  String
   number String
 
+  files             Json @default("[]")
   commentCount      Int
   changedFilesCount Int
   linesAddedCount   Int
@@ -312,7 +313,8 @@ model PullRequest {
 model PullRequestTracking {
   id Int @id @default(autoincrement())
 
-  size PullRequestSize
+  linesTracked Int             @default(0) // User may ignore some files
+  size         PullRequestSize
 
   firstCommitAt            DateTime?
   firstDraftedAt           DateTime?

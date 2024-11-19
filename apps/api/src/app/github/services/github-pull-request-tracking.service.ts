@@ -1,6 +1,8 @@
 import { isAfter } from "date-fns";
 import { differenceInBusinessMilliseconds } from "../../../lib/date";
 import { PullRequest, PullRequestSize, PullRequestState } from "@prisma/client";
+import { sum } from "radash";
+import { PullRequestFile } from "../../pull-requests/services/pull-request.types";
 
 /**
  * We need to iterate over the Pull Request timeline to properly assess
@@ -128,16 +130,25 @@ export const getReviewCompareTime = (
   return prCreatedAt;
 };
 
-export const getPullRequestSize = (
-  pullRequest: Pick<PullRequest, "linesAddedCount" | "linesDeletedCount">
+export const getPullRequestLinesTracked = (
+  pullRequest: Pick<PullRequest, "files">
 ) => {
-  const totalChanges =
-    pullRequest.linesAddedCount + pullRequest.linesDeletedCount;
+  // TO-DO: Filter out undesired extensions
+  return sum(
+    getPullRequestFiles(pullRequest),
+    (file) => file.additions + file.deletions
+  );
+};
 
-  if (totalChanges < 20) return PullRequestSize.TINY;
-  if (totalChanges < 100) return PullRequestSize.SMALL;
-  if (totalChanges < 250) return PullRequestSize.MEDIUM;
-  if (totalChanges < 500) return PullRequestSize.LARGE;
+const getPullRequestFiles = (pullRequest: Pick<PullRequest, "files">) => {
+  return pullRequest.files as unknown as PullRequestFile[];
+};
+
+export const getPullRequestSize = (linesChanged: number) => {
+  if (linesChanged < 20) return PullRequestSize.TINY;
+  if (linesChanged < 100) return PullRequestSize.SMALL;
+  if (linesChanged < 250) return PullRequestSize.MEDIUM;
+  if (linesChanged < 500) return PullRequestSize.LARGE;
 
   return PullRequestSize.HUGE;
 };

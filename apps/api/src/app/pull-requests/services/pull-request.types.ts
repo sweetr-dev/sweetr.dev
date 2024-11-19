@@ -14,3 +14,10 @@ export interface PaginatePullRequestsArgs {
   states?: PullRequestState[];
   sizes?: PullRequestSize[];
 }
+
+export interface PullRequestFile {
+  changeType: string;
+  path: string;
+  additions: number;
+  deletions: number;
+}

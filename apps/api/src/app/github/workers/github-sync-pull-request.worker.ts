@@ -3,7 +3,7 @@ import {
   PullRequestSynchronizeEvent,
 } from "@octokit/webhooks-types";
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { addJob, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { syncPullRequest } from "../services/github-pull-request.service";
@@ -50,6 +50,8 @@ export const syncPullRequestWorker = createWorker(
         installationId,
       }
     );
+
+    addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
   },
   {
     limiter: {

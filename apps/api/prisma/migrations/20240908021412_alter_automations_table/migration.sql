@@ -20,7 +20,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "AutomationType" AS ENUM ('PR_TITLE_CHECK');
+CREATE TYPE "AutomationType" AS ENUM ('PR_TITLE_CHECK', 'PR_SIZE_LABELER');
 
 -- DropIndex
 DROP INDEX "Automation_slug_key";
