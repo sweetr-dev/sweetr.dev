@@ -3,6 +3,8 @@ import { differenceInBusinessMilliseconds } from "../../../lib/date";
 import { PullRequest, PullRequestSize, PullRequestState } from "@prisma/client";
 import { sum } from "radash";
 import { PullRequestFile } from "../../pull-requests/services/pull-request.types";
+import micromatch from "micromatch";
+import { config } from "../../../config";
 
 /**
  * We need to iterate over the Pull Request timeline to properly assess
@@ -133,14 +135,17 @@ export const getReviewCompareTime = (
 export const getPullRequestLinesTracked = (
   pullRequest: Pick<PullRequest, "files">
 ) => {
-  // TO-DO: Filter out undesired extensions
   const files = getPullRequestFiles(pullRequest);
 
-  const linesAddedCount = sum(files, (file) => file.additions);
-  const linesDeletedCount = sum(files, (file) => file.deletions);
+  const filteredFiles = files.filter(
+    (file) => !micromatch.isMatch(file.path, config.glob.ignorableFilesGlob)
+  );
+
+  const linesAddedCount = sum(filteredFiles, (file) => file.additions);
+  const linesDeletedCount = sum(filteredFiles, (file) => file.deletions);
 
   return {
-    changedFilesCount: files.length,
+    changedFilesCount: filteredFiles.length,
     linesAddedCount,
     linesDeletedCount,
     linesChangedCount: linesAddedCount + linesDeletedCount,
