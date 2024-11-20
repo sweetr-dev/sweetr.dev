@@ -15,11 +15,11 @@ export const LinesChanged = ({
   return (
     <Stack gap={0} align="center" miw={120} {...props}>
       <Group gap={4} wrap="nowrap">
-        <Text c="red.5" fw={500} size="sm">
-          -{deletions}
-        </Text>
         <Text c="green.5" fw={500} size="sm">
           +{additions}
+        </Text>
+        <Text c="red.5" fw={500} size="sm">
+          -{deletions}
         </Text>
       </Group>
       <Text
@@ -29,7 +29,7 @@ export const LinesChanged = ({
         ta="center"
         style={{ whiteSpace: "nowrap" }}
       >
-        {files > 1 ? `${files} files` : "1 file"} changed
+        {files > 1 ? `${files} files` : "1 file"} tracked
       </Text>
     </Stack>
   );

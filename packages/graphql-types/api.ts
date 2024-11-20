@@ -419,10 +419,16 @@ export enum PullRequestState {
 
 export type PullRequestTracking = {
   __typename?: 'PullRequestTracking';
+  /** The amount of files changed (ignores auto-generated files) */
+  changedFilesCount: Scalars['Int']['output'];
   /** The time when the pull request received its first approval */
   firstApprovalAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time when the pull request received its first review */
   firstReviewAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The amount of lines added (ignores auto-generated files) */
+  linesAddedCount: Scalars['Int']['output'];
+  /** The amount of lines deleted (ignores auto-generated files) */
+  linesDeletedCount: Scalars['Int']['output'];
   /** The size of the pull request */
   size: PullRequestSize;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first approval */
@@ -1085,8 +1091,11 @@ export type PullRequestResolvers<ContextType = GraphQLContext, ParentType extend
 };
 
 export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestTracking'] = ResolversParentTypes['PullRequestTracking']> = {
+  changedFilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   firstApprovalAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   firstReviewAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  linesAddedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  linesDeletedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   size?: Resolver<ResolversTypes['PullRequestSize'], ParentType, ContextType>;
   timeToFirstApproval?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstReview?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
