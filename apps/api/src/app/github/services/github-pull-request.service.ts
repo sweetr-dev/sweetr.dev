@@ -357,8 +357,13 @@ const upsertPullRequestTracking = async (
     },
   });
 
-  const linesTracked = getPullRequestLinesTracked(pullRequest);
-  const size = getPullRequestSize(linesTracked);
+  const {
+    linesAddedCount,
+    linesDeletedCount,
+    changedFilesCount,
+    linesChangedCount,
+  } = getPullRequestLinesTracked(pullRequest);
+  const size = getPullRequestSize(linesChangedCount);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
   const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);
@@ -372,7 +377,9 @@ const upsertPullRequestTracking = async (
     create: {
       pullRequestId: pullRequest.id,
       workspaceId: pullRequest.workspaceId,
-      linesTracked,
+      linesAddedCount,
+      linesDeletedCount,
+      changedFilesCount,
       size,
       firstCommitAt,
       firstDraftedAt,
@@ -382,7 +389,9 @@ const upsertPullRequestTracking = async (
       cycleTime,
     },
     update: {
-      linesTracked,
+      linesAddedCount,
+      linesDeletedCount,
+      changedFilesCount,
       size,
       firstCommitAt,
       firstDraftedAt,

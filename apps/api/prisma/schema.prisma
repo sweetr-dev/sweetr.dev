@@ -313,8 +313,11 @@ model PullRequest {
 model PullRequestTracking {
   id Int @id @default(autoincrement())
 
-  linesTracked Int             @default(0) // User may ignore some files
-  size         PullRequestSize
+  // When tracking, we ignore files that doesn't matter for PR size (i.e. lock files)
+  changedFilesCount Int             @default(0)
+  linesAddedCount   Int             @default(0)
+  linesDeletedCount Int             @default(0)
+  size              PullRequestSize
 
   firstCommitAt            DateTime?
   firstDraftedAt           DateTime?

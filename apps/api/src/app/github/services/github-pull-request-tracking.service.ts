@@ -134,10 +134,17 @@ export const getPullRequestLinesTracked = (
   pullRequest: Pick<PullRequest, "files">
 ) => {
   // TO-DO: Filter out undesired extensions
-  return sum(
-    getPullRequestFiles(pullRequest),
-    (file) => file.additions + file.deletions
-  );
+  const files = getPullRequestFiles(pullRequest);
+
+  const linesAddedCount = sum(files, (file) => file.additions);
+  const linesDeletedCount = sum(files, (file) => file.deletions);
+
+  return {
+    changedFilesCount: files.length,
+    linesAddedCount,
+    linesDeletedCount,
+    linesChangedCount: linesAddedCount + linesDeletedCount,
+  };
 };
 
 const getPullRequestFiles = (pullRequest: Pick<PullRequest, "files">) => {
