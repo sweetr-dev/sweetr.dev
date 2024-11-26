@@ -5,8 +5,7 @@ import Particles from "./particles";
 import Highlighter from "./highlighter";
 import Swiper, { Navigation } from "swiper";
 import "swiper/swiper.min.css";
-import { IconBug, IconClockBolt, IconGavel } from "@tabler/icons-react";
-import AutomationIcon from "./automation-icon";
+import AutomationIcon from "./automation-benefit-icon";
 
 Swiper.use([Navigation]);
 
@@ -69,8 +68,8 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1 mb-1">
-                    <AutomationIcon IconComponent={IconClockBolt} />
-                    <AutomationIcon IconComponent={IconBug} />
+                    <AutomationIcon type="cycleTime" />
+                    <AutomationIcon type="failureRate" />
                   </div>
                   <div className="font-bold text-green-400">Available</div>
                 </div>
@@ -98,7 +97,7 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1 mb-1">
-                    <AutomationIcon IconComponent={IconGavel} />
+                    <AutomationIcon type="techDebt" />
                   </div>
                   <div className="font-bold text-green-400">Available</div>
                 </div>
@@ -126,7 +125,7 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1 mb-1">
-                    <AutomationIcon IconComponent={IconClockBolt} />
+                    <AutomationIcon type="cycleTime" />
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
@@ -154,7 +153,7 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1 mb-1">
-                    <AutomationIcon IconComponent={IconBug} />
+                    <AutomationIcon type="failureRate" />
                   </div>
                   <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
