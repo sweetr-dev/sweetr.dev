@@ -51,7 +51,7 @@ export const FormPullRequestSizeSettings = ({
           <BadgePullRequestSize size={PullRequestSize.HUGE} />
           <Text>
             more than {form.getValues().settings?.pullRequest?.size?.large}{" "}
-            changes
+            changes.
           </Text>
         </Group>
       </Stack>
@@ -62,6 +62,7 @@ export const FormPullRequestSizeSettings = ({
           label="Glob Patterns"
           description="Files matching these patterns will be ignored when calculating total changes."
           value={["package-lock.json", "yarn.lock"]}
+          {...form.getInputProps(`settings.pullRequest.size.ignorePatterns`)}
         />
       </Stack>
       <Divider my="sm" />

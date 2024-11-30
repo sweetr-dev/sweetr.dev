@@ -7,6 +7,7 @@ export const WorkspaceSettings = z.object({
       small: z.number().min(1),
       medium: z.number().min(1),
       large: z.number().min(1),
+      ignorePatterns: z.array(z.string()),
     }),
   }),
 });

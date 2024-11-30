@@ -707,6 +707,7 @@ export type WorkspaceSettingsPullRequestInput = {
 
 export type WorkspaceSettingsPullRequestSize = {
   __typename?: 'WorkspaceSettingsPullRequestSize';
+  ignorePatterns: Array<Scalars['String']['output']>;
   large: Scalars['Int']['output'];
   medium: Scalars['Int']['output'];
   small: Scalars['Int']['output'];
@@ -714,6 +715,7 @@ export type WorkspaceSettingsPullRequestSize = {
 };
 
 export type WorkspaceSettingsPullRequestSizeInput = {
+  ignorePatterns?: InputMaybe<Array<Scalars['String']['input']>>;
   large?: InputMaybe<Scalars['Int']['input']>;
   medium?: InputMaybe<Scalars['Int']['input']>;
   small?: InputMaybe<Scalars['Int']['input']>;
@@ -1265,6 +1267,7 @@ export type WorkspaceSettingsPullRequestResolvers<ContextType = GraphQLContext, 
 };
 
 export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequestSize'] = ResolversParentTypes['WorkspaceSettingsPullRequestSize']> = {
+  ignorePatterns?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   large?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   medium?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

@@ -16,6 +16,7 @@ export default /* GraphQL */ `
     small: Int!
     medium: Int!
     large: Int!
+    ignorePatterns: [String!]!
   }
 
   type Mutation {
@@ -40,5 +41,6 @@ export default /* GraphQL */ `
     small: Int
     medium: Int
     large: Int
+    ignorePatterns: [String!]
   }
 `;

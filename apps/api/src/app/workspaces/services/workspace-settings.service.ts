@@ -4,6 +4,7 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 import { WorkspaceSettings } from "./workspace-settings.types";
 import { findWorkspaceById } from "./workspace.service";
 import { DeepNullish } from "../../../lib/type-helpers";
+import { config } from "../../../config";
 
 export const updateWorkspaceSettings = async (
   workspaceId: number,
@@ -45,6 +46,7 @@ const getDefaultSettings = (): WorkspaceSettings => {
         small: 100,
         medium: 250,
         large: 500,
+        ignorePatterns: config.glob.ignorableFilesGlob,
       },
     },
   };
@@ -69,6 +71,9 @@ const mergeSettings = (
         large:
           newSettings.pullRequest?.size?.large ||
           existingSettings.pullRequest?.size?.large,
+        ignorePatterns:
+          newSettings.pullRequest?.size?.ignorePatterns ||
+          existingSettings.pullRequest?.size?.ignorePatterns,
       },
     },
   };

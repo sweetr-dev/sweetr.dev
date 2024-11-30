@@ -131,6 +131,7 @@ export const useWorkspaceSettingsQuery = (
                     small
                     medium
                     large
+                    ignorePatterns
                   }
                 }
               }
