@@ -250,6 +250,7 @@ export type Mutation = {
   unarchiveTeam: Team;
   updateAutomation: Automation;
   updateDigest: Digest;
+  updateWorkspaceSettings: Workspace;
   upsertTeam: Team;
 };
 
@@ -291,6 +292,11 @@ export type MutationUpdateAutomationArgs = {
 
 export type MutationUpdateDigestArgs = {
   input: UpdateDigestInput;
+};
+
+
+export type MutationUpdateWorkspaceSettingsArgs = {
+  input: UpdateWorkspaceSettingsInput;
 };
 
 
@@ -592,6 +598,11 @@ export type UpdateDigestInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
 
+export type UpdateWorkspaceSettingsInput = {
+  settings: WorkspaceSettingsInput;
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UpsertTeamInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   endColor: Scalars['String']['input'];
@@ -631,6 +642,7 @@ export type Workspace = {
   person?: Maybe<Person>;
   pullRequests: Array<PullRequest>;
   repositories: Array<Repository>;
+  settings: WorkspaceSettings;
   team?: Maybe<Team>;
   teams: Array<Team>;
 };
@@ -673,6 +685,39 @@ export type WorkspaceTeamArgs = {
 
 export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
+};
+
+export type WorkspaceSettings = {
+  __typename?: 'WorkspaceSettings';
+  pullRequest: WorkspaceSettingsPullRequest;
+};
+
+export type WorkspaceSettingsInput = {
+  pullRequest?: InputMaybe<WorkspaceSettingsPullRequestInput>;
+};
+
+export type WorkspaceSettingsPullRequest = {
+  __typename?: 'WorkspaceSettingsPullRequest';
+  size: WorkspaceSettingsPullRequestSize;
+};
+
+export type WorkspaceSettingsPullRequestInput = {
+  size?: InputMaybe<WorkspaceSettingsPullRequestSizeInput>;
+};
+
+export type WorkspaceSettingsPullRequestSize = {
+  __typename?: 'WorkspaceSettingsPullRequestSize';
+  large?: Maybe<Scalars['Int']['output']>;
+  medium?: Maybe<Scalars['Int']['output']>;
+  small?: Maybe<Scalars['Int']['output']>;
+  tiny?: Maybe<Scalars['Int']['output']>;
+};
+
+export type WorkspaceSettingsPullRequestSizeInput = {
+  large?: InputMaybe<Scalars['Int']['input']>;
+  medium?: InputMaybe<Scalars['Int']['input']>;
+  small?: InputMaybe<Scalars['Int']['input']>;
+  tiny?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -817,10 +862,17 @@ export type ResolversTypes = {
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
   UpdateDigestInput: ResolverTypeWrapper<DeepPartial<UpdateDigestInput>>;
+  UpdateWorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<UpdateWorkspaceSettingsInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
   Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
+  WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
+  WorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsInput>>;
+  WorkspaceSettingsPullRequest: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequest>>;
+  WorkspaceSettingsPullRequestInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestInput>>;
+  WorkspaceSettingsPullRequestSize: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestSize>>;
+  WorkspaceSettingsPullRequestSizeInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestSizeInput>>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -884,10 +936,17 @@ export type ResolversParentTypes = {
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
   UpdateDigestInput: DeepPartial<UpdateDigestInput>;
+  UpdateWorkspaceSettingsInput: DeepPartial<UpdateWorkspaceSettingsInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
   Workspace: DeepPartial<Workspace>;
+  WorkspaceSettings: DeepPartial<WorkspaceSettings>;
+  WorkspaceSettingsInput: DeepPartial<WorkspaceSettingsInput>;
+  WorkspaceSettingsPullRequest: DeepPartial<WorkspaceSettingsPullRequest>;
+  WorkspaceSettingsPullRequestInput: DeepPartial<WorkspaceSettingsPullRequestInput>;
+  WorkspaceSettingsPullRequestSize: DeepPartial<WorkspaceSettingsPullRequestSize>;
+  WorkspaceSettingsPullRequestSizeInput: DeepPartial<WorkspaceSettingsPullRequestSizeInput>;
 };
 
 export type SkipAuthDirectiveArgs = { };
@@ -1025,6 +1084,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
+  updateWorkspaceSettings?: Resolver<ResolversTypes['Workspace'], ParentType, ContextType, RequireFields<MutationUpdateWorkspaceSettingsArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;
 };
 
@@ -1188,8 +1248,27 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   person?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType, RequireFields<WorkspacePersonArgs, 'handle'>>;
   pullRequests?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType, RequireFields<WorkspacePullRequestsArgs, 'input'>>;
   repositories?: Resolver<Array<ResolversTypes['Repository']>, ParentType, ContextType, Partial<WorkspaceRepositoriesArgs>>;
+  settings?: Resolver<ResolversTypes['WorkspaceSettings'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType, RequireFields<WorkspaceTeamArgs, 'teamId'>>;
   teams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType, Partial<WorkspaceTeamsArgs>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettings'] = ResolversParentTypes['WorkspaceSettings']> = {
+  pullRequest?: Resolver<ResolversTypes['WorkspaceSettingsPullRequest'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceSettingsPullRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequest'] = ResolversParentTypes['WorkspaceSettingsPullRequest']> = {
+  size?: Resolver<ResolversTypes['WorkspaceSettingsPullRequestSize'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequestSize'] = ResolversParentTypes['WorkspaceSettingsPullRequestSize']> = {
+  large?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  medium?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  small?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  tiny?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1232,6 +1311,9 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Trial?: TrialResolvers<ContextType>;
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;
+  WorkspaceSettings?: WorkspaceSettingsResolvers<ContextType>;
+  WorkspaceSettingsPullRequest?: WorkspaceSettingsPullRequestResolvers<ContextType>;
+  WorkspaceSettingsPullRequestSize?: WorkspaceSettingsPullRequestSizeResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = GraphQLContext> = {

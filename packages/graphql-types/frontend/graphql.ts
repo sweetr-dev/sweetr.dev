@@ -248,6 +248,7 @@ export type Mutation = {
   unarchiveTeam: Team;
   updateAutomation: Automation;
   updateDigest: Digest;
+  updateWorkspaceSettings: Workspace;
   upsertTeam: Team;
 };
 
@@ -289,6 +290,11 @@ export type MutationUpdateAutomationArgs = {
 
 export type MutationUpdateDigestArgs = {
   input: UpdateDigestInput;
+};
+
+
+export type MutationUpdateWorkspaceSettingsArgs = {
+  input: UpdateWorkspaceSettingsInput;
 };
 
 
@@ -590,6 +596,11 @@ export type UpdateDigestInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
 
+export type UpdateWorkspaceSettingsInput = {
+  settings: WorkspaceSettingsInput;
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UpsertTeamInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   endColor: Scalars['String']['input'];
@@ -629,6 +640,7 @@ export type Workspace = {
   person?: Maybe<Person>;
   pullRequests: Array<PullRequest>;
   repositories: Array<Repository>;
+  settings: WorkspaceSettings;
   team?: Maybe<Team>;
   teams: Array<Team>;
 };
@@ -671,6 +683,39 @@ export type WorkspaceTeamArgs = {
 
 export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
+};
+
+export type WorkspaceSettings = {
+  __typename?: 'WorkspaceSettings';
+  pullRequest: WorkspaceSettingsPullRequest;
+};
+
+export type WorkspaceSettingsInput = {
+  pullRequest?: InputMaybe<WorkspaceSettingsPullRequestInput>;
+};
+
+export type WorkspaceSettingsPullRequest = {
+  __typename?: 'WorkspaceSettingsPullRequest';
+  size: WorkspaceSettingsPullRequestSize;
+};
+
+export type WorkspaceSettingsPullRequestInput = {
+  size?: InputMaybe<WorkspaceSettingsPullRequestSizeInput>;
+};
+
+export type WorkspaceSettingsPullRequestSize = {
+  __typename?: 'WorkspaceSettingsPullRequestSize';
+  large?: Maybe<Scalars['Int']['output']>;
+  medium?: Maybe<Scalars['Int']['output']>;
+  small?: Maybe<Scalars['Int']['output']>;
+  tiny?: Maybe<Scalars['Int']['output']>;
+};
+
+export type WorkspaceSettingsPullRequestSizeInput = {
+  large?: InputMaybe<Scalars['Int']['input']>;
+  medium?: InputMaybe<Scalars['Int']['input']>;
+  small?: InputMaybe<Scalars['Int']['input']>;
+  tiny?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type LoginWithGithubMutationVariables = Exact<{

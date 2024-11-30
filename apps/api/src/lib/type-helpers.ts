@@ -11,6 +11,18 @@ export type Camelize<GenericObject> = {
       ? Array<Camelize<ArrayItem>>
       : GenericObject[ObjectProperty]
     : GenericObject[ObjectProperty] extends Record<string, unknown>
-    ? Camelize<GenericObject[ObjectProperty]>
-    : GenericObject[ObjectProperty];
+      ? Camelize<GenericObject[ObjectProperty]>
+      : GenericObject[ObjectProperty];
 };
+
+export type DeepNullable<T> = {
+  [K in keyof T]: DeepNullable<T[K]> | null;
+};
+
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
+
+export type DeepNullish<T> = DeepNullable<DeepPartial<T>>;
