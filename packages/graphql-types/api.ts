@@ -707,10 +707,10 @@ export type WorkspaceSettingsPullRequestInput = {
 
 export type WorkspaceSettingsPullRequestSize = {
   __typename?: 'WorkspaceSettingsPullRequestSize';
-  large?: Maybe<Scalars['Int']['output']>;
-  medium?: Maybe<Scalars['Int']['output']>;
-  small?: Maybe<Scalars['Int']['output']>;
-  tiny?: Maybe<Scalars['Int']['output']>;
+  large: Scalars['Int']['output'];
+  medium: Scalars['Int']['output'];
+  small: Scalars['Int']['output'];
+  tiny: Scalars['Int']['output'];
 };
 
 export type WorkspaceSettingsPullRequestSizeInput = {
@@ -1265,10 +1265,10 @@ export type WorkspaceSettingsPullRequestResolvers<ContextType = GraphQLContext, 
 };
 
 export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequestSize'] = ResolversParentTypes['WorkspaceSettingsPullRequestSize']> = {
-  large?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  medium?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  small?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  tiny?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  large?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  medium?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  small?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tiny?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

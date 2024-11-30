@@ -12,10 +12,10 @@ export default /* GraphQL */ `
   }
 
   type WorkspaceSettingsPullRequestSize {
-    tiny: Int
-    small: Int
-    medium: Int
-    large: Int
+    tiny: Int!
+    small: Int!
+    medium: Int!
+    large: Int!
   }
 
   type Mutation {

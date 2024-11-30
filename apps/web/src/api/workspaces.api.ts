@@ -1,4 +1,9 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import {
@@ -8,7 +13,12 @@ import {
   WorkspaceByInstallationIdQuery,
   WorkspaceSyncProgressQuery,
   WorkspaceSyncProgressQueryVariables,
+  MutationUpdateWorkspaceSettingsArgs,
+  UpdateWorkspaceSettingsMutation,
+  WorkspaceSettingsQuery,
+  WorkspaceSettingsQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
+import { queryClient } from "./clients/query-client";
 
 export const userWorkspacesQuery = (
   args: UserWorkspacesQueryVariables,
@@ -99,5 +109,75 @@ export const useWorkspaceSyncProgressQuery = (
         `),
         args,
       ),
+    ...options,
+  });
+
+export const useWorkspaceSettingsQuery = (
+  args: WorkspaceSettingsQueryVariables,
+  options?: Partial<UseQueryOptions<WorkspaceSettingsQuery>>,
+) =>
+  useQuery({
+    queryKey: ["workspace", args.workspaceId, "settings"],
+    queryFn: () =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          query WorkspaceSettings($workspaceId: SweetID!) {
+            workspace(workspaceId: $workspaceId) {
+              id
+              settings {
+                pullRequest {
+                  size {
+                    tiny
+                    small
+                    medium
+                    large
+                  }
+                }
+              }
+            }
+          }
+        `),
+        args,
+      ),
+    ...options,
+  });
+
+export const useUpdateWorkspaceSettingsMutation = (
+  options?: UseMutationOptions<
+    UpdateWorkspaceSettingsMutation,
+    unknown,
+    MutationUpdateWorkspaceSettingsArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation UpdateWorkspaceSettings(
+            $input: UpdateWorkspaceSettingsInput!
+          ) {
+            updateWorkspaceSettings(input: $input) {
+              id
+              settings {
+                pullRequest {
+                  size {
+                    tiny
+                    small
+                    medium
+                    large
+                  }
+                }
+              }
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: (_, __, args) => {
+      queryClient.invalidateQueries({
+        queryKey: ["workspace", args.input.workspaceId, "settings"],
+      });
+    },
     ...options,
   });

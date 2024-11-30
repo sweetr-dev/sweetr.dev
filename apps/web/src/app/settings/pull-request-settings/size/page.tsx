@@ -1,25 +1,74 @@
-import {
-  Text,
-  Title,
-  Button,
-  Stack,
-  Group,
-  NumberInput,
-  Divider,
-  TagsInput,
-  Anchor,
-} from "@mantine/core";
+import { Button, Skeleton, Stack } from "@mantine/core";
 import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
-import { BadgePullRequestSize } from "../../../../components/badge-pull-request-size";
-import { PullRequestSize } from "@sweetr/graphql-types/frontend/graphql";
-import { useSupportChat } from "../../../../components/navbar/use-support-chat";
+import { useForm, zodResolver } from "@mantine/form";
+import { PullRequestSizeSettings } from "./components/types";
+import { useWorkspace } from "../../../../providers/workspace.provider";
+import { FormPullRequestSizeSettings } from "./components/form-pull-request-size-settings";
+import { FormEventHandler, useEffect, useMemo } from "react";
+import {
+  useUpdateWorkspaceSettingsMutation,
+  useWorkspaceSettingsQuery,
+} from "../../../../api/workspaces.api";
+import { showErrorNotification } from "../../../../providers/notification.provider";
+import { showSuccessNotification } from "../../../../providers/notification.provider";
+import { useNavigate } from "react-router-dom";
+import { LoadableContent } from "../../../../components/loadable-content";
 
 export const PullRequestSizePage = () => {
   const drawerProps = useDrawerPage({
     closeUrl: `/settings/pull-request`,
   });
-  const { openChat } = useSupportChat();
+  const { workspace } = useWorkspace();
+  const navigate = useNavigate();
+
+  const { data, isLoading } = useWorkspaceSettingsQuery({
+    workspaceId: workspace.id,
+  });
+
+  const { mutate, isPending } = useUpdateWorkspaceSettingsMutation({
+    onSuccess: () => {
+      showSuccessNotification({
+        message: `Size settings updated.`,
+      });
+
+      navigate("/settings/pull-request");
+    },
+    onError: () => {
+      showErrorNotification({
+        message: "Something went wrong. Please try again.",
+      });
+    },
+  });
+
+  useEffect(() => {
+    const settings = data?.workspace.settings;
+
+    form.setValues({
+      workspaceId: workspace.id,
+      settings,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  const form = useForm<PullRequestSizeSettings>({
+    validate: zodResolver(PullRequestSizeSettings),
+  });
+
+  const isFormValid = useMemo(() => form.isValid(), [form]);
+
+  const handleSave: FormEventHandler = async (event) => {
+    event.preventDefault();
+
+    if (form.validate().hasErrors) return;
+
+    await mutate({
+      input: {
+        workspaceId: workspace.id,
+        settings: form.values.settings,
+      },
+    });
+  };
 
   return (
     <DrawerScrollable
@@ -27,55 +76,25 @@ export const PullRequestSizePage = () => {
       title="Pull Request Size"
       actions={
         <>
-          <Button type="submit" loading={false}>
+          <Button type="submit" loading={isPending} disabled={!isFormValid}>
             Save
           </Button>
         </>
       }
-      size={580}
+      onSubmit={handleSave}
+      size={600}
     >
-      <Stack p="md">
-        <Title order={5}>Sizing</Title>
-
-        {[
-          PullRequestSize.TINY,
-          PullRequestSize.SMALL,
-          PullRequestSize.MEDIUM,
-          PullRequestSize.LARGE,
-        ].map((size) => (
-          <Group key={size}>
-            <BadgePullRequestSize size={size} />
-            <Text>up to</Text>
-            <NumberInput defaultValue={100} flex="1" />
-            changes.
-          </Group>
-        ))}
-        <Group>
-          <BadgePullRequestSize size={PullRequestSize.HUGE} />
-          <Text>more than 100 changes</Text>
-        </Group>
-      </Stack>
-      <Divider my="sm" />
-      <Stack p="md">
-        <Title order={5}>Ignore Files</Title>
-        <TagsInput
-          label="Glob Patterns"
-          description="Files matching these patterns will be ignored when calculating total changes."
-          value={["package-lock.json", "yarn.lock"]}
-        />
-      </Stack>
-      <Divider my="sm" />
-      <Stack p="md">
-        <Title order={5}>Note</Title>
-        <Text c="dimmed" fz="sm">
-          We recalculate the Pull Request size every time it receives an update.{" "}
-          Reach out to support if you need all past stale Pull Requests
-          recalculated.
-        </Text>
-        <Button onClick={openChat} variant="default" w="fit-content">
-          Chat with support
-        </Button>
-      </Stack>
+      <LoadableContent
+        isLoading={isLoading}
+        content={<FormPullRequestSizeSettings form={form} />}
+        whenLoading={
+          <Stack p="md">
+            <Skeleton w="100%" h={300} />
+            <Skeleton w="100%" h={100} />
+            <Skeleton w="100%" h={100} />
+          </Stack>
+        }
+      />
     </DrawerScrollable>
   );
 };
