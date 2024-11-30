@@ -12,6 +12,7 @@ import {
   PullRequest,
   PullRequestState,
   Repository,
+  Workspace,
 } from "@prisma/client";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJob } from "../../../bull-mq/queues";
@@ -99,6 +100,7 @@ export const syncPullRequest = async (
   const gitProfile = await upsertGitProfile(gitPrData.author);
   const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(
+    workspace,
     gitInstallationId,
     gitProfile.id,
     repository,
@@ -283,6 +285,7 @@ const getPullRequestFiles = async (
 };
 
 const upsertPullRequest = async (
+  workspace: Workspace,
   installationId: number,
   gitProfileId: number,
   repository: Repository,
@@ -323,6 +326,7 @@ const upsertPullRequest = async (
   });
 
   await upsertPullRequestTracking(
+    workspace,
     installationId,
     repository,
     pullRequest,
@@ -333,6 +337,7 @@ const upsertPullRequest = async (
 };
 
 const upsertPullRequestTracking = async (
+  workspace: Workspace,
   installationId: number,
   repository: Repository,
   pullRequest: PullRequest,
@@ -362,8 +367,8 @@ const upsertPullRequestTracking = async (
     linesDeletedCount,
     changedFilesCount,
     linesChangedCount,
-  } = getPullRequestLinesTracked(pullRequest);
-  const size = getPullRequestSize(linesChangedCount);
+  } = getPullRequestLinesTracked(workspace, pullRequest);
+  const size = getPullRequestSize(workspace, linesChangedCount);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
   const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);

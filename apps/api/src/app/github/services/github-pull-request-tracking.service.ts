@@ -1,10 +1,16 @@
 import { isAfter } from "date-fns";
 import { differenceInBusinessMilliseconds } from "../../../lib/date";
-import { PullRequest, PullRequestSize, PullRequestState } from "@prisma/client";
+import {
+  PullRequest,
+  PullRequestSize,
+  PullRequestState,
+  Workspace,
+} from "@prisma/client";
 import { sum } from "radash";
 import { PullRequestFile } from "../../pull-requests/services/pull-request.types";
 import micromatch from "micromatch";
 import { config } from "../../../config";
+import { getWorkspaceSettings } from "../../workspaces/services/workspace-settings.service";
 
 /**
  * We need to iterate over the Pull Request timeline to properly assess
@@ -133,12 +139,15 @@ export const getReviewCompareTime = (
 };
 
 export const getPullRequestLinesTracked = (
+  workspace: Pick<Workspace, "settings">,
   pullRequest: Pick<PullRequest, "files">
 ) => {
+  const settings = getWorkspaceSettings(workspace);
   const files = getPullRequestFiles(pullRequest);
 
   const filteredFiles = files.filter(
-    (file) => !micromatch.isMatch(file.path, config.glob.ignorableFilesGlob)
+    (file) =>
+      !micromatch.isMatch(file.path, settings.pullRequest.size.ignorePatterns)
   );
 
   const linesAddedCount = sum(filteredFiles, (file) => file.additions);
@@ -156,11 +165,23 @@ const getPullRequestFiles = (pullRequest: Pick<PullRequest, "files">) => {
   return pullRequest.files as unknown as PullRequestFile[];
 };
 
-export const getPullRequestSize = (linesChanged: number) => {
-  if (linesChanged < 20) return PullRequestSize.TINY;
-  if (linesChanged < 100) return PullRequestSize.SMALL;
-  if (linesChanged < 250) return PullRequestSize.MEDIUM;
-  if (linesChanged < 500) return PullRequestSize.LARGE;
+export const getPullRequestSize = (
+  workspace: Pick<Workspace, "settings">,
+  linesChanged: number
+) => {
+  const settings = getWorkspaceSettings(workspace);
+
+  if (linesChanged < settings.pullRequest.size.tiny)
+    return PullRequestSize.TINY;
+
+  if (linesChanged < settings.pullRequest.size.small)
+    return PullRequestSize.SMALL;
+
+  if (linesChanged < settings.pullRequest.size.medium)
+    return PullRequestSize.MEDIUM;
+
+  if (linesChanged < settings.pullRequest.size.large)
+    return PullRequestSize.LARGE;
 
   return PullRequestSize.HUGE;
 };
