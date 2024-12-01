@@ -173,14 +173,8 @@ export default function FeaturesTraits() {
                       </h3>
                     </div>
                     <p className="grow  text-sm text-dark-100">
-                      Join our GitHub community to share feedback, report
-                      problems or submit contributions.{" "}
-                      <Link
-                        href="https://github.com/orgs/sweetr-dev/discussions"
-                        className="text-green-400 underline"
-                      >
-                        Learn more.
-                      </Link>
+                      Be part of our community, share feedback, report problems,
+                      and submit contributions to the source code.
                     </p>
                   </div>
                   <figure className="relative">
