@@ -2,9 +2,8 @@ import { Button, Skeleton, Stack } from "@mantine/core";
 import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 import { useForm, zodResolver } from "@mantine/form";
-import { PullRequestSizeSettings } from "./components/types";
+import { PullRequestSizeSettings } from "./components/form-pull-request-size-settings/types";
 import { useWorkspace } from "../../../../providers/workspace.provider";
-import { FormPullRequestSizeSettings } from "./components/form-pull-request-size-settings";
 import { FormEventHandler, useEffect, useMemo } from "react";
 import {
   useUpdateWorkspaceSettingsMutation,
@@ -14,6 +13,7 @@ import { showErrorNotification } from "../../../../providers/notification.provid
 import { showSuccessNotification } from "../../../../providers/notification.provider";
 import { useNavigate } from "react-router-dom";
 import { LoadableContent } from "../../../../components/loadable-content";
+import { FormPullRequestSizeSettings } from "./components/form-pull-request-size-settings";
 
 export const PullRequestSizePage = () => {
   const drawerProps = useDrawerPage({

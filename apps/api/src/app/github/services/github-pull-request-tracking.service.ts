@@ -171,16 +171,16 @@ export const getPullRequestSize = (
 ) => {
   const settings = getWorkspaceSettings(workspace);
 
-  if (linesChanged < settings.pullRequest.size.tiny)
+  if (linesChanged <= settings.pullRequest.size.tiny)
     return PullRequestSize.TINY;
 
-  if (linesChanged < settings.pullRequest.size.small)
+  if (linesChanged <= settings.pullRequest.size.small)
     return PullRequestSize.SMALL;
 
-  if (linesChanged < settings.pullRequest.size.medium)
+  if (linesChanged <= settings.pullRequest.size.medium)
     return PullRequestSize.MEDIUM;
 
-  if (linesChanged < settings.pullRequest.size.large)
+  if (linesChanged <= settings.pullRequest.size.large)
     return PullRequestSize.LARGE;
 
   return PullRequestSize.HUGE;

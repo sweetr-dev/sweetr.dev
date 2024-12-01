@@ -2,7 +2,7 @@ import { Anchor, Group, Paper, Stack, Title, Text } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-interface CardSettingsProps {
+interface CardOpenableSettingsProps {
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -14,7 +14,7 @@ export const CardOpenableSettings = ({
   title,
   description,
   href,
-}: CardSettingsProps) => {
+}: CardOpenableSettingsProps) => {
   return (
     <Anchor
       component={Link}

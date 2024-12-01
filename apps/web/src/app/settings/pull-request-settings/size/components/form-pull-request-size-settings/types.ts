@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Person } from "@sweetr/graphql-types/frontend/graphql";
 
 export const PullRequestSizeSettings = z.object({
   workspaceId: z.string().min(1),
@@ -17,7 +16,7 @@ export const PullRequestSizeSettings = z.object({
           if (size.small <= size.tiny) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "Small must be greater than tiny",
+              message: "Small must be greater than Tiny",
               path: ["small"],
             });
           }
@@ -45,5 +44,3 @@ export const PullRequestSizeSettings = z.object({
 });
 
 export type PullRequestSizeSettings = z.infer<typeof PullRequestSizeSettings>;
-
-export type PersonData = Pick<Person, "id" | "name" | "handle" | "avatar">;
