@@ -66,16 +66,17 @@ export default function Footer() {
               <li>
                 <a
                   className="text-zinc-500 hover:text-dark-100 transition"
-                  href="https://github.com/sweetr-dev/sweetr.dev/discussions"
+                  href="https://sweetr.featurebase.app/changelog"
                   target="_blank"
+                  rel="nofollow"
                 >
-                  Community
+                  Changelog
                 </a>
               </li>
               <li>
                 <a
                   className="text-zinc-500 hover:text-dark-100 transition"
-                  href="https://github.com/orgs/sweetr-dev/projects/2/views/1?layout=table&groupedBy%5BcolumnId%5D=Status"
+                  href="https://sweetr.featurebase.app/roadmap"
                   target="_blank"
                   rel="nofollow"
                 >
