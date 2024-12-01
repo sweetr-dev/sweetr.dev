@@ -11,6 +11,7 @@ import {
   getWorkspaceName,
   getWorkspaceUninstallGitUrl,
 } from "../../services/workspace.service";
+import { getWorkspaceSettings } from "../../services/workspace-settings.service";
 
 type WorkspaceWithRelations = DatabaseWorkspace & {
   gitProfile: GitProfile | null;
@@ -22,7 +23,7 @@ export const transformWorkspace = (
   workspace: WorkspaceWithRelations
 ): Pick<
   ApiWorkspace,
-  "id" | "name" | "handle" | "avatar" | "gitUninstallUrl"
+  "id" | "name" | "handle" | "avatar" | "gitUninstallUrl" | "settings"
 > => {
   return {
     // Base properties
@@ -31,5 +32,6 @@ export const transformWorkspace = (
     handle: getWorkspaceHandle(workspace),
     avatar: getWorkspaceAvatar(workspace),
     gitUninstallUrl: getWorkspaceUninstallGitUrl(workspace),
+    settings: getWorkspaceSettings(workspace),
   };
 };

@@ -1,9 +1,9 @@
 import { Badge, Divider, Title, NavLink } from "@mantine/core";
 import {
   IconApps,
-  IconAspectRatio,
   IconBuildingCommunity,
   IconCash,
+  IconGitPullRequest,
   IconServerBolt,
   IconUser,
   IconUsers,
@@ -65,22 +65,17 @@ export const SubnavSettings = () => {
       />
       <Divider label="Misc" labelPosition="left" mt="md" />
       <NavLink
-        to="#"
+        to="/settings/pull-request"
+        active={pathname === "/settings/pull-request"}
         component={Link}
-        label="Deployments"
-        leftSection={<IconServerBolt stroke={1.5} size={18} />}
-        disabled
-        rightSection={
-          <Badge size="xs" variant="default">
-            Soon
-          </Badge>
-        }
+        label="Pull Request"
+        leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
       />
       <NavLink
         to="#"
         component={Link}
-        label="Pull Request Size"
-        leftSection={<IconAspectRatio stroke={1.5} size={18} />}
+        label="Deployments"
+        leftSection={<IconServerBolt stroke={1.5} size={18} />}
         disabled
         rightSection={
           <Badge size="xs" variant="default">

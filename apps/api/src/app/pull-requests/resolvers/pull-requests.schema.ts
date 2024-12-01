@@ -66,6 +66,15 @@ export default /* GraphQL */ `
     "The size of the pull request"
     size: PullRequestSize!
 
+    "The amount of files changed (ignores auto-generated files)"
+    changedFilesCount: Int!
+
+    "The amount of lines added (ignores auto-generated files)"
+    linesAddedCount: Int!
+
+    "The amount of lines deleted (ignores auto-generated files)"
+    linesDeletedCount: Int!
+
     "The time when the pull request received its first review"
     firstReviewAt: DateTime
 

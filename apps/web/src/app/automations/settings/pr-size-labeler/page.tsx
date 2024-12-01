@@ -54,6 +54,7 @@ export const AutomationPrSizeLabelerPage = () => {
             color: settings?.labels?.huge?.color || "#ff8787",
           },
         },
+        repositories: [],
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -26,6 +26,7 @@ export const FormPrSizeLabeler = z.object({
         color: mustBeHexadecimal,
       }),
     }),
+    repositories: z.array(z.any()),
   }),
 });
 

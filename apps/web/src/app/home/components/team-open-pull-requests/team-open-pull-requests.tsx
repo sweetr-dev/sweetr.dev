@@ -115,9 +115,10 @@ export const TeamOpenPullRequests = (props: BoxProps) => {
                 }}
                 comments={pr.commentCount}
                 changes={{
-                  additions: pr.linesAddedCount,
-                  deletions: pr.linesDeletedCount,
-                  files: pr.changedFilesCount,
+                  additions: pr.tracking.linesAddedCount ?? pr.linesAddedCount,
+                  deletions:
+                    pr.tracking.linesDeletedCount ?? pr.linesDeletedCount,
+                  files: pr.tracking.changedFilesCount ?? pr.changedFilesCount,
                 }}
               />
             );

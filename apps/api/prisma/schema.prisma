@@ -141,12 +141,24 @@ model Organization {
 model Workspace {
   id Int @id @default(autoincrement())
 
-  gitProvider  GitProvider
-  memberships  WorkspaceMembership[]
-  repositories Repository[]
-  teams        Team[]
+  gitProvider GitProvider
+  settings    Json        @default("{}")
+  trialEndAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
 
-  installation Installation?
+  subscription        Subscription?
+  installation        Installation?
+  memberships         WorkspaceMembership[]
+  repositories        Repository[]
+  teams               Team[]
+  Automation          Automation[]
+  CodeReview          CodeReview[]
+  PullRequestTracking PullRequestTracking[]
+  PullRequest         PullRequest[]
+  TeamMember          TeamMember[]
+  Integration         Integration[]
+  Digest              Digest[]
 
   // A workspace can belong either to an Organization or an User
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -156,19 +168,6 @@ model Workspace {
   // Re-authenticating creates a new user and reconnects 
   gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
-
-  Automation          Automation[]
-  CodeReview          CodeReview[]
-  PullRequestTracking PullRequestTracking[]
-  PullRequest         PullRequest[]
-  TeamMember          TeamMember[]
-  subscription        Subscription?
-
-  trialEndAt  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
-  Integration Integration[]
-  Digest      Digest[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -279,6 +278,7 @@ model PullRequest {
   title  String
   number String
 
+  files             Json @default("[]")
   commentCount      Int
   changedFilesCount Int
   linesAddedCount   Int
@@ -312,7 +312,11 @@ model PullRequest {
 model PullRequestTracking {
   id Int @id @default(autoincrement())
 
-  size PullRequestSize
+  // When tracking, we ignore files that doesn't matter for PR size (i.e. lock files)
+  changedFilesCount Int             @default(0)
+  linesAddedCount   Int             @default(0)
+  linesDeletedCount Int             @default(0)
+  size              PullRequestSize
 
   firstCommitAt            DateTime?
   firstDraftedAt           DateTime?
