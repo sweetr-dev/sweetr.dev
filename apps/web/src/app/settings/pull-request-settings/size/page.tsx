@@ -75,11 +75,9 @@ export const PullRequestSizePage = () => {
       {...drawerProps}
       title="Pull Request Size"
       actions={
-        <>
-          <Button type="submit" loading={isPending} disabled={!isFormValid}>
-            Save
-          </Button>
-        </>
+        <Button type="submit" loading={isPending} disabled={!isFormValid}>
+          Save
+        </Button>
       }
       onSubmit={handleSave}
       size={600}

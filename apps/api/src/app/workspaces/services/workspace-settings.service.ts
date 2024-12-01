@@ -60,19 +60,19 @@ const mergeSettings = (
     pullRequest: {
       size: {
         tiny:
-          newSettings.pullRequest?.size?.tiny ||
+          newSettings.pullRequest?.size?.tiny ??
           existingSettings.pullRequest?.size?.tiny,
         small:
-          newSettings.pullRequest?.size?.small ||
+          newSettings.pullRequest?.size?.small ??
           existingSettings.pullRequest?.size?.small,
         medium:
-          newSettings.pullRequest?.size?.medium ||
+          newSettings.pullRequest?.size?.medium ??
           existingSettings.pullRequest?.size?.medium,
         large:
-          newSettings.pullRequest?.size?.large ||
+          newSettings.pullRequest?.size?.large ??
           existingSettings.pullRequest?.size?.large,
         ignorePatterns:
-          newSettings.pullRequest?.size?.ignorePatterns ||
+          newSettings.pullRequest?.size?.ignorePatterns ??
           existingSettings.pullRequest?.size?.ignorePatterns,
       },
     },

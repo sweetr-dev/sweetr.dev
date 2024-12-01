@@ -242,7 +242,7 @@ const getPullRequestFiles = async (
     return fileQuery.nodes || [];
   }
 
-  const files: object[] = [];
+  const files: object[] = [...(fileQuery.nodes || [])];
 
   while (fileQuery.pageInfo.hasNextPage) {
     const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);

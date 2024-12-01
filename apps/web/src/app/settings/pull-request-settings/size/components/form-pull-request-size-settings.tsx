@@ -38,7 +38,6 @@ export const FormPullRequestSizeSettings = ({
             <BadgePullRequestSize size={size} />
             <Text>up to</Text>
             <NumberInput
-              defaultValue={100}
               flex="1"
               {...form.getInputProps(
                 `settings.pullRequest.size.${size.toLowerCase()}`,
@@ -61,7 +60,6 @@ export const FormPullRequestSizeSettings = ({
         <TagsInput
           label="Glob Patterns"
           description="Files matching these patterns will be ignored when calculating total changes."
-          value={["package-lock.json", "yarn.lock"]}
           {...form.getInputProps(`settings.pullRequest.size.ignorePatterns`)}
         />
       </Stack>
