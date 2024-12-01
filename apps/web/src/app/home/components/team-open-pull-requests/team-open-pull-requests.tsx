@@ -14,6 +14,7 @@ import { LoadableContent } from "../../../../components/loadable-content";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { IconMoodCheck } from "@tabler/icons-react";
 import { useTeammatesQuery } from "../../../../api/teams.api";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const TeamOpenPullRequests = (props: BoxProps) => {
   const { user } = useAuthenticatedUser();
@@ -114,12 +115,7 @@ export const TeamOpenPullRequests = (props: BoxProps) => {
                   avatar: pr.author.avatar!,
                 }}
                 comments={pr.commentCount}
-                changes={{
-                  additions: pr.tracking.linesAddedCount ?? pr.linesAddedCount,
-                  deletions:
-                    pr.tracking.linesDeletedCount ?? pr.linesDeletedCount,
-                  files: pr.tracking.changedFilesCount ?? pr.changedFilesCount,
-                }}
+                changes={getPullRequestChanges(pr)}
               />
             );
           })}

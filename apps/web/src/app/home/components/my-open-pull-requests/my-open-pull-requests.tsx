@@ -13,6 +13,7 @@ import { parseNullableISO } from "../../../../providers/date.provider";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { IconMilkshake } from "@tabler/icons-react";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const MyOpenPullRequests = (props: BoxProps) => {
   const { user } = useAuthenticatedUser();
@@ -104,12 +105,7 @@ export const MyOpenPullRequests = (props: BoxProps) => {
                   avatar: pr.author.avatar!,
                 }}
                 comments={pr.commentCount}
-                changes={{
-                  additions: pr.tracking.linesAddedCount ?? pr.linesAddedCount,
-                  deletions:
-                    pr.tracking.linesDeletedCount ?? pr.linesDeletedCount,
-                  files: pr.tracking.changedFilesCount ?? pr.changedFilesCount,
-                }}
+                changes={getPullRequestChanges(pr)}
               />
             );
           })}

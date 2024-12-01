@@ -17,6 +17,7 @@ import { PageEmptyState } from "../../../../components/page-empty-state";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../providers/date.provider";
 import { LoadableContent } from "../../../../components/loadable-content";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const PersonPullRequestsPage = () => {
   const { workspace } = useWorkspace();
@@ -117,11 +118,7 @@ export const PersonPullRequestsPage = () => {
                     pr.tracking.timeToFirstApproval || undefined
                   }
                   timeToMerge={pr.tracking.timeToMerge || undefined}
-                  changes={{
-                    additions: pr.linesAddedCount,
-                    deletions: pr.linesDeletedCount,
-                    files: pr.changedFilesCount,
-                  }}
+                  changes={getPullRequestChanges(pr)}
                 />
               </Fragment>
             );

@@ -14,6 +14,7 @@ import { useCodeReviewsInfiniteQuery } from "../../../../api/code-review.api";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../providers/date.provider";
 import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const PersonCodeReviewsPage = () => {
   const { workspace } = useWorkspace();
@@ -105,11 +106,7 @@ export const PersonCodeReviewsPage = () => {
                     codeReview.pullRequest.author.handle,
                   avatar: codeReview.pullRequest.author.avatar || undefined,
                 }}
-                prChanges={{
-                  additions: codeReview.pullRequest.linesAddedCount,
-                  deletions: codeReview.pullRequest.linesDeletedCount,
-                  files: codeReview.pullRequest.changedFilesCount,
-                }}
+                prChanges={getPullRequestChanges(codeReview.pullRequest)}
               />
             </Fragment>
           );

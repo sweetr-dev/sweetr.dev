@@ -29,6 +29,7 @@ import { LoadableContent } from "../../../../components/loadable-content/loadabl
 import { FilterDate } from "../../../../components/filter-date";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
 import { useTeamId } from "../use-team";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const TeamPullRequestsPage = () => {
   const teamId = useTeamId();
@@ -205,14 +206,7 @@ export const TeamPullRequestsPage = () => {
                       avatar: pr.author.avatar!,
                     }}
                     comments={pr.commentCount}
-                    changes={{
-                      additions:
-                        pr.tracking.linesAddedCount ?? pr.linesAddedCount,
-                      deletions:
-                        pr.tracking.linesDeletedCount ?? pr.linesDeletedCount,
-                      files:
-                        pr.tracking.changedFilesCount ?? pr.changedFilesCount,
-                    }}
+                    changes={getPullRequestChanges(pr)}
                   />
                 </Fragment>
               );
