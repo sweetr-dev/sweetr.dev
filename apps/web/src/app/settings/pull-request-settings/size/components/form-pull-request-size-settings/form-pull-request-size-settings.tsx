@@ -1,5 +1,4 @@
 import { UseFormReturnType } from "@mantine/form";
-import { PullRequestSizeSettings } from "./types";
 import {
   Stack,
   Title,
@@ -10,9 +9,10 @@ import {
   Button,
   Text,
 } from "@mantine/core";
-import { BadgePullRequestSize } from "../../../../../components/badge-pull-request-size";
 import { PullRequestSize } from "@sweetr/graphql-types/frontend/graphql";
-import { useSupportChat } from "../../../../../components/navbar/use-support-chat";
+import { BadgePullRequestSize } from "../../../../../../components/badge-pull-request-size";
+import { useSupportChat } from "../../../../../../components/navbar/use-support-chat";
+import { PullRequestSizeSettings } from "./types";
 
 export interface FormPullRequestSizeSettingsProps {
   form: UseFormReturnType<PullRequestSizeSettings>;

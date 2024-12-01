@@ -9,7 +9,6 @@ import {
 import { sum } from "radash";
 import { PullRequestFile } from "../../pull-requests/services/pull-request.types";
 import micromatch from "micromatch";
-import { config } from "../../../config";
 import { getWorkspaceSettings } from "../../workspaces/services/workspace-settings.service";
 
 /**
