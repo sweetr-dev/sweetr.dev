@@ -52,8 +52,27 @@ ALTER TABLE "TeamMember" FORCE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation_policy ON "TeamMember" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
 CREATE POLICY bypass_rls_policy ON "TeamMember" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
 
--- AutomationSetting
-ALTER TABLE "AutomationSetting" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "AutomationSetting" FORCE ROW LEVEL SECURITY;
-CREATE POLICY tenant_isolation_policy ON "AutomationSetting" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
-CREATE POLICY bypass_rls_policy ON "AutomationSetting" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+
+-- Integration
+ALTER TABLE "Integration" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Integration" FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON "Integration" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "Integration" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+
+-- Subscription
+ALTER TABLE "Subscription" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Subscription" FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON "Subscription" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "Subscription" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+
+-- Digest
+ALTER TABLE "Digest" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Digest" FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON "Digest" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "Digest" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+
+-- Automation
+ALTER TABLE "Automation" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Automation" FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON "Automation" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "Automation" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
