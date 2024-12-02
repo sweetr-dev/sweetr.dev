@@ -84,12 +84,12 @@ export default function PricingTabs() {
       text: (
         <>
           Not yet. They are in our backlog, you can check their status on
-          GitHub.
+          Featurebase.
           <div className="mt-1">
             <Link
               target="_blank"
               className="text-green-400 hover:underline"
-              href="https://github.com/orgs/sweetr-dev/discussions/4"
+              href="https://sweetr.featurebase.app/p/bitbucket-integration-2"
             >
               BitBucket
             </Link>{" "}
@@ -97,7 +97,7 @@ export default function PricingTabs() {
             <Link
               target="_blank"
               className="text-green-400 hover:underline"
-              href="https://github.com/orgs/sweetr-dev/discussions/3"
+              href="https://sweetr.featurebase.app/p/gitlab-integration-8"
             >
               {" "}
               GitLab

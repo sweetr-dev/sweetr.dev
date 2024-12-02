@@ -64,7 +64,7 @@ export const Layout = ({ preview, children }: LayoutProps) => {
                     </td>
                     <td>
                       <Button
-                        href="https://github.com/orgs/sweetr-dev/discussions/new/choose"
+                        href="https://sweetr.featurebase.app"
                         className="text-zinc-500 text-sm rounded"
                       >
                         Give feedback
