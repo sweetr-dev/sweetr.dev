@@ -43,7 +43,7 @@ import {
 } from "./providers/auth.provider";
 import {
   installGitAppIfNoWorkspaces,
-  skipOAuthIfAuthenticated,
+  handleOAuthRedirect,
 } from "./providers/github.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
             path: "/github",
             children: [
               {
-                loader: skipOAuthIfAuthenticated,
+                loader: handleOAuthRedirect,
                 path: "/github/callback",
                 element: <OAuthGithubPage />,
               },

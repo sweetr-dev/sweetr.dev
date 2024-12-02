@@ -6,11 +6,11 @@ import { useLoginWithGithubMutation } from "../../../api/auth.api";
 import { Logo } from "../../../components/logo";
 import { setAuth } from "../../../providers/auth.provider";
 import { showErrorNotification } from "../../../providers/notification.provider";
-import { isUrlGithubInstallCallback } from "../../../providers/github.provider";
+import { isGithubInstallSuccessCallback } from "../../../providers/github.provider";
 import { forwardQueryParameters } from "../../../providers/url.provider";
 
 const getRedirectUrl = (encodedUrl?: string) => {
-  if (isUrlGithubInstallCallback(new URL(window.location.href))) {
+  if (isGithubInstallSuccessCallback(new URL(window.location.href))) {
     const redirectTo = forwardQueryParameters(
       new URL("/github/install", window.location.origin),
     );
@@ -54,7 +54,7 @@ export const OAuthGithubPage = () => {
       });
     }
 
-    if (isUrlGithubInstallCallback(new URL(window.location.href))) {
+    if (isGithubInstallSuccessCallback(new URL(window.location.href))) {
       const installationId = searchParams.get("installation_id");
 
       navigate(
