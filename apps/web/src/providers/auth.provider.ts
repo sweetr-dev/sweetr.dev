@@ -38,11 +38,15 @@ export const logout = (): void => {
   });
 };
 
-export const redirectIfNoCredentials = () => {
+export const redirectIfNoCredentials = (from: URL) => {
   const authorization = getAuthorizationHeader();
 
   if (!authorization) {
-    return redirect("/login");
+    const redirectTo = `${from.pathname}${from.search}`;
+
+    return redirect(
+      `/login${redirectTo && redirectTo != "/" ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,
+    );
   }
 
   setAuthorizationHeader(authorization);

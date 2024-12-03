@@ -89,8 +89,10 @@ export const router = createBrowserRouter([
             <ErrorPage />
           </AppPage>
         ),
-        loader: async () => {
-          const redirectResponse = redirectIfNoCredentials();
+        loader: async ({ request }) => {
+          const redirectResponse = redirectIfNoCredentials(
+            new URL(request.url),
+          );
 
           if (redirectResponse) {
             showInfoNotification({
