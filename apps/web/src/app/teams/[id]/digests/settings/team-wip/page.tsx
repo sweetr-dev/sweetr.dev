@@ -10,7 +10,7 @@ import { FormWipDigest } from "../types";
 import {
   DayOfTheWeek,
   DigestType,
-  Frequency,
+  DigestFrequency,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
 import {
@@ -54,7 +54,7 @@ export const TeamWipDigestPage = () => {
     initialValues: {
       enabled: false,
       channel: "",
-      frequency: Frequency.WEEKLY,
+      frequency: DigestFrequency.WEEKLY,
       dayOfTheWeek: weekDays,
       timeOfDay: "09:00",
       timezone: getBrowserTimezone(),
@@ -67,7 +67,7 @@ export const TeamWipDigestPage = () => {
     const values = {
       enabled: digest.enabled,
       channel: digest.channel ?? "",
-      frequency: digest.frequency ?? Frequency.WEEKLY,
+      frequency: digest.frequency ?? DigestFrequency.WEEKLY,
       dayOfTheWeek: digest.dayOfTheWeek ?? weekDays,
       timeOfDay: digest.timeOfDay ?? "09:00",
       timezone: digest.timezone ?? getBrowserTimezone(),
@@ -91,7 +91,7 @@ export const TeamWipDigestPage = () => {
       teamId,
       type: DigestType.TEAM_WIP,
       workspaceId: workspace.id,
-      frequency: form.values.frequency as Frequency,
+      frequency: form.values.frequency as DigestFrequency,
       settings: {},
     });
   };

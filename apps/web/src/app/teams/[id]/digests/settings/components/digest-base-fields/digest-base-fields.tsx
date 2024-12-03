@@ -12,7 +12,7 @@ import {
   Chip,
   Group,
 } from "@mantine/core";
-import { Frequency } from "@sweetr/graphql-types/api";
+import { DigestFrequency } from "@sweetr/graphql-types/api";
 import { IconBrandSlack, IconClock, IconWorld } from "@tabler/icons-react";
 import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
@@ -69,20 +69,20 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
             <Title order={5}>Schedule</Title>
 
             <Select
-              label="Frequency"
+              label="DigestFrequency"
               data={[
-                { value: Frequency.WEEKLY, label: "Every week" },
+                { value: DigestFrequency.WEEKLY, label: "Every week" },
                 {
-                  value: Frequency.MONTHLY,
+                  value: DigestFrequency.MONTHLY,
                   label: `First of the month`,
                 },
               ]}
               value={form.values.frequency}
               onChange={(value) => {
-                form.setFieldValue("frequency", value as Frequency);
+                form.setFieldValue("frequency", value as DigestFrequency);
 
                 if (
-                  value === Frequency.MONTHLY &&
+                  value === DigestFrequency.MONTHLY &&
                   form.values.dayOfTheWeek.length > 1
                 ) {
                   form.setFieldValue(
@@ -97,7 +97,7 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
               <Chip.Group
                 value={form.values.dayOfTheWeek}
                 onChange={(value) => {
-                  if (form.values.frequency === Frequency.WEEKLY) {
+                  if (form.values.frequency === DigestFrequency.WEEKLY) {
                     form.setFieldValue("dayOfTheWeek", value as DayOfTheWeek[]);
                   } else if (value) {
                     form.setFieldValue("dayOfTheWeek", [
@@ -105,7 +105,7 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
                     ]);
                   }
                 }}
-                multiple={form.values.frequency === Frequency.WEEKLY}
+                multiple={form.values.frequency === DigestFrequency.WEEKLY}
               >
                 <Group>
                   <Chip value={`${DayOfTheWeek.MONDAY}`} size="xs">

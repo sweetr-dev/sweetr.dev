@@ -175,12 +175,17 @@ export type Digest = {
   channel: Scalars['String']['output'];
   dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['output'];
-  frequency: Frequency;
+  frequency: DigestFrequency;
   settings: Scalars['JSONObject']['output'];
   timeOfDay: Scalars['String']['output'];
   timezone: Scalars['TimeZone']['output'];
   type: DigestType;
 };
+
+export enum DigestFrequency {
+  MONTHLY = 'MONTHLY',
+  WEEKLY = 'WEEKLY'
+}
 
 export type DigestQueryInput = {
   type: DigestType;
@@ -189,11 +194,6 @@ export type DigestQueryInput = {
 export enum DigestType {
   TEAM_METRICS = 'TEAM_METRICS',
   TEAM_WIP = 'TEAM_WIP'
-}
-
-export enum Frequency {
-  MONTHLY = 'MONTHLY',
-  WEEKLY = 'WEEKLY'
 }
 
 export type GraphChartLink = {
@@ -587,7 +587,7 @@ export type UpdateDigestInput = {
   channel: Scalars['String']['input'];
   dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['input'];
-  frequency: Frequency;
+  frequency: DigestFrequency;
   settings: Scalars['JSONObject']['input'];
   teamId: Scalars['SweetID']['input'];
   timeOfDay: Scalars['String']['input'];
@@ -842,7 +842,7 @@ export type TeamDigestQueryVariables = Exact<{
 }>;
 
 
-export type TeamDigestQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', digest?: { __typename?: 'Digest', type: DigestType, enabled: boolean, channel: string, frequency: Frequency, dayOfTheWeek: Array<DayOfTheWeek>, timeOfDay: string, timezone: string, settings: object } | null } | null } };
+export type TeamDigestQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', digest?: { __typename?: 'Digest', type: DigestType, enabled: boolean, channel: string, frequency: DigestFrequency, dayOfTheWeek: Array<DayOfTheWeek>, timeOfDay: string, timezone: string, settings: object } | null } | null } };
 
 export type UpdateDigestMutationVariables = Exact<{
   input: UpdateDigestInput;

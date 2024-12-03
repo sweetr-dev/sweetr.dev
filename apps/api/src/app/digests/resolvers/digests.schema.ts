@@ -4,7 +4,7 @@ export default /* GraphQL */ `
     TEAM_WIP
   }
 
-  enum Frequency {
+  enum DigestFrequency {
     WEEKLY
     MONTHLY
   }
@@ -23,7 +23,7 @@ export default /* GraphQL */ `
     type: DigestType!
     enabled: Boolean!
     channel: String!
-    frequency: Frequency!
+    frequency: DigestFrequency!
     dayOfTheWeek: [DayOfTheWeek!]!
     timeOfDay: String!
     timezone: TimeZone!
@@ -49,7 +49,7 @@ export default /* GraphQL */ `
     type: DigestType!
     enabled: Boolean!
     channel: String!
-    frequency: Frequency!
+    frequency: DigestFrequency!
     dayOfTheWeek: [DayOfTheWeek!]!
     timeOfDay: String!
     timezone: TimeZone!
