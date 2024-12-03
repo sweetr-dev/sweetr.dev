@@ -6,6 +6,7 @@ import {
 import { IntegrationApp } from "@prisma/client";
 import * as slackService from "../slack/services/slack-integration.service";
 import { logger } from "../../../lib/logger";
+import { Integration } from "@sweetr/graphql-types/api";
 
 const integrationServices: Record<IntegrationApp, IntegrationService> = {
   [IntegrationApp.SLACK]: slackService,
@@ -47,10 +48,14 @@ export const getIntegrationInstallUrl = async (app: IntegrationApp) => {
   return integrationServices[app].getInstallUrl();
 };
 
-export const getWorkspaceIntegrations = async (workspaceId: number) => {
-  const integrations = Object.values(integrationServices).map((service) =>
-    service.getIntegration(workspaceId)
+export const getWorkspaceIntegrations = async (
+  workspaceId: number
+): Promise<Integration[]> => {
+  const integrationPromises = Object.values(integrationServices).map(
+    (service) => service.getIntegration(workspaceId)
   );
 
-  return (await Promise.all(integrations)).filter((i) => i !== null);
+  const integrations = await Promise.all(integrationPromises);
+
+  return integrations.filter((i) => i !== null) as Integration[];
 };
