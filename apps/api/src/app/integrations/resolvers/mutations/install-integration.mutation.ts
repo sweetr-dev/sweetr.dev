@@ -29,7 +29,7 @@ export const installIntegrationMutation = createMutationResolver({
     }
 
     await installIntegration({
-      workspace,
+      workspaceId: workspace.id,
       app: input.app,
       code: input.code,
     });

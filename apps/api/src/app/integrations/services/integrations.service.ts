@@ -5,24 +5,42 @@ import {
 } from "./integrations.types";
 import { IntegrationApp } from "@prisma/client";
 import * as slackService from "../slack/services/slack-integration.service";
+import { logger } from "../../../lib/logger";
 
 const integrationServices: Record<IntegrationApp, IntegrationService> = {
   [IntegrationApp.SLACK]: slackService,
 };
 
 export const installIntegration = ({
-  workspace,
+  workspaceId,
   app,
   code,
 }: InstallIntegrationArgs) => {
-  return integrationServices[app].installIntegration(workspace, code);
+  return integrationServices[app].installIntegration(workspaceId, code);
 };
 
 export const removeIntegration = ({
-  workspace,
+  workspaceId,
   app,
 }: RemoveIntegrationArgs) => {
-  return integrationServices[app].removeIntegration(workspace);
+  return integrationServices[app].removeIntegration(workspaceId);
+};
+
+export const removeAllIntegrationsFromWorkspace = async (
+  workspaceId: number
+) => {
+  const integrations = await getWorkspaceIntegrations(workspaceId);
+
+  return Promise.all(
+    integrations.map((i) => {
+      logger.info("[removeAllWorkspaceIntegrations] Removing integration", {
+        workspaceId,
+        app: i.app,
+      });
+
+      return removeIntegration({ workspaceId, app: i.app });
+    })
+  );
 };
 
 export const getIntegrationInstallUrl = async (app: IntegrationApp) => {

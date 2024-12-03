@@ -2,6 +2,7 @@ import { GitProvider } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { Installation as GitHubInstallation } from "@octokit/webhooks-types";
 import { logger } from "../../../lib/logger";
+import { removeAllIntegrationsFromWorkspace } from "../../integrations/services/integrations.service";
 
 export const handleAppUninstall = async (
   gitInstallation: GitHubInstallation
@@ -31,6 +32,8 @@ export const handleAppUninstall = async (
 
     return;
   }
+
+  await removeAllIntegrationsFromWorkspace(installation.workspaceId);
 
   if (installation.workspace.organization) {
     // Deleting organization causes cascade action for whole workspace.

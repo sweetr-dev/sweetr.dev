@@ -1,4 +1,3 @@
-import { Workspace } from "@prisma/client";
 import { getPrisma, jsonObject } from "../../../../prisma";
 import { config } from "../../../../config";
 import { getTemporaryNonce } from "../../../workspace-authorization.service";
@@ -15,10 +14,7 @@ import {
   uninstallSlackWorkspace,
 } from "./slack-client.service";
 
-export const installIntegration = async (
-  workspace: Workspace,
-  code: string
-) => {
+export const installIntegration = async (workspaceId: number, code: string) => {
   let response: OauthV2AccessResponse;
 
   try {
@@ -41,15 +37,15 @@ export const installIntegration = async (
     "error",
   ]);
 
-  await getPrisma(workspace.id).integration.upsert({
+  await getPrisma(workspaceId).integration.upsert({
     where: {
       workspaceId_app: {
-        workspaceId: workspace.id,
+        workspaceId,
         app: IntegrationApp.SLACK,
       },
     },
     create: {
-      workspaceId: workspace.id,
+      workspaceId,
       app: IntegrationApp.SLACK,
       data: data as JsonObject,
     },
@@ -59,15 +55,14 @@ export const installIntegration = async (
   });
 };
 
-export const removeIntegration = async (workspace: Workspace) => {
+export const removeIntegration = async (workspaceId: number) => {
   try {
-    const { slackClient, integration } = await getWorkspaceSlackClient(
-      workspace.id
-    );
+    const { slackClient, integration } =
+      await getWorkspaceSlackClient(workspaceId);
 
     await uninstallSlackWorkspace(slackClient);
 
-    await getPrisma(workspace.id).integration.delete({
+    await getPrisma(workspaceId).integration.delete({
       where: {
         id: integration.id,
       },
@@ -82,7 +77,7 @@ export const removeIntegration = async (workspace: Workspace) => {
   }
 };
 
-export const removeIntegrationByTeamId = async (teamId: string) => {
+export const removeIntegrationBySlackTeamId = async (teamId: string) => {
   return getPrisma().integration.deleteMany({
     where: {
       data: {
