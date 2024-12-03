@@ -27,8 +27,8 @@ export const getTimeToMergeChartData = async ({
     INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
     INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
     INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    WHERE p."mergedAt" >= ${new Date(startDate)} 
+      AND p."mergedAt" <= ${new Date(endDate)} 
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -64,8 +64,8 @@ export const getTimeForFirstReviewChartData = async ({
     INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
     INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
     INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE pt."firstReviewAt" >= ${startDate} 
-      AND pt."firstReviewAt" <= ${endDate} 
+    WHERE pt."firstReviewAt" >= ${new Date(startDate)} 
+      AND pt."firstReviewAt" <= ${new Date(endDate)} 
       AND pt."firstReviewAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -101,8 +101,8 @@ export const getTimeForApprovalChartData = async ({
     INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
     INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
     INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE pt."firstApprovalAt" >= ${startDate} 
-      AND pt."firstApprovalAt" <= ${endDate} 
+    WHERE pt."firstApprovalAt" >= ${new Date(startDate)} 
+      AND pt."firstApprovalAt" <= ${new Date(endDate)} 
       AND pt."firstApprovalAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -128,6 +128,8 @@ export const getCycleTimeChartData = async ({
   endDate,
   period,
 }: ChartFilters) => {
+  console.log("getCycleTimeChartData", startDate, endDate, period);
+
   const query = Prisma.sql`
     SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
     AVG(pt."cycleTime") AS value
@@ -136,8 +138,8 @@ export const getCycleTimeChartData = async ({
     INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
     INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
     INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    WHERE p."mergedAt" >= ${new Date(startDate)}
+      AND p."mergedAt" <= ${new Date(endDate)}
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -173,8 +175,8 @@ export const getPullRequestSizeDistributionChartData = async ({
     JOIN "GitProfile" gp ON p."authorId" = gp."id"
     JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
     JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    WHERE p."mergedAt" >= ${new Date(startDate)} 
+      AND p."mergedAt" <= ${new Date(endDate)} 
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND r."workspaceId" = ${workspaceId}
