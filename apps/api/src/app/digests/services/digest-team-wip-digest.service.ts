@@ -12,7 +12,7 @@ import { getPersonGitUrl } from "../../people/services/people.service";
 import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
-import { subMonths } from "date-fns/subMonths";
+import { subMonths } from "date-fns";
 
 export const sendTeamWipDigest = async (digest: DigestWithWorkspace) => {
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);

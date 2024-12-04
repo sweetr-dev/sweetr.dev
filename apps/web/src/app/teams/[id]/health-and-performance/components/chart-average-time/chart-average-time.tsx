@@ -10,7 +10,7 @@ import {
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { formatMsDuration } from "../../../../../../providers/date.provider";
-
+import { UTCDate } from "@date-fns/utc";
 interface ChartAverageTimeProps {
   chartData?: NumericChartData | null;
   period: Period;
@@ -53,7 +53,7 @@ export const ChartAverageTime = ({
         axisPointer: {
           label: {
             formatter({ value }) {
-              return formatTooltipDate(new Date(value), period);
+              return formatTooltipDate(new UTCDate(value), period);
             },
           },
         },
@@ -70,7 +70,7 @@ export const ChartAverageTime = ({
         data: chartData.columns,
         axisLabel: {
           formatter(value) {
-            return formatAxisDate(new Date(value), period);
+            return formatAxisDate(new UTCDate(value), period);
           },
         },
       },

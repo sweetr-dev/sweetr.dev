@@ -2,11 +2,10 @@ import { DayOfTheWeek, Frequency } from "@prisma/client";
 import { getBypassRlsPrisma } from "../../../prisma";
 import { isActiveCustomer } from "../../workspace-authorization.service";
 import { Digest, DigestWithWorkspace } from "./digest.types";
-import { getDate } from "date-fns/getDate";
-import { toZonedTime, format } from "date-fns-tz";
-import { getDay } from "date-fns/getDay";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { captureException } from "../../../lib/sentry";
+import { TZDate } from "@date-fns/tz";
+import { format, getDate, getDay } from "date-fns";
 
 export const findScheduledDigests = async (date: Date): Promise<Digest[]> => {
   // Only retrieve monthly digests if we are in the first week of the month
@@ -36,7 +35,7 @@ export const findScheduledDigests = async (date: Date): Promise<Digest[]> => {
 };
 
 const isScheduled = (digest: DigestWithWorkspace, date: Date) => {
-  const zonedDate = toZonedTime(date, digest.timezone);
+  const zonedDate = new TZDate(date, digest.timezone);
   const timeOfDay = format(zonedDate, "HH:mm");
   const dayOfTheWeek = getDayOfTheWeek(getDay(zonedDate));
 
