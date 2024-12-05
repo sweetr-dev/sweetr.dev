@@ -4,12 +4,12 @@ export interface MetricLineElements {
   change: number;
 }
 
-export type TeamMetricType =
+export type DigestMetricType =
   | "timeToMerge"
   | "timeForFirstReview"
   | "timeForApproval"
   | "cycleTime"
-  | "avgPrSize";
+  | "pullRequestSize";
 
 export interface TeamMetric {
   current: bigint;

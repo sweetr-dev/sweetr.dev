@@ -1,7 +1,7 @@
 import { DayOfTheWeek, Frequency } from "@prisma/client";
 import { getBypassRlsPrisma } from "../../../prisma";
 import { isActiveCustomer } from "../../workspace-authorization.service";
-import { Digest, DigestWithWorkspace } from "./digest.types";
+import { Digest, DigestWithRelations } from "./digest.types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { captureException } from "../../../lib/sentry";
 import { TZDate } from "@date-fns/tz";
@@ -18,6 +18,7 @@ export const findScheduledDigests = async (date: Date): Promise<Digest[]> => {
       frequency: includeMonthly ? undefined : Frequency.WEEKLY,
     },
     include: {
+      team: true,
       workspace: {
         include: {
           subscription: true,
@@ -28,13 +29,13 @@ export const findScheduledDigests = async (date: Date): Promise<Digest[]> => {
   });
 
   const scheduledDigests = digests.filter((digest) =>
-    isScheduled(digest as DigestWithWorkspace, date)
+    isScheduled(digest as DigestWithRelations, date)
   );
 
-  return scheduledDigests as DigestWithWorkspace[];
+  return scheduledDigests as DigestWithRelations[];
 };
 
-const isScheduled = (digest: DigestWithWorkspace, date: Date) => {
+const isScheduled = (digest: DigestWithRelations, date: Date) => {
   const zonedDate = new TZDate(date, digest.timezone);
   const timeOfDay = format(zonedDate, "HH:mm");
   const dayOfTheWeek = getDayOfTheWeek(getDay(zonedDate));
@@ -68,7 +69,7 @@ const getDayOfTheWeek = (weekDay: number): DayOfTheWeek => {
   ][weekDay];
 };
 
-export const canSendDigest = (digest: DigestWithWorkspace): boolean => {
+export const canSendDigest = (digest: DigestWithRelations): boolean => {
   if (!isActiveCustomer(digest.workspace)) return false;
 
   if (!digest.workspace.installation) return false;

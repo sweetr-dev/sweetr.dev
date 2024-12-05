@@ -5,12 +5,28 @@ import {
   joinSlackChannel,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
-import { DigestWithWorkspace } from "./digest.types";
+import { DigestWithRelations } from "./digest.types";
 import { encodeId } from "../../../lib/hash-id";
 import { env } from "../../../env";
-import { MetricLineElements } from "./digest-team-metrics.types";
+import {
+  DigestMetricType,
+  MetricLineElements,
+} from "./digest-team-metrics.types";
+import {
+  endOfDay,
+  format,
+  millisecondsToHours,
+  startOfDay,
+  sub,
+} from "date-fns";
+import { Frequency } from "@prisma/client";
+import * as averageMetricsService from "../../metrics/services/average-metrics.service";
+import { AverageMetricFilters } from "../../metrics/services/average-metrics.service";
+import { all, capitalize } from "radash";
+import { getPullRequestSize } from "../../github/services/github-pull-request-tracking.service";
+import { UTCDate } from "@date-fns/utc";
 
-export const sendTeamMetricsDigest = async (digest: DigestWithWorkspace) => {
+export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
   const slackChannel = await joinSlackChannel(slackClient, digest.channel);
@@ -19,7 +35,8 @@ export const sendTeamMetricsDigest = async (digest: DigestWithWorkspace) => {
     throw new ResourceNotFoundException("Slack channel not found");
   }
 
-  const blocks = await getDigestMessageBlocks(digest);
+  const metrics = await getTeamMetrics(digest);
+  const blocks = await getDigestMessageBlocks(digest, metrics);
 
   await sendSlackMessage(slackClient, {
     channel: slackChannel.id,
@@ -29,30 +46,126 @@ export const sendTeamMetricsDigest = async (digest: DigestWithWorkspace) => {
   });
 };
 
+const getChartFilters = (
+  digest: DigestWithRelations
+): { latest: AverageMetricFilters; previous: AverageMetricFilters } => {
+  const subUnit = digest.frequency === Frequency.WEEKLY ? "weeks" : "months";
+
+  return {
+    latest: {
+      workspaceId: digest.workspaceId,
+      teamId: digest.teamId,
+      startDate: startOfDay(sub(new UTCDate(), { [subUnit]: 1 })).toISOString(),
+      endDate: endOfDay(new UTCDate()).toISOString(),
+    },
+    previous: {
+      workspaceId: digest.workspaceId,
+      teamId: digest.teamId,
+      startDate: startOfDay(sub(new UTCDate(), { [subUnit]: 2 })).toISOString(),
+      endDate: endOfDay(sub(new UTCDate(), { [subUnit]: 1 })).toISOString(),
+    },
+  };
+};
+
+const getTeamMetrics = async (digest: DigestWithRelations) => {
+  const { latest, previous } = getChartFilters(digest);
+
+  const latestResults: Record<DigestMetricType, number> = await all({
+    cycleTime: averageMetricsService.getAverageCycleTime(latest),
+    timeForFirstReview:
+      averageMetricsService.getAverageTimeForFirstReview(latest),
+    timeForApproval: averageMetricsService.getAverageTimeForApproval(latest),
+    timeToMerge: averageMetricsService.getAverageTimeToMerge(latest),
+    pullRequestSize: averageMetricsService.getAveragePullRequestSize(latest),
+  });
+
+  const previousResults: Record<DigestMetricType, number> = await all({
+    cycleTime: averageMetricsService.getAverageCycleTime(previous),
+    timeForFirstReview:
+      averageMetricsService.getAverageTimeForFirstReview(previous),
+    timeForApproval: averageMetricsService.getAverageTimeForApproval(previous),
+    timeToMerge: averageMetricsService.getAverageTimeToMerge(previous),
+    pullRequestSize: averageMetricsService.getAveragePullRequestSize(previous),
+  });
+
+  const calculateChange = (latestValue: number, previousValue: number) => {
+    if (previousValue === 0) {
+      return 0;
+    }
+
+    if (latestValue === 0) {
+      return -100;
+    }
+
+    const change = ((latestValue - previousValue) * 10000) / previousValue;
+
+    return Number(change) / 100;
+  };
+
+  const buildMetric = (key: DigestMetricType) => {
+    return {
+      [key]: {
+        latest: {
+          ...latest,
+          value: latestResults[key],
+        },
+        previous: {
+          ...previous,
+          value: previousResults[key],
+        },
+        change: calculateChange(latestResults[key], previousResults[key]),
+      },
+    };
+  };
+
+  return {
+    ...buildMetric("cycleTime"),
+    ...buildMetric("timeForFirstReview"),
+    ...buildMetric("timeForApproval"),
+    ...buildMetric("timeToMerge"),
+    ...buildMetric("pullRequestSize"),
+  };
+};
+
 const getDigestMessageBlocks = async (
-  digest: DigestWithWorkspace
+  digest: DigestWithRelations,
+  metrics: Awaited<ReturnType<typeof getTeamMetrics>>
 ): Promise<AnyBlock[]> => {
-  // TO-DO: Get metrics data
-  // We'll implement better PR size calculation and p90 metrics first
+  const { latest, previous } = getChartFilters(digest);
 
   return [
     {
       type: "header",
       text: {
         type: "plain_text",
-        text: "Metrics Digest",
+        text: getHeaderText(digest),
       },
+    },
+    {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            {
+              type: "text",
+              text: `Avg of ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")} (vs ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")})`,
+            },
+          ],
+        },
+      ],
     },
     {
       type: "section",
       text: {
-        type: "plain_text",
-        text: "Avg of Sept 15th—Sept 21st (vs Sept 8th—Sept 14th).",
+        type: "mrkdwn",
+        text: "\n",
       },
     },
     {
       type: "divider",
     },
+
     {
       type: "rich_text",
       elements: [
@@ -60,8 +173,8 @@ const getDigestMessageBlocks = async (
           type: "rich_text_section",
           elements: getMetricLineElements({
             label: "📂 PR Size",
-            value: "321 lines",
-            change: 7,
+            value: `${capitalize(getPullRequestSize(digest.workspace, metrics.pullRequestSize.latest.value))} ~${metrics.pullRequestSize.latest.value.toFixed(1)} lines`,
+            change: metrics.pullRequestSize.change,
           }),
         },
       ],
@@ -76,8 +189,8 @@ const getDigestMessageBlocks = async (
           type: "rich_text_section",
           elements: getMetricLineElements({
             label: "⏱️ PR Cycle Time",
-            value: "32 hours",
-            change: -12,
+            value: `${millisecondsToHours(Number(metrics.cycleTime.latest.value))} hours`,
+            change: metrics.cycleTime.change,
           }),
         },
         {
@@ -87,24 +200,30 @@ const getDigestMessageBlocks = async (
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to First Review",
-                value: "4 hours",
-                change: 12,
+                value: `${millisecondsToHours(
+                  Number(metrics.timeForFirstReview.latest.value)
+                )} hours`,
+                change: metrics.timeForFirstReview.change,
               }),
             },
             {
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to Approve",
-                value: "12 hours",
-                change: -50,
+                value: `${millisecondsToHours(
+                  Number(metrics.timeForApproval.latest.value)
+                )} hours`,
+                change: metrics.timeForApproval.change,
               }),
             },
             {
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to Merge",
-                value: "1 hour",
-                change: 0,
+                value: `${millisecondsToHours(
+                  Number(metrics.timeToMerge.latest.value)
+                )} hours`,
+                change: metrics.timeToMerge.change,
               }),
             },
           ],
@@ -130,6 +249,13 @@ const getDigestMessageBlocks = async (
       ],
     },
   ];
+};
+
+const getHeaderText = (digest: DigestWithRelations) => {
+  const teamName = digest.team.name;
+  const teamLabel = teamName.endsWith("s") ? `${teamName}'` : `${teamName}'s`;
+
+  return `${digest.team.icon} ${teamLabel} Metric Digest`;
 };
 
 const getMetricLineElements = ({
@@ -168,7 +294,7 @@ const getMetricLineElements = ({
 };
 
 const getChangeEmoji = (change: number) => {
-  return change < 0 ? "🟠 " : "🟢 ";
+  return change > 0 ? "🟠 " : "🟢 ";
 };
 
 const getChangeLabel = (change: number) => {
@@ -176,5 +302,5 @@ const getChangeLabel = (change: number) => {
     return "0% change";
   }
 
-  return `${Math.abs(change)}% ${change > 0 ? "better" : "worse"}`;
+  return `${Math.abs(change).toFixed(0)}% ${change > 0 ? "worse" : "better"}`;
 };

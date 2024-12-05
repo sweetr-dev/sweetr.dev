@@ -6,7 +6,7 @@ import {
   joinSlackChannel,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
-import { DigestWithWorkspace } from "./digest.types";
+import { DigestWithRelations } from "./digest.types";
 import { AnyBlock } from "@slack/web-api";
 import { getPersonGitUrl } from "../../people/services/people.service";
 import { env } from "../../../env";
@@ -14,7 +14,7 @@ import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
 
-export const sendTeamWipDigest = async (digest: DigestWithWorkspace) => {
+export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
   const slackChannel = await joinSlackChannel(slackClient, digest.channel);
@@ -34,7 +34,7 @@ export const sendTeamWipDigest = async (digest: DigestWithWorkspace) => {
 };
 
 const getDigestMessageBlocks = async (
-  digest: DigestWithWorkspace
+  digest: DigestWithRelations
 ): Promise<AnyBlock[]> => {
   const { drafted, open, approved } = await getPullRequestsGroupedByState(
     digest.workspaceId,
