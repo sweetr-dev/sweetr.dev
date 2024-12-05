@@ -161,7 +161,7 @@ export const getPullRequestSizeDistributionChartData = async ({
       AND p."mergedAt" <= ${new Date(endDate)} 
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
-      AND pt."workspaceId" = ${workspaceId}
+      AND wm."workspaceId" = ${workspaceId}
     GROUP BY period, size
     ORDER BY period ASC;
   `;
