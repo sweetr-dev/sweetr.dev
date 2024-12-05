@@ -7,9 +7,6 @@ import { useFilterSearchParameters } from "../../../../../../providers/filter.pr
 import { IconCalendar, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../providers/date.provider";
-import startOfDay from "date-fns/startOfDay";
-import endOfToday from "date-fns/endOfToday";
-import subDays from "date-fns/subDays";
 import { LoadableContent } from "../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../components/card-info";
 import { useChartTimeToMergeQuery } from "../../../../../../api/chart.api";
@@ -20,6 +17,7 @@ import { PageEmptyState } from "../../../../../../components/page-empty-state";
 import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { ButtonDocs } from "../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
+import { startOfDay, subDays, endOfToday } from "date-fns";
 
 export const TeamPullRequestsTimeToMergePage = () => {
   const teamId = useTeamId();

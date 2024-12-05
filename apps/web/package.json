@@ -11,6 +11,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.0",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.1",
@@ -30,7 +31,7 @@
     "@tabler/icons-react": "^2.40.0",
     "@tanstack/react-query": "^5.22.2",
     "crisp-sdk-web": "^1.0.25",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.0.0",
     "dayjs": "^1.11.10",
     "echarts": "^5.5.0",
     "emoji-mart": "^5.5.2",

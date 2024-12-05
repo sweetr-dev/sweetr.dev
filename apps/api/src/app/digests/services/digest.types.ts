@@ -7,6 +7,7 @@ import {
   Prisma,
   DayOfTheWeek,
   Frequency,
+  Team,
 } from "@prisma/client";
 
 export type Digest = Omit<DbDigest, "settings"> & {
@@ -57,7 +58,8 @@ export interface DigestTeamWip extends Omit<Digest, "settings"> {
 
 export type DigestSettings = Prisma.JsonObject;
 
-export type DigestWithWorkspace = Digest & {
+export type DigestWithRelations = Digest & {
+  team: Team;
   workspace: Workspace & {
     subscription: Subscription | null;
     installation: Installation | null;

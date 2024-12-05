@@ -177,12 +177,17 @@ export type Digest = {
   channel: Scalars['String']['output'];
   dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['output'];
-  frequency: Frequency;
+  frequency: DigestFrequency;
   settings: Scalars['JSONObject']['output'];
   timeOfDay: Scalars['String']['output'];
   timezone: Scalars['TimeZone']['output'];
   type: DigestType;
 };
+
+export enum DigestFrequency {
+  MONTHLY = 'MONTHLY',
+  WEEKLY = 'WEEKLY'
+}
 
 export type DigestQueryInput = {
   type: DigestType;
@@ -191,11 +196,6 @@ export type DigestQueryInput = {
 export enum DigestType {
   TEAM_METRICS = 'TEAM_METRICS',
   TEAM_WIP = 'TEAM_WIP'
-}
-
-export enum Frequency {
-  MONTHLY = 'MONTHLY',
-  WEEKLY = 'WEEKLY'
 }
 
 export type GraphChartLink = {
@@ -589,7 +589,7 @@ export type UpdateDigestInput = {
   channel: Scalars['String']['input'];
   dayOfTheWeek: Array<DayOfTheWeek>;
   enabled: Scalars['Boolean']['input'];
-  frequency: Frequency;
+  frequency: DigestFrequency;
   settings: Scalars['JSONObject']['input'];
   teamId: Scalars['SweetID']['input'];
   timeOfDay: Scalars['String']['input'];
@@ -816,10 +816,10 @@ export type ResolversTypes = {
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
   Digest: ResolverTypeWrapper<DeepPartial<Digest>>;
+  DigestFrequency: ResolverTypeWrapper<DeepPartial<DigestFrequency>>;
   DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
   DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
-  Frequency: ResolverTypeWrapper<DeepPartial<Frequency>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
   InstallIntegrationInput: ResolverTypeWrapper<DeepPartial<InstallIntegrationInput>>;
@@ -1039,7 +1039,7 @@ export type DigestResolvers<ContextType = GraphQLContext, ParentType extends Res
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   dayOfTheWeek?: Resolver<Array<ResolversTypes['DayOfTheWeek']>, ParentType, ContextType>;
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  frequency?: Resolver<ResolversTypes['Frequency'], ParentType, ContextType>;
+  frequency?: Resolver<ResolversTypes['DigestFrequency'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   timeOfDay?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;

@@ -1,5 +1,6 @@
 import {
   differenceInDays,
+  DurationUnit,
   format,
   formatDistanceToNow,
   formatDuration,
@@ -14,7 +15,10 @@ export const humanizeDuration = (durationInMs: number) => {
   return formatDistanceToNow(new Date(Date.now() - durationInMs));
 };
 
-export const formatMsDuration = (durationInMs: number, format?: string[]) => {
+export const formatMsDuration = (
+  durationInMs: number,
+  format?: DurationUnit[],
+) => {
   const duration = intervalToDuration({
     start: new Date(Date.now() - durationInMs),
     end: new Date(),

@@ -17,9 +17,9 @@ import {
   PullRequestSize,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
-import formatRelative from "date-fns/formatRelative";
 import { BadgeFirstReview } from "./badge-code-review-time";
 import { BadgePullRequestSize } from "../badge-pull-request-size";
+import { formatRelative } from "date-fns";
 
 interface CardCodeReviewProps {
   title: string;

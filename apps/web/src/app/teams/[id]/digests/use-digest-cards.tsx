@@ -14,7 +14,7 @@ interface DigestCardData {
 
 const digestCards: Record<DigestType, DigestCardData> = {
   [DigestType.TEAM_METRICS]: {
-    available: false,
+    available: true,
     type: DigestType.TEAM_METRICS,
     enabled: false,
     title: "Metrics Digest",

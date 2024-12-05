@@ -10,7 +10,7 @@ import { FormMetricsDigest } from "../types";
 import {
   DayOfTheWeek,
   DigestType,
-  Frequency,
+  DigestFrequency,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
 import {
@@ -46,7 +46,7 @@ export const TeamMetricsDigestPage = () => {
     initialValues: {
       enabled: false,
       channel: "",
-      frequency: Frequency.MONTHLY,
+      frequency: DigestFrequency.MONTHLY,
       dayOfTheWeek: [DayOfTheWeek.MONDAY],
       timeOfDay: "09:00",
       timezone: getBrowserTimezone(),
@@ -59,7 +59,7 @@ export const TeamMetricsDigestPage = () => {
     const values = {
       enabled: digest.enabled,
       channel: digest.channel ?? "",
-      frequency: digest.frequency ?? Frequency.MONTHLY,
+      frequency: digest.frequency ?? DigestFrequency.MONTHLY,
       dayOfTheWeek: digest.dayOfTheWeek ?? [DayOfTheWeek.MONDAY],
       timeOfDay: digest.timeOfDay ?? "09:00",
       timezone: digest.timezone ?? getBrowserTimezone(),
@@ -83,7 +83,7 @@ export const TeamMetricsDigestPage = () => {
       teamId,
       type: DigestType.TEAM_METRICS,
       workspaceId: workspace.id,
-      frequency: form.values.frequency as Frequency,
+      frequency: form.values.frequency as DigestFrequency,
       settings: {},
     });
   };

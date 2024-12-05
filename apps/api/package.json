@@ -28,6 +28,8 @@
   "license": "ISC",
   "dependencies": {
     "@bull-board/express": "^5.14.1",
+    "@date-fns/tz": "^1.2.0",
+    "@date-fns/utc": "^2.1.0",
     "@envelop/generic-auth": "^7.0.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.0",
@@ -41,8 +43,7 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "basic-auth": "^2.0.1",
     "bullmq": "^5.2.0",
-    "date-fns": "^3.3.1",
-    "date-fns-tz": "^3.2.0",
+    "date-fns": "^4.0.0",
     "dotenv": "^16.3.1",
     "envsafe": "^2.0.3",
     "express": "^4.18.2",
