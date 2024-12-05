@@ -33,7 +33,7 @@ export const runPrTitleCheckAutomation = async (
       sha: gitPullRequest.head.sha,
       state: regex.test(gitPullRequest.title) ? "success" : "error",
       context: "[Sweetr] PR Title Check",
-      target_url: `${env.FRONTEND_URL}/automations/PR_TITLE_CHECK`,
+      target_url: `${env.FRONTEND_URL}/automations/pr-title-check`,
       description: regexExample
         ? `Compliant title example — ${regexExample}`
         : "Checks whether the PR title meets the requirements.",
