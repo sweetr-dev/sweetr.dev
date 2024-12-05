@@ -1,40 +1,19 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
-import { Period } from "@sweetr/graphql-types/dist/api";
 import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
-
-interface ChartFilters {
-  workspaceId: number;
-  startDate: string;
-  endDate: string;
-  period: Period;
-  teamId: number;
-}
-
-type CodeReviewDistributionRow = {
-  source: string;
-  target: string;
-  value: number;
-  isTargetFromTeam: number;
-  crAuthorName: string;
-  crAuthorAvatar?: string;
-  prAuthorName: string;
-  prAuthorAvatar?: string;
-};
-
-type CodeReviewLink = {
-  source: string;
-  target: string;
-  value: number;
-};
+import {
+  CodeReviewChartFilters,
+  CodeReviewDistributionRow,
+  CodeReviewLink,
+} from "./chart-code-review.types";
 
 export const getCodeReviewDistributionChartData = async ({
   workspaceId,
   teamId,
   startDate,
   endDate,
-}: ChartFilters) => {
+}: CodeReviewChartFilters) => {
   const query = Prisma.sql`
   SELECT
     CONCAT('cr-author:', CR_Author."handle") AS source,

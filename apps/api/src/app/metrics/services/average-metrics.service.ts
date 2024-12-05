@@ -1,12 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
-
-export interface AverageMetricFilters {
-  workspaceId: number;
-  startDate: string;
-  endDate: string;
-  teamId: number;
-}
+import { AverageMetricFilters } from "./average-metrics.types";
 
 const innerJoinClause = Prisma.sql`
     INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"

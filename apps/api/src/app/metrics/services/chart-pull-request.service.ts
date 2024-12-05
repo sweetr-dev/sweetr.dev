@@ -1,16 +1,8 @@
 import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { periodToDateTrunc } from "./chart.service";
-import { Period } from "@sweetr/graphql-types/dist/api";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
-
-interface ChartFilters {
-  workspaceId: number;
-  startDate: string;
-  endDate: string;
-  period: Period;
-  teamId: number;
-}
+import { PullRequestChartFilters } from "./chart-pull-request.types";
 
 const innerJoinClause = Prisma.sql`
     INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
@@ -25,7 +17,7 @@ export const getTimeToMergeChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT 
       DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
@@ -58,7 +50,7 @@ export const getTimeForFirstReviewChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT DATE_TRUNC(${periodToDateTrunc(
       period
@@ -92,7 +84,7 @@ export const getTimeForApprovalChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT 
       DATE_TRUNC(${periodToDateTrunc(period)}, pt."firstApprovalAt") AS period,
@@ -125,7 +117,7 @@ export const getCycleTimeChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT 
       DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
@@ -158,7 +150,7 @@ export const getPullRequestSizeDistributionChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
     pt.size AS size,
