@@ -233,7 +233,7 @@ export default function FeaturesTraits() {
               A lot more to come
             </h2>
             <p className="text-md text-zinc-400">
-              A sneak peek into our planned features and roadmap.
+              A sneak peek into our planned features.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-16 mt-12">
