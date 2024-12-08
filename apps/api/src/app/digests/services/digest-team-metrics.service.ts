@@ -153,7 +153,7 @@ const getDigestMessageBlocks = async (
           elements: [
             {
               type: "text",
-              text: `Avg of ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")} (vs ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")})`,
+              text: `Avg of ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")} (vs ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")})`,
             },
           ],
         },
