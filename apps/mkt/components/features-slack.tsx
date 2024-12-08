@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
-import FeatureIllustration from "@/public/images/home.png";
-import FeatureImage01 from "@/public/images/home.png";
+import SlackLogo from "@/public/images/logos/slack.svg";
 import DigestMetrics from "@/public/images/digest-metrics.png";
 import DigestWip from "@/public/images/digest-wip.png";
 import { IconChartBar, IconProgress } from "@tabler/icons-react";
@@ -29,10 +28,10 @@ export default function FeaturesSlack() {
         <div className="max-w-[908px] mx-auto px-4 sm:px-6">
           <div className="max-w-3xl mx-auto text-center pb-12">
             <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-              Slack Digests
+              Digests
             </h2>
             <p className="text-lg text-dark-100">
-              Schedule digests to keep your team in sync.
+              Scheduled digests to keep your team informed and accountable.
             </p>
           </div>
           <div>
@@ -56,8 +55,7 @@ export default function FeaturesSlack() {
                   </div>
                 </div>
                 <div className="text-sm text-zinc-400">
-                  Summary of Pull Request metrics for teams to identify
-                  bottlenecks and understand changes impact.
+                  Identify bottlenecks and understand impact of changes.
                 </div>
               </button>
               <button
@@ -78,8 +76,7 @@ export default function FeaturesSlack() {
                   </div>
                 </div>
                 <div className="text-sm text-zinc-400">
-                  Summary of Pull Requests that are in progress to keep teams in
-                  sync.
+                  Keep the team in sync.
                 </div>
               </button>
             </div>
@@ -108,6 +105,15 @@ export default function FeaturesSlack() {
                       height={500}
                       alt="Metrics Digest"
                     />
+
+                    <Image
+                      className="absolute top-0 left-full -translate-x-[70%] ml-2 -mt-4 md:ml-5 md:-mt-6 w-[48px] h-[48px] md:w-[100px] md:h-[100px]"
+                      src={SlackLogo}
+                      width={100}
+                      height={100}
+                      alt="Illustration"
+                      aria-hidden="true"
+                    />
                   </div>
                 </Transition>
                 {/* Item 2 */}
@@ -131,6 +137,15 @@ export default function FeaturesSlack() {
                       height={500}
                       quality={100}
                       alt="Work In Progress Digest"
+                    />
+
+                    <Image
+                      className="absolute top-0 left-full -translate-x-[70%] ml-2 -mt-4 md:ml-5 md:-mt-6 w-[48px] h-[48px] md:w-[100px] md:h-[100px]"
+                      src={SlackLogo}
+                      width={100}
+                      height={100}
+                      alt="Illustration"
+                      aria-hidden="true"
                     />
                   </div>
                 </Transition>
