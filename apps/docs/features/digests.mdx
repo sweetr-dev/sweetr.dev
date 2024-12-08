@@ -1,0 +1,47 @@
+---
+title: Digests
+description: Scheduled Slack digests to keep teams informed and accountable.
+icon: "newspaper"
+---
+
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { ColorBadge } from "/snippets/color-badge.mdx";
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/digests.png" />
+</Frame>
+
+<Tip>You must enable Slack integration in order to enable digests.</Tip>
+
+Digests can be sent monthly, weekly, or daily. Digests are team scoped, and must be enabled individually for each team.
+
+## Metrics Digest
+
+<Frame>
+  <img src="/images/digest-metrics.png" />
+</Frame>
+
+The metrics digest includes a summary of metrics found in [Team Insights](/features/team).
+
+- Average Pull Request Size
+- Average Cycle Time
+  - Time to First Review
+  - Time to Approve
+  - Time to Merge
+
+Enabling this digest should help teams understand their flow, and areas for improvement. It helps with accountability and removes the hurdle of having to manually check the metrics in the Sweetr dashboard.
+
+## Work in Progress Digest
+
+<Frame>
+  <img src="/images/digest-wip.png" />
+</Frame>
+
+The work in progress digest includes a summary of all the team's open Pull Requests.
+
+Enabling this digest should help teams alignment, by bringing light to any PRs that may need attention.
+
+<CtaGetStarted />
