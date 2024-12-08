@@ -146,7 +146,7 @@ export default function FeaturesOverview() {
               {/* Tabs buttons */}
               <div className="mb-8 md:mb-0 space-y-3">
                 <p className="text-white uppercase text-sm font-medium text-center ">
-                  For managers & team leads
+                  For managers & their teams
                 </p>
                 {features.map((feature, index) => {
                   const Icon = feature.icon;

@@ -5,6 +5,7 @@ import FeaturesTraits from "@/components/features-traits";
 import FeaturesAutomations from "@/components/features-automations";
 import PricingTabs from "@/components/pricing-tabs";
 import ProblemStatements from "@/components/problem-statements";
+import FeaturesSlack from "@/components/features-slack";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <ProblemStatements />
       <FeaturesOverview />
+      <FeaturesSlack />
       <FeaturesAutomations />
       <FeaturesTraits />
       <PricingTabs />
