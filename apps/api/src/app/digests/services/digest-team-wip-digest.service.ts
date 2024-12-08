@@ -175,6 +175,7 @@ const getPullRequestsGroupedByState = async (
         },
       },
       mergedAt: null,
+      closedAt: null,
       createdAt: {
         gte: subMonths(new Date(), 3),
       },
