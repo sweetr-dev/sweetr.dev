@@ -145,9 +145,14 @@ export default function FeaturesOverview() {
             <div className="lg:max-w-[430px] lg:min-w-[430px]">
               {/* Tabs buttons */}
               <div className="mb-8 md:mb-0 space-y-3">
-                <p className="text-white uppercase text-sm font-medium text-center ">
-                  For managers & their teams
-                </p>
+                <div>
+                  <p className="text-white uppercase text-sm font-medium text-center ">
+                    For managers & their teams
+                  </p>
+                  <p className="text-dark-100 text-sm text-center mt-1">
+                    Sweetr syncs your GitHub data automatically.
+                  </p>
+                </div>
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
 
