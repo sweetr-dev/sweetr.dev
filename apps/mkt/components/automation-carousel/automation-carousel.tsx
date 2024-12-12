@@ -5,7 +5,7 @@ import Particles from "./particles";
 import Highlighter from "./highlighter";
 import Swiper, { Navigation } from "swiper";
 import "swiper/swiper.min.css";
-import AutomationIcon from "./automation-benefit-icon";
+import { AutomationIcon } from "./automation-benefit-icon";
 
 Swiper.use([Navigation]);
 
@@ -97,7 +97,7 @@ export const AutomationCarousel = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1 mb-1">
-                    <AutomationIcon type="techDebt" />
+                    <AutomationIcon type="compliance" />
                   </div>
                   <div className="font-bold text-green-400">Available</div>
                 </div>
