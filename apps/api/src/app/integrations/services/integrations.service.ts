@@ -58,5 +58,5 @@ export const getWorkspaceIntegrations = async (
 
   const integrations = await Promise.all(integrationPromises);
 
-  return integrations.filter((i) => i !== null && i.isEnabled) as Integration[];
+  return integrations.filter((i) => i !== null) as Integration[];
 };
