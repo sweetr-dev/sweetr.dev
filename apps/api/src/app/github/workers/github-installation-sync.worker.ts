@@ -9,8 +9,14 @@ export const githubInstallationSyncWorker = createWorker(
   async (job: Job<InstallationCreatedEvent>) => {
     await syncGitHubInstallation(job.data.installation, job.data.sender);
 
-    await addJob(SweetQueue.SAAS_NOTIFY_NEW_INSTALLATION, {
-      installationId: job.data.installation.id,
-    });
+    await addJob(
+      SweetQueue.SAAS_NOTIFY_NEW_INSTALLATION,
+      {
+        installationId: job.data.installation.id,
+      },
+      {
+        delay: 1000 * 10,
+      }
+    );
   }
 );

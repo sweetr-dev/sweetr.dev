@@ -10,7 +10,7 @@ import {
   getWorkspaceHandle,
   getWorkspaceName,
 } from "../workspaces/services/workspace.service";
-import { InstallationTargetType, TeamMemberRole } from "@prisma/client";
+import { InstallationTargetType } from "@prisma/client";
 
 export const saasNotifyNewInstallationWorker = createWorker(
   SweetQueue.SAAS_NOTIFY_NEW_INSTALLATION,
