@@ -73,6 +73,11 @@ export const env = envsafe({
     allowEmpty: true,
     devDefault: "",
   }),
+  SLACK_INSTALL_NOTIFICATION_WEBHOOK_URL: str({
+    desc: "The URL to the Slack install notification webhook",
+    allowEmpty: true,
+    devDefault: "",
+  }),
   JWT_SECRET: str({
     desc: "The secret string used to sign JWT tokens",
   }),

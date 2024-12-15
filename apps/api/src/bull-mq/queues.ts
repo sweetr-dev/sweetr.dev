@@ -35,6 +35,9 @@ export enum SweetQueue {
   // Automations
   AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
   AUTOMATION_PR_SIZE_LABELER = "{automation.pr_size_labeler}",
+
+  // SaaS - Internal to Sweetr team
+  SAAS_NOTIFY_NEW_INSTALLATION = "{saas.notify_new_installation}",
 }
 
 export enum JobPriority {
