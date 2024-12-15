@@ -10,7 +10,7 @@ import {
   getWorkspaceHandle,
   getWorkspaceName,
 } from "../workspaces/services/workspace.service";
-import { InstallationTargetType } from "@prisma/client";
+import { InstallationTargetType, TeamMemberRole } from "@prisma/client";
 
 export const saasNotifyNewInstallationWorker = createWorker(
   SweetQueue.SAAS_NOTIFY_NEW_INSTALLATION,
@@ -24,7 +24,15 @@ export const saasNotifyNewInstallationWorker = createWorker(
           include: {
             organization: true,
             gitProfile: true,
-            memberships: true,
+            memberships: {
+              include: {
+                gitProfile: {
+                  include: {
+                    user: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -39,17 +47,21 @@ export const saasNotifyNewInstallationWorker = createWorker(
       return;
     }
 
+    const member = installation.workspace.memberships.find(
+      (member) => member.gitProfile.user?.id
+    );
+
     const httpClient = await getHttpClient();
 
     httpClient.post(env.SLACK_INSTALL_NOTIFICATION_WEBHOOK_URL, {
       json: {
+        url: `https://github.com/${getWorkspaceHandle(installation.workspace)}`,
         name: `${
           installation.targetType === InstallationTargetType.ORGANIZATION
             ? "🏢"
             : "🧑‍💻"
-        } ${getWorkspaceName(installation.workspace)}`,
-        url: `https://github.com/${getWorkspaceHandle(installation.workspace)}`,
-        memberCount: `👥 ${installation.workspace.memberships.length} members`,
+        } ${getWorkspaceName(installation.workspace)} 👥 ${installation.workspace.memberships.length} members`,
+        user: `🙏 ${member?.gitProfile.name} ✉️ ${member?.gitProfile.user?.email} 😺 ${member?.gitProfile.handle}`,
       },
     });
   }
