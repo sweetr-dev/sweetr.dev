@@ -28,7 +28,7 @@ const run = async () => {
     return;
   }
 
-  addJob(SweetQueue.GITHUB_INSTALLATION_SYNC, {
+  await addJob(SweetQueue.GITHUB_INSTALLATION_SYNC, {
     installation: installationGroupedByAccount[targetHandle][0],
     sender: gitProfile,
   });

@@ -51,7 +51,7 @@ export const syncPullRequestWorker = createWorker(
       }
     );
 
-    addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
+    await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
   },
   {
     limiter: {

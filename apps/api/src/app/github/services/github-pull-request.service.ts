@@ -112,7 +112,7 @@ export const syncPullRequest = async (
       gitPrData,
     });
 
-    addJob(
+    await addJob(
       SweetQueue.GITHUB_SYNC_CODE_REVIEW,
       {
         pull_request: {

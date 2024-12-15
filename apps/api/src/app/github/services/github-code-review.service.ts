@@ -62,7 +62,7 @@ export const syncCodeReviews = async (
       pullRequestId,
     });
 
-    addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
+    await addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
       pull_request: {
         node_id: pullRequestId,
       },
