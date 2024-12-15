@@ -30,7 +30,7 @@ export const removeIntegration = ({
 export const removeAllIntegrationsFromWorkspace = async (
   workspaceId: number
 ) => {
-  const integrations = await getWorkspaceIntegrations(workspaceId);
+  const integrations = await getWorkspaceEnabledIntegrations(workspaceId);
 
   return Promise.all(
     integrations.map((i) => {
@@ -48,7 +48,7 @@ export const getIntegrationInstallUrl = async (app: IntegrationApp) => {
   return integrationServices[app].getInstallUrl();
 };
 
-export const getWorkspaceIntegrations = async (
+export const getWorkspaceEnabledIntegrations = async (
   workspaceId: number
 ): Promise<Integration[]> => {
   const integrationPromises = Object.values(integrationServices).map(
@@ -57,5 +57,5 @@ export const getWorkspaceIntegrations = async (
 
   const integrations = await Promise.all(integrationPromises);
 
-  return integrations.filter((i) => i !== null) as Integration[];
+  return integrations.filter((i) => i !== null && i.isEnabled) as Integration[];
 };
