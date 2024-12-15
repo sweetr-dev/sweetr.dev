@@ -56,7 +56,7 @@ export default function ProblemStatements() {
               The problems
             </h2>
             <h3 className="text-lg text-red-400">
-              Faced by engineering managers and team leads.
+              Faced by engineering managers and leadership.
             </h3>
           </div>
           <div className="flex flex-wrap">
