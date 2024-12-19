@@ -22,9 +22,9 @@ const inter_tight = Inter_Tight({
 export const metadata: Metadata = {
   title: "sweetr.dev",
   description:
-    "The dev-first platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
+    "The developer platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
   openGraph: {
-    title: "Sweetr - The dev-first platform for continuous improvement",
+    title: "Sweetr - The developer platform for continuous improvement",
     description:
       "Enable your software engineering teams to optimize and speed up development while improving developer experience. Self-host for free or try a 14-day trial.",
     url: "https://sweetr.dev",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "sweetr.dev",
-    description: "The dev-first platform for continuous improvement",
+    description: "The developer platform for continuous improvement",
     images: ["https://sweetr.dev/images/og-image.png"],
   },
 };

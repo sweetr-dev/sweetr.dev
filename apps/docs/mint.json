@@ -87,7 +87,8 @@
             "features/automations/pr-size-labeler",
             "features/automations/pr-title-check"
           ]
-        }
+        },
+        "features/integrations"
       ]
     },
     {

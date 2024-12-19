@@ -13,11 +13,14 @@ import Image8 from "@/public/images/hero/8-sweetr-teamc-deo-review-distribution-
 import Image9 from "@/public/images/hero/9-sweetr-people-directory.png";
 import Image10 from "@/public/images/hero/10-sweetr-person-code-reviews.png";
 import {
+  IconBrandGithub,
   IconChevronLeft,
   IconChevronRight,
   IconInfoCircle,
+  IconLock,
   IconPlayerPause,
   IconPlayerPlay,
+  IconServer,
 } from "@tabler/icons-react";
 
 export const HeroVideo = () => {
@@ -102,20 +105,45 @@ export const HeroVideo = () => {
 
   return (
     <>
-      <div className="hidden md:flex justify-end gap-1 text-dark-100 mb-1">
-        <button onClick={handleAutoPlay} aria-label="Auto-play Slider">
-          {isAutoPlaying ? (
-            <IconPlayerPause stroke={1.5} size={20} />
-          ) : (
-            <IconPlayerPlay stroke={1.5} size={20} />
-          )}
-        </button>
-        <button onClick={handlePrevious} aria-label="Previous Slide">
-          <IconChevronLeft stroke={1.5} size={20} />
-        </button>
-        <button onClick={handleNext} aria-label="Next Slide">
-          <IconChevronRight stroke={1.5} size={20} />
-        </button>
+      <div className="flex justify-between gap-1 text-dark-100 mb-1">
+        <div></div>
+        <div>
+          <div className="text-dark-200 text-sm">
+            <div className="flex justify-center gap-2">
+              <div className="flex gap-1 items-center">
+                <IconLock size={14} />
+                100% secure
+              </div>
+              <div>•</div>
+              <div className="flex gap-1 items-center">
+                <IconServer size={14} />
+                self host for free
+              </div>
+              <div className="hidden md:block">•</div>
+              <div className="hidden md:flex gap-1 items-center">
+                <IconBrandGithub size={14} />
+                source code available
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="hidden md:block">
+            <button onClick={handleAutoPlay} aria-label="Auto-play Slider">
+              {isAutoPlaying ? (
+                <IconPlayerPause stroke={1.5} size={20} />
+              ) : (
+                <IconPlayerPlay stroke={1.5} size={20} />
+              )}
+            </button>
+            <button onClick={handlePrevious} aria-label="Previous Slide">
+              <IconChevronLeft stroke={1.5} size={20} />
+            </button>
+            <button onClick={handleNext} aria-label="Next Slide">
+              <IconChevronRight stroke={1.5} size={20} />
+            </button>
+          </div>
+        </div>
       </div>
       <div className="block relative ease-out duration-300">
         {/* hover:scale-105 cursor-pointer */}

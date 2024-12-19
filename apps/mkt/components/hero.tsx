@@ -2,6 +2,13 @@ import Link from "next/link";
 import { HeroVideo } from "./hero-video";
 import Image from "next/image";
 import Particles from "./automation-carousel/particles";
+import {
+  IconBook,
+  IconBrandGithub,
+  IconCloud,
+  IconLock,
+  IconServer,
+} from "@tabler/icons-react";
 
 export default async function Hero() {
   const repo = "sweetr-dev/sweetr.dev";
@@ -27,9 +34,9 @@ export default async function Hero() {
           {/* Section content */}
           <div className="px-4 sm:px-6 md:px-0">
             <div className="mx-auto relative">
-              <div className="text-center pb-12 md:pb-16 z-10">
-                <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent text-white pb-4">
-                  The dev-first platform for
+              <div className="text-center pb-4 z-10">
+                <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent text-white mb-2">
+                  The developer platform for
                   <em
                     className={`italic flex relative justify-center items-center text-green-400`}
                   >
@@ -37,14 +44,14 @@ export default async function Hero() {
                   </em>
                 </h1>
                 <div className="max-w-2xl mx-auto">
-                  <h2 className="text-lg text-dark-100 mb-8">
-                    Enable your software engineering teams to optimize and speed
-                    up development while improving developer experience.
+                  <h2 className="text-lg text-dark-100 mb-12">
+                    Enable your development teams to optimize and speed up
+                    development while improving developer experience.
                   </h2>
                 </div>
-                <div className="max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="pb-12 md:mb-16 max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                   <div>
-                    <Link
+                    {/* <Link
                       className="btn text-white w-full border-dark-400  shadow-md shadow-[rgba(255,255,255,0.05)]"
                       href={`https://github.com/${repo}`}
                       target="_blank"
@@ -64,14 +71,23 @@ export default async function Hero() {
                           {starsString}
                         </div>
                       )}
+                    </Link> */}
+                    <Link
+                      className="btn text-white w-full bg-dark-800 border-dark-200 shadow-xl shadow-[rgba(255,255,255,0.1)]"
+                      href={`https://docs.sweetr.dev`}
+                      target="_blank"
+                    >
+                      <div className="flex gap-2 items-center">
+                        Read the docs
+                      </div>
                     </Link>
                   </div>
                   <div>
                     <a
-                      className="btn text-green-400  font-semibold border-green-400  w-full shadow-md shadow-green-300/20"
+                      className="btn text-green-400 bg-dark-800 font-semibold border-green-400  w-full shadow-xl shadow-green-300/10"
                       href="#pricing"
                     >
-                      Get started for free
+                      Get started
                     </a>
                   </div>
                 </div>
