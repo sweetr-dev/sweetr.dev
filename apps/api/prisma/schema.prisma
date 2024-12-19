@@ -96,10 +96,11 @@ model GitProfile {
   userId Int?
 
   // A single user might have multiple git profiles, with multiple personal workspaces.
-  workspace       Workspace?
-  pullRequests    PullRequest[]
-  teamMemberships TeamMember[]
-  codeReviews     CodeReview[]
+  workspace         Workspace?
+  pullRequests      PullRequest[]
+  teamMemberships   TeamMember[]
+  codeReviews       CodeReview[]
+  CodeReviewRequest CodeReviewRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -154,6 +155,7 @@ model Workspace {
   teams               Team[]
   Automation          Automation[]
   CodeReview          CodeReview[]
+  CodeReviewRequest   CodeReviewRequest[]
   PullRequestTracking PullRequestTracking[]
   PullRequest         PullRequest[]
   TeamMember          TeamMember[]
@@ -294,9 +296,10 @@ model PullRequest {
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   repositoryId Int
 
-  author      GitProfile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    Int
-  codeReviews CodeReview[]
+  author             GitProfile          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId           Int
+  codeReviews        CodeReview[]
+  codeReviewRequests CodeReviewRequest[]
 
   tracking PullRequestTracking?
 
@@ -365,6 +368,29 @@ model CodeReview {
   @@unique([pullRequestId, authorId])
   @@index([workspaceId])
   @@index([authorId])
+  @@index([pullRequestId])
+}
+
+model CodeReviewRequest {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime
+  deletedAt DateTime?
+
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int
+
+  reviewer   GitProfile @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewerId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([pullRequestId, reviewerId])
+  @@index([workspaceId])
+  @@index([reviewerId])
   @@index([pullRequestId])
 }
 
