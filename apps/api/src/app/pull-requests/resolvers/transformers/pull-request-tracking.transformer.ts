@@ -16,6 +16,9 @@ export const transformPullRequestTracking = (
   if (!tracking) {
     return {
       size: PullRequestSize.MEDIUM,
+      changedFilesCount: 0,
+      linesAddedCount: 0,
+      linesDeletedCount: 0,
       firstApprovalAt: null,
       firstReviewAt: null,
       timeToFirstApproval: null,
@@ -26,6 +29,9 @@ export const transformPullRequestTracking = (
 
   return {
     size: tracking.size as PullRequestSize,
+    changedFilesCount: tracking.changedFilesCount,
+    linesAddedCount: tracking.linesAddedCount,
+    linesDeletedCount: tracking.linesDeletedCount,
     firstApprovalAt: tracking.firstApprovalAt?.toISOString(),
     firstReviewAt: tracking.firstReviewAt?.toISOString(),
     timeToFirstApproval: tracking.timeToFirstApproval,

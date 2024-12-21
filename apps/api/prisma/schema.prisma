@@ -60,6 +60,26 @@ enum AutomationType {
   PR_SIZE_LABELER
 }
 
+enum DigestType {
+  TEAM_METRICS
+  TEAM_WIP
+}
+
+enum DayOfTheWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+enum Frequency {
+  WEEKLY
+  MONTHLY
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -76,10 +96,11 @@ model GitProfile {
   userId Int?
 
   // A single user might have multiple git profiles, with multiple personal workspaces.
-  workspace       Workspace?
-  pullRequests    PullRequest[]
-  teamMemberships TeamMember[]
-  codeReviews     CodeReview[]
+  workspace         Workspace?
+  pullRequests      PullRequest[]
+  teamMemberships   TeamMember[]
+  codeReviews       CodeReview[]
+  CodeReviewRequest CodeReviewRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -121,12 +142,25 @@ model Organization {
 model Workspace {
   id Int @id @default(autoincrement())
 
-  gitProvider  GitProvider
-  memberships  WorkspaceMembership[]
-  repositories Repository[]
-  teams        Team[]
+  gitProvider GitProvider
+  settings    Json        @default("{}")
+  trialEndAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
 
-  installation Installation?
+  subscription        Subscription?
+  installation        Installation?
+  memberships         WorkspaceMembership[]
+  repositories        Repository[]
+  teams               Team[]
+  Automation          Automation[]
+  CodeReview          CodeReview[]
+  CodeReviewRequest   CodeReviewRequest[]
+  PullRequestTracking PullRequestTracking[]
+  PullRequest         PullRequest[]
+  TeamMember          TeamMember[]
+  Integration         Integration[]
+  Digest              Digest[]
 
   // A workspace can belong either to an Organization or an User
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -136,18 +170,6 @@ model Workspace {
   // Re-authenticating creates a new user and reconnects 
   gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
-
-  Automation          Automation[]
-  CodeReview          CodeReview[]
-  PullRequestTracking PullRequestTracking[]
-  PullRequest         PullRequest[]
-  TeamMember          TeamMember[]
-  subscription        Subscription?
-
-  trialEndAt  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
-  Integration Integration[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -258,6 +280,7 @@ model PullRequest {
   title  String
   number String
 
+  files             Json @default("[]")
   commentCount      Int
   changedFilesCount Int
   linesAddedCount   Int
@@ -273,9 +296,10 @@ model PullRequest {
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   repositoryId Int
 
-  author      GitProfile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    Int
-  codeReviews CodeReview[]
+  author             GitProfile          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId           Int
+  codeReviews        CodeReview[]
+  codeReviewRequests CodeReviewRequest[]
 
   tracking PullRequestTracking?
 
@@ -291,7 +315,11 @@ model PullRequest {
 model PullRequestTracking {
   id Int @id @default(autoincrement())
 
-  size PullRequestSize
+  // When tracking, we ignore files that doesn't matter for PR size (i.e. lock files)
+  changedFilesCount Int             @default(0)
+  linesAddedCount   Int             @default(0)
+  linesDeletedCount Int             @default(0)
+  size              PullRequestSize
 
   firstCommitAt            DateTime?
   firstDraftedAt           DateTime?
@@ -343,6 +371,29 @@ model CodeReview {
   @@index([pullRequestId])
 }
 
+model CodeReviewRequest {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime
+  deletedAt DateTime?
+
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int
+
+  reviewer   GitProfile @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewerId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([pullRequestId, reviewerId])
+  @@index([workspaceId])
+  @@index([reviewerId])
+  @@index([pullRequestId])
+}
+
 model Team {
   id          Int          @id @default(autoincrement())
   name        String
@@ -358,6 +409,7 @@ model Team {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  Digest    Digest[]
 
   @@index([workspaceId])
 }
@@ -380,6 +432,34 @@ model TeamMember {
 
   @@index([workspaceId])
   @@index([gitProfileId])
+  @@index([teamId])
+}
+
+model Digest {
+  id      Int        @id @default(autoincrement())
+  type    DigestType
+  enabled Boolean
+
+  channel String
+
+  frequency    Frequency
+  dayOfTheWeek DayOfTheWeek[]
+  timeOfDay    String
+  timezone     String
+
+  settings Json
+
+  teamId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([teamId, type])
+  @@index([workspaceId])
   @@index([teamId])
 }
 

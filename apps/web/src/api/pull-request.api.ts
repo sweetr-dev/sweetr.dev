@@ -56,6 +56,9 @@ export const usePullRequestsInfiniteQuery = (
                 closedAt
                 tracking {
                   size
+                  changedFilesCount
+                  linesAddedCount
+                  linesDeletedCount
                   timeToFirstReview
                   timeToMerge
                   timeToFirstApproval

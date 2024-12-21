@@ -1,11 +1,8 @@
 import { DelayedError, Job } from "bullmq";
-import { fromUnixTime } from "date-fns/fromUnixTime";
 import { logger } from "../../../lib/logger";
 import { redisConnection } from "../../../bull-mq/redis-connection";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
-import { isPast } from "date-fns/isPast";
-import { getTime } from "date-fns/getTime";
-import { addSeconds } from "date-fns";
+import { addSeconds, getTime, isPast, fromUnixTime } from "date-fns";
 
 const oneSecondInMs = 1000;
 

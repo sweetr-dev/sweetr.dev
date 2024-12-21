@@ -35,6 +35,12 @@ interface ReviewData {
   createdAt: string;
 }
 
+interface ReviewRequestData {
+  createdAt: Date;
+  deletedAt: Date | null;
+  author: Author;
+}
+
 export const syncCodeReviews = async (
   gitInstallationId: number,
   pullRequestId: string
@@ -62,7 +68,7 @@ export const syncCodeReviews = async (
       pullRequestId,
     });
 
-    addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
+    await addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
       pull_request: {
         node_id: pullRequestId,
       },
@@ -84,11 +90,10 @@ export const syncCodeReviews = async (
     return;
   }
 
-  const { reviews, firstReviewerRequestedAt } = await fetchPullRequestReviews(
-    gitInstallationId,
-    pullRequestId
-  );
+  const { reviews, firstReviewerRequestedAt, reviewRequests } =
+    await fetchPullRequestReviews(gitInstallationId, pullRequestId);
 
+  await upsertCodeReviewRequests(pullRequest, reviewRequests);
   await upsertCodeReviews(pullRequest, reviews);
   await updatePullRequestTracking(
     pullRequest,
@@ -102,6 +107,7 @@ const fetchPullRequestReviews = async (
   pullRequestId: string
 ): Promise<{
   reviews: ReviewData[];
+  reviewRequests: ReviewRequestData[];
   firstReviewerRequestedAt: string | null;
 }> => {
   const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
@@ -110,12 +116,34 @@ const fetchPullRequestReviews = async (
   let cursor: string | null = null;
   const isFirstRequest = cursor === null;
   let firstReviewerRequestedAt = null;
+  let reviewRequests: ReviewRequestData[] = [];
 
-  const timelineItemsFragment = `timelineItems(itemTypes: [REVIEW_REQUESTED_EVENT], last: ${GITHUB_MAX_PAGE_LIMIT}) {
+  const timelineItemsFragment = `timelineItems(itemTypes: [REVIEW_REQUESTED_EVENT, REVIEW_REQUEST_REMOVED_EVENT], last: ${GITHUB_MAX_PAGE_LIMIT}) {
     nodes {
       __typename
       ... on ReviewRequestedEvent {
         createdAt
+        requestedReviewer {
+          __typename
+          ... on User {
+            id
+            login
+            name
+            avatarUrl
+          }
+        }
+      }
+      ... on ReviewRequestRemovedEvent {
+        createdAt
+        requestedReviewer {
+          __typename
+          ... on User {
+            id
+            login
+            name
+            avatarUrl
+          }
+        }
       }
     }
   }`;
@@ -177,6 +205,12 @@ const fetchPullRequestReviews = async (
     if (isFirstRequest) {
       firstReviewerRequestedAt =
         response.node.timelineItems.nodes[0]?.createdAt || null;
+
+      reviewRequests = getReviewRequests(
+        response.node.timelineItems.nodes.filter(
+          (node) => node.requestedReviewer.__typename === "User"
+        )
+      );
     }
 
     // Aggregate reviews by author
@@ -216,6 +250,7 @@ const fetchPullRequestReviews = async (
 
   return {
     reviews: Object.values(reviews),
+    reviewRequests,
     firstReviewerRequestedAt,
   };
 };
@@ -236,6 +271,96 @@ const getCodeReviewState = (state: string) => {
   if (state === "CHANGES_REQUESTED") return CodeReviewState.CHANGES_REQUESTED;
 
   return CodeReviewState.COMMENTED;
+};
+
+const getReviewRequests = (nodes: any[]): ReviewRequestData[] => {
+  const requestedReviewers = new Map<string, ReviewRequestData>();
+
+  // Sort by createdAt
+  nodes.sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+
+  nodes.forEach((node) => {
+    if (
+      node.__typename === "ReviewRequestedEvent" &&
+      node.requestedReviewer.__typename === "User"
+    ) {
+      const reviewerId = node.requestedReviewer.id;
+
+      requestedReviewers.set(reviewerId, {
+        createdAt: new Date(node.createdAt),
+        deletedAt: null,
+        author: {
+          id: reviewerId,
+          login: node.requestedReviewer.login,
+          name: node.requestedReviewer.name,
+          avatarUrl: node.requestedReviewer.avatarUrl,
+        },
+      });
+    }
+
+    if (
+      node.__typename === "ReviewRequestRemovedEvent" &&
+      node.requestedReviewer.__typename === "User"
+    ) {
+      const reviewerId = node.requestedReviewer.id;
+
+      if (requestedReviewers.has(reviewerId)) {
+        const reviewRequest = requestedReviewers.get(reviewerId);
+
+        if (reviewRequest) {
+          reviewRequest.deletedAt = new Date(node.createdAt);
+          reviewRequest.author = {
+            id: reviewerId,
+            login: node.requestedReviewer.login,
+            name: node.requestedReviewer.name,
+            avatarUrl: node.requestedReviewer.avatarUrl,
+          };
+        }
+      }
+    }
+  });
+
+  return Array.from(requestedReviewers.values());
+};
+
+const upsertCodeReviewRequests = async (
+  pullRequest: PullRequest,
+  reviewRequests: ReviewRequestData[]
+) => {
+  logger.debug("upsertCodeReviewRequests", { pullRequest, reviewRequests });
+
+  return parallel(10, reviewRequests, async (reviewRequest) => {
+    if (!reviewRequest.author?.id) {
+      logger.info("syncCodeReviews: Skipping unknown author", {
+        reviewRequest,
+      });
+
+      return;
+    }
+
+    const gitProfile = await upsertGitProfile(reviewRequest.author);
+
+    const data = {
+      workspaceId: pullRequest.workspaceId,
+      reviewerId: gitProfile.id,
+      pullRequestId: pullRequest.id,
+      createdAt: new Date(),
+      deletedAt: reviewRequest.deletedAt,
+    };
+
+    return await getPrisma(pullRequest.workspaceId).codeReviewRequest.upsert({
+      where: {
+        pullRequestId_reviewerId: {
+          reviewerId: gitProfile.id,
+          pullRequestId: pullRequest.id,
+        },
+      },
+      create: data,
+      update: data,
+    });
+  });
 };
 
 const upsertCodeReviews = async (

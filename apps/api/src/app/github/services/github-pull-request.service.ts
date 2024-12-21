@@ -1,21 +1,25 @@
 import {
   getInstallationGraphQLOctoKit,
   getInstallationOctoKit,
+  GITHUB_MAX_PAGE_LIMIT,
 } from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import {
   GitProvider,
+  Prisma,
   PullRequest,
   PullRequestState,
   Repository,
+  Workspace,
 } from "@prisma/client";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJob } from "../../../bull-mq/queues";
 import {
   getCycleTime,
   getFirstDraftAndReadyDates,
+  getPullRequestLinesTracked,
   getPullRequestSize,
   getTimeToCode,
   getTimeToMerge,
@@ -96,6 +100,7 @@ export const syncPullRequest = async (
   const gitProfile = await upsertGitProfile(gitPrData.author);
   const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(
+    workspace,
     gitInstallationId,
     gitProfile.id,
     repository,
@@ -107,7 +112,7 @@ export const syncPullRequest = async (
       gitPrData,
     });
 
-    addJob(
+    await addJob(
       SweetQueue.GITHUB_SYNC_CODE_REVIEW,
       {
         pull_request: {
@@ -184,6 +189,20 @@ const fetchPullRequest = async (
               createdAt
             }
 
+            files(first: ${GITHUB_MAX_PAGE_LIMIT}) {
+              nodes {
+                __typename
+                changeType
+                path
+                additions
+                deletions
+              }
+              pageInfo {
+                hasNextPage
+                endCursor 
+              }
+            }
+
             timelineItems(itemTypes: [READY_FOR_REVIEW_EVENT, CONVERT_TO_DRAFT_EVENT], last: 100) {
               nodes {
                 __typename
@@ -204,16 +223,75 @@ const fetchPullRequest = async (
     }
   );
 
-  return response.node;
+  return {
+    ...response.node,
+    files: await getPullRequestFiles(
+      installationId,
+      pullRequestId,
+      response.node.files
+    ),
+  };
+};
+
+const getPullRequestFiles = async (
+  installationId: number,
+  pullRequestId: string,
+  fileQuery: any
+) => {
+  if (!fileQuery.pageInfo.hasNextPage) {
+    return fileQuery.nodes || [];
+  }
+
+  const files: object[] = [...(fileQuery.nodes || [])];
+
+  while (fileQuery.pageInfo.hasNextPage) {
+    const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
+    const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
+      `
+      query PullRequestFilesQuery(
+        $nodeId: ID!
+        $cursor: String
+      ) {
+        node(id: $nodeId) {
+          ... on PullRequest {
+            id
+            files(first: ${GITHUB_MAX_PAGE_LIMIT}, after: $cursor) {
+              nodes {
+                changeType
+                path
+                additions
+                deletions
+              }
+              pageInfo {
+                hasNextPage
+                endCursor 
+              }
+            }
+          }
+        }
+      }
+    `,
+      {
+        nodeId: pullRequestId,
+        cursor: fileQuery.pageInfo.endCursor,
+      }
+    );
+
+    files.push(...response.node.files.nodes);
+    fileQuery.pageInfo = response.node.files.pageInfo;
+  }
+
+  return files;
 };
 
 const upsertPullRequest = async (
+  workspace: Workspace,
   installationId: number,
   gitProfileId: number,
   repository: Repository,
   gitPrData: any
 ) => {
-  const data: Omit<PullRequest, "id"> = {
+  const data: Prisma.PullRequestUncheckedCreateInput = {
     gitProvider: GitProvider.GITHUB,
     gitPullRequestId: gitPrData.id,
     gitUrl: gitPrData.url,
@@ -231,6 +309,7 @@ const upsertPullRequest = async (
     repositoryId: repository.id,
     workspaceId: repository.workspaceId,
     authorId: gitProfileId,
+    files: gitPrData.files,
   };
 
   const pullRequest = await getPrisma(
@@ -247,6 +326,7 @@ const upsertPullRequest = async (
   });
 
   await upsertPullRequestTracking(
+    workspace,
     installationId,
     repository,
     pullRequest,
@@ -257,6 +337,7 @@ const upsertPullRequest = async (
 };
 
 const upsertPullRequestTracking = async (
+  workspace: Workspace,
   installationId: number,
   repository: Repository,
   pullRequest: PullRequest,
@@ -281,7 +362,13 @@ const upsertPullRequestTracking = async (
     },
   });
 
-  const size = getPullRequestSize(pullRequest);
+  const {
+    linesAddedCount,
+    linesDeletedCount,
+    changedFilesCount,
+    linesChangedCount,
+  } = getPullRequestLinesTracked(workspace, pullRequest);
+  const size = getPullRequestSize(workspace, linesChangedCount);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
   const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);
@@ -295,6 +382,9 @@ const upsertPullRequestTracking = async (
     create: {
       pullRequestId: pullRequest.id,
       workspaceId: pullRequest.workspaceId,
+      linesAddedCount,
+      linesDeletedCount,
+      changedFilesCount,
       size,
       firstCommitAt,
       firstDraftedAt,
@@ -304,6 +394,9 @@ const upsertPullRequestTracking = async (
       cycleTime,
     },
     update: {
+      linesAddedCount,
+      linesDeletedCount,
+      changedFilesCount,
       size,
       firstCommitAt,
       firstDraftedAt,

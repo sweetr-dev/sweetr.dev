@@ -10,6 +10,7 @@ import {
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { CallbackDataParams } from "echarts/types/dist/shared";
+import { UTCDate } from "@date-fns/utc";
 
 interface ChartStackedBarProps {
   chartData?: NumericSeriesChartData | null;
@@ -40,7 +41,7 @@ export const ChartStackedBars = ({
         },
         formatter: function (params: Arrayable<CallbackDataParams>) {
           let total = 0;
-          let tooltipContent = `<div style="padding: 0 15px; ">${params[0].axisValueLabel}</div>`;
+          let tooltipContent = `<div style="padding: 0 15px; ">${(params as any)[0].axisValueLabel}</div>`;
 
           (params as Array<CallbackDataParams>).forEach(function (item) {
             total += item.value as number;
@@ -54,7 +55,7 @@ export const ChartStackedBars = ({
         axisPointer: {
           label: {
             formatter({ value }) {
-              return formatTooltipDate(new Date(value), period);
+              return formatTooltipDate(new UTCDate(value), period);
             },
           },
         },
@@ -70,7 +71,7 @@ export const ChartStackedBars = ({
         data: chartData.columns,
         axisLabel: {
           formatter(value: string) {
-            return formatAxisDate(new Date(value), period);
+            return formatAxisDate(new UTCDate(value), period);
           },
         },
       },

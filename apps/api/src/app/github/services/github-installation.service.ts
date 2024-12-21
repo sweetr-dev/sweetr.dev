@@ -16,7 +16,6 @@ import { logger } from "../../../lib/logger";
 import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
 import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
 import { addDays, endOfDay } from "date-fns";
-import { JsonObject } from "@prisma/client/runtime/library";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const syncGitHubInstallation = async (

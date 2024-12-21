@@ -1,6 +1,5 @@
 import { Stack, Divider, Skeleton, Box, Group } from "@mantine/core";
 import { CardPullRequest } from "../../../../components/card-pull-request";
-import { useParams } from "react-router-dom";
 import { parseISO } from "date-fns";
 import {
   useInfiniteLoading,
@@ -18,7 +17,6 @@ import { format } from "date-fns";
 import { usePullRequestsInfiniteQuery } from "../../../../api/pull-request.api";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { useWorkspace } from "../../../../providers/workspace.provider";
-import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
 import { parseNullableISO } from "../../../../providers/date.provider";
 import {
   IconAspectRatio,
@@ -30,9 +28,11 @@ import { useForm } from "@mantine/form";
 import { LoadableContent } from "../../../../components/loadable-content/loadable-content";
 import { FilterDate } from "../../../../components/filter-date";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
+import { useTeamId } from "../use-team";
+import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const TeamPullRequestsPage = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
   const filters = useForm<{
@@ -48,8 +48,6 @@ export const TeamPullRequestsPage = () => {
       createdAtTo: searchParams.get("createdAtTo"),
     },
   });
-
-  if (!teamId) throw new ResourceNotFound();
 
   const {
     data,
@@ -208,11 +206,7 @@ export const TeamPullRequestsPage = () => {
                       avatar: pr.author.avatar!,
                     }}
                     comments={pr.commentCount}
-                    changes={{
-                      additions: pr.linesAddedCount,
-                      deletions: pr.linesDeletedCount,
-                      files: pr.changedFilesCount,
-                    }}
+                    changes={getPullRequestChanges(pr)}
                   />
                 </Fragment>
               );

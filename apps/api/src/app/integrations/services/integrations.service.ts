@@ -4,35 +4,59 @@ import {
   RemoveIntegrationArgs,
 } from "./integrations.types";
 import { IntegrationApp } from "@prisma/client";
-import * as slackService from "../slack/services/slack.service";
+import * as slackService from "../slack/services/slack-integration.service";
+import { logger } from "../../../lib/logger";
+import { Integration } from "@sweetr/graphql-types/api";
 
 const integrationServices: Record<IntegrationApp, IntegrationService> = {
   [IntegrationApp.SLACK]: slackService,
 };
 
 export const installIntegration = ({
-  workspace,
+  workspaceId,
   app,
   code,
 }: InstallIntegrationArgs) => {
-  return integrationServices[app].installIntegration(workspace, code);
+  return integrationServices[app].installIntegration(workspaceId, code);
 };
 
 export const removeIntegration = ({
-  workspace,
+  workspaceId,
   app,
 }: RemoveIntegrationArgs) => {
-  return integrationServices[app].removeIntegration(workspace);
+  return integrationServices[app].removeIntegration(workspaceId);
+};
+
+export const removeAllIntegrationsFromWorkspace = async (
+  workspaceId: number
+) => {
+  const integrations = await getWorkspaceIntegrations(workspaceId);
+  const enabledIntegrations = integrations.filter((i) => i.isEnabled);
+
+  return Promise.all(
+    enabledIntegrations.map((i) => {
+      logger.info("[removeAllWorkspaceIntegrations] Removing integration", {
+        workspaceId,
+        app: i.app,
+      });
+
+      return removeIntegration({ workspaceId, app: i.app });
+    })
+  );
 };
 
 export const getIntegrationInstallUrl = async (app: IntegrationApp) => {
   return integrationServices[app].getInstallUrl();
 };
 
-export const getWorkspaceIntegrations = async (workspaceId: number) => {
-  const integrations = Object.values(integrationServices).map((service) =>
-    service.getIntegration(workspaceId)
+export const getWorkspaceIntegrations = async (
+  workspaceId: number
+): Promise<Integration[]> => {
+  const integrationPromises = Object.values(integrationServices).map(
+    (service) => service.getIntegration(workspaceId)
   );
 
-  return (await Promise.all(integrations)).filter((i) => i !== null);
+  const integrations = await Promise.all(integrationPromises);
+
+  return integrations.filter((i) => i !== null) as Integration[];
 };

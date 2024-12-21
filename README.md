@@ -13,7 +13,7 @@
   ·
   <a href="https://docs.sweetr.dev/">Docs</a>
   ·
-  <a href="https://github.com/sweetr-dev/sweetr.dev/discussions">Community</a>
+  <a href="https://sweetr.featurebase.app/">Feedback</a>
 </p>
 
 <p align="center">

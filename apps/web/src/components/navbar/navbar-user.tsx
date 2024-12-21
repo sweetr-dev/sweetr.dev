@@ -103,7 +103,7 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
           <Menu.Item
             leftSection={<IconSpeakerphone size={14} stroke={1.5} />}
             component="a"
-            href="https://github.com/orgs/sweetr-dev/discussions"
+            href="https://sweetr.featurebase.app"
             rel="nofollow"
             target="_blank"
           >

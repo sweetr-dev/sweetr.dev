@@ -1,6 +1,6 @@
 import { AutomationType, PullRequestSize } from "@prisma/client";
 import { logger } from "../../../../lib/logger";
-import { getBypassRlsPrisma } from "../../../../prisma";
+import { getBypassRlsPrisma, getPrisma } from "../../../../prisma";
 import {
   canRunAutomation,
   findAutomationByType,
@@ -8,11 +8,11 @@ import {
 } from "../../services/automation.service";
 import { PullRequest } from "@octokit/webhooks-types";
 import { getInstallationOctoKit } from "../../../../lib/octokit";
-import { getPullRequestSize } from "../../../github/services/github-pull-request-tracking.service";
 import { AutomationPrSizeLabeler } from "../../services/automation.types";
 import { objectify } from "radash";
 import { captureException } from "../../../../lib/sentry";
 import { IntegrationException } from "../../../errors/exceptions/integration.exception";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 
 export const runPrSizeLabelerAutomation = async (
   gitInstallationId: number,
@@ -42,14 +42,33 @@ export const runPrSizeLabelerAutomation = async (
   )
     return;
 
-  const size = getPullRequestSize({
-    linesAddedCount: gitPullRequest.additions,
-    linesDeletedCount: gitPullRequest.deletions,
+  const pullRequest = await getPrisma(workspace.id).pullRequest.findFirst({
+    where: { gitPullRequestId: gitPullRequest.node_id },
+    include: {
+      tracking: true,
+    },
   });
+
+  if (!pullRequest?.tracking) {
+    captureException(
+      new ResourceNotFoundException(
+        "[Automation] PR Size Labeler: Pull Request tracking not found",
+        {
+          extra: { gitInstallationId, gitPullRequest, pullRequest },
+          severity: "error",
+        }
+      )
+    );
+    return;
+  }
 
   await maybeCreateLabels(gitInstallationId, automation, gitPullRequest);
 
-  const labels = await getLabels(automation, gitPullRequest, size);
+  const labels = await getLabels(
+    automation,
+    gitPullRequest,
+    pullRequest.tracking.size
+  );
 
   await getInstallationOctoKit(gitInstallationId).rest.issues.setLabels({
     owner: gitPullRequest.base.repo.owner.login,

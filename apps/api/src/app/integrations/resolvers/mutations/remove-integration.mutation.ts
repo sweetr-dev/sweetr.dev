@@ -24,7 +24,7 @@ export const removeIntegrationMUtation = createMutationResolver({
     }
 
     await removeIntegration({
-      workspace,
+      workspaceId: workspace.id,
       app: input.app,
     });
 

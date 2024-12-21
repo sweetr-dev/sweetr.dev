@@ -1,92 +1,106 @@
 import {
-  Box,
   Group,
   Text,
   Title,
   Button,
-  Anchor,
   Skeleton,
   List,
   rem,
   ThemeIcon,
   Paper,
+  Stack,
+  Divider,
 } from "@mantine/core";
-import {
-  IconBook2,
-  IconCheck,
-  IconCircleCheckFilled,
-} from "@tabler/icons-react";
+import { IconCheck, IconCircleCheckFilled } from "@tabler/icons-react";
 import { ImageIntegrationLogo } from "../components/image-integration-logo";
 import { LoadableContent } from "../../../../components/loadable-content";
-import { PageContainer } from "../../../../components/page-container";
-import { PageTitle } from "../../../../components/page-title";
-import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { ListScopes } from "../components/list-scopes";
 import { Link } from "react-router-dom";
-import { useIntegrations } from "../use-integrations";
+import { useIntegrations } from "../../../../providers/integration.provider";
 import { formatDate } from "../../../../providers/date.provider";
 import { useConfirmationModal } from "../../../../providers/modal.provider";
 import { useSlackIntegration } from "./use-slack-integration";
+import { DrawerScrollable } from "../../../../components/drawer-scrollable";
+import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 
 export const IntegrationSlackPage = () => {
-  const { integrations, isLoading } = useIntegrations();
+  const { integrations, query } = useIntegrations();
   const integration = integrations?.SLACK;
   const { openConfirmationModal } = useConfirmationModal();
   const { isIntegrating, handleUninstall } = useSlackIntegration();
+  const drawerProps = useDrawerPage({
+    closeUrl: `/settings/integrations`,
+  });
 
   return (
-    <PageContainer>
-      <Breadcrumbs
-        items={[
-          { label: "Integrations", href: "/settings/integrations" },
-          { label: "Slack" },
-        ]}
-      />
+    <DrawerScrollable
+      {...drawerProps}
+      title={
+        <Group gap="md">
+          <ImageIntegrationLogo brand="slack" h={36} />
+          <Title mb={0} order={2}>
+            Slack
+          </Title>
+        </Group>
+      }
+      actions={
+        <>
+          {integration && !integration?.isEnabled && integration.installUrl && (
+            <Button
+              fullWidth
+              component={Link}
+              to={integration.installUrl}
+              loading={isIntegrating}
+            >
+              Install
+            </Button>
+          )}
 
-      <Box maw={560}>
-        <LoadableContent
-          whenLoading={
+          {integration?.isEnabled && (
             <>
-              <Skeleton h={50} />
-              <Skeleton h={175} mt={24} />
-              <Skeleton h={232} mt="lg" />
-              <Skeleton h={36} mt="lg" />
-            </>
-          }
-          isLoading={isLoading && !isIntegrating}
-          content={
-            <>
-              <PageTitle
-                title={
-                  <Group gap="md" mb="md">
-                    <ImageIntegrationLogo brand="slack" h={40} />
-                    <Title mb={0} order={2}>
-                      Slack
-                    </Title>
-                  </Group>
+              <Button
+                fullWidth
+                color="red"
+                variant="outline"
+                onClick={() =>
+                  openConfirmationModal({
+                    title: "Uninstall Slack App",
+                    label: (
+                      <>
+                        Your digest and alert settings will not be removed. You
+                        can reinstall Slack anytime to re-enable notifications.
+                      </>
+                    ),
+                    confirmLabel: "Uninstall Slack",
+                    onConfirm: handleUninstall,
+                  })
                 }
               >
-                <Anchor
-                  underline="never"
-                  target="_blank"
-                  href="https://docs.sweetr.dev"
-                >
-                  <Button
-                    variant="subtle"
-                    color="dark.1"
-                    leftSection={<IconBook2 stroke={1.5} size={20} />}
-                  >
-                    Docs
-                  </Button>
-                </Anchor>
-              </PageTitle>
-
-              {integration?.isEnabled && (
-                <>
-                  <Title order={5} mb="xs">
-                    Status
-                  </Title>
-                  <Paper p="md" radius="md" mb="lg" withBorder>
+                Uninstall
+              </Button>
+            </>
+          )}
+        </>
+      }
+      size={580}
+    >
+      <LoadableContent
+        whenLoading={
+          <>
+            <Skeleton h={50} />
+            <Skeleton h={175} mt={24} />
+            <Skeleton h={232} mt="lg" />
+            <Skeleton h={36} mt="lg" />
+          </>
+        }
+        isLoading={query.isLoading && !isIntegrating}
+        content={
+          <>
+            {integration?.isEnabled && (
+              <>
+                <Stack p="md">
+                  <Title order={5}>Status</Title>
+                  <Paper p="md" radius="md" withBorder>
                     <Group>
                       <ThemeIcon color="green" variant="outline" bd="none">
                         <IconCircleCheckFilled size={24} stroke={1.5} />
@@ -95,12 +109,13 @@ export const IntegrationSlackPage = () => {
                       {formatDate(integration.enabledAt, "MMMM do, yyyy")}
                     </Group>
                   </Paper>
-                </>
-              )}
+                </Stack>
 
-              <Title order={5} mb="xs">
-                Description
-              </Title>
+                <Divider my="sm" />
+              </>
+            )}
+            <Stack p="md">
+              <Title order={5}>Description</Title>
               <Paper withBorder p="md">
                 <Text>
                   Integrate with your Slack workspace to allow Sweetr to send
@@ -122,20 +137,23 @@ export const IntegrationSlackPage = () => {
                   }
                 >
                   <List.Item>
-                    Remind reviewers about PRs awaiting their review.
-                  </List.Item>
-                  <List.Item>
-                    Remind developers about their stale PRs.
-                  </List.Item>
-                  <List.Item>
                     Send weekly digest of teams&apos; relevant metrics.
+                  </List.Item>
+                  <List.Item>
+                    (Coming Soon) Remind reviewers about PRs awaiting their
+                    review.
+                  </List.Item>
+                  <List.Item>
+                    (Coming Soon) Remind developers about their stale PRs.
                   </List.Item>
                 </List>
               </Paper>
+            </Stack>
 
-              <Title order={5} mb="xs" mt="lg">
-                Scopes
-              </Title>
+            <Divider my="sm" />
+
+            <Stack p="md">
+              <Title order={5}>Scopes</Title>
               <Paper withBorder p="md">
                 <Text>
                   Review the {integration?.isEnabled ? "granted" : "requested"}{" "}
@@ -167,51 +185,10 @@ export const IntegrationSlackPage = () => {
                   ]}
                 />
               </Paper>
-
-              {integration &&
-                !integration?.isEnabled &&
-                integration.installUrl && (
-                  <Button
-                    mt="lg"
-                    fullWidth
-                    component={Link}
-                    to={integration.installUrl}
-                    loading={isIntegrating}
-                  >
-                    Install
-                  </Button>
-                )}
-
-              {integration?.isEnabled && (
-                <>
-                  <Button
-                    mt="lg"
-                    fullWidth
-                    color="red"
-                    variant="outline"
-                    onClick={() =>
-                      openConfirmationModal({
-                        title: "Uninstall Slack App",
-                        label: (
-                          <>
-                            Your automation settings will not be removed. You
-                            can reinstall Slack anytime to re-enable
-                            notifications.
-                          </>
-                        ),
-                        confirmLabel: "Uninstall Slack",
-                        onConfirm: handleUninstall,
-                      })
-                    }
-                  >
-                    Uninstall
-                  </Button>
-                </>
-              )}
-            </>
-          }
-        />
-      </Box>
-    </PageContainer>
+            </Stack>
+          </>
+        }
+      />
+    </DrawerScrollable>
   );
 };

@@ -16,6 +16,21 @@ CREATE TYPE "CodeReviewState" AS ENUM ('APPROVED', 'CHANGES_REQUESTED', 'COMMENT
 -- CreateEnum
 CREATE TYPE "TeamMemberRole" AS ENUM ('DESIGNER', 'ENGINEER', 'LEADER', 'MANAGER', 'PRODUCT', 'QA');
 
+-- CreateEnum
+CREATE TYPE "IntegrationApp" AS ENUM ('SLACK');
+
+-- CreateEnum
+CREATE TYPE "AutomationType" AS ENUM ('PR_TITLE_CHECK', 'PR_SIZE_LABELER');
+
+-- CreateEnum
+CREATE TYPE "DigestType" AS ENUM ('TEAM_METRICS', 'TEAM_WIP');
+
+-- CreateEnum
+CREATE TYPE "DayOfTheWeek" AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
+
+-- CreateEnum
+CREATE TYPE "Frequency" AS ENUM ('WEEKLY', 'MONTHLY');
+
 -- CreateTable
 CREATE TABLE "GitProfile" (
     "id" SERIAL NOT NULL,
@@ -25,6 +40,8 @@ CREATE TABLE "GitProfile" (
     "name" TEXT NOT NULL,
     "avatar" TEXT,
     "userId" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "GitProfile_pkey" PRIMARY KEY ("id")
 );
@@ -34,6 +51,8 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "slug" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -46,35 +65,44 @@ CREATE TABLE "Organization" (
     "name" TEXT NOT NULL,
     "handle" TEXT NOT NULL,
     "avatar" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Automation" (
-    "id" SERIAL NOT NULL,
-    "slug" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "shortDescription" TEXT NOT NULL,
-    "demoUrl" TEXT NOT NULL,
-    "color" TEXT NOT NULL,
-    "icon" TEXT NOT NULL,
-    "benefits" JSONB NOT NULL,
-    "available" BOOLEAN NOT NULL DEFAULT true,
-    "docsUrl" TEXT,
-
-    CONSTRAINT "Automation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Workspace" (
     "id" SERIAL NOT NULL,
     "gitProvider" "GitProvider" NOT NULL,
+    "settings" JSONB NOT NULL DEFAULT '{}',
+    "trialEndAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "organizationId" INTEGER,
     "gitProfileId" INTEGER,
 
     CONSTRAINT "Workspace_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Subscription" (
+    "id" SERIAL NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "priceId" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "interval" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "currentPeriodStart" TIMESTAMP(3) NOT NULL,
+    "currentPeriodEnd" TIMESTAMP(3) NOT NULL,
+    "startedAt" TIMESTAMP(3) NOT NULL,
+    "object" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -89,6 +117,8 @@ CREATE TABLE "Installation" (
     "events" JSONB NOT NULL,
     "suspendedAt" TIMESTAMP(3),
     "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Installation_pkey" PRIMARY KEY ("id")
 );
@@ -99,6 +129,8 @@ CREATE TABLE "WorkspaceMembership" (
     "gitProfileId" INTEGER NOT NULL,
     "workspaceId" INTEGER NOT NULL,
     "role" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "WorkspaceMembership_pkey" PRIMARY KEY ("id")
 );
@@ -118,6 +150,7 @@ CREATE TABLE "Repository" (
     "starCount" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL,
     "workspaceId" INTEGER NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Repository_pkey" PRIMARY KEY ("id")
 );
@@ -130,6 +163,7 @@ CREATE TABLE "PullRequest" (
     "gitUrl" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "number" TEXT NOT NULL,
+    "files" JSONB NOT NULL DEFAULT '[]',
     "commentCount" INTEGER NOT NULL,
     "changedFilesCount" INTEGER NOT NULL,
     "linesAddedCount" INTEGER NOT NULL,
@@ -149,6 +183,9 @@ CREATE TABLE "PullRequest" (
 -- CreateTable
 CREATE TABLE "PullRequestTracking" (
     "id" SERIAL NOT NULL,
+    "changedFilesCount" INTEGER NOT NULL DEFAULT 0,
+    "linesAddedCount" INTEGER NOT NULL DEFAULT 0,
+    "linesDeletedCount" INTEGER NOT NULL DEFAULT 0,
     "size" "PullRequestSize" NOT NULL,
     "firstCommitAt" TIMESTAMP(3),
     "firstDraftedAt" TIMESTAMP(3),
@@ -163,6 +200,8 @@ CREATE TABLE "PullRequestTracking" (
     "cycleTime" BIGINT,
     "pullRequestId" INTEGER NOT NULL,
     "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "PullRequestTracking_pkey" PRIMARY KEY ("id")
 );
@@ -176,6 +215,7 @@ CREATE TABLE "CodeReview" (
     "pullRequestId" INTEGER NOT NULL,
     "authorId" INTEGER NOT NULL,
     "workspaceId" INTEGER NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "CodeReview_pkey" PRIMARY KEY ("id")
 );
@@ -188,8 +228,10 @@ CREATE TABLE "Team" (
     "icon" TEXT NOT NULL,
     "startColor" TEXT NOT NULL,
     "endColor" TEXT NOT NULL,
-    "workspaceId" INTEGER NOT NULL,
     "archivedAt" TIMESTAMP(3),
+    "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
 );
@@ -201,21 +243,54 @@ CREATE TABLE "TeamMember" (
     "teamId" INTEGER NOT NULL,
     "gitProfileId" INTEGER,
     "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "AutomationSetting" (
+CREATE TABLE "Digest" (
     "id" SERIAL NOT NULL,
+    "type" "DigestType" NOT NULL,
+    "enabled" BOOLEAN NOT NULL,
+    "channel" TEXT NOT NULL,
+    "frequency" "Frequency" NOT NULL,
+    "dayOfTheWeek" "DayOfTheWeek"[],
+    "timeOfDay" TEXT NOT NULL,
+    "timezone" TEXT NOT NULL,
+    "settings" JSONB NOT NULL,
+    "teamId" INTEGER NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Digest_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Automation" (
+    "id" SERIAL NOT NULL,
+    "type" "AutomationType" NOT NULL,
     "enabled" BOOLEAN NOT NULL,
     "settings" JSONB NOT NULL,
-    "automationId" INTEGER NOT NULL,
-    "workspaceId" INTEGER,
-    "repositoryId" INTEGER,
-    "teamId" INTEGER,
+    "workspaceId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "AutomationSetting_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Automation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Integration" (
+    "id" SERIAL NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
+    "app" "IntegrationApp" NOT NULL,
+    "data" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Integration_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -237,13 +312,16 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Organization_gitProvider_gitOrganizationId_key" ON "Organization"("gitProvider", "gitOrganizationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Automation_slug_key" ON "Automation"("slug");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Workspace_gitProfileId_key" ON "Workspace"("gitProfileId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Workspace_organizationId_key" ON "Workspace"("organizationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Subscription_workspaceId_key" ON "Subscription"("workspaceId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Subscription_subscriptionId_key" ON "Subscription"("subscriptionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Installation_gitInstallationId_key" ON "Installation"("gitInstallationId");
@@ -309,23 +387,23 @@ CREATE INDEX "TeamMember_gitProfileId_idx" ON "TeamMember"("gitProfileId");
 CREATE INDEX "TeamMember_teamId_idx" ON "TeamMember"("teamId");
 
 -- CreateIndex
-CREATE INDEX "AutomationSetting_workspaceId_idx" ON "AutomationSetting"("workspaceId");
+CREATE INDEX "Digest_workspaceId_idx" ON "Digest"("workspaceId");
 
 -- CreateIndex
-CREATE INDEX "AutomationSetting_automationId_idx" ON "AutomationSetting"("automationId");
+CREATE INDEX "Digest_teamId_idx" ON "Digest"("teamId");
 
 -- CreateIndex
-CREATE INDEX "AutomationSetting_repositoryId_idx" ON "AutomationSetting"("repositoryId");
+CREATE UNIQUE INDEX "Digest_teamId_type_key" ON "Digest"("teamId", "type");
 
 -- CreateIndex
-CREATE INDEX "AutomationSetting_teamId_idx" ON "AutomationSetting"("teamId");
+CREATE INDEX "Automation_workspaceId_type_idx" ON "Automation"("workspaceId", "type");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AutomationSetting_automationId_workspaceId_key" ON "AutomationSetting"("automationId", "workspaceId");
+CREATE UNIQUE INDEX "Automation_workspaceId_type_key" ON "Automation"("workspaceId", "type");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AutomationSetting_automationId_repositoryId_key" ON "AutomationSetting"("automationId", "repositoryId");
+CREATE INDEX "Integration_workspaceId_app_idx" ON "Integration"("workspaceId", "app");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AutomationSetting_automationId_teamId_key" ON "AutomationSetting"("automationId", "teamId");
+CREATE UNIQUE INDEX "Integration_workspaceId_app_key" ON "Integration"("workspaceId", "app");
 

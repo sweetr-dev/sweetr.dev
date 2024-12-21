@@ -22,9 +22,9 @@ const inter_tight = Inter_Tight({
 export const metadata: Metadata = {
   title: "sweetr.dev",
   description:
-    "The dev-first platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
+    "The developer platform for continuous improvement. Enable your software engineering teams to optimize and speed up development while improving developer experience.",
   openGraph: {
-    title: "Sweetr - The dev-first platform for continuous improvement",
+    title: "Sweetr - The developer platform for continuous improvement",
     description:
       "Enable your software engineering teams to optimize and speed up development while improving developer experience. Self-host for free or try a 14-day trial.",
     url: "https://sweetr.dev",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "sweetr.dev",
-    description: "The dev-first platform for continuous improvement",
+    description: "The developer platform for continuous improvement",
     images: ["https://sweetr.dev/images/og-image.png"],
   },
 };
@@ -65,6 +65,15 @@ export default function RootLayout({
           data-website-id={analyticsId}
         />
       )}
+      <Script id="microsoft-clarity" strategy="afterInteractive">
+        {`
+          (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "pe79341baq");
+        `}
+      </Script>
       <CrispChat />
       <body
         className={`${inter.variable} ${inter_tight.variable} font-inter antialiased bg-white text-zinc-900 tracking-tight`}

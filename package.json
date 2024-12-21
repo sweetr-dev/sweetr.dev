@@ -17,14 +17,16 @@
     "ssl:generate": "node ./certs/devcert.js",
     "heroku-postbuild": "turbo run build --filter api",
     "start": "cd apps/api && npm run start",
-    "ngrok": "ngrok http https://api.sweetr.local:8000 --domain weekly-flying-primate.ngrok-free.app",
-    "test": "vitest run"
+    "test": "vitest run",
+    "_ngrok": "ngrok http https://api.sweetr.local:8000 --domain $NGROK_DOMAIN",
+    "ngrok": "dotenv -e ./apps/api/.env -- npm run _ngrok"
   },
   "dependencies": {
     "devcert": "^1.2.2",
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
+    "dotenv-cli": "^7.4.2",
     "prettier": "latest",
     "turbo": "latest",
     "vitest": "^2.1.1"

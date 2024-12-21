@@ -4,7 +4,7 @@ import {
   FindGitProfileByIdArgs,
   PaginateGitProfilesArgs,
 } from "./people.types";
-import { Prisma } from "@prisma/client";
+import { GitProfile, Prisma } from "@prisma/client";
 
 export const paginateGitProfiles = async (
   workspaceId: number,
@@ -82,4 +82,9 @@ export const findGitProfileById = async ({
       user: true,
     },
   });
+};
+
+// TO-DO: Support other Git Providers
+export const getPersonGitUrl = (person: GitProfile) => {
+  return `https://github.com/${person.handle}`;
 };

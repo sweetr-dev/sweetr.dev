@@ -8,7 +8,6 @@ interface CardIntegrationProps {
   available: boolean;
   description: string;
   icon: ReactNode;
-  color: string;
   onClick?: () => void;
 }
 
@@ -18,7 +17,6 @@ export const CardIntegration = ({
   available,
   description,
   icon,
-  color,
   onClick,
 }: CardIntegrationProps) => {
   return (
@@ -30,7 +28,14 @@ export const CardIntegration = ({
       className={available ? "grow-on-hover" : ""}
       onClick={onClick}
     >
-      <Card.Section bg={color} h={180}>
+      <Card.Section
+        h={180}
+        style={{
+          background:
+            "radial-gradient(circle, var(--mantine-color-dark-5) 20%, rgba(0, 0, 0, 0.15) 95%)",
+          borderBottom: "1px solid var(--mantine-color-dark-5)",
+        }}
+      >
         <Group align="center" justify="center" h="100%">
           {icon}
         </Group>

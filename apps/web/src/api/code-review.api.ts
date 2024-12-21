@@ -56,6 +56,9 @@ export const useCodeReviewsInfiniteQuery = (
                     linesDeletedCount
                     tracking {
                       size
+                      changedFilesCount
+                      linesAddedCount
+                      linesDeletedCount
                       firstReviewAt
                       timeToFirstReview
                     }

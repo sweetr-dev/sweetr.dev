@@ -7,7 +7,7 @@ interface ImageDemoProps {
   height?: number;
 }
 
-export const ImageDemo = ({ height = 200, src, title }: ImageDemoProps) => {
+export const ImageDemo = ({ src, title }: ImageDemoProps) => {
   const [isOpen, modalControl] = useDisclosure(false);
 
   return (
@@ -15,10 +15,11 @@ export const ImageDemo = ({ height = 200, src, title }: ImageDemoProps) => {
       <Paper withBorder>
         <Image
           src={src}
-          height={height}
+          mah={200}
           width={702}
           onClick={() => modalControl.open()}
           style={{ cursor: "pointer", objectPosition: "top" }}
+          className="grow-on-hover"
           radius="md"
           fallbackSrc="https://placehold.co/500x100?text=img"
         />

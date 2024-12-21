@@ -10,6 +10,7 @@ export enum SweetQueue {
   // Crons - https://docs.bullmq.io/guide/jobs/repeatable
   CRON_GITHUB_RETRY_FAILED_WEBHOOKS = "{cron.github.retry_failed_webhooks}",
   CRON_STRIPE_UPDATE_SEATS = "{cron.stripe.update_seats}",
+  CRON_SCHEDULE_DIGESTS = "{cron.schedule_digests}",
 
   // GitHub
   GITHUB_INSTALLATION_SYNC = "{github.installation.sync}",
@@ -22,6 +23,9 @@ export enum SweetQueue {
   GITHUB_SYNC_CODE_REVIEW = "{github.sync.code_review}",
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
 
+  // Digests
+  DIGEST_SEND = "{digest.send}",
+
   // Stripe
   STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
 
@@ -31,6 +35,9 @@ export enum SweetQueue {
   // Automations
   AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
   AUTOMATION_PR_SIZE_LABELER = "{automation.pr_size_labeler}",
+
+  // SaaS - Internal to Sweetr team
+  SAAS_NOTIFY_NEW_INSTALLATION = "{saas.notify_new_installation}",
 }
 
 export enum JobPriority {

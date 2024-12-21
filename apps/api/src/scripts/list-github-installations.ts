@@ -10,7 +10,6 @@ const octokit = getAppOctoKit();
 octokit.rest.apps.listInstallations().then((response) => {
   for (const installation of response.data) {
     console.log("-----------------------------------");
-    console.log(installation.id, installation.account?.login);
-    console.log("Deleting....");
+    console.log(installation);
   }
 });

@@ -58,7 +58,6 @@ echarts.use([
   CanvasRenderer,
 ]);
 
-// TO-DO: Upgrade date-fns and use UTCDate
 export const formatAxisDate = (date: Date, period: Period): string => {
   if (period === Period.DAILY) return format(date, "MM/dd");
   if (period === Period.WEEKLY) return format(date, "MM/dd");
@@ -68,7 +67,6 @@ export const formatAxisDate = (date: Date, period: Period): string => {
   return format(date, "yyyy");
 };
 
-// TO-DO: Upgrade date-fns and use UTCDate
 export const formatTooltipDate = (date: Date, period: Period): string => {
   if (period === Period.DAILY) return format(date, "MMMM do yyyy");
   if (period === Period.WEEKLY)

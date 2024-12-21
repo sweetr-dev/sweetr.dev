@@ -2,7 +2,7 @@ import { Job } from "bullmq";
 import { SweetQueue } from "../../../../bull-mq/queues";
 import { createWorker } from "../../../../bull-mq/workers";
 import { logger } from "../../../../lib/logger";
-import { removeIntegrationByTeamId } from "../services/slack.service";
+import { removeIntegrationBySlackTeamId } from "../services/slack-integration.service";
 
 export const slackAppUninstalledWorker = createWorker(
   SweetQueue.SLACK_APP_UNINSTALLED,
@@ -10,7 +10,7 @@ export const slackAppUninstalledWorker = createWorker(
     logger.info("slackAppUninstalled", { teamId: job.data.team_id });
 
     if (job.data.team_id) {
-      await removeIntegrationByTeamId(job.data.team_id);
+      await removeIntegrationBySlackTeamId(job.data.team_id);
     }
   }
 );

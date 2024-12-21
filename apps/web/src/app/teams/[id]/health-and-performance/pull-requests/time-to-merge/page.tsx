@@ -1,16 +1,12 @@
-import { useParams } from "react-router-dom";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { Box, Group, Paper, Skeleton } from "@mantine/core";
-import { useChartDrawer } from "../../chart-page.provider";
+import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
 import { FilterSelect } from "../../../../../../components/filter-select";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
 import { IconCalendar, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../providers/date.provider";
-import startOfDay from "date-fns/startOfDay";
-import endOfToday from "date-fns/endOfToday";
-import subDays from "date-fns/subDays";
 import { LoadableContent } from "../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../components/card-info";
 import { useChartTimeToMergeQuery } from "../../../../../../api/chart.api";
@@ -20,11 +16,13 @@ import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../components/page-empty-state";
 import { ResourceNotFound } from "../../../../../../exceptions/resource-not-found.exception";
 import { ButtonDocs } from "../../../../../../components/button-docs";
+import { useTeamId } from "../../../use-team";
+import { startOfDay, subDays, endOfToday } from "date-fns";
 
 export const TeamPullRequestsTimeToMergePage = () => {
-  const { teamId } = useParams();
+  const teamId = useTeamId();
   const { workspace } = useWorkspace();
-  const drawerProps = useChartDrawer({
+  const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/health-and-performance/`,
   });
   const searchParams = useFilterSearchParameters();

@@ -2,7 +2,7 @@ import Image from "next/image";
 import ShieldImage from "@/public/images/shield.png";
 import CommandImage from "@/public/images/command.png";
 import SimpleImage from "@/public/images/simple.png";
-import CommunityImage from "@/public/images/community-bg.png";
+import GitRepo from "@/public/images/git-repo.jpg";
 import SpeedImage from "@/public/images/speed.png";
 
 import {
@@ -10,8 +10,8 @@ import {
   IconBolt,
   IconCode,
   IconFocus,
-  IconHeadphones,
   IconHeartHandshake,
+  IconPlugConnected,
   IconRefreshDot,
   IconShieldHeart,
   IconSteam,
@@ -173,20 +173,14 @@ export default function FeaturesTraits() {
                       </h3>
                     </div>
                     <p className="grow  text-sm text-dark-100">
-                      Join our GitHub community to share feedback, report
-                      problems or submit contributions.{" "}
-                      <Link
-                        href="https://github.com/orgs/sweetr-dev/discussions"
-                        className="text-green-400 underline"
-                      >
-                        Learn more.
-                      </Link>
+                      Be part of our community, share feedback, report problems,
+                      and submit contributions to the source code.
                     </p>
                   </div>
                   <figure className="relative">
                     <Image
-                      className="h-[250px] mt-[27px] lg:h-[280px] lg:max-h-[280px] border border-dark-400 w-auto object-cover mx-auto object-left sm:object-contain sm:h-auto rounded-t-lg opacity-80 shadow-[0_0_20px_3px_rgba(255,255,255,0.1)] block"
-                      src={CommunityImage}
+                      className="h-[250px] mt-[27px] lg:h-[280px] lg:max-h-[280px] border border-dark-400 w-auto object-cover mx-auto object-left sm:object-contain sm:h-auto rounded-t-lg opacity-90 shadow-[0_0_20px_3px_rgba(255,255,255,0.25)] block z-[10000]"
+                      src={GitRepo}
                       width={721}
                       height={280}
                       alt="Community"
@@ -239,7 +233,7 @@ export default function FeaturesTraits() {
               A lot more to come
             </h2>
             <p className="text-md text-zinc-400">
-              A sneak peek into our planned features and roadmap.
+              A sneak peek into our planned features.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-16 mt-12">
@@ -258,12 +252,6 @@ export default function FeaturesTraits() {
                 icon: IconRefreshDot,
               },
               {
-                title: "Focus time",
-                description:
-                  "Integration with your calendar provider to give you insights on developers' available focus time.",
-                icon: IconHeadphones,
-              },
-              {
                 title: "Wellbeing",
                 description:
                   "More wellbeing-focused insights for increased developer satisfaction and wellness.",
@@ -276,9 +264,15 @@ export default function FeaturesTraits() {
                 icon: IconTarget,
               },
               {
-                title: "Onboarding",
+                title: "More Integrations",
                 description:
-                  "A gamified experience to make onboarding more effective and fun.",
+                  "All of your toolstack: JIRA, Linear, Teams, PagerDuty, and others.",
+                icon: IconPlugConnected,
+              },
+              {
+                title: "1:1s",
+                description:
+                  "A new experience for managers and leaders to coach their teams.",
                 icon: IconHeartHandshake,
               },
             ].map((plannedFeature) => {

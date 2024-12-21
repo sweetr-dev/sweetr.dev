@@ -37,9 +37,9 @@
       "url": "https://github.com/sweetr-dev/sweetr.dev"
     },
     {
-      "name": "Community",
+      "name": "Give Feedback",
       "icon": "message-code",
-      "url": "https://github.com/sweetr-dev/sweetr.dev/discussions"
+      "url": "https://sweetr.featurebase.app/"
     }
   ],
   "feedback": {
@@ -65,6 +65,7 @@
         "features/people",
         "features/pull-requests",
         "features/code-reviews",
+        "features/digests",
         {
           "group": "Team Insights",
           "icon": "chart-simple",
@@ -86,7 +87,8 @@
             "features/automations/pr-size-labeler",
             "features/automations/pr-title-check"
           ]
-        }
+        },
+        "features/integrations"
       ]
     },
     {

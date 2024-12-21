@@ -1,16 +1,15 @@
 import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { periodToDateTrunc } from "./chart.service";
-import { Period } from "@sweetr/graphql-types/dist/api";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
+import { PullRequestChartFilters } from "./chart-pull-request.types";
 
-interface ChartFilters {
-  workspaceId: number;
-  startDate: string;
-  endDate: string;
-  period: Period;
-  teamId?: number;
-}
+const innerJoinClause = Prisma.sql`
+    INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
+    INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
+    INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
+    INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
+`;
 
 export const getTimeToMergeChartData = async ({
   workspaceId,
@@ -18,17 +17,15 @@ export const getTimeToMergeChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
-    SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
-    AVG(pt."timeToMerge") AS value
+    SELECT 
+      DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
+      AVG(pt."timeToMerge") AS value
     FROM "PullRequestTracking" pt
-    INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
-    INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-    INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
-    INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    ${innerJoinClause}
+    WHERE p."mergedAt" >= ${new Date(startDate)} 
+      AND p."mergedAt" <= ${new Date(endDate)} 
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -53,19 +50,16 @@ export const getTimeForFirstReviewChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT DATE_TRUNC(${periodToDateTrunc(
       period
     )}, pt."firstReviewAt") AS period,
     AVG(pt."timeToFirstReview") AS value
     FROM "PullRequestTracking" pt
-    INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
-    INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-    INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
-    INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE pt."firstReviewAt" >= ${startDate} 
-      AND pt."firstReviewAt" <= ${endDate} 
+    ${innerJoinClause}
+    WHERE pt."firstReviewAt" >= ${new Date(startDate)} 
+      AND pt."firstReviewAt" <= ${new Date(endDate)} 
       AND pt."firstReviewAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -90,19 +84,15 @@ export const getTimeForApprovalChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
-    SELECT DATE_TRUNC(${periodToDateTrunc(
-      period
-    )}, pt."firstApprovalAt") AS period,
-    AVG(pt."timeToFirstApproval") AS value
+    SELECT 
+      DATE_TRUNC(${periodToDateTrunc(period)}, pt."firstApprovalAt") AS period,
+      AVG(pt."timeToFirstApproval") AS value
     FROM "PullRequestTracking" pt
-    INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
-    INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-    INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
-    INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE pt."firstApprovalAt" >= ${startDate} 
-      AND pt."firstApprovalAt" <= ${endDate} 
+    ${innerJoinClause}
+    WHERE pt."firstApprovalAt" >= ${new Date(startDate)} 
+      AND pt."firstApprovalAt" <= ${new Date(endDate)} 
       AND pt."firstApprovalAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -127,17 +117,15 @@ export const getCycleTimeChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
-    SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
-    AVG(pt."cycleTime") AS value
+    SELECT 
+      DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
+      AVG(pt."cycleTime") AS value
     FROM "PullRequestTracking" pt
-    INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
-    INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-    INNER JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
-    INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    ${innerJoinClause}
+    WHERE p."mergedAt" >= ${new Date(startDate)}
+      AND p."mergedAt" <= ${new Date(endDate)}
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
       AND wm."workspaceId" = ${workspaceId}
@@ -151,7 +139,7 @@ export const getCycleTimeChartData = async ({
     );
 
   return results.map((result) => ({
-    period: result.period.toISOString(),
+    period: result.period?.toISOString(),
     value: BigInt(Math.floor(result.value || 0)),
   }));
 };
@@ -162,22 +150,18 @@ export const getPullRequestSizeDistributionChartData = async ({
   startDate,
   endDate,
   period,
-}: ChartFilters) => {
+}: PullRequestChartFilters) => {
   const query = Prisma.sql`
     SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
     pt.size AS size,
     COUNT(p."id") AS value
     FROM "PullRequestTracking" pt
-    JOIN "PullRequest" p ON pt."pullRequestId" = p."id"
-    JOIN "Repository" r ON p."repositoryId" = r."id"
-    JOIN "GitProfile" gp ON p."authorId" = gp."id"
-    JOIN "TeamMember" tm ON gp."id" = tm."gitProfileId"
-    JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-    WHERE p."mergedAt" >= ${startDate} 
-      AND p."mergedAt" <= ${endDate} 
+    ${innerJoinClause}
+    WHERE p."mergedAt" >= ${new Date(startDate)} 
+      AND p."mergedAt" <= ${new Date(endDate)} 
       AND p."mergedAt" IS NOT NULL
       AND tm."teamId" = ${teamId}
-      AND r."workspaceId" = ${workspaceId}
+      AND wm."workspaceId" = ${workspaceId}
     GROUP BY period, size
     ORDER BY period ASC;
   `;
