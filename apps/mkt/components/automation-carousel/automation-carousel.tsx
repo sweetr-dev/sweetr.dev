@@ -67,19 +67,14 @@ export const AutomationCarousel = () => {
                       size. Increase awareness about creating small PRs.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-1">
-                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClockBolt
-                        color="#fff"
-                        stroke={1.5}
-                        className="w-5 h-5"
-                      />
-                    </div>
-                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconBug color="#fff" stroke={1.5} className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="font-bold text-green-400">Available</div>
+                  <a
+                    href="https://docs.sweetr.dev/features/automations/pr-size-labeler"
+                    className="mt-4 btn bg-green-400"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read the docs
+                  </a>
                 </div>
               </div>
             </div>
@@ -97,23 +92,21 @@ export const AutomationCarousel = () => {
                 <div className="flex flex-col p-4 h-full">
                   <div className="grow">
                     <div className="font-bold text-lg mb-1 text-zinc-200">
-                      PR Title Requirements
+                      PR Title Check
                     </div>
                     <div className="text-dark-200 mb-3">
                       Enforce standards on Pull Request titles. Ticket code,
                       specific prefix, or something else? You pick it.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-1">
-                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconGavel
-                        color="#fff"
-                        stroke={1.5}
-                        className="w-5 h-5"
-                      />
-                    </div>
-                  </div>
-                  <div className="font-bold text-green-400">Available</div>
+                  <a
+                    href="https://docs.sweetr.dev/features/automations/pr-title-check"
+                    className="mt-4 btn bg-green-400"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read the docs
+                  </a>
                 </div>
               </div>
             </div>
@@ -138,16 +131,9 @@ export const AutomationCarousel = () => {
                       reviewed or has been open for too long.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-1">
-                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconClockBolt
-                        color="#fff"
-                        stroke={1.5}
-                        className="w-5 h-5"
-                      />
-                    </div>
+                  <div className="btn hover:scale-100 border-dark-100 border-dashed text-dark-100 mt-4">
+                    Coming soon
                   </div>
-                  <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
               </div>
             </div>
@@ -172,16 +158,13 @@ export const AutomationCarousel = () => {
                       can be merged in selected repositories.
                     </div>
                   </div>
-                  <div className="flex space-x-1 mb-1">
-                    <div className="rounded p-1 bg-dark-600 border border-dark-400 flex items-center justify-center w-7 h-7">
-                      <IconBug color="#fff" stroke={1.5} className="w-5 h-5" />
-                    </div>
+                  <div className="btn hover:scale-100 border-dark-100 border-dashed text-dark-100 mt-4">
+                    Coming soon
                   </div>
-                  <div className="font-bold text-dark-100">Coming Soon</div>
                 </div>
               </div>
             </div>
-            <div className="rounded-[4px] swiper-slide h-full group/slide border-[2px] border-dashed border-dark-300">
+            <div className="rounded-[4px] swiper-slide h-full group/slide border-[1px] border-dashed border-dark-300">
               <div className="relative h-[385px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
                 More coming soon
               </div>
