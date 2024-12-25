@@ -5,7 +5,7 @@ import FeaturesTraits from "@/components/features-traits";
 import FeaturesAutomations from "@/components/features-automations";
 import PricingTabs from "@/components/pricing-tabs";
 import ProblemStatements from "@/components/problem-statements";
-import FeaturesSlack from "@/components/features-slack";
+import FeaturesSlack from "@/components/features-slack-digests";
 
 export default function Home() {
   return (

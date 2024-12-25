@@ -8,7 +8,7 @@ import DigestMetrics from "@/public/images/digest-metrics.png";
 import DigestWip from "@/public/images/digest-wip.png";
 import { IconChartBar, IconProgress } from "@tabler/icons-react";
 
-export default function FeaturesSlack() {
+export default function FeaturesSlackDigests() {
   const [tab, setTab] = useState<number>(1);
 
   const tabs = useRef<HTMLDivElement>(null);
@@ -38,14 +38,18 @@ export default function FeaturesSlack() {
             {/* Tabs buttons */}
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
               <button
-                className={`hover:scale-105 transition-all duration-500 text-left px-4 py-5 border border-dark-400 rounded ${tab !== 1 ? "bg-dark-800 opacity-60 hover:opacity-100 transition" : "bg-dark-900 shadow-sm"}`}
+                className={`hover:scale-105 transition-all duration-200 text-left px-4 py-5 border border-dark-400 rounded ${tab !== 1 ? "" : "shadow-lg shadow-green-400/20 border-green-400"}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setTab(1);
                 }}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <div className="text-xl font-inter-tight font-semibold text-zinc-200">
+                  <div
+                    className={`text-xl font-inter-tight font-semibold ${
+                      tab !== 1 ? "text-zinc-200" : "text-green-400"
+                    }`}
+                  >
                     Metrics Digest
                   </div>
                   <div
@@ -59,14 +63,18 @@ export default function FeaturesSlack() {
                 </div>
               </button>
               <button
-                className={`hover:scale-105 transition-all duration-500 text-left px-4 py-5 border border-dark-400 rounded ${tab !== 2 ? "bg-dark-800 opacity-60 hover:opacity-100 transition" : "bg-dark-900 shadow-sm"}`}
+                className={`hover:scale-105 transition-all duration-200 text-left px-4 py-5 border border-dark-400 rounded ${tab !== 2 ? "" : "shadow-lg shadow-green-400/20 border-green-400"}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setTab(2);
                 }}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <div className="text-xl font-inter-tight font-semibold text-zinc-200">
+                  <div
+                    className={`text-xl font-inter-tight font-semibold ${
+                      tab !== 2 ? "text-zinc-200" : "text-green-400"
+                    }`}
+                  >
                     Work In Progress Digest
                   </div>
                   <div

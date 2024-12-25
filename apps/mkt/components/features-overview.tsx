@@ -60,7 +60,7 @@ const features = [
     image: FeatureCodeReviews,
   },
   {
-    title: "DORA: Cycle Time",
+    title: "Cycle Time",
     description: "View average time to code, review, and merge.",
     benefits: (
       <>
@@ -133,11 +133,10 @@ export default function FeaturesOverview() {
           <div className="max-w-xl lg:max-w-6xl mx-auto px-4 sm:px-6 md:px-0">
             <div className="relative mx-auto pb-12 md:pb-20">
               <h2 className="font-inter-tight text-3xl md:text-4xl font-bold text-white mb-4">
-                Your pathway to engineering excellence
+                Unlock engineering excellence
               </h2>{" "}
               <div className="text-lg text-green-400 max-w-2xl">
-                Unlock continuous improvement with team-focused data, insights &
-                automations.
+                Improve with team-focused data, insights & automations.
               </div>
             </div>
           </div>
@@ -193,25 +192,21 @@ export default function FeaturesOverview() {
                   href="https://github.com/apps/sweetr-dev/installations/new"
                   target="_blank"
                   rel="nofollow"
-                  className="block w-full text-left px-4 py-4 rounded border border-green-400 hover:scale-105 transition-all duration-500"
+                  className="block w-full text-left px-4 py-4 rounded bg-green-400 text-black hover:scale-105 transition-all duration-500 shadow-xl shadow-green-300/30"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-[8px] text-green-400">
+                    <div className="flex items-center gap-[8px] ">
                       <IconBrandGithub
-                        stroke={1}
+                        stroke={1.5}
                         className={`shrink-0`}
                         size={24}
                       />
                       <div className="font-inter-tight text-lg font-semibold ">
-                        Try now - Connect to GitHub
+                        Start 2-week free trial
                       </div>
                     </div>
                     <div>
-                      <IconExternalLink
-                        stroke={1}
-                        size={16}
-                        className="text-green-400"
-                      />
+                      <IconExternalLink stroke={2} size={16} className="" />
                     </div>
                   </div>
                 </a>
