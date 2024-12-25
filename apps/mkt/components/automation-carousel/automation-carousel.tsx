@@ -48,7 +48,7 @@ export const AutomationCarousel = () => {
           >
             <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
+                <div className="bg-green-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   📏
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -67,6 +67,16 @@ export const AutomationCarousel = () => {
                       size. Increase awareness about creating small PRs.
                     </div>
                   </div>
+                  <div className="flex flex-col gap-2 mih-[334px]">
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconClockBolt size={20} stroke={1.5} />
+                      <div>Improves cycle time</div>
+                    </div>
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconBug size={20} stroke={1.5} />
+                      <div>Improves failure rate</div>
+                    </div>
+                  </div>
                   <a
                     href="https://docs.sweetr.dev/features/automations/pr-size-labeler"
                     className="mt-4 btn bg-green-400"
@@ -80,7 +90,7 @@ export const AutomationCarousel = () => {
             </div>
             <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-green-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
+                <div className="bg-red-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   ✍️
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -97,6 +107,12 @@ export const AutomationCarousel = () => {
                     <div className="text-dark-200 mb-3">
                       Enforce standards on Pull Request titles. Ticket code,
                       specific prefix, or something else? You pick it.
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 min-h-[64px]">
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconGavel size={20} stroke={1.5} />
+                      <div>Improves compliance</div>
                     </div>
                   </div>
                   <a
@@ -131,6 +147,12 @@ export const AutomationCarousel = () => {
                       reviewed or has been open for too long.
                     </div>
                   </div>
+                  <div className="flex flex-col gap-2 min-h-[64px]">
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconClockBolt size={20} stroke={1.5} />
+                      <div>Improves cycle time</div>
+                    </div>
+                  </div>
                   <div className="btn hover:scale-100 border-dark-100 border-dashed text-dark-100 mt-4">
                     Coming soon
                   </div>
@@ -139,7 +161,45 @@ export const AutomationCarousel = () => {
             </div>
             <div className="rounded-[4px] swiper-slide h-full group/slide">
               <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
-                <div className="bg-red-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
+                <div className="bg-yellow-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
+                  🏗️
+                  <Particles
+                    className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
+                    quantity={4}
+                    refresh={swiperInitialized}
+                    rgb="23, 25, 25"
+                  />
+                </div>
+                <div className="flex flex-col p-4 h-full">
+                  <div className="grow">
+                    <div className="font-bold text-lg mb-1 text-zinc-200">
+                      Environment Drift Alert
+                    </div>
+                    <div className="text-dark-200 mb-3">
+                      Get notified when multiple changes are pending release.
+                      Release earlier and stop releasing too many changes at
+                      once.
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 min-h-[64px]">
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconClockBolt size={20} stroke={1.5} />
+                      <div>Improves cycle time</div>
+                    </div>
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconBug size={20} stroke={1.5} />
+                      <div>Improves failure rate</div>
+                    </div>
+                  </div>
+                  <div className="btn hover:scale-100 border-dark-100 border-dashed text-dark-100 mt-4">
+                    Coming soon
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[4px] swiper-slide h-full group/slide">
+              <div className="border border-dark-400 relative h-full bg-dark-700 rounded-[inherit] z-20 overflow-hidden">
+                <div className="bg-blue-100 flex align-center justify-center text-[80px] py-8 z-20 relative">
                   🧊
                   <Particles
                     className="absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 ease-in-out"
@@ -158,6 +218,12 @@ export const AutomationCarousel = () => {
                       can be merged in selected repositories.
                     </div>
                   </div>
+                  <div className="flex flex-col gap-2 min-h-[64px]">
+                    <div className="flex items-center gap-2 text-green-500 h-[28px]">
+                      <IconBug size={20} stroke={1.5} />
+                      <div>Improves failure rate</div>
+                    </div>
+                  </div>
                   <div className="btn hover:scale-100 border-dark-100 border-dashed text-dark-100 mt-4">
                     Coming soon
                   </div>
@@ -165,7 +231,7 @@ export const AutomationCarousel = () => {
               </div>
             </div>
             <div className="rounded-[4px] swiper-slide h-full group/slide border-[1px] border-dashed border-dark-300">
-              <div className="relative h-[385px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
+              <div className="relative h-[451px] bg-dark-800 rounded-[inherit] z-20 overflow-hidden text-gray-100 flex items-center justify-center text-lg">
                 More coming soon
               </div>
             </div>
