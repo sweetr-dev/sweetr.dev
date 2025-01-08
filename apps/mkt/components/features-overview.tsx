@@ -221,6 +221,7 @@ export default function FeaturesOverview() {
                     <Transition
                       key={index}
                       show={tab === index}
+                      as="div"
                       className="w-full"
                       enter="transition ease-in-out duration-700 transform order-first"
                       enterFrom="opacity-0 -translate-y-4"

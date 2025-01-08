@@ -94,6 +94,7 @@ export default function FeaturesSlackDigests() {
                 {/* Item 1 */}
                 <Transition
                   show={tab === 1}
+                  as="div"
                   className="w-full text-center"
                   enter="transition ease-in-out duration-700 transform order-first"
                   enterFrom="opacity-0 -translate-y-4"
@@ -127,6 +128,7 @@ export default function FeaturesSlackDigests() {
                 {/* Item 2 */}
                 <Transition
                   show={tab === 2}
+                  as="div"
                   className="w-full text-center"
                   enter="transition ease-in-out duration-700 transform order-first"
                   enterFrom="opacity-0 -translate-y-4"
