@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.17",
+    "@headlessui/react": "^2.2.0",
     "@radix-ui/react-slider": "^1.2.2",
     "@tabler/icons": "^2.40.0",
     "@tabler/icons-react": "^2.40.0",
