@@ -9,7 +9,7 @@ interface ButtonContactUsProps {
 export const ButtonContactUs = ({ className = "" }: ButtonContactUsProps) => {
   return (
     <button
-      className="btn border border-dark-400  text-dark-100 w-full shadow"
+      className="btn border border-dark-400 text-zinc-200 w-full shadow"
       onClick={() => {
         Crisp.chat.open();
       }}
