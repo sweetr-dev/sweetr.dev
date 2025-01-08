@@ -10,17 +10,23 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
+    "@radix-ui/react-slider": "^1.2.2",
     "@tabler/icons": "^2.40.0",
     "@tabler/icons-react": "^2.40.0",
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.42",
     "@types/react-dom": "^18.2.17",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "crisp-sdk-web": "^1.0.25",
+    "lucide-react": "^0.469.0",
     "next": "^14.2.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sharp": "^0.33.4",
     "swiper": "^8.4.7",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
