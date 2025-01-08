@@ -81,7 +81,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="18"
+                    id="cloud-all-features"
                     content="Simplified plan with no feature-gating."
                   >
                     All features
@@ -96,7 +96,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="15"
+                    id="1-year-data-retention"
                     content="Sync and mantain historical data up to 1 year."
                   >
                     1 year data retention
@@ -111,7 +111,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="15"
+                    id="regular-support"
                     content="We'll help you through our live chat or email."
                   >
                     Regular support
@@ -161,7 +161,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="18"
+                    id="enterprise-all-features"
                     content="Simplified plan with no feature-gating."
                   >
                     All features
@@ -175,7 +175,10 @@ export const PricingCards = () => {
                   >
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
-                  <Tooltip id="18" content="Scale without limits.">
+                  <Tooltip
+                    id="unlimited-contributors"
+                    content="Scale without limits."
+                  >
                     Unlimited contributors
                   </Tooltip>
                 </li>
@@ -188,7 +191,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="14"
+                    id="on-premise-supported"
                     content="Option to self-host our application."
                   >
                     On-premise supported
@@ -203,7 +206,7 @@ export const PricingCards = () => {
                     <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                   </svg>
                   <Tooltip
-                    id="15"
+                    id="3-years-data-retention"
                     content="Sync and mantain historical data up to 3 years. Customizable to your needs."
                   >
                     3+ years data retention
@@ -219,7 +222,7 @@ export const PricingCards = () => {
                   </svg>
 
                   <Tooltip
-                    id="15"
+                    id="priority-support"
                     content="We'll help you through our live chat, email or Slack Connect."
                   >
                     Priority support
