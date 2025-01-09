@@ -1,5 +1,5 @@
 import { getPrisma } from "../../../prisma";
-import { Prisma } from "@prisma/client";
+import { CodeReview, CodeReviewState, Prisma } from "@prisma/client";
 import { PaginateCodeReviewsArgs } from "./code-review.types";
 
 export const paginateCodeReviews = async (
@@ -43,4 +43,18 @@ export const paginateCodeReviews = async (
   }
 
   return getPrisma(workspaceId).codeReview.findMany(query);
+};
+
+export const isPullRequestApproved = (
+  codeReviews: Pick<CodeReview, "state">[]
+) => {
+  const approvals = codeReviews.filter(
+    (review) => review.state === CodeReviewState.APPROVED
+  ).length;
+
+  const changesRequested = codeReviews.filter(
+    (review) => review.state === CodeReviewState.CHANGES_REQUESTED
+  ).length;
+
+  return approvals > 0 && changesRequested === 0;
 };

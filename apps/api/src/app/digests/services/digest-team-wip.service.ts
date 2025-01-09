@@ -1,4 +1,4 @@
-import { CodeReviewState, PullRequestState } from "@prisma/client";
+import { PullRequestState } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
@@ -13,6 +13,7 @@ import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
+import { isPullRequestApproved } from "../../code-reviews/services/code-review.service";
 
 export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
@@ -198,11 +199,7 @@ const getPullRequestsGroupedByState = async (
       continue;
     }
 
-    if (
-      pullRequest.codeReviews.some(
-        (review) => review.state === CodeReviewState.APPROVED
-      )
-    ) {
+    if (isPullRequestApproved(pullRequest.codeReviews)) {
       approved.push(pullRequest);
       continue;
     }
