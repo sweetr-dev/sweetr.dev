@@ -79,12 +79,6 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
         active={pathname.startsWith(getLink("alerts"))}
         component={Link}
         label="Alerts"
-        disabled
-        rightSection={
-          <Badge size="xs" variant="default">
-            Soon
-          </Badge>
-        }
         leftSection={<IconBell stroke={1.5} size={18} />}
       />
       <NavLink
