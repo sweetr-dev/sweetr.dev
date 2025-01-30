@@ -71,7 +71,7 @@ export const TeamMetricsDigestPage = () => {
   }, [digestQuery.isFetched]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const isFormValid = useMemo(() => form.isValid(), [form.values]);
+  const isFormValid = useMemo(() => !form.validate().hasErrors, [form.values]);
 
   const handleSave: FormEventHandler = async (event) => {
     event.preventDefault();
