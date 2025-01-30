@@ -6,7 +6,7 @@ import { OauthV2AccessResponse } from "@slack/web-api";
 import { omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
-import { IntegrationApp } from "@sweetr/graphql-types/dist/api";
+import { IntegrationApp } from "../../../../graphql-types";
 import {
   authorizeSlackWorkspace,
   getSlackClient,

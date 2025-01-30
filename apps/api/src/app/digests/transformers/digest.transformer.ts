@@ -3,7 +3,7 @@ import {
   DayOfTheWeek,
   DigestType,
   DigestFrequency,
-} from "@sweetr/graphql-types/dist/api";
+} from "../../../graphql-types";
 import { Digest } from "../services/digest.types";
 
 export const transformDigest = (digest: Digest): ApiDigest => {

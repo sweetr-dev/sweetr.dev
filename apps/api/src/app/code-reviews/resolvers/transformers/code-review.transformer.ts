@@ -2,7 +2,7 @@ import { CodeReview as DatabaseCodeReview, GitProfile } from "@prisma/client";
 import {
   CodeReview as ApiCodeReview,
   CodeReviewState,
-} from "@sweetr/graphql-types/dist/api";
+} from "../../../../graphql-types";
 
 export const transformCodeReview = (
   codeReview: DatabaseCodeReview & {

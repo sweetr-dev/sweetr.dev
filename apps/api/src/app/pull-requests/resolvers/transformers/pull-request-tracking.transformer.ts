@@ -5,7 +5,7 @@ import {
 import {
   PullRequestTracking as ApiPullRequestTracking,
   PullRequestSize,
-} from "@sweetr/graphql-types/dist/api";
+} from "../../../../graphql-types";
 import { differenceInBusinessMilliseconds } from "../../../../lib/date";
 
 export const transformPullRequestTracking = (
