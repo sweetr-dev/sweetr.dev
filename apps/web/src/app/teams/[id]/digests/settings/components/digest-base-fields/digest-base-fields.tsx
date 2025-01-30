@@ -15,7 +15,6 @@ import {
   Button,
   Tooltip,
 } from "@mantine/core";
-import { DigestFrequency } from "@sweetr/graphql-types/api";
 import {
   IconBrandSlack,
   IconClock,
@@ -25,7 +24,10 @@ import {
 import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
 import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
-import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  DayOfTheWeek,
+  DigestFrequency,
+} from "@sweetr/graphql-types/frontend/graphql";
 import { useEffect, useRef } from "react";
 import { useSendTestMessage } from "../../../../use-send-test-message";
 

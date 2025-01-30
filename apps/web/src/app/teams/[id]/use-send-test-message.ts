@@ -1,9 +1,9 @@
-import { IntegrationApp } from "@sweetr/graphql-types/api";
 import { showSuccessNotification } from "../../../providers/notification.provider";
 import { getErrorMessage } from "../../../providers/error-message.provider";
 import { useSendTestMessageMutation } from "../../../api/integrations.api";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { showErrorNotification } from "../../../providers/notification.provider";
+import { IntegrationApp } from "@sweetr/graphql-types/frontend/graphql";
 
 export const useSendTestMessage = () => {
   const { workspace } = useWorkspace();
