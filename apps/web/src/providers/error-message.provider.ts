@@ -15,7 +15,14 @@ export const getErrorMessage = (error: unknown) => {
         }
       | undefined;
 
-    if (extensions?.code === "INPUT_VALIDATION_FAILED") {
+    if (
+      extensions &&
+      [
+        "INPUT_VALIDATION_FAILED",
+        "RESOURCE_NOT_FOUND",
+        "RATE_LIMIT_EXCEEDED",
+      ].includes(extensions.code)
+    ) {
       return extensions.userFacingMessage;
     }
   }

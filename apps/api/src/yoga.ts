@@ -6,6 +6,7 @@ import { join } from "path";
 import { authPlugin } from "./app/auth/resolvers/plugins/auth.plugin";
 import { env } from "./env";
 import { useSentry } from "./lib/use-sentry.plugin";
+import { rateLimiterPlugin } from "./lib/rate-limiter.plugin";
 
 const resolvers = loadFilesSync(
   join(__dirname, "./**/*.(query|mutation|resolver).(js|ts)")
@@ -21,7 +22,7 @@ const schema = createSchema<GraphQLContext>({
 export const yoga = createYoga<GraphQLContext>({
   graphqlEndpoint: "/",
   schema,
-  plugins: [authPlugin, useSentry()],
+  plugins: [authPlugin, useSentry(), rateLimiterPlugin],
   graphiql: env.NODE_ENV === "development",
   landingPage: false,
   logging: false,
