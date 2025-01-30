@@ -4,7 +4,7 @@ import { RateLimitException } from "../app/errors/exceptions/rate-limit.exceptio
 
 export const rateLimiterPlugin = useRateLimiter({
   identifyFn: (context: GraphQLContext) =>
-    context.workspaceId?.toString() ?? context.currentToken.userId.toString(),
+    context.workspaceId?.toString() ?? context.currentToken?.userId.toString(),
   transformError: (message: string) =>
     new RateLimitException("Rate limit exceeded", {
       userFacingMessage: message,
