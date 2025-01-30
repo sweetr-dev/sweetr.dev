@@ -33,6 +33,7 @@ const documents = {
     "\n          query WorkspaceIntegrations($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              integrations {\n                app\n                isEnabled\n                installUrl\n                enabledAt\n                target\n              }\n            }\n          }\n        ": types.WorkspaceIntegrationsDocument,
     "\n          mutation InstallIntegration($input: InstallIntegrationInput!) {\n            installIntegration(input: $input)\n          }\n        ": types.InstallIntegrationDocument,
     "\n          mutation RemoveIntegration($input: RemoveIntegrationInput!) {\n            removeIntegration(input: $input)\n          }\n        ": types.RemoveIntegrationDocument,
+    "\n          mutation SendTestMessage($input: SendTestMessageInput!) {\n            sendTestMessage(input: $input)\n          }\n        ": types.SendTestMessageDocument,
     "\n          query People($workspaceId: SweetID!, $input: PeopleQueryInput) {\n            workspace(workspaceId: $workspaceId) {\n              people(input: $input) {\n                id\n                name\n                handle\n                avatar\n              }\n            }\n          }\n        ": types.PeopleDocument,
     "\n          query Person($workspaceId: SweetID!, $handle: String!) {\n            workspace(workspaceId: $workspaceId) {\n              person(handle: $handle) {\n                id\n                name\n                handle\n                avatar\n                teamMemberships {\n                  id\n                  role\n                  team {\n                    id\n                    name\n                    icon\n                  }\n                }\n              }\n            }\n          }\n        ": types.PersonDocument,
     "\n          query PersonalMetrics($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              me {\n                personalMetrics {\n                  pullRequestSize {\n                    current\n                    previous\n                    change\n                  }\n                  codeReviewAmount {\n                    current\n                    previous\n                    change\n                  }\n                }\n              }\n            }\n          }\n        ": types.PersonalMetricsDocument,
@@ -146,6 +147,10 @@ export function graphql(source: "\n          mutation InstallIntegration($input:
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n          mutation RemoveIntegration($input: RemoveIntegrationInput!) {\n            removeIntegration(input: $input)\n          }\n        "): (typeof documents)["\n          mutation RemoveIntegration($input: RemoveIntegrationInput!) {\n            removeIntegration(input: $input)\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          mutation SendTestMessage($input: SendTestMessageInput!) {\n            sendTestMessage(input: $input)\n          }\n        "): (typeof documents)["\n          mutation SendTestMessage($input: SendTestMessageInput!) {\n            sendTestMessage(input: $input)\n          }\n        "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

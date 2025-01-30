@@ -12,24 +12,32 @@ import {
   Group,
   Input,
   Text,
+  Button,
+  Tooltip,
 } from "@mantine/core";
 import { DigestFrequency } from "@sweetr/graphql-types/api";
-import { IconClock, IconInfoCircle, IconWorld } from "@tabler/icons-react";
+import {
+  IconBrandSlack,
+  IconClock,
+  IconInfoCircle,
+  IconWorld,
+} from "@tabler/icons-react";
 import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
 import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
 import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
 import { useEffect, useRef } from "react";
+import { useSendTestMessage } from "../../../../use-send-test-message";
 
 interface DigestBaseFieldsProps {
   form: UseFormReturnType<FormDigest>;
 }
 
 export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
+  const { sendTestMessage, isSendingTestMessage } = useSendTestMessage();
   const isEnabled = form.values.enabled;
 
   const channelRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (isEnabled && !form.values.channel) {
       channelRef.current?.focus();
@@ -69,6 +77,18 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
                     </Input.Error>
                   )}
                 </Stack>
+                <Tooltip label="Send a test message to the channel" withArrow>
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      sendTestMessage(form.values.channel);
+                    }}
+                    leftSection={<IconBrandSlack size={16} stroke={1.5} />}
+                    loading={isSendingTestMessage}
+                  >
+                    Test
+                  </Button>
+                </Tooltip>
               </Group>
             </Input.Wrapper>
           </>

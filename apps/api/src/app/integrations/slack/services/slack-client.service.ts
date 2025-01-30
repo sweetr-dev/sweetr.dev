@@ -70,7 +70,9 @@ export const joinSlackChannel = async (
   const channel = await findSlackChannel(slackClient, channelName);
 
   if (!channel?.id) {
-    throw new ResourceNotFoundException("Slack channel not found");
+    throw new ResourceNotFoundException("Slack channel not found", {
+      userFacingMessage: "Could not find Slack channel.",
+    });
   }
 
   if (!channel.is_member) {
