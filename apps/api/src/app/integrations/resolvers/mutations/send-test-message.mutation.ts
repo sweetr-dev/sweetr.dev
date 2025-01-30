@@ -5,7 +5,6 @@ import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
 import { sendTestMessage } from "../../slack/services/slack-integration.service";
-import { IntegrationApp } from "@sweetr/graphql-types/api";
 
 export const sendTestMessageMutation = createMutationResolver({
   sendTestMessage: async (_, { input }, context) => {
@@ -15,7 +14,6 @@ export const sendTestMessageMutation = createMutationResolver({
       z.object({
         workspaceId: z.number(),
         channel: z.string().max(80),
-        app: z.nativeEnum(IntegrationApp),
       }),
       input
     );
