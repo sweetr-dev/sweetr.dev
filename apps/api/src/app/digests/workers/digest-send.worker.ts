@@ -3,10 +3,8 @@ import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { logger } from "../../../lib/logger";
 import { DigestWithRelations } from "../services/digest.types";
-import { DigestType } from "@prisma/client";
-import { sendTeamWipDigest } from "../services/digest-team-wip.service";
-import { sendTeamMetricsDigest } from "../services/digest-team-metrics.service";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
+import { sendDigest } from "../services/digest.service";
 
 export const digestSendWorker = createWorker(
   SweetQueue.DIGEST_SEND,
@@ -21,12 +19,6 @@ export const digestSendWorker = createWorker(
       });
     }
 
-    if (digest.type === DigestType.TEAM_METRICS) {
-      await sendTeamMetricsDigest(digest);
-    }
-
-    if (digest.type === DigestType.TEAM_WIP) {
-      await sendTeamWipDigest(digest);
-    }
+    await sendDigest(digest);
   }
 );

@@ -6,7 +6,12 @@ import { z } from "zod";
 
 export const FormDigest = z.object({
   enabled: z.boolean(),
-  channel: z.string().min(1),
+  channel: z
+    .string()
+    .min(1, "Field is required")
+    .refine((val) => !val.startsWith("#"), {
+      message: "Channel should not start with #",
+    }),
   frequency: z.nativeEnum(DigestFrequency),
   dayOfTheWeek: z.array(z.nativeEnum(DayOfTheWeek)).min(1),
   timeOfDay: z.string().min(1),

@@ -2,8 +2,8 @@ import { ThemeIcon, Tooltip } from "@mantine/core";
 import {
   IconEye,
   IconEyeCheck,
-  IconEyeClosed,
   IconEyeOff,
+  IconEyeQuestion,
 } from "@tabler/icons-react";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 
@@ -30,7 +30,7 @@ export const BadgeCodeReviewTime = ({
 
     if (firstReviewAt) return IconEye;
 
-    return IconEyeClosed;
+    return IconEyeQuestion;
   })();
 
   const getLabel = () => {
@@ -54,7 +54,7 @@ export const BadgeCodeReviewTime = ({
   };
 
   const getIconColor = () => {
-    if (mergedWithoutApproval) return "red.9";
+    if (mergedWithoutApproval) return "dark.9";
 
     if (!timeToFirstReview) return;
 
@@ -64,7 +64,7 @@ export const BadgeCodeReviewTime = ({
       : undefined;
 
     if (hoursToFirstReview >= 48 || (hoursToApprove && hoursToApprove >= 48))
-      return "red.9";
+      return "dark.9";
 
     if (hoursToFirstReview >= 24 || (hoursToApprove && hoursToApprove >= 24))
       return "yellow.6";
@@ -77,10 +77,21 @@ export const BadgeCodeReviewTime = ({
     return "green.5";
   };
 
+  const color = getIconColor();
   return (
     <>
       <Tooltip label={getLabel()} withArrow position="right">
-        <ThemeIcon size="md" variant="default" c={getIconColor()}>
+        <ThemeIcon
+          size="md"
+          color="red.7"
+          variant={color === "dark.9" ? "filled" : "default"}
+          c={getIconColor()}
+          style={
+            color === "dark.9"
+              ? { boxShadow: "0 0 10px var(--mantine-color-red-5)" }
+              : {}
+          }
+        >
           <Icon size={20} stroke={1.5} />
         </ThemeIcon>
       </Tooltip>

@@ -10,7 +10,9 @@ import {
   InstallIntegrationMutation,
   MutationInstallIntegrationArgs,
   MutationRemoveIntegrationArgs,
+  MutationSendTestMessageArgs,
   RemoveIntegrationMutation,
+  SendTestMessageMutation,
   WorkspaceIntegrationsQuery,
   WorkspaceIntegrationsQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
@@ -91,5 +93,26 @@ export const useRemoveIntegrationMutation = (
         queryKey: ["integrations"],
       });
     },
+    ...options,
+  });
+
+export const useSendTestMessageMutation = (
+  options?: UseMutationOptions<
+    SendTestMessageMutation,
+    unknown,
+    MutationSendTestMessageArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation SendTestMessage($input: SendTestMessageInput!) {
+            sendTestMessage(input: $input)
+          }
+        `),
+        args,
+      ),
     ...options,
   });

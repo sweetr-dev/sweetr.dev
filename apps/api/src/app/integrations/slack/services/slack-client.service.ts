@@ -55,7 +55,10 @@ export const findSlackChannel = async (
   channelName: string
 ) => {
   // TO-DO: Paginate
-  const channels = await slackClient?.conversations.list({ limit: 1000 });
+  const channels = await slackClient?.conversations.list({
+    limit: 1000,
+    types: "public_channel,private_channel",
+  });
 
   return channels?.channels?.find((ch) => ch.name === channelName);
 };
@@ -67,7 +70,9 @@ export const joinSlackChannel = async (
   const channel = await findSlackChannel(slackClient, channelName);
 
   if (!channel?.id) {
-    throw new ResourceNotFoundException("Slack channel not found");
+    throw new ResourceNotFoundException("Slack channel not found", {
+      userFacingMessage: "Could not find Slack channel.",
+    });
   }
 
   if (!channel.is_member) {

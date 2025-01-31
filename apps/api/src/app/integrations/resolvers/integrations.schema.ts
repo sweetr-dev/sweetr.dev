@@ -23,6 +23,12 @@ export default /* GraphQL */ `
     app: IntegrationApp!
   }
 
+  input SendTestMessageInput {
+    workspaceId: SweetID!
+    app: IntegrationApp!
+    channel: String!
+  }
+
   extend type Workspace {
     integrations: [Integration!]!
   }
@@ -30,5 +36,11 @@ export default /* GraphQL */ `
   type Mutation {
     installIntegration(input: InstallIntegrationInput!): Void
     removeIntegration(input: RemoveIntegrationInput!): Void
+    sendTestMessage(input: SendTestMessageInput!): Void
+      @rateLimit(
+        window: "60s"
+        max: 5
+        message: "You got rate limited. You can send 5 test messages per minute."
+      )
   }
 `;

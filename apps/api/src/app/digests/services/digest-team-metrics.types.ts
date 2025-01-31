@@ -5,6 +5,7 @@ export interface MetricLineElements {
 }
 
 export type DigestMetricType =
+  | "prCount"
   | "timeToMerge"
   | "timeForFirstReview"
   | "timeForApproval"

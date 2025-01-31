@@ -5,9 +5,12 @@ import {
   FindDigestByTypeArgs,
   UpsertDigest,
   Digest,
+  DigestWithRelations,
 } from "./digest.types";
 import { assign, isObject } from "radash";
 import { DigestType } from "@prisma/client";
+import { sendTeamMetricsDigest } from "./digest-team-metrics.service";
+import { sendTeamWipDigest } from "./digest-team-wip.service";
 
 export const findDigestByType = async <T extends DigestType>({
   workspaceId,
@@ -99,4 +102,14 @@ export const upsertDigest = async ({
   });
 
   return updatedDigest as unknown as Digest;
+};
+
+export const sendDigest = async (digest: DigestWithRelations) => {
+  if (digest.type === DigestType.TEAM_METRICS) {
+    await sendTeamMetricsDigest(digest);
+  }
+
+  if (digest.type === DigestType.TEAM_WIP) {
+    await sendTeamWipDigest(digest);
+  }
 };

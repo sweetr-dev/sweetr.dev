@@ -6,7 +6,7 @@ import {
 import { IntegrationApp } from "@prisma/client";
 import * as slackService from "../slack/services/slack-integration.service";
 import { logger } from "../../../lib/logger";
-import { Integration } from "@sweetr/graphql-types/api";
+import { Integration } from "../../../graphql-types";
 
 const integrationServices: Record<IntegrationApp, IntegrationService> = {
   [IntegrationApp.SLACK]: slackService,

@@ -6,13 +6,16 @@ import { OauthV2AccessResponse } from "@slack/web-api";
 import { omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
-import { IntegrationApp } from "@sweetr/graphql-types/dist/api";
+import { IntegrationApp } from "../../../../graphql-types";
 import {
   authorizeSlackWorkspace,
   getSlackClient,
   getWorkspaceSlackClient,
+  joinSlackChannel,
+  sendSlackMessage,
   uninstallSlackWorkspace,
 } from "./slack-client.service";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 
 export const installIntegration = async (workspaceId: number, code: string) => {
   let response: OauthV2AccessResponse;
@@ -121,4 +124,21 @@ export const getInstallUrl = (): string => {
   url.searchParams.append("scope", config.slack.scope);
 
   return url.toString();
+};
+
+export const sendTestMessage = async (workspaceId: number, channel: string) => {
+  const { slackClient } = await getWorkspaceSlackClient(workspaceId);
+
+  const slackChannel = await joinSlackChannel(slackClient, channel);
+
+  if (!slackChannel?.id) {
+    throw new ResourceNotFoundException("Slack channel not found");
+  }
+
+  await sendSlackMessage(slackClient, {
+    channel: slackChannel.id,
+    text: "Sweet, it works! 🍧",
+    unfurl_links: false,
+    unfurl_media: false,
+  });
 };

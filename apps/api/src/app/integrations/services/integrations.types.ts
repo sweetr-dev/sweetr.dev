@@ -1,5 +1,5 @@
 import { IntegrationApp } from "@prisma/client";
-import { Integration } from "@sweetr/graphql-types/dist/api";
+import { Integration } from "../../../graphql-types";
 
 export interface IntegrationService {
   installIntegration: (workspaceId: number, code: string) => Promise<void>;

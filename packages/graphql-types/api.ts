@@ -247,6 +247,7 @@ export type Mutation = {
   loginToStripe?: Maybe<Scalars['String']['output']>;
   loginWithGithub: LoginWithGithubResponse;
   removeIntegration?: Maybe<Scalars['Void']['output']>;
+  sendTestMessage?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
   updateAutomation: Automation;
   updateDigest: Digest;
@@ -277,6 +278,11 @@ export type MutationLoginWithGithubArgs = {
 
 export type MutationRemoveIntegrationArgs = {
   input: RemoveIntegrationInput;
+};
+
+
+export type MutationSendTestMessageArgs = {
+  input: SendTestMessageInput;
 };
 
 
@@ -513,6 +519,12 @@ export type Repository = {
   fullName: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type SendTestMessageInput = {
+  app: IntegrationApp;
+  channel: Scalars['String']['input'];
+  workspaceId: Scalars['SweetID']['input'];
 };
 
 export type Subscription = {
@@ -851,6 +863,7 @@ export type ResolversTypes = {
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
+  SendTestMessageInput: ResolverTypeWrapper<DeepPartial<SendTestMessageInput>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
   Subscription: ResolverTypeWrapper<{}>;
   SweetID: ResolverTypeWrapper<DeepPartial<Scalars['SweetID']['output']>>;
@@ -926,6 +939,7 @@ export type ResolversParentTypes = {
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
+  SendTestMessageInput: DeepPartial<SendTestMessageInput>;
   String: DeepPartial<Scalars['String']['output']>;
   Subscription: {};
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
@@ -950,6 +964,16 @@ export type ResolversParentTypes = {
   WorkspaceSettingsPullRequestSize: DeepPartial<WorkspaceSettingsPullRequestSize>;
   WorkspaceSettingsPullRequestSizeInput: DeepPartial<WorkspaceSettingsPullRequestSizeInput>;
 };
+
+export type RateLimitDirectiveArgs = {
+  arrayLengthField?: Maybe<Scalars['String']['input']>;
+  identityArgs?: Maybe<Array<Maybe<Scalars['String']['input']>>>;
+  max?: Maybe<Scalars['Int']['input']>;
+  message?: Maybe<Scalars['String']['input']>;
+  window?: Maybe<Scalars['String']['input']>;
+};
+
+export type RateLimitDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = RateLimitDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type SkipAuthDirectiveArgs = { };
 
@@ -1083,6 +1107,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
+  sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
@@ -1320,5 +1345,6 @@ export type Resolvers<ContextType = GraphQLContext> = {
 };
 
 export type DirectiveResolvers<ContextType = GraphQLContext> = {
+  rateLimit?: RateLimitDirectiveResolver<any, any, ContextType>;
   skipAuth?: SkipAuthDirectiveResolver<any, any, ContextType>;
 };

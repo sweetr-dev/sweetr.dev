@@ -20,12 +20,7 @@ export const CardOpenableSettings = ({
   const rightSection = right || <IconArrowRight stroke={1.5} size={20} />;
 
   const content = (
-    <Paper
-      p="md"
-      radius="md"
-      withBorder
-      className={href ? "grow-on-hover" : ""}
-    >
+    <Paper p="md" withBorder className={href ? "grow-on-hover" : ""}>
       <Group justify="space-between" wrap="nowrap">
         <Group>
           {left}

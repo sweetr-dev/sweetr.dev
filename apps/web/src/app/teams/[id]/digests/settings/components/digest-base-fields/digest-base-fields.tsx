@@ -4,31 +4,42 @@ import {
   Stack,
   Title,
   Switch,
-  TextInput,
   Divider,
   Select,
   Box,
   InputLabel,
   Chip,
   Group,
+  Input,
+  Text,
+  Button,
+  Tooltip,
 } from "@mantine/core";
-import { DigestFrequency } from "@sweetr/graphql-types/api";
-import { IconBrandSlack, IconClock, IconWorld } from "@tabler/icons-react";
+import {
+  IconBrandSlack,
+  IconClock,
+  IconInfoCircle,
+  IconWorld,
+} from "@tabler/icons-react";
 import { BoxSetting } from "../../../../../../../components/box-setting";
 import { SelectHour } from "../../../../../../../components/select-hour";
 import { SelectTimezone } from "../../../../../../../components/select-timezone/select-timezone";
-import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  DayOfTheWeek,
+  DigestFrequency,
+} from "@sweetr/graphql-types/frontend/graphql";
 import { useEffect, useRef } from "react";
+import { useSendTestMessage } from "../../../../use-send-test-message";
 
 interface DigestBaseFieldsProps {
   form: UseFormReturnType<FormDigest>;
 }
 
 export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
+  const { sendTestMessage, isSendingTestMessage } = useSendTestMessage();
   const isEnabled = form.values.enabled;
 
   const channelRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (isEnabled && !form.values.channel) {
       channelRef.current?.focus();
@@ -51,14 +62,46 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
         </BoxSetting>
 
         {isEnabled && (
-          <TextInput
-            ref={channelRef}
-            label="Channel"
-            leftSection={<IconBrandSlack stroke={1} />}
-            placeholder="#team"
-            {...form.getInputProps("channel")}
-          />
+          <>
+            <Input.Wrapper>
+              <Input.Label required>Channel</Input.Label>
+              <Group align="top">
+                <Stack gap="5px" flex="1">
+                  <Input
+                    ref={channelRef}
+                    leftSection={<>#</>}
+                    flex="1"
+                    {...form.getInputProps("channel")}
+                  />
+                  {form.getInputProps("channel").error && (
+                    <Input.Error>
+                      {form.getInputProps("channel").error}
+                    </Input.Error>
+                  )}
+                </Stack>
+                <Tooltip label="Send a test message to the channel" withArrow>
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      sendTestMessage(form.values.channel);
+                    }}
+                    leftSection={<IconBrandSlack size={16} stroke={1.5} />}
+                    loading={isSendingTestMessage}
+                  >
+                    Test
+                  </Button>
+                </Tooltip>
+              </Group>
+            </Input.Wrapper>
+          </>
         )}
+        <Group gap={5}>
+          <IconInfoCircle size={16} stroke={1.5} />
+          <Text c="dimmed" size="xs">
+            Tip: Sweetr is only able to auto join public channels. You must
+            manually invite @Sweetr to private channels.
+          </Text>
+        </Group>
       </Stack>
 
       {isEnabled && (
@@ -69,7 +112,8 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
             <Title order={5}>Schedule</Title>
 
             <Select
-              label="DigestFrequency"
+              required
+              label="Frequency"
               data={[
                 { value: DigestFrequency.WEEKLY, label: "Every week" },
                 {
@@ -93,7 +137,7 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
               }}
             />
             <Box>
-              <InputLabel>Day of the week</InputLabel>
+              <InputLabel required>Day of the week</InputLabel>
               <Chip.Group
                 value={form.values.dayOfTheWeek}
                 onChange={(value) => {
@@ -134,11 +178,13 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
             </Box>
             <Group grow>
               <SelectHour
+                required
                 {...form.getInputProps("timeOfDay")}
                 label="Time"
                 leftSection={<IconClock size={16} stroke={1.5} />}
               />
               <SelectTimezone
+                required
                 {...form.getInputProps("timezone", { type: "input" })}
                 label="Timezone"
                 leftSection={<IconWorld size={16} stroke={1.5} />}

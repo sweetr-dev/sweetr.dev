@@ -1,7 +1,7 @@
 import {
   Automation as ApiAutomation,
   AutomationType,
-} from "@sweetr/graphql-types/dist/api";
+} from "../../../../graphql-types";
 import { Automation } from "../../services/automation.types";
 
 export const transformAutomation = (automation: Automation): ApiAutomation => {

@@ -19,7 +19,7 @@ export const scheduleCronJobs = async () => {
 
   await addJob(SweetQueue.CRON_SCHEDULE_DIGESTS, null, {
     repeat: {
-      pattern: "0 * * * *",
+      pattern: "*/15 * * * *",
     },
   });
 };
