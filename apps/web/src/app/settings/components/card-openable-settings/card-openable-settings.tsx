@@ -22,7 +22,7 @@ export const CardOpenableSettings = ({
       underline="never"
       c="var(--mantine-color-text)"
     >
-      <Paper p="md" radius="md" withBorder className="grow-on-hover">
+      <Paper p="md" withBorder className="grow-on-hover">
         <Group justify="space-between" wrap="nowrap">
           <Group>
             {icon}
