@@ -23,6 +23,26 @@ export type Scalars = {
   Void: { input: null; output: null; }
 };
 
+export type Alert = {
+  __typename?: 'Alert';
+  channel: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  settings: Scalars['JSONObject']['output'];
+  type: AlertType;
+};
+
+export type AlertQueryInput = {
+  type: AlertType;
+};
+
+export enum AlertType {
+  HOT_PR = 'HOT_PR',
+  MERGED_WITHOUT_APPROVAL = 'MERGED_WITHOUT_APPROVAL',
+  SLOW_MERGE = 'SLOW_MERGE',
+  SLOW_REVIEW = 'SLOW_REVIEW',
+  UNRELEASED_CHANGES = 'UNRELEASED_CHANGES'
+}
+
 export type ArchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -247,6 +267,7 @@ export type Mutation = {
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
+  updateAlert: Alert;
   updateAutomation: Automation;
   updateDigest: Digest;
   updateWorkspaceSettings: Workspace;
@@ -286,6 +307,11 @@ export type MutationSendTestMessageArgs = {
 
 export type MutationUnarchiveTeamArgs = {
   input: UnarchiveTeamInput;
+};
+
+
+export type MutationUpdateAlertArgs = {
+  input: UpdateAlertInput;
 };
 
 
@@ -532,6 +558,8 @@ export type Subscription = {
 
 export type Team = {
   __typename?: 'Team';
+  alert?: Maybe<Alert>;
+  alerts: Array<Alert>;
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   digest?: Maybe<Digest>;
@@ -542,6 +570,11 @@ export type Team = {
   members: Array<TeamMember>;
   name: Scalars['String']['output'];
   startColor: Scalars['String']['output'];
+};
+
+
+export type TeamAlertArgs = {
+  input: AlertQueryInput;
 };
 
 
@@ -585,6 +618,15 @@ export type Trial = {
 
 export type UnarchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UpdateAlertInput = {
+  channel: Scalars['String']['input'];
+  enabled: Scalars['Boolean']['input'];
+  settings: Scalars['JSONObject']['input'];
+  teamId: Scalars['SweetID']['input'];
+  type: AlertType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -731,6 +773,30 @@ export type WorkspaceSettingsPullRequestSizeInput = {
   small?: InputMaybe<Scalars['Int']['input']>;
   tiny?: InputMaybe<Scalars['Int']['input']>;
 };
+
+export type TeamAlertsQueryVariables = Exact<{
+  workspaceId: Scalars['SweetID']['input'];
+  teamId: Scalars['SweetID']['input'];
+}>;
+
+
+export type TeamAlertsQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', alerts: Array<{ __typename?: 'Alert', type: AlertType, enabled: boolean }> } | null } };
+
+export type TeamAlertQueryVariables = Exact<{
+  workspaceId: Scalars['SweetID']['input'];
+  teamId: Scalars['SweetID']['input'];
+  input: AlertQueryInput;
+}>;
+
+
+export type TeamAlertQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', team?: { __typename?: 'Team', alert?: { __typename?: 'Alert', type: AlertType, enabled: boolean, channel: string, settings: object } | null } | null } };
+
+export type UpdateAlertMutationVariables = Exact<{
+  input: UpdateAlertInput;
+}>;
+
+
+export type UpdateAlertMutation = { __typename?: 'Mutation', updateAlert: { __typename?: 'Alert', type: AlertType, enabled: boolean } };
 
 export type LoginWithGithubMutationVariables = Exact<{
   input: LoginWithGithubInput;
@@ -1017,6 +1083,9 @@ export type UpdateWorkspaceSettingsMutationVariables = Exact<{
 export type UpdateWorkspaceSettingsMutation = { __typename?: 'Mutation', updateWorkspaceSettings: { __typename?: 'Workspace', id: string, settings: { __typename?: 'WorkspaceSettings', pullRequest: { __typename?: 'WorkspaceSettingsPullRequest', size: { __typename?: 'WorkspaceSettingsPullRequestSize', tiny: number, small: number, medium: number, large: number } } } } };
 
 
+export const TeamAlertsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamAlerts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alerts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TeamAlertsQuery, TeamAlertsQueryVariables>;
+export const TeamAlertDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamAlert"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AlertQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alert"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"channel"}},{"kind":"Field","name":{"kind":"Name","value":"settings"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TeamAlertQuery, TeamAlertQueryVariables>;
+export const UpdateAlertDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAlert"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateAlertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAlert"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]} as unknown as DocumentNode<UpdateAlertMutation, UpdateAlertMutationVariables>;
 export const LoginWithGithubDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginWithGithub"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginWithGithubInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginWithGithub"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]}}]} as unknown as DocumentNode<LoginWithGithubMutation, LoginWithGithubMutationVariables>;
 export const AuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthProviderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"redirectUrl"}}]}}]}}]} as unknown as DocumentNode<AuthProviderQuery, AuthProviderQueryVariables>;
 export const WorkspaceAutomationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"WorkspaceAutomation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AutomationQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"automation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"settings"}}]}}]}}]}}]} as unknown as DocumentNode<WorkspaceAutomationQuery, WorkspaceAutomationQueryVariables>;

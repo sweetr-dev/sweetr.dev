@@ -3,13 +3,13 @@ import { logger } from "../../../../lib/logger";
 import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
-import { upsertDigest } from "../../services/digest.service";
+import { upsertAlert } from "../../services/alert.service";
 import { z } from "zod";
-import { transformDigest } from "../transformers/digest.transformer";
+import { transformAlert } from "../transformers/alert.transformer";
 
-export const updateDigestMutation = createMutationResolver({
-  updateDigest: async (_, { input }, context) => {
-    logger.info("mutation.updateDigest", { input });
+export const updateAlertMutation = createMutationResolver({
+  updateAlert: async (_, { input }, context) => {
+    logger.info("mutation.updateAlert", { input });
 
     validateInputOrThrow(
       z.object({
@@ -25,19 +25,15 @@ export const updateDigestMutation = createMutationResolver({
 
     await protectWithPaywall(input.workspaceId);
 
-    const digest = await upsertDigest({
+    const alert = await upsertAlert({
       workspaceId: input.workspaceId,
       teamId: input.teamId,
       type: input.type,
       channel: input.channel,
       enabled: input.enabled,
-      frequency: input.frequency,
-      dayOfTheWeek: input.dayOfTheWeek,
-      timeOfDay: input.timeOfDay,
-      timezone: input.timezone,
       settings: input.settings,
     });
 
-    return transformDigest(digest);
+    return transformAlert(alert);
   },
 });

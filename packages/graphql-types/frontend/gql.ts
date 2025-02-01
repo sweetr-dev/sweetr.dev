@@ -13,6 +13,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n          query TeamAlerts($workspaceId: SweetID!, $teamId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alerts {\n                  type\n                  enabled\n                }\n              }\n            }\n          }\n        ": types.TeamAlertsDocument,
+    "\n          query TeamAlert(\n            $workspaceId: SweetID!\n            $teamId: SweetID!\n            $input: AlertQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alert(input: $input) {\n                  type\n                  enabled\n                  channel\n                  settings\n                }\n              }\n            }\n          }\n        ": types.TeamAlertDocument,
+    "\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        ": types.UpdateAlertDocument,
     "\n          mutation LoginWithGithub($input: LoginWithGithubInput!) {\n            loginWithGithub(input: $input) {\n              token {\n                accessToken\n              }\n            }\n          }\n        ": types.LoginWithGithubDocument,
     "\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        ": types.AuthProviderDocument,
     "\n          query WorkspaceAutomation(\n            $workspaceId: SweetID!\n            $input: AutomationQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              automation(input: $input) {\n                type\n                enabled\n                settings\n              }\n            }\n          }\n        ": types.WorkspaceAutomationDocument,
@@ -67,6 +70,18 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          query TeamAlerts($workspaceId: SweetID!, $teamId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alerts {\n                  type\n                  enabled\n                }\n              }\n            }\n          }\n        "): (typeof documents)["\n          query TeamAlerts($workspaceId: SweetID!, $teamId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alerts {\n                  type\n                  enabled\n                }\n              }\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          query TeamAlert(\n            $workspaceId: SweetID!\n            $teamId: SweetID!\n            $input: AlertQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alert(input: $input) {\n                  type\n                  enabled\n                  channel\n                  settings\n                }\n              }\n            }\n          }\n        "): (typeof documents)["\n          query TeamAlert(\n            $workspaceId: SweetID!\n            $teamId: SweetID!\n            $input: AlertQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alert(input: $input) {\n                  type\n                  enabled\n                  channel\n                  settings\n                }\n              }\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        "): (typeof documents)["\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

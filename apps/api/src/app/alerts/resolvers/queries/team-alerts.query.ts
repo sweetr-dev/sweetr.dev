@@ -1,16 +1,16 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
+import { transformAlert } from "../transformers/alert.transformer";
 import {
-  findDigestByType,
-  findDigestsByTeam,
-} from "../../services/digest.service";
-import { Digest } from "../../services/digest.types";
-import { transformDigest } from "../transformers/digest.transformer";
+  findAlertByType,
+  findAlertsByTeam,
+} from "../../services/alert.service";
+import { Alert } from "../../services/alert.types";
 
-export const teamDigestsQuery = createFieldResolver("Team", {
-  digest: async (team, { input }, context) => {
-    logger.info("query.team.digest", { team });
+export const teamAlertsQuery = createFieldResolver("Team", {
+  alert: async (team, { input }, context) => {
+    logger.info("query.team.alert", { team });
 
     if (!team.id) {
       throw new ResourceNotFoundException("Team not found");
@@ -20,18 +20,18 @@ export const teamDigestsQuery = createFieldResolver("Team", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const digest = await findDigestByType({
+    const alert = await findAlertByType({
       workspaceId: context.workspaceId,
       teamId: team.id,
       type: input.type,
     });
 
-    if (!digest) return null;
+    if (!alert) return null;
 
-    return transformDigest(digest as Digest);
+    return transformAlert(alert as Alert);
   },
-  digests: async (team, _, context) => {
-    logger.info("query.team.digests", { team });
+  alerts: async (team, _, context) => {
+    logger.info("query.team.alerts", { team });
 
     if (!team.id) {
       throw new ResourceNotFoundException("Team not found");
@@ -41,8 +41,8 @@ export const teamDigestsQuery = createFieldResolver("Team", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const digests = await findDigestsByTeam(context.workspaceId, team.id);
+    const alerts = await findAlertsByTeam(context.workspaceId, team.id);
 
-    return digests.map(transformDigest);
+    return alerts.map(transformAlert);
   },
 });
