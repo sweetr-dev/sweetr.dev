@@ -57,6 +57,7 @@ export const AutomationPrSizeLabelerPage = () => {
         repositories: [],
       },
     });
+    form.resetDirty();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [automationSettings]);
 

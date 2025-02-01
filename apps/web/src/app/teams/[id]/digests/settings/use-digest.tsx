@@ -7,7 +7,7 @@ import {
   useTeamDigestQuery,
   useUpdateDigestMutation,
 } from "../../../../../api/digest.api";
-import { useDigestsCards } from "../use-digest-cards";
+import { useDigestCards } from "../use-digest-cards";
 import {
   showSuccessNotification,
   showErrorNotification,
@@ -22,7 +22,7 @@ interface UseDigestsProps {
 
 export const useDigest = ({ teamId, type }: UseDigestsProps) => {
   const { workspace } = useWorkspace();
-  const { digestCards } = useDigestsCards();
+  const { digestCards } = useDigestCards();
   const digestCard = digestCards[type];
   const navigate = useNavigate();
 

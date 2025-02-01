@@ -13,13 +13,14 @@ import {
   DigestFrequency,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
-import {
-  DigestBaseFields,
-  DigestLoadingSkeleton,
-} from "../components/digest-base-fields";
-import { AlertEnableSlack } from "../components/alert-enable-slack";
+import { DigestBaseFields } from "../components/digest-base-fields";
+import { AlertEnableSlack } from "../../../../../../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
-import { getBrowserTimezone } from "../../../../../../providers/date.provider";
+import {
+  getBrowserTimezone,
+  weekDays,
+} from "../../../../../../providers/date.provider";
+import { DigestLoadingSkeleton } from "../components/digest-loading-skeleton";
 
 export const TeamWipDigestPage = () => {
   const teamId = useTeamId();
@@ -39,14 +40,6 @@ export const TeamWipDigestPage = () => {
   const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/digests`,
   });
-
-  const weekDays = [
-    DayOfTheWeek.MONDAY,
-    DayOfTheWeek.TUESDAY,
-    DayOfTheWeek.WEDNESDAY,
-    DayOfTheWeek.THURSDAY,
-    DayOfTheWeek.FRIDAY,
-  ];
 
   const form = useForm<FormWipDigest>({
     mode: "controlled",
@@ -72,8 +65,8 @@ export const TeamWipDigestPage = () => {
       timeOfDay: digest.timeOfDay ?? "09:00",
       timezone: digest.timezone ?? getBrowserTimezone(),
     };
-    form.setInitialValues(values);
     form.setValues(values);
+    form.resetDirty();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [digestQuery.isFetched]);
