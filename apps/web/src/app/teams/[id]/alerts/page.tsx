@@ -75,57 +75,6 @@ export const TeamAlertsPage = () => {
                   />
                 );
               })}
-              {/* 
-              <CardOpenableSettings
-                href={`/teams/${teamId}/alerts/stuck-on-merge`}
-                left={
-                  <IconGitMerge
-                    stroke={1}
-                    size={28}
-                    color="var(--mantine-color-green-4)"
-                  />
-                }
-                right={<BadgeOnOff enabled={true} available={true} />}
-                title="Slow merge"
-                description="Alert when an approved Pull Request has been waiting for merge for too long."
-              />
-              <CardOpenableSettings
-                left={
-                  <IconEyeOff
-                    stroke={1}
-                    size={28}
-                    color="var(--mantine-color-green-4)"
-                  />
-                }
-                right={<BadgeOnOff enabled={false} available={true} />}
-                title="Merged PR without approval"
-                description="Alert when a Pull Request is merged without approvals."
-                href="#"
-              />
-              <CardOpenableSettings
-                left={
-                  <IconMessage2Exclamation
-                    stroke={1}
-                    size={28}
-                    color="var(--mantine-color-green-4)"
-                  />
-                }
-                right={<BadgeOnOff enabled={true} available={true} />}
-                title="Hot Pull Request"
-                description="Alert when a Pull Request has lot of comments or back-and-forth."
-              />
-              <CardOpenableSettings
-                left={
-                  <IconRocketOff
-                    stroke={1}
-                    size={28}
-                    color="var(--mantine-color-green-4)"
-                  />
-                }
-                right={<BadgeOnOff enabled={false} available={false} />}
-                title="Too many unreleased changes"
-                description="Alert when many merged Pull Requests are pending release."
-              /> */}
             </Stack>
           </>
         }

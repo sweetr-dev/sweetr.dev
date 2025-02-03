@@ -12,7 +12,7 @@ export const BadgeOnOff = ({
 }: BadgeOnOffProps) => {
   if (!available) {
     return (
-      <Badge color="gray" variant="light" {...props}>
+      <Badge radius="sm" size="lg" color="gray" variant="light" {...props}>
         Coming Soon
       </Badge>
     );
@@ -20,14 +20,14 @@ export const BadgeOnOff = ({
 
   if (enabled) {
     return (
-      <Badge color="green" variant="light" {...props}>
+      <Badge radius="sm" size="lg" color="green" variant="light" {...props}>
         On
       </Badge>
     );
   }
 
   return (
-    <Badge color="violet" variant="light" {...props}>
+    <Badge radius="sm" size="lg" color="violet" variant="light" {...props}>
       Off
     </Badge>
   );

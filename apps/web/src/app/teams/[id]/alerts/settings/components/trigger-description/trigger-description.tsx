@@ -12,14 +12,18 @@ export const TriggerDescription = ({
 }: TriggerDescriptionProps) => {
   return (
     <Paper withBorder p="xs">
-      <Group gap={5} align="center">
+      <Group gap="xs" align="center">
         {type === "cron" && <IconCalendar stroke={1.5} size={20} />}
         {type === "event" && <IconWebhook stroke={1.5} size={20} />}
-        <Text fw={500}>{type === "cron" ? "Cron-based:" : "Event-based:"}</Text>
-        <Text>
-          {type === "cron" ? "Runs checks " : "Runs when "}
-          {label}.
-        </Text>
+        <div>
+          <Text fw={500}>
+            {type === "cron" ? "Cron-based: " : "Event-based: "}
+            <Text component="span">
+              {type === "cron" ? "Runs checks " : "Runs when "}
+              {label}.
+            </Text>
+          </Text>
+        </div>
       </Group>
     </Paper>
   );

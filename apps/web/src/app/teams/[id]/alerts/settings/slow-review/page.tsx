@@ -20,7 +20,6 @@ import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowReviewAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../providers/form.provider.ts";
 import { TriggerDescription } from "../components/trigger-description";
-import { Span } from "../../../../../../components/span";
 
 export const SlowReviewAlertPage = () => {
   const teamId = useTeamId();
@@ -94,7 +93,7 @@ export const SlowReviewAlertPage = () => {
           <>
             <Stack p="md">
               <Text>{alert.description}</Text>
-              <TriggerDescription type="cron" label="once per hour" />
+              <TriggerDescription type="cron" label="every 30 minutes" />
             </Stack>
             <Divider />
 
@@ -115,9 +114,14 @@ export const SlowReviewAlertPage = () => {
                       <Input.Wrapper>
                         <Input.Label>
                           A Pull Request is awaiting review for more than{" "}
-                          <Span color="green">
+                          <Text
+                            component="span"
+                            c="green"
+                            fz="inherit"
+                            fw="inherit"
+                          >
                             {form.values.settings.maxWaitInHours} hours
-                          </Span>
+                          </Text>
                         </Input.Label>
                         <Slider
                           mt="xs"

@@ -6,6 +6,7 @@ import {
   Input,
   Slider,
   Title,
+  Group,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
@@ -20,7 +21,7 @@ import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowMergeAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../providers/form.provider.ts";
 import { TriggerDescription } from "../components/trigger-description";
-import { Span } from "../../../../../../components/span";
+import { IconGitMerge } from "@tabler/icons-react";
 
 export const SlowMergeAlertPage = () => {
   const teamId = useTeamId();
@@ -112,9 +113,14 @@ export const SlowMergeAlertPage = () => {
                         <Input.Label>
                           An approved Pull Request is awaiting merge for more
                           than{" "}
-                          <Span color="green">
+                          <Text
+                            component="span"
+                            c="green"
+                            fz="inherit"
+                            fw="inherit"
+                          >
                             {form.values.settings.maxWaitInHours} hours
-                          </Span>
+                          </Text>
                         </Input.Label>
                         <Slider
                           mt="xs"
