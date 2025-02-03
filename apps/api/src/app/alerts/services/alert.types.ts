@@ -11,6 +11,12 @@ export type Alert = Omit<DbAlert, "settings"> & {
   settings: AlertSettings;
 };
 
+export interface FindActiveAlerts<T extends AlertType> {
+  workspaceId: number;
+  teamIds: number[];
+  type: T;
+}
+
 export interface FindAlertByTypeArgs<T extends AlertType> {
   workspaceId: number;
   teamId: number;

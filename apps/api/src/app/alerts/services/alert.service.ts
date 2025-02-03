@@ -5,11 +5,12 @@ import { AlertType } from "@prisma/client";
 import {
   Alert,
   AlertTypeMap,
+  FindActiveAlerts,
   FindAlertByTypeArgs,
   UpsertAlert,
 } from "./alert.types";
 
-export const findAlertByType = async <T extends AlertType>({
+export const findTeamAlertByType = async <T extends AlertType>({
   workspaceId,
   teamId,
   type,
@@ -24,6 +25,24 @@ export const findAlertByType = async <T extends AlertType>({
   if (!alert) return null;
 
   return alert as AlertTypeMap[T];
+};
+
+export const findActiveAlerts = async <T extends AlertType>({
+  workspaceId,
+  teamIds,
+  type,
+}: FindActiveAlerts<T>) => {
+  const alerts = await getPrisma(workspaceId).alert.findMany({
+    where: {
+      teamId: {
+        in: teamIds,
+      },
+      type,
+      enabled: true,
+    },
+  });
+
+  return alerts.map((alert) => alert as AlertTypeMap[T]);
 };
 
 export const findAlertsByTeam = async (workspaceId: number, teamId: number) => {

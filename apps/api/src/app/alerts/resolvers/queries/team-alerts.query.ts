@@ -3,7 +3,7 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { transformAlert } from "../transformers/alert.transformer";
 import {
-  findAlertByType,
+  findTeamAlertByType,
   findAlertsByTeam,
 } from "../../services/alert.service";
 import { Alert } from "../../services/alert.types";
@@ -20,7 +20,7 @@ export const teamAlertsQuery = createFieldResolver("Team", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const alert = await findAlertByType({
+    const alert = await findTeamAlertByType({
       workspaceId: context.workspaceId,
       teamId: team.id,
       type: input.type,

@@ -38,7 +38,11 @@ export const workspaceQuery = createQueryResolver({
     logger.info("query.workspaceByInstallationId", { input });
 
     const workspace = await findWorkspaceByGitInstallationId(
-      input.gitInstallationId
+      input.gitInstallationId,
+      {
+        repositories: true,
+        memberships: true,
+      }
     );
 
     if (!workspace) return null;
