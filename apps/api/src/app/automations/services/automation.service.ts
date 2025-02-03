@@ -1,5 +1,5 @@
 import { JsonObject } from "@prisma/client/runtime/library";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import {
   Automation,
   AutomationTypeMap,
@@ -8,8 +8,9 @@ import {
   UpsertAutomationArgs,
 } from "./automation.types";
 import { assign, isObject } from "radash";
-import { AutomationType, GitProvider } from "@prisma/client";
+import { AutomationType } from "@prisma/client";
 import { isActiveCustomer } from "../../workspace-authorization.service";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 export const findAutomationByType = async <T extends AutomationType>({
   workspaceId,
@@ -107,20 +108,12 @@ export const canRunAutomation = async ({
 export const findWorkspaceByInstallationId = async (
   gitInstallationId: number
 ) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString(),
+    {
       subscription: true,
-      installation: true,
-    },
-  });
+    }
+  );
 
   if (!workspace) return null;
 

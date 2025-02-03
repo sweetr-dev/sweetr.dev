@@ -3,10 +3,11 @@ import {
   GITHUB_MAX_PAGE_LIMIT,
   getInstallationGraphQLOctoKit,
 } from "../../../lib/octokit";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { logger } from "../../../lib/logger";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 type GitOrganizationMember = {
   id: string;
@@ -119,14 +120,9 @@ const fetchGitHubOrganizationMembers = async (
 };
 
 const findWorkspaceOrThrow = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
 
   if (!workspace) {
     throw new ResourceNotFoundException("Could not find workspace", {

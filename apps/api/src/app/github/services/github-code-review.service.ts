@@ -4,7 +4,7 @@ import {
 } from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import {
   CodeReviewState,
   GitProvider,
@@ -20,6 +20,7 @@ import {
 import { parseNullableISO } from "../../../lib/date";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 interface Author {
   id: string;
@@ -491,18 +492,9 @@ const findPullRequest = async (
 };
 
 const findWorkspace = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
 
   if (!workspace) return null;
   if (!workspace.gitProfile && !workspace.organization) return null;
