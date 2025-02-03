@@ -5,10 +5,15 @@ import {
   Alert as DbAlert,
   AlertType,
   Prisma,
+  Team,
 } from "@prisma/client";
 
 export type Alert = Omit<DbAlert, "settings"> & {
   settings: AlertSettings;
+};
+
+export type AlertWithTeam<T extends AlertType> = AlertTypeMap[T] & {
+  team: Team;
 };
 
 export interface FindActiveAlerts<T extends AlertType> {

@@ -32,10 +32,7 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
     SweetQueue.GITHUB_SYNC_PULL_REQUEST,
     SweetQueue.AUTOMATION_PR_TITLE_CHECK,
   ],
-  "pull_request.closed": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL,
-  ],
+  "pull_request.closed": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.converted_to_draft": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.ready_for_review": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
   "pull_request.reopened": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],

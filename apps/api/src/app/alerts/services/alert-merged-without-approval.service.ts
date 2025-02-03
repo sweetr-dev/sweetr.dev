@@ -11,6 +11,8 @@ import {
   joinSlackChannel,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
+import { AlertWithTeam } from "./alert.types";
+import { PullRequestWithRelations } from "./alert-merged-without-approval.types";
 
 export const alertMergedWithoutApproval = async (
   gitInstallationId: string,
@@ -28,7 +30,6 @@ export const alertMergedWithoutApproval = async (
   const isApproved = pullRequest.codeReviews.some(
     (cr) => cr.state === CodeReviewState.APPROVED
   );
-
   const isMerged = pullRequest.state === PullRequestState.MERGED;
 
   if (isApproved || !isMerged) {
@@ -43,28 +44,81 @@ export const alertMergedWithoutApproval = async (
     type: AlertType.MERGED_WITHOUT_APPROVAL,
   });
 
-  const channels = unique(alerts.map((alert) => alert.channel));
+  const uniqueAlerts = unique(alerts, (alert) => alert.channel);
 
   await Promise.all(
-    channels.map((channel) => sendAlert(workspace.id, channel))
+    uniqueAlerts.map((alert) => sendAlert(workspace.id, alert, pullRequest))
   );
 };
 
-const sendAlert = async (workspaceId: number, channel: string) => {
+const sendAlert = async (
+  workspaceId: number,
+  alert: AlertWithTeam<"MERGED_WITHOUT_APPROVAL">,
+  pullRequest: PullRequestWithRelations
+) => {
   const { slackClient } = await getWorkspaceSlackClient(workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, channel);
+  const slackChannel = await joinSlackChannel(slackClient, alert.channel);
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");
   }
 
+  const blocks = await getMessageBlocks(alert, pullRequest);
+
   await sendSlackMessage(slackClient, {
     channel: slackChannel.id,
-    text: "A pull request was merged without approval",
+    blocks,
+    text: "A pull request was merged without approvals",
     unfurl_links: false,
     unfurl_media: false,
   });
+};
+
+const getMessageBlocks = async (
+  alert: AlertWithTeam<"MERGED_WITHOUT_APPROVAL">,
+  pullRequest: PullRequestWithRelations
+) => {
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `PR "*<${pullRequest.gitUrl}|${pullRequest.title}>*" was merged without approvals ⚠️`,
+      },
+    },
+    {
+      type: "context",
+      elements: [
+        {
+          type: "image",
+          image_url: pullRequest.author.avatar,
+          alt_text: pullRequest.author.name,
+        },
+        {
+          type: "mrkdwn",
+          text: pullRequest.author.name,
+        },
+        {
+          type: "image",
+          image_url: "https://github.githubassets.com/favicons/favicon.png",
+          alt_text: "GitHub",
+        },
+        {
+          type: "mrkdwn",
+          text: pullRequest.repository.fullName,
+        },
+        {
+          type: "mrkdwn",
+          text: `*Size*: \`${pullRequest.tracking?.size || "unknown"}\``,
+        },
+        {
+          type: "mrkdwn",
+          text: `*Team*: ${alert.team.name}`,
+        },
+      ],
+    },
+  ];
 };
 
 const getWorkspaceOrThrow = async (gitInstallationId: string) => {
@@ -89,6 +143,8 @@ const getPullRequestOrThrow = async (
     },
     include: {
       codeReviews: true,
+      repository: true,
+      tracking: true,
       author: {
         include: {
           teamMemberships: true,

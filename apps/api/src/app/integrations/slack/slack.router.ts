@@ -21,3 +21,10 @@ slackRouter.post(
     return res.status(200).send();
   })
 );
+
+slackRouter.post(
+  "/slack/interactive",
+  catchErrors(async (req, res) => {
+    return res.status(200).send();
+  })
+);

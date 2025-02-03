@@ -1,10 +1,11 @@
 import { JsonObject } from "@prisma/client/runtime/library";
 import { getPrisma } from "../../../prisma";
 import { assign, isObject } from "radash";
-import { AlertType } from "@prisma/client";
+import { AlertType, Team } from "@prisma/client";
 import {
   Alert,
   AlertTypeMap,
+  AlertWithTeam,
   FindActiveAlerts,
   FindAlertByTypeArgs,
   UpsertAlert,
@@ -40,9 +41,12 @@ export const findActiveAlerts = async <T extends AlertType>({
       type,
       enabled: true,
     },
+    include: {
+      team: true,
+    },
   });
 
-  return alerts.map((alert) => alert as AlertTypeMap[T]);
+  return alerts.map((alert) => alert as AlertWithTeam<T>);
 };
 
 export const findAlertsByTeam = async (workspaceId: number, teamId: number) => {
