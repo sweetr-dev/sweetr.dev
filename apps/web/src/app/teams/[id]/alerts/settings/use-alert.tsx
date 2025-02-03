@@ -16,16 +16,20 @@ import {
 } from "../../../../../api/alert.api";
 import { FormEventHandler, useMemo } from "react";
 import { UseFormReturnType } from "@mantine/form";
-import { FormAlert } from "./types";
+import { BaseFormAlert } from "./types";
 import { useDrawerPage } from "../../../../../providers/drawer-page.provider";
 
-interface UseAlertsProps {
+interface UseAlertsProps<T> {
   teamId: string;
   type: AlertType;
-  form: UseFormReturnType<FormAlert>;
+  form: UseFormReturnType<T>;
 }
 
-export const useAlert = ({ teamId, type, form }: UseAlertsProps) => {
+export const useAlert = <T extends BaseFormAlert>({
+  teamId,
+  type,
+  form,
+}: UseAlertsProps<T>) => {
   const { workspace } = useWorkspace();
   const { alertCards } = useAlertCards();
   const alertCard = alertCards[type];
@@ -69,7 +73,6 @@ export const useAlert = ({ teamId, type, form }: UseAlertsProps) => {
       ...form.values,
       teamId,
       type,
-      settings: {},
       workspaceId: workspace.id,
     });
   };

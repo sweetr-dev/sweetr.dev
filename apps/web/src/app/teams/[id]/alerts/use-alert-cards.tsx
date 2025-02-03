@@ -25,7 +25,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     title: "Slow review",
     description:
       "Alert when an open Pull Request has been waiting for review for too long.",
-    icon: IconGitMerge,
+    icon: IconEyeCode,
     getRoute: (teamId) => `/teams/${teamId}/alerts/slow-review`,
   },
   [AlertType.SLOW_MERGE]: {
@@ -34,7 +34,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     title: "Slow merge",
     description:
       "Alert when an approved Pull Request has been waiting for merge for too long.",
-    icon: IconEyeCode,
+    icon: IconGitMerge,
     getRoute: (teamId) => `/teams/${teamId}/alerts/slow-merge`,
   },
   [AlertType.MERGED_WITHOUT_APPROVAL]: {

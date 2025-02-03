@@ -6,7 +6,6 @@ import {
   Group,
   Tooltip,
   Button,
-  Divider,
   Text,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
@@ -14,13 +13,15 @@ import { IconBrandSlack, IconInfoCircle } from "@tabler/icons-react";
 import { useRef, useEffect } from "react";
 import { BoxSetting } from "../../../../../../components/box-setting";
 import { useSendTestMessage } from "../../../use-send-test-message";
-import { FormAlert } from "../../settings/types";
+import { BaseFormAlert } from "../../settings/types";
 
-interface AlertBaseFieldsProps {
-  form: UseFormReturnType<FormAlert>;
+interface AlertBaseFieldsProps<T> {
+  form: UseFormReturnType<T>;
 }
 
-export const AlertBaseFields = ({ form }: AlertBaseFieldsProps) => {
+export const AlertBaseFields = <T extends BaseFormAlert>({
+  form,
+}: AlertBaseFieldsProps<T>) => {
   const { sendTestMessage, isSendingTestMessage } = useSendTestMessage();
   const isEnabled = form.values.enabled;
 
@@ -89,8 +90,6 @@ export const AlertBaseFields = ({ form }: AlertBaseFieldsProps) => {
           </>
         )}
       </Stack>
-
-      <Divider my="md" />
     </>
   );
 };

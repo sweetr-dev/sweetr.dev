@@ -1,4 +1,12 @@
-import { Button, Text, Divider, Stack } from "@mantine/core";
+import {
+  Button,
+  Text,
+  Divider,
+  Stack,
+  Input,
+  Slider,
+  Title,
+} from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
 import { LoadableContent } from "../../../../../../components/loadable-content";
@@ -11,6 +19,8 @@ import { useAlert } from "../use-alert";
 import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowMergeAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../providers/form.provider.ts";
+import { TriggerDescription } from "../components/trigger-description";
+import { Span } from "../../../../../../components/span";
 
 export const SlowMergeAlertPage = () => {
   const teamId = useTeamId();
@@ -19,6 +29,9 @@ export const SlowMergeAlertPage = () => {
   const initialValues = {
     enabled: false,
     channel: "",
+    settings: {
+      maxWaitInHours: 2,
+    },
   };
 
   const form = useForm<FormSlowMergeAlert>({
@@ -40,12 +53,18 @@ export const SlowMergeAlertPage = () => {
     form,
   });
 
+  const settings = alert?.settings as
+    | FormSlowMergeAlert["settings"]
+    | undefined
+    | null;
+
   useFormAsyncData({
     isFetched: alertQuery.isFetched,
     form,
     values: {
       enabled: alert.enabled || initialValues.enabled,
       channel: alert.channel || initialValues.channel,
+      settings: settings || initialValues.settings,
     },
   });
 
@@ -71,6 +90,7 @@ export const SlowMergeAlertPage = () => {
           <>
             <Stack p="md">
               <Text>{alert.description}</Text>
+              <TriggerDescription type="cron" label="once per hour" />
             </Stack>
             <Divider />
 
@@ -83,6 +103,33 @@ export const SlowMergeAlertPage = () => {
             {integration && (
               <>
                 <AlertBaseFields form={form} />
+                {form.values.enabled && (
+                  <>
+                    <Divider my="md" />
+                    <Stack p="md" pb="xl">
+                      <Title order={5}>Trigger</Title>
+                      <Input.Wrapper>
+                        <Input.Label>
+                          An approved Pull Request is awaiting merge for more
+                          than{" "}
+                          <Span color="green">
+                            {form.values.settings.maxWaitInHours} hours
+                          </Span>
+                        </Input.Label>
+                        <Slider
+                          mt="xs"
+                          min={1}
+                          max={7 * 24}
+                          label={(value) => `${value} hours`}
+                          {...form.getInputProps("settings.maxWaitInHours")}
+                        />
+                        <Input.Description mt="xs">
+                          Weekends are not included in the calculation.
+                        </Input.Description>
+                      </Input.Wrapper>
+                    </Stack>
+                  </>
+                )}
               </>
             )}
           </>

@@ -11,6 +11,7 @@ import { useAlert } from "../use-alert";
 import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormMergedWithoutReviewAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../providers/form.provider.ts";
+import { TriggerDescription } from "../components/trigger-description";
 
 export const MergedWithoutApprovalAlertPage = () => {
   const teamId = useTeamId();
@@ -19,6 +20,7 @@ export const MergedWithoutApprovalAlertPage = () => {
   const initialValues = {
     enabled: false,
     channel: "",
+    settings: {},
   };
 
   const form = useForm<FormMergedWithoutReviewAlert>({
@@ -46,6 +48,7 @@ export const MergedWithoutApprovalAlertPage = () => {
     values: {
       enabled: alert.enabled || initialValues.enabled,
       channel: alert.channel || initialValues.channel,
+      settings: alert.settings || initialValues.settings,
     },
   });
 
@@ -71,6 +74,10 @@ export const MergedWithoutApprovalAlertPage = () => {
           <>
             <Stack p="md">
               <Text>{alert.description}</Text>
+              <TriggerDescription
+                type="event"
+                label="a Pull Request is merged"
+              />
             </Stack>
             <Divider />
 
