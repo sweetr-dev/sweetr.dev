@@ -2,7 +2,7 @@ import { AnyBlock, RichTextElement } from "@slack/web-api";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
 import { DigestWithRelations } from "./digest.types";
@@ -20,11 +20,17 @@ import { getPullRequestSize } from "../../github/services/github-pull-request-tr
 import { UTCDate } from "@date-fns/utc";
 import { formatMsDuration } from "../../../lib/date";
 import { AverageMetricFilters } from "../../metrics/services/average-metrics.types";
+import { logger } from "../../../lib/logger";
 
 export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
+  logger.info("sendTeamMetricsDigest", { digest });
+
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, digest.channel);
+  const slackChannel = await joinSlackChannelOrThrow(
+    slackClient,
+    digest.channel
+  );
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");

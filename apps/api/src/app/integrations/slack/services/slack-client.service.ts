@@ -4,6 +4,7 @@ import { getPrisma, jsonObject } from "../../../../prisma";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { config } from "../../../../config";
 import { IntegrationException } from "../../../errors/exceptions/integration.exception";
+import { logger } from "../../../../lib/logger";
 
 export const getSlackClient = () => new WebClient();
 
@@ -50,24 +51,32 @@ export const uninstallSlackWorkspace = async (slackClient: WebClient) => {
   });
 };
 
-export const findSlackChannel = async (
+export const findSlackChannelOrThrow = async (
   slackClient: WebClient,
   channelName: string
 ) => {
   // TO-DO: Paginate
-  const channels = await slackClient?.conversations.list({
+  const response = await slackClient?.conversations.list({
     limit: 1000,
     types: "public_channel,private_channel",
   });
 
-  return channels?.channels?.find((ch) => ch.name === channelName);
+  logger.debug("Slack channels", { response });
+
+  if (!response?.ok || !response.channels?.length) {
+    throw new IntegrationException("Failed to fetch Slack channels", {
+      extra: { response },
+    });
+  }
+
+  return response?.channels?.find((ch) => ch.name === channelName);
 };
 
-export const joinSlackChannel = async (
+export const joinSlackChannelOrThrow = async (
   slackClient: WebClient,
   channelName: string
 ) => {
-  const channel = await findSlackChannel(slackClient, channelName);
+  const channel = await findSlackChannelOrThrow(slackClient, channelName);
 
   if (!channel?.id) {
     throw new ResourceNotFoundException("Slack channel not found", {
