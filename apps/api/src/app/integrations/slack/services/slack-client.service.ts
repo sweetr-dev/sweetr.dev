@@ -55,26 +55,37 @@ export const findSlackChannelOrThrow = async (
   slackClient: WebClient,
   channelName: string
 ) => {
-  // TO-DO: Paginate
-  const response = await slackClient?.conversations.list({
-    limit: 999,
-    types: "public_channel,private_channel",
-  });
+  let channels: string[] = [];
+  let cursor;
 
-  logger.debug("slackClient.conversations.list", {
-    ok: response.ok,
-    error: response.error,
-    metadata: response.response_metadata,
-    channels: response.channels,
-  });
-
-  if (!response?.ok || !response.channels?.length) {
-    throw new IntegrationException("Failed to fetch Slack channels", {
-      extra: { response },
+  do {
+    const response = await slackClient?.conversations.list({
+      limit: 200,
+      types: "public_channel,private_channel",
+      cursor,
     });
-  }
 
-  return response?.channels?.find((ch) => ch.name === channelName);
+    logger.debug("slackClient.conversations.list", {
+      ok: response.ok,
+      error: response.error,
+      metadata: response.response_metadata,
+      channels: response.channels,
+    });
+
+    if (!response?.ok || !response.channels) {
+      throw new IntegrationException("Failed to fetch Slack channels", {
+        extra: { response },
+      });
+    }
+
+    const channelNames = response.channels.map((ch) => ch.name as string);
+
+    channels = channels.concat(channelNames);
+
+    cursor = response.response_metadata?.next_cursor;
+  } while (cursor);
+
+  return channels.find((channel) => channel === channelName);
 };
 
 export const joinSlackChannelOrThrow = async (
