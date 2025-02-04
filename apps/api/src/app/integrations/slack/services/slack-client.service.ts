@@ -1,5 +1,9 @@
 import { IntegrationApp } from "@prisma/client";
-import { ChatPostMessageArguments, WebClient } from "@slack/web-api";
+import {
+  ChatPostMessageArguments,
+  WebClient,
+  ChannelsListResponse,
+} from "@slack/web-api";
 import { getPrisma, jsonObject } from "../../../../prisma";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { config } from "../../../../config";
@@ -55,7 +59,7 @@ export const findSlackChannelOrThrow = async (
   slackClient: WebClient,
   channelName: string
 ) => {
-  let channels: string[] = [];
+  let channels: ChannelsListResponse["channels"] = [];
   let cursor;
 
   do {
@@ -78,14 +82,12 @@ export const findSlackChannelOrThrow = async (
       });
     }
 
-    const channelNames = response.channels.map((ch) => ch.name as string);
-
-    channels = channels.concat(channelNames);
+    channels = channels.concat(response.channels);
 
     cursor = response.response_metadata?.next_cursor;
   } while (cursor);
 
-  return channels.find((channel) => channel === channelName);
+  return channels.find((channel) => channel.name === channelName);
 };
 
 export const joinSlackChannelOrThrow = async (
