@@ -58,7 +58,7 @@ export const findSlackChannelOrThrow = async (
   // TO-DO: Paginate
   const response = await slackClient?.conversations.list({
     limit: 999,
-    types: "public_channel,private_channel",
+    //types: "public_channel,private_channel",
   });
 
   logger.debug("slackClient.conversations.list", {
