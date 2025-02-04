@@ -61,7 +61,11 @@ export const findSlackChannelOrThrow = async (
     types: "public_channel,private_channel",
   });
 
-  logger.debug("Slack channels", { response });
+  logger.debug("slackClient.conversations.list", {
+    ok: response.ok,
+    error: response.error,
+    channels: response.channels?.length,
+  });
 
   if (!response?.ok || !response.channels?.length) {
     throw new IntegrationException("Failed to fetch Slack channels", {
