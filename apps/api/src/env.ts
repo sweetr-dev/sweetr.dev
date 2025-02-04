@@ -14,6 +14,12 @@ export const env = envsafe({
     default: "production",
     choices: ["development", "staging", "production"],
   }),
+  LOG_LEVEL: str({
+    desc: "The log level",
+    default: "info",
+    devDefault: "debug",
+    choices: ["debug", "info", "warn", "error"],
+  }),
   PORT: port({
     desc: "The port the app is running on",
   }),

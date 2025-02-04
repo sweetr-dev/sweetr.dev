@@ -11,7 +11,7 @@ import {
   authorizeSlackWorkspace,
   getSlackClient,
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
   uninstallSlackWorkspace,
 } from "./slack-client.service";
@@ -129,7 +129,7 @@ export const getInstallUrl = (): string => {
 export const sendTestMessage = async (workspaceId: number, channel: string) => {
   const { slackClient } = await getWorkspaceSlackClient(workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, channel);
+  const slackChannel = await joinSlackChannelOrThrow(slackClient, channel);
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");

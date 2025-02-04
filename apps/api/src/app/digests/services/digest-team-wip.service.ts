@@ -3,7 +3,7 @@ import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
 import { DigestWithRelations } from "./digest.types";
@@ -14,11 +14,17 @@ import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
 import { isPullRequestApproved } from "../../code-reviews/services/code-review.service";
+import { logger } from "../../../lib/logger";
 
 export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
+  logger.info("sendTeamWipDigest", { digest });
+
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, digest.channel);
+  const slackChannel = await joinSlackChannelOrThrow(
+    slackClient,
+    digest.channel
+  );
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");

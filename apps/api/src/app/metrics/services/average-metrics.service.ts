@@ -123,8 +123,10 @@ export const getPullRequestCount = async (filters: AverageMetricFilters) => {
     `;
 
   const results = await getPrisma(filters.workspaceId).$queryRaw<
-    { value: number }[]
+    { value: bigint }[]
   >(query);
 
-  return results.at(0)?.value || 0;
+  const value = results.at(0)?.value || 0n;
+
+  return Number(value);
 };

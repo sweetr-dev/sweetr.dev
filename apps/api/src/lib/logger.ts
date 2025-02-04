@@ -13,6 +13,7 @@ const stream = env.LOG_DRAIN === "logtail" ? logTailStream : consoleStream;
 export const logger = pino(
   {
     nestedKey: "payload",
+    level: env.LOG_LEVEL,
     hooks: {
       logMethod(args, method) {
         // Accept message as first argument, payload as second
