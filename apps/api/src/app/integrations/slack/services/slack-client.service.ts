@@ -1,5 +1,9 @@
 import { IntegrationApp } from "@prisma/client";
-import { ChatPostMessageArguments, WebClient } from "@slack/web-api";
+import {
+  ChannelsListResponse,
+  ChatPostMessageArguments,
+  WebClient,
+} from "@slack/web-api";
 import { getPrisma, jsonObject } from "../../../../prisma";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { config } from "../../../../config";
@@ -55,25 +59,35 @@ export const findSlackChannelOrThrow = async (
   slackClient: WebClient,
   channelName: string
 ) => {
-  // TO-DO: Paginate
-  const response = await slackClient?.conversations.list({
-    limit: 1000,
-    types: "public_channel,private_channel",
-  });
+  let channels: ChannelsListResponse["channels"] = [];
+  let cursor;
 
-  logger.debug("slackClient.conversations.list", {
-    ok: response.ok,
-    error: response.error,
-    channels: response.channels?.length,
-  });
-
-  if (!response?.ok || !response.channels?.length) {
-    throw new IntegrationException("Failed to fetch Slack channels", {
-      extra: { response },
+  do {
+    const response = await slackClient?.conversations.list({
+      limit: 200,
+      types: "public_channel,private_channel",
+      cursor,
     });
-  }
 
-  return response?.channels?.find((ch) => ch.name === channelName);
+    logger.debug("slackClient.conversations.list", {
+      ok: response.ok,
+      error: response.error,
+      metadata: response.response_metadata,
+      channels: response.channels,
+    });
+
+    if (!response?.ok || !response.channels) {
+      throw new IntegrationException("Failed to fetch Slack channels", {
+        extra: { response },
+      });
+    }
+
+    channels = channels.concat(response.channels);
+
+    cursor = response.response_metadata?.next_cursor;
+  } while (cursor);
+
+  return channels.find((channel) => channel.name === channelName);
 };
 
 export const joinSlackChannelOrThrow = async (
