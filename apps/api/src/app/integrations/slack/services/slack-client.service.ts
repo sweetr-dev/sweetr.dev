@@ -64,7 +64,7 @@ export const findSlackChannelOrThrow = async (
   logger.debug("slackClient.conversations.list", {
     ok: response.ok,
     error: response.error,
-    channels: response.channels?.length,
+    channels: response.channels,
   });
 
   if (!response?.ok || !response.channels?.length) {
