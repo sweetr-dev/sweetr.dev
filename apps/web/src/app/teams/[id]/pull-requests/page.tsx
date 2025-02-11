@@ -184,30 +184,7 @@ export const TeamPullRequestsPage = () => {
                       labelPosition="left"
                     />
                   )}
-                  <CardPullRequest
-                    title={pr.title}
-                    state={pr.state}
-                    url={pr.gitUrl}
-                    repositoryName={pr.repository.name}
-                    createdAt={createdAt}
-                    closedAt={parseNullableISO(pr.closedAt)}
-                    mergedAt={parseNullableISO(pr.mergedAt)}
-                    firstReviewAt={parseNullableISO(pr.tracking.firstReviewAt)}
-                    size={pr.tracking.size}
-                    timeToFirstReview={
-                      pr.tracking.timeToFirstReview || undefined
-                    }
-                    timeToFirstApproval={
-                      pr.tracking.timeToFirstApproval || undefined
-                    }
-                    timeToMerge={pr.tracking.timeToMerge || undefined}
-                    author={{
-                      name: pr.author.name!,
-                      avatar: pr.author.avatar!,
-                    }}
-                    comments={pr.commentCount}
-                    changes={getPullRequestChanges(pr)}
-                  />
+                  <CardPullRequest pullRequest={pr} />
                 </Fragment>
               );
             })}

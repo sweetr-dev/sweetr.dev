@@ -12,103 +12,79 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
 import { IconPullRequestState } from "./icon-pull-request-state";
-import {
-  PullRequestSize,
-  PullRequestState,
-} from "@sweetr/graphql-types/frontend/graphql";
-import { formatRelative } from "date-fns";
+import { PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
-import { BadgeCodeReviewTime } from "./badge-code-review-time";
-import { BadgeMergeTime } from "./badge-merge-time";
 import { BadgePullRequestSize } from "../badge-pull-request-size/badge-pull-request-size";
+import classes from "./card-pull-request.module.css";
+import { getPullRequestChanges } from "../../providers/pull-request.provider";
+import { usePrCard } from "./use-pr-card";
+import { BadgeStatus } from "./badge-status";
+import { useBadges } from "./use-badges";
 
 interface CardPullRequestProps {
-  title: string;
-  state: PullRequestState;
-  comments: number;
-  url: string;
-  repositoryName: string;
-  createdAt: Date;
-  closedAt?: Date;
-  mergedAt?: Date;
-  firstReviewAt?: Date;
-  size: PullRequestSize;
-  timeToFirstReview?: number;
-  timeToFirstApproval?: number;
-  timeToMerge?: number;
-  author?: {
-    name: string;
-    avatar: string;
-  };
-  changes: {
-    additions: number;
-    deletions: number;
-    files: number;
-  };
+  pullRequest: PullRequest;
 }
 
-export const CardPullRequest = ({
-  title,
-  state,
-  url,
-  repositoryName,
-  createdAt,
-  closedAt,
-  mergedAt,
-  author,
-  changes,
-  comments,
-  size,
-  firstReviewAt,
-  timeToFirstReview,
-  timeToFirstApproval,
-  timeToMerge,
-}: CardPullRequestProps) => {
+export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
-  const getTimeLabel = () => {
-    const openedAtLabel = `Opened ${formatRelative(createdAt, new Date())}`;
+  const { getCommentFlameProps, getTimeLabel } = usePrCard(pullRequest);
 
-    if (mergedAt) return `Merged ${formatRelative(mergedAt, new Date())}`;
+  const { getCardColor, badges } = useBadges(pullRequest);
 
-    if (closedAt) return `Closed ${formatRelative(closedAt, new Date())}`;
-
-    return openedAtLabel;
-  };
-
-  const getCommentFlameProps = (comments: number) => {
-    if (comments >= 30) {
-      return { color: theme.colors.red[7], fill: theme.colors.red[7] };
-    }
-
-    if (comments >= 20) {
-      return { color: theme.colors.red[6] };
-    }
-
-    return { color: theme.colors.red[4] };
-  };
+  const cardColor = getCardColor();
 
   return (
-    <Anchor href={url} underline="never" c="dark.0" target="_blank">
-      <Paper p="xs" radius="md" withBorder className="grow-on-hover">
+    <Anchor
+      href={pullRequest.gitUrl}
+      underline="never"
+      c="dark.0"
+      target="_blank"
+    >
+      <Paper
+        p="md"
+        pl="lg"
+        radius="md"
+        withBorder
+        className={`${classes.card} grow-on-hover`}
+        style={{
+          ["--borderWidth"]: cardColor ? "2px" : 0,
+          ["--startColor"]: cardColor?.start,
+          ["--endColor"]: cardColor?.end,
+        }}
+      >
         <Group justify="space-between" wrap={isSmallScreen ? "wrap" : "nowrap"}>
           <Group wrap="nowrap">
-            <IconPullRequestState state={state} />
             <Stack gap={0}>
               <Group gap="xs" wrap="nowrap">
                 <Title order={4} c="dark.3" textWrap="nowrap">
-                  {repositoryName}
+                  {pullRequest.repository.name}
                 </Title>
-                <Title order={4} lineClamp={1} title={title}>
-                  {title}
+                <Title order={4} lineClamp={1} title={pullRequest.title}>
+                  {pullRequest.title}
                 </Title>
               </Group>
 
-              <Group gap={4} mt={2}>
-                <Text c="dimmed" size="xs">
-                  {getTimeLabel()}
-                </Text>
+              <Group gap={10} mt={10}>
+                <Paper radius="md">
+                  <Group justify="center" align="center" gap={5} py={2}>
+                    <IconPullRequestState state={pullRequest.state} />
+                    <Text size="sm" c="dimmed">
+                      {getTimeLabel()}
+                    </Text>
+                  </Group>
+                </Paper>
+
+                {badges.map((badge) => (
+                  <BadgeStatus
+                    key={badge.label}
+                    variant={badge.variant}
+                    icon={badge.icon}
+                  >
+                    {badge.label}
+                  </BadgeStatus>
+                ))}
               </Group>
             </Stack>
           </Group>
@@ -116,54 +92,34 @@ export const CardPullRequest = ({
           <Group
             gap="xl"
             wrap="nowrap"
-            style={{ flexGrow: 1 }}
             justify={isSmallScreen ? "center" : "flex-end"}
           >
-            {author && (
-              <Tooltip label={author.name} withArrow position="top">
-                <Avatar src={author.avatar} size={32} />
+            {pullRequest.author && (
+              <Tooltip label={pullRequest.author.name} withArrow position="top">
+                <Avatar src={pullRequest.author.avatar} size={40} />
               </Tooltip>
             )}
 
-            <Group gap={4} miw={40} justify="flex-start">
-              {comments > 10 ? (
+            <Group gap={5} miw={40} justify="flex-start" align="center">
+              {pullRequest.commentCount > 10 ? (
                 <IconFlame
                   stroke={1.5}
-                  size={16}
-                  {...getCommentFlameProps(comments)}
+                  size={20}
+                  {...getCommentFlameProps(pullRequest.commentCount)}
                 />
               ) : (
-                <IconMessage stroke={1.5} size={16} />
+                <IconMessage stroke={1} size={20} />
               )}
 
-              <Text size="sm" fw={500}>
-                {comments}
+              <Text size="md" fw={500}>
+                {pullRequest.commentCount}
               </Text>
             </Group>
 
             <BadgePullRequestSize
-              size={size}
-              tooltip={<LinesChanged {...changes} />}
+              size={pullRequest.tracking.size}
+              tooltip={<LinesChanged {...getPullRequestChanges(pullRequest)} />}
             />
-
-            <Stack gap={4} miw={28} mih={61} justify="center">
-              {state !== PullRequestState.CLOSED && (
-                <>
-                  <BadgeCodeReviewTime
-                    timeToFirstReview={timeToFirstReview}
-                    timeToFirstApproval={timeToFirstApproval}
-                    firstReviewAt={firstReviewAt}
-                    mergedAt={mergedAt}
-                  />
-                  {timeToMerge && (
-                    <BadgeMergeTime
-                      timeToMerge={timeToMerge}
-                      mergedAt={mergedAt}
-                    />
-                  )}
-                </>
-              )}
-            </Stack>
           </Group>
         </Group>
       </Paper>

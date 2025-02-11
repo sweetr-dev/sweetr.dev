@@ -34,7 +34,11 @@ export const transformPullRequestTracking = (
     linesDeletedCount: tracking.linesDeletedCount,
     firstApprovalAt: tracking.firstApprovalAt?.toISOString(),
     firstReviewAt: tracking.firstReviewAt?.toISOString(),
-    timeToFirstApproval: tracking.timeToFirstApproval,
+    timeToFirstApproval: calculateTimeForEvent(
+      tracking.firstApprovalAt || tracking.firstReadyAt || prCreatedAt,
+      tracking.timeToFirstApproval,
+      prState
+    ),
     timeToFirstReview: calculateTimeForEvent(
       tracking.firstReadyAt || prCreatedAt,
       tracking.timeToFirstReview,

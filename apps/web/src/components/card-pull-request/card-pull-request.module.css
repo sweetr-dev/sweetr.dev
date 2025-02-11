@@ -1,0 +1,15 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--borderWidth);
+    opacity: 0.75;
+    background: linear-gradient(180deg, var(--startColor), var(--endColor));
+  }
+}
