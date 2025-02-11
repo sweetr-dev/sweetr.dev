@@ -3,27 +3,11 @@ import {
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
 import {
-  IconEyeCode,
-  IconCheck,
   TablerIconsProps,
-  IconX,
   IconGitMerge,
-  IconBolt,
-  IconEyeClosed,
   IconClock,
-  IconRubberStamp,
-  IconRubberStampOff,
-  IconChecklist,
   IconEyeCheck,
-  IconCode,
-  IconMessage,
-  IconEye,
-  IconChecks,
-  IconEyeQuestion,
-  IconEyeEdit,
   IconEyeX,
-  IconSquareX,
-  IconSquareCheck,
   IconSquareRoundedCheck,
   IconSquareRoundedX,
 } from "@tabler/icons-react";
@@ -33,7 +17,7 @@ import { isBefore, parseISO, subDays } from "date-fns";
 
 type Variant = "success" | "warning" | "error" | "default";
 
-type BadgeData = null | {
+export type BadgeData = null | {
   variant: Variant;
   label: string;
   icon: React.ComponentType<TablerIconsProps>;
@@ -44,7 +28,7 @@ export const useBadges = (pullRequest: PullRequest) => {
     staleDraft: getStaleDraftBadge(pullRequest),
     reviewed: getReviewBadge(pullRequest),
     approved: getApprovalBadge(pullRequest),
-    slowMerge: getSlowMergeBadge(pullRequest),
+    merged: getMergeBadge(pullRequest),
   };
 
   const getCardColor = () => {
@@ -63,16 +47,12 @@ export const useBadges = (pullRequest: PullRequest) => {
 
   return {
     getCardColor,
-    badges: Object.values(badges).filter(Boolean) as NonNullable<BadgeData>[],
+    badges,
   };
 };
 
 const getReviewBadge = (pullRequest: PullRequest) => {
-  if (
-    [PullRequestState.CLOSED, PullRequestState.DRAFT].includes(
-      pullRequest.state,
-    )
-  ) {
+  if ([PullRequestState.CLOSED].includes(pullRequest.state)) {
     return null;
   }
 
@@ -155,21 +135,27 @@ const getApprovalBadge = (pullRequest: PullRequest) => {
   };
 };
 
-const getSlowMergeBadge = (pullRequest: PullRequest) => {
-  if (pullRequest.state !== PullRequestState.OPEN) return null;
+const getMergeBadge = (pullRequest: PullRequest) => {
+  if (
+    ![PullRequestState.OPEN, PullRequestState.MERGED].includes(
+      pullRequest.state,
+    )
+  )
+    return null;
 
   const isApproved = !!pullRequest.tracking.firstApprovalAt;
   const isMerged = !!pullRequest.mergedAt;
   const timeToMerge = pullRequest.tracking.timeToMerge;
 
-  if (isMerged || !timeToMerge || !isApproved) return null;
+  if (!timeToMerge || !isApproved) return null;
 
   const hoursToMerge = timeToMerge / msToHour;
+
   if (hoursToMerge <= 24) return null;
 
   return {
     variant: "error" as Variant,
-    label: "Stuck on Merge",
+    label: isMerged ? "Slow Merge" : "Stuck on Merge",
     icon: IconGitMerge,
   };
 };
