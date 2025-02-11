@@ -155,7 +155,7 @@ const getMergeBadge = (pullRequest: PullRequest) => {
 
   return {
     variant: "error" as Variant,
-    label: isMerged ? "Slow Merge" : "Stuck on Merge",
+    label: isMerged ? "Slow merge" : "Stuck on merge",
     icon: IconGitMerge,
   };
 };
