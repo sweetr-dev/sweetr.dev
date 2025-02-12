@@ -63,7 +63,7 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
               wrap={isSmallScreen ? "wrap" : "nowrap"}
             >
               <Group wrap="nowrap">
-                <Stack gap={0}>
+                <Stack gap="xs">
                   <Group gap="xs" wrap="nowrap">
                     <Title order={4} c="dark.3" textWrap="nowrap">
                       {pullRequest.repository.name}
@@ -73,15 +73,13 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
                     </Title>
                   </Group>
 
-                  <Group gap={10} mt={10}>
-                    <Paper radius="md">
-                      <Group justify="center" align="center" gap={5} py={2}>
-                        <IconPullRequestState state={pullRequest.state} />
-                        <Text size="sm" c="dimmed">
-                          {getTimeLabel()}
-                        </Text>
-                      </Group>
-                    </Paper>
+                  <Group gap="xs">
+                    <Group justify="center" align="center" gap={5}>
+                      <IconPullRequestState state={pullRequest.state} />
+                      <Text size="sm" c="dimmed">
+                        {getTimeLabel()}
+                      </Text>
+                    </Group>
 
                     {(
                       Object.values(badges).filter(

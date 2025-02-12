@@ -10,7 +10,7 @@ import {
   Anchor,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconMessage } from "@tabler/icons-react";
+import { IconMessage, IconMessage2, IconPencil } from "@tabler/icons-react";
 import { IconCodeReview } from "./icon-code-review";
 import {
   CodeReviewState,
@@ -20,6 +20,7 @@ import { LinesChanged } from "../lines-changed/lines-changed";
 import { BadgeFirstReview } from "./badge-code-review-time";
 import { BadgePullRequestSize } from "../badge-pull-request-size";
 import { formatRelative } from "date-fns";
+import { BadgeStatus } from "./badge-status";
 
 interface CardCodeReviewProps {
   title: string;
@@ -55,6 +56,7 @@ export const CardCodeReview = ({
   prFirstReviewAt,
   prTimeToFirstReview,
   prGitUrl,
+  prComments,
 }: CardCodeReviewProps) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -62,11 +64,11 @@ export const CardCodeReview = ({
 
   return (
     <Anchor href={prGitUrl} underline="never" c="dark.0" target="_blank">
-      <Paper px="sm" py="md" radius="md" withBorder className="grow-on-hover">
+      <Paper p="md" radius="md" withBorder className="grow-on-hover">
         <Group justify="space-between" wrap={isSmallScreen ? "wrap" : "nowrap"}>
           <Group wrap="nowrap" style={{ flexGrow: 1 }}>
             <IconCodeReview state={state} />
-            <Stack gap={0}>
+            <Stack gap="xs">
               <Group gap="xs" wrap="nowrap">
                 <Title order={4} c="dark.3" textWrap="nowrap">
                   {repositoryName}
@@ -75,9 +77,23 @@ export const CardCodeReview = ({
                   {title}
                 </Title>
               </Group>
-              <Text c="dimmed" size="xs">
-                Reviewed {formatRelative(createdAt, new Date())}
-              </Text>
+
+              <Group gap="xs">
+                <Text c="dimmed" size="sm">
+                  {state === CodeReviewState.APPROVED && "Approved"}
+                  {state === CodeReviewState.COMMENTED && "Reviewed"}
+                  {state === CodeReviewState.CHANGES_REQUESTED &&
+                    "Changes requested"}{" "}
+                  {formatRelative(createdAt, new Date())}
+                </Text>
+
+                <BadgeStatus icon={IconPencil} variant="default">
+                  {comments} comments
+                </BadgeStatus>
+                {isFirstPRReview && prTimeToFirstReview && (
+                  <BadgeFirstReview timeToFirstReview={prTimeToFirstReview} />
+                )}
+              </Group>
             </Stack>
           </Group>
 
@@ -88,25 +104,20 @@ export const CardCodeReview = ({
             justify={isSmallScreen ? "center" : "flex-end"}
           >
             <Group gap={4} miw={40} justify="flex-start" wrap="nowrap">
-              <IconMessage stroke={1.5} size={16} />
+              <IconMessage stroke={1.5} size={20} />
               <Text size="sm" fw={500}>
-                {comments}
+                {prComments}
               </Text>
             </Group>
 
             <Tooltip label={prAuthor.name} withArrow position="top">
-              <Avatar src={prAuthor.avatar} size={24} />
+              <Avatar src={prAuthor.avatar} size={40} />
             </Tooltip>
 
             <BadgePullRequestSize
               size={prSize}
               tooltip={<LinesChanged {...prChanges} />}
             />
-            <Group miw={28}>
-              {isFirstPRReview && prTimeToFirstReview && (
-                <BadgeFirstReview timeToFirstReview={prTimeToFirstReview} />
-              )}
-            </Group>
           </Group>
         </Group>
       </Paper>
