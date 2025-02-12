@@ -25,7 +25,7 @@ export const SubnavPerson = ({ person }: SubnavPersonProps) => {
           @{person.handle}
         </Title>
       </Group>
-      <Divider label="Home" labelPosition="left" mt="sm" />
+      <Divider label="About" labelPosition="left" mt="sm" />
       <NavLink
         to={getLink("")}
         active={pathname === getLink("")}
