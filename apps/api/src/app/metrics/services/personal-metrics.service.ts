@@ -25,8 +25,14 @@ const getCodeReviewMetrics = async (workspaceId: number, personId: number) => {
     }[]
   >(Prisma.sql`
     SELECT
-      COUNT(*) FILTER (WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE) AS current,
-      COUNT(*) FILTER (WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days') AS previous
+      COUNT(*) FILTER (
+        WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        AND "CodeReview"."workspaceId" = ${workspaceId}
+      ) AS current,
+      COUNT(*) FILTER (
+        WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        AND "CodeReview"."workspaceId" = ${workspaceId}
+      ) AS previous
     FROM
       "CodeReview"
     JOIN
@@ -71,10 +77,22 @@ const getPullRequestSizeMetrics = async (
     }[]
   >(Prisma.sql`
     SELECT
-      COUNT(*) FILTER (WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE) AS current,
-      COUNT(*) FILTER (WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days') AS previous,
-      COUNT(*) FILTER (WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE) AS current_small,
-      COUNT(*) FILTER (WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days') AS previous_small
+      COUNT(*) FILTER (
+        WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        AND "PullRequest"."workspaceId" = ${workspaceId}
+      ) AS current,
+      COUNT(*) FILTER (
+        WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        AND "PullRequest"."workspaceId" = ${workspaceId}
+      ) AS previous,
+      COUNT(*) FILTER (
+        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        AND "PullRequest"."workspaceId" = ${workspaceId}
+      ) AS current_small,
+      COUNT(*) FILTER (
+        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        AND "PullRequest"."workspaceId" = ${workspaceId}
+      ) AS previous_small
     FROM
       "PullRequest"
     JOIN
