@@ -1,6 +1,7 @@
-import { ThemeIcon, Tooltip } from "@mantine/core";
+import { Tooltip } from "@mantine/core";
 import { IconEyeStar } from "@tabler/icons-react";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
+import { BadgeStatus } from "./badge-status";
 
 interface BadgeFirstReviewProps {
   timeToFirstReview: number;
@@ -21,13 +22,14 @@ export const BadgeFirstReview = ({
           withArrow
           position="right"
         >
-          <ThemeIcon
-            size="md"
-            variant="default"
-            c={getFirstReviewColor(timeInHours)}
-          >
-            <IconEyeStar size={20} stroke={1.5} />{" "}
-          </ThemeIcon>
+          <div>
+            <BadgeStatus
+              icon={IconEyeStar}
+              variant={getFirstReviewColor(timeInHours)}
+            >
+              First to review
+            </BadgeStatus>
+          </div>
         </Tooltip>
       }
     </>
@@ -35,7 +37,7 @@ export const BadgeFirstReview = ({
 };
 
 const getFirstReviewColor = (durationInHours: number) => {
-  if (durationInHours < 2) return "green.5";
+  if (durationInHours < 2) return "success";
 
-  return "dark.1";
+  return "default";
 };

@@ -111,7 +111,7 @@ export const TimelinePullRequest = ({
             )}
           </ThemeIcon>
         }
-        title={isDraft ? "Drafted" : "Opened"}
+        title={isDraft ? "Drafted" : "Created"}
         c={getColor(1)}
       >
         <Text size="xs" mt={4}>
@@ -134,7 +134,7 @@ export const TimelinePullRequest = ({
             <>in {humanizeDuration(timeToFirstReview)}</>
           )}
           {!hasReviews && timeToFirstReview && (
-            <>awaiting for {humanizeDuration(timeToFirstReview)}</>
+            <>pending for {humanizeDuration(timeToFirstReview)}</>
           )}
           {!hasReviews && isDone && <>Skipped</>}
         </Text>
@@ -159,7 +159,7 @@ export const TimelinePullRequest = ({
             <>in {humanizeDuration(timeToFirstApproval)}</>
           )}
           {!isApproved && timeToFirstApproval && (
-            <>awaiting for {humanizeDuration(timeToFirstApproval)}</>
+            <>pending for {humanizeDuration(timeToFirstApproval)}</>
           )}
           {!isApproved && isDone && <>Skipped</>}
         </Text>
@@ -178,7 +178,7 @@ export const TimelinePullRequest = ({
           {isMerged && timeToMerge && <>in {humanizeDuration(timeToMerge)}</>}
 
           {!isMerged && timeToMerge && (
-            <>awaiting for {humanizeDuration(timeToMerge)}</>
+            <>pending for {humanizeDuration(timeToMerge)}</>
           )}
         </Text>
       </Timeline.Item>
