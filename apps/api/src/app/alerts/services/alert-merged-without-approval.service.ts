@@ -8,7 +8,7 @@ import { findActiveAlerts } from "./alert.service";
 import { unique } from "radash";
 import {
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
 import { AlertWithTeam } from "./alert.types";
@@ -58,7 +58,10 @@ const sendAlert = async (
 ) => {
   const { slackClient } = await getWorkspaceSlackClient(workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, alert.channel);
+  const slackChannel = await joinSlackChannelOrThrow(
+    slackClient,
+    alert.channel
+  );
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");
