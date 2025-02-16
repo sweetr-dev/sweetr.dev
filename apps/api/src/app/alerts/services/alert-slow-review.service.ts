@@ -54,6 +54,9 @@ export const findAlertableSlowReviewPullRequests = async (
       },
       tracking: {
         firstApprovalAt: null, // TO-DO: Change to fullyApprovedAt once we support it
+        firstReadyAt: {
+          lte: subHours(new Date(), maxWaitInHours),
+        },
       },
       OR: [
         // Either all reviews are older than the max wait time
@@ -70,11 +73,6 @@ export const findAlertableSlowReviewPullRequests = async (
         {
           codeReviews: {
             none: {},
-          },
-          tracking: {
-            firstReadyAt: {
-              lte: subHours(new Date(), maxWaitInHours),
-            },
           },
         },
       ],
