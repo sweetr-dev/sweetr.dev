@@ -89,7 +89,7 @@ export const SlowMergeAlertPage = () => {
           <>
             <Stack p="md">
               <Text>{alert.description}</Text>
-              <TriggerDescription type="cron" label="once per hour" />
+              <TriggerDescription type="cron" label="every 15 minutes" />
             </Stack>
             <Divider />
 

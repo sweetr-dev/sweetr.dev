@@ -68,7 +68,7 @@ const getMessageBlocks = async (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `PR "*<${pullRequest.gitUrl}|${pullRequest.title}>*" was merged without approvals ⚠️`,
+        text: `⚠️ "*<${pullRequest.gitUrl}|${pullRequest.title}>*" was *merged without approvals*`,
       },
     },
     {
@@ -101,6 +101,9 @@ const getMessageBlocks = async (
           text: `*Team*: ${alert.team.name}`,
         },
       ],
+    },
+    {
+      type: "divider",
     },
   ];
 };

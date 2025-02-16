@@ -418,11 +418,10 @@ model Team {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now()) @updatedAt
-  Digest     Digest[]
-  Alert      Alert[]
-  AlertEvent AlertEvent[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Digest    Digest[]
+  Alert     Alert[]
 
   @@index([workspaceId])
 }
@@ -511,14 +510,10 @@ model AlertEvent {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  Team   Team? @relation(fields: [teamId], references: [id])
-  teamId Int?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   @@index([workspaceId])
-  @@index([teamId])
   @@index([pullRequestId])
   @@index([alertId])
 }

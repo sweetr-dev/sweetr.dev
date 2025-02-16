@@ -93,7 +93,7 @@ export const SlowReviewAlertPage = () => {
           <>
             <Stack p="md">
               <Text>{alert.description}</Text>
-              <TriggerDescription type="cron" label="every 30 minutes" />
+              <TriggerDescription type="cron" label="every 15 minutes" />
             </Stack>
             <Divider />
 

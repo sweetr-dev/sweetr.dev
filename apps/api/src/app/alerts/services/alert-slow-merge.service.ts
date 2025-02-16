@@ -59,7 +59,11 @@ const findAlertableMergeReviewPullRequests = async (
       },
     },
     include: {
-      alertEvents: true,
+      alertEvents: {
+        where: {
+          alertId: alert.id,
+        },
+      },
       author: true,
       repository: true,
       tracking: true,
@@ -87,7 +91,7 @@ const getMessageBlocks = async (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `PR "*<${pullRequest.gitUrl}|${pullRequest.title}>*" is pending merge ⚠️`,
+        text: `⚠️ "*<${pullRequest.gitUrl}|${pullRequest.title}>*" is pending *merge* for over ${alert.settings.maxWaitInHours} hours`,
       },
     },
     {
@@ -120,6 +124,9 @@ const getMessageBlocks = async (
           text: `*Team*: ${alert.team.name}`,
         },
       ],
+    },
+    {
+      type: "divider",
     },
   ];
 };

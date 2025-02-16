@@ -4,7 +4,6 @@ CREATE TABLE "AlertEvent" (
     "alertId" INTEGER NOT NULL,
     "pullRequestId" INTEGER NOT NULL,
     "workspaceId" INTEGER NOT NULL,
-    "teamId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -13,9 +12,6 @@ CREATE TABLE "AlertEvent" (
 
 -- CreateIndex
 CREATE INDEX "AlertEvent_workspaceId_idx" ON "AlertEvent"("workspaceId");
-
--- CreateIndex
-CREATE INDEX "AlertEvent_teamId_idx" ON "AlertEvent"("teamId");
 
 -- CreateIndex
 CREATE INDEX "AlertEvent_pullRequestId_idx" ON "AlertEvent"("pullRequestId");
