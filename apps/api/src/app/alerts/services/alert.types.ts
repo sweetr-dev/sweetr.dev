@@ -12,6 +12,14 @@ export type Alert = Omit<DbAlert, "settings"> & {
   settings: AlertSettings;
 };
 
+export type AlertWithRelations<T extends AlertType> = AlertTypeMap[T] & {
+  team: Team;
+  workspace: Workspace & {
+    subscription: Subscription | null;
+    installation: Installation | null;
+  };
+};
+
 export type AlertWithTeam<T extends AlertType> = AlertTypeMap[T] & {
   team: Team;
 };
@@ -55,12 +63,16 @@ export type AlertTypeMap = {
 
 export interface AlertSlowMerge extends Omit<Alert, "settings"> {
   type: typeof AlertType.SLOW_MERGE;
-  settings: Prisma.JsonObject;
+  settings: {
+    maxWaitInHours: number;
+  };
 }
 
 export interface AlertSlowReview extends Omit<Alert, "settings"> {
   type: typeof AlertType.SLOW_REVIEW;
-  settings: Prisma.JsonObject;
+  settings: {
+    maxWaitInHours: number;
+  };
 }
 
 export interface AlertMergedWithoutApproval extends Omit<Alert, "settings"> {
@@ -78,4 +90,9 @@ export interface AlertUnreleasedChanges extends Omit<Alert, "settings"> {
   settings: Prisma.JsonObject;
 }
 
-export type AlertSettings = Prisma.JsonObject;
+export type AlertSettings =
+  | AlertSlowMerge["settings"]
+  | AlertSlowReview["settings"]
+  | AlertMergedWithoutApproval["settings"]
+  | AlertHotPr["settings"]
+  | AlertUnreleasedChanges["settings"];

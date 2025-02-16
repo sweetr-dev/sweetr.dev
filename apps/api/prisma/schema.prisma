@@ -310,7 +310,7 @@ model PullRequest {
   authorId           Int
   codeReviews        CodeReview[]
   codeReviewRequests CodeReviewRequest[]
-  AlertEvent         AlertEvent[]
+  alertEvents        AlertEvent[]
 
   tracking PullRequestTracking?
 

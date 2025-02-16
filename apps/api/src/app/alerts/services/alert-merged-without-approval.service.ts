@@ -4,7 +4,7 @@ import { findWorkspaceByGitInstallationId } from "../../workspaces/services/work
 import { getPrisma } from "../../../prisma";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { AlertType, CodeReviewState, PullRequestState } from "@prisma/client";
-import { findActiveAlerts } from "./alert.service";
+import { findTeamActiveAlerts } from "./alert.service";
 import { unique } from "radash";
 import {
   getWorkspaceSlackClient,
@@ -13,6 +13,7 @@ import {
 } from "../../integrations/slack/services/slack-client.service";
 import { AlertWithTeam } from "./alert.types";
 import { PullRequestWithRelations } from "./alert-merged-without-approval.types";
+import { sendAlert } from "./send-alert.service";
 
 export const alertMergedWithoutApproval = async (
   gitInstallationId: string,
@@ -20,7 +21,7 @@ export const alertMergedWithoutApproval = async (
 ) => {
   const workspace = await getWorkspaceOrThrow(gitInstallationId);
 
-  if (!isActiveCustomer(workspace, workspace?.subscription)) return;
+  if (!isActiveCustomer(workspace)) return;
 
   const pullRequest = await getPullRequestOrThrow(
     workspace.id,
@@ -38,7 +39,7 @@ export const alertMergedWithoutApproval = async (
 
   const teamIds = pullRequest.author.teamMemberships.map((m) => m.teamId);
 
-  const alerts = await findActiveAlerts({
+  const alerts = await findTeamActiveAlerts({
     workspaceId: workspace.id,
     teamIds,
     type: AlertType.MERGED_WITHOUT_APPROVAL,
@@ -47,35 +48,15 @@ export const alertMergedWithoutApproval = async (
   const uniqueAlerts = unique(alerts, (alert) => alert.channel);
 
   await Promise.all(
-    uniqueAlerts.map((alert) => sendAlert(workspace.id, alert, pullRequest))
+    uniqueAlerts.map(async (alert) =>
+      sendAlert({
+        workspaceId: workspace.id,
+        blocks: await getMessageBlocks(alert, pullRequest),
+        channel: alert.channel,
+        text: "A pull request was merged without approvals",
+      })
+    )
   );
-};
-
-const sendAlert = async (
-  workspaceId: number,
-  alert: AlertWithTeam<"MERGED_WITHOUT_APPROVAL">,
-  pullRequest: PullRequestWithRelations
-) => {
-  const { slackClient } = await getWorkspaceSlackClient(workspaceId);
-
-  const slackChannel = await joinSlackChannelOrThrow(
-    slackClient,
-    alert.channel
-  );
-
-  if (!slackChannel?.id) {
-    throw new ResourceNotFoundException("Slack channel not found");
-  }
-
-  const blocks = await getMessageBlocks(alert, pullRequest);
-
-  await sendSlackMessage(slackClient, {
-    channel: slackChannel.id,
-    blocks,
-    text: "A pull request was merged without approvals",
-    unfurl_links: false,
-    unfurl_media: false,
-  });
 };
 
 const getMessageBlocks = async (

@@ -1,7 +1,7 @@
 import { JsonObject } from "@prisma/client/runtime/library";
 import { getPrisma } from "../../../prisma";
 import { assign, isObject } from "radash";
-import { AlertType, Team } from "@prisma/client";
+import { AlertType } from "@prisma/client";
 import {
   Alert,
   AlertTypeMap,
@@ -28,7 +28,7 @@ export const findTeamAlertByType = async <T extends AlertType>({
   return alert as AlertTypeMap[T];
 };
 
-export const findActiveAlerts = async <T extends AlertType>({
+export const findTeamActiveAlerts = async <T extends AlertType>({
   workspaceId,
   teamIds,
   type,

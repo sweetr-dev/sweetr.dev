@@ -11,6 +11,7 @@ export enum SweetQueue {
   CRON_GITHUB_RETRY_FAILED_WEBHOOKS = "{cron.github.retry_failed_webhooks}",
   CRON_STRIPE_UPDATE_SEATS = "{cron.stripe.update_seats}",
   CRON_SCHEDULE_DIGESTS = "{cron.schedule_digests}",
+  CRON_SCHEDULE_ALERTS = "{cron.schedule_alerts}",
 
   // GitHub
   GITHUB_INSTALLATION_SYNC = "{github.installation.sync}",
@@ -35,6 +36,8 @@ export enum SweetQueue {
 
   // Alerts
   ALERT_MERGED_WITHOUT_APPROVAL = "{alert.merged_without_approval}",
+  ALERT_SLOW_MERGE = "{alert.slow_merge}",
+  ALERT_SLOW_REVIEW = "{alert.slow_review}",
 
   // Digests
   DIGEST_SEND = "{digest.send}",

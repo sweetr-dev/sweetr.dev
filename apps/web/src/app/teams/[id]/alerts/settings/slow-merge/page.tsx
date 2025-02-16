@@ -6,7 +6,6 @@ import {
   Input,
   Slider,
   Title,
-  Group,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { DrawerScrollable } from "../../../../../../components/drawer-scrollable";
@@ -21,7 +20,6 @@ import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowMergeAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../providers/form.provider.ts";
 import { TriggerDescription } from "../components/trigger-description";
-import { IconGitMerge } from "@tabler/icons-react";
 
 export const SlowMergeAlertPage = () => {
   const teamId = useTeamId();
