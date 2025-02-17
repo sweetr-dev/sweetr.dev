@@ -25,6 +25,26 @@ export type Scalars = {
   Void: { input: null; output: null; }
 };
 
+export type Alert = {
+  __typename?: 'Alert';
+  channel: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  settings: Scalars['JSONObject']['output'];
+  type: AlertType;
+};
+
+export type AlertQueryInput = {
+  type: AlertType;
+};
+
+export enum AlertType {
+  HOT_PR = 'HOT_PR',
+  MERGED_WITHOUT_APPROVAL = 'MERGED_WITHOUT_APPROVAL',
+  SLOW_MERGE = 'SLOW_MERGE',
+  SLOW_REVIEW = 'SLOW_REVIEW',
+  UNRELEASED_CHANGES = 'UNRELEASED_CHANGES'
+}
+
 export type ArchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -249,6 +269,7 @@ export type Mutation = {
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
+  updateAlert: Alert;
   updateAutomation: Automation;
   updateDigest: Digest;
   updateWorkspaceSettings: Workspace;
@@ -288,6 +309,11 @@ export type MutationSendTestMessageArgs = {
 
 export type MutationUnarchiveTeamArgs = {
   input: UnarchiveTeamInput;
+};
+
+
+export type MutationUpdateAlertArgs = {
+  input: UpdateAlertInput;
 };
 
 
@@ -534,6 +560,8 @@ export type Subscription = {
 
 export type Team = {
   __typename?: 'Team';
+  alert?: Maybe<Alert>;
+  alerts: Array<Alert>;
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   digest?: Maybe<Digest>;
@@ -544,6 +572,11 @@ export type Team = {
   members: Array<TeamMember>;
   name: Scalars['String']['output'];
   startColor: Scalars['String']['output'];
+};
+
+
+export type TeamAlertArgs = {
+  input: AlertQueryInput;
 };
 
 
@@ -587,6 +620,15 @@ export type Trial = {
 
 export type UnarchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UpdateAlertInput = {
+  channel: Scalars['String']['input'];
+  enabled: Scalars['Boolean']['input'];
+  settings: Scalars['JSONObject']['input'];
+  teamId: Scalars['SweetID']['input'];
+  type: AlertType;
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -805,6 +847,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Alert: ResolverTypeWrapper<DeepPartial<Alert>>;
+  AlertQueryInput: ResolverTypeWrapper<DeepPartial<AlertQueryInput>>;
+  AlertType: ResolverTypeWrapper<DeepPartial<AlertType>>;
   ArchiveTeamInput: ResolverTypeWrapper<DeepPartial<ArchiveTeamInput>>;
   AuthProvider: ResolverTypeWrapper<DeepPartial<AuthProvider>>;
   AuthProviderInput: ResolverTypeWrapper<DeepPartial<AuthProviderInput>>;
@@ -875,6 +920,7 @@ export type ResolversTypes = {
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
   Trial: ResolverTypeWrapper<DeepPartial<Trial>>;
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
+  UpdateAlertInput: ResolverTypeWrapper<DeepPartial<UpdateAlertInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
   UpdateDigestInput: ResolverTypeWrapper<DeepPartial<UpdateDigestInput>>;
   UpdateWorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<UpdateWorkspaceSettingsInput>>;
@@ -892,6 +938,8 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Alert: DeepPartial<Alert>;
+  AlertQueryInput: DeepPartial<AlertQueryInput>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
   AuthProviderInput: DeepPartial<AuthProviderInput>;
   AuthProviderResponse: DeepPartial<AuthProviderResponse>;
@@ -950,6 +998,7 @@ export type ResolversParentTypes = {
   Token: DeepPartial<Token>;
   Trial: DeepPartial<Trial>;
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
+  UpdateAlertInput: DeepPartial<UpdateAlertInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
   UpdateDigestInput: DeepPartial<UpdateDigestInput>;
   UpdateWorkspaceSettingsInput: DeepPartial<UpdateWorkspaceSettingsInput>;
@@ -978,6 +1027,14 @@ export type RateLimitDirectiveResolver<Result, Parent, ContextType = GraphQLCont
 export type SkipAuthDirectiveArgs = { };
 
 export type SkipAuthDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = SkipAuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AlertResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Alert'] = ResolversParentTypes['Alert']> = {
+  channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['AlertType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type AuthProviderResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AuthProviderResponse'] = ResolversParentTypes['AuthProviderResponse']> = {
   redirectUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1109,6 +1166,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
+  updateAlert?: Resolver<ResolversTypes['Alert'], ParentType, ContextType, RequireFields<MutationUpdateAlertArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
   updateWorkspaceSettings?: Resolver<ResolversTypes['Workspace'], ParentType, ContextType, RequireFields<MutationUpdateWorkspaceSettingsArgs, 'input'>>;
@@ -1218,6 +1276,8 @@ export interface SweetIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
 }
 
 export type TeamResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+  alert?: Resolver<Maybe<ResolversTypes['Alert']>, ParentType, ContextType, RequireFields<TeamAlertArgs, 'input'>>;
+  alerts?: Resolver<Array<ResolversTypes['Alert']>, ParentType, ContextType>;
   archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   digest?: Resolver<Maybe<ResolversTypes['Digest']>, ParentType, ContextType, RequireFields<TeamDigestArgs, 'input'>>;
@@ -1301,6 +1361,7 @@ export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLConte
 };
 
 export type Resolvers<ContextType = GraphQLContext> = {
+  Alert?: AlertResolvers<ContextType>;
   AuthProviderResponse?: AuthProviderResponseResolvers<ContextType>;
   Automation?: AutomationResolvers<ContextType>;
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;

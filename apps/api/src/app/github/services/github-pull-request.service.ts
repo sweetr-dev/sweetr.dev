@@ -25,6 +25,7 @@ import {
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
 import {
+  findWorkspaceByGitInstallationId,
   findWorkspaceUsers,
   getInitialSyncProgress,
   incrementInitialSyncProgress,
@@ -490,18 +491,9 @@ const upsertRepository = async (workspaceId, gitRepositoryData: any) => {
 };
 
 const findWorkspace = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
 
   if (!workspace) return null;
 

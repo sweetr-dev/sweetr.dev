@@ -1,16 +1,16 @@
 import { Anchor, Image, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link, Outlet } from "react-router-dom";
 import { CardDigest } from "./components/card-digest";
-import { useDigestsCards } from "./use-digest-cards";
+import { useDigestCards } from "./use-digest-cards";
 import { useDigests } from "./use-digests";
 import { useTeamId } from "../use-team";
 import { LoadableContent } from "../../../../components/loadable-content";
-import { AlertEnableSlack } from "./settings/components/alert-enable-slack";
+import { AlertEnableSlack } from "../../../../components/alert-enable-slack";
 import { useMessagingIntegration } from "../../../../providers/integration.provider";
 
 export const TeamDigestsPage = () => {
   const teamId = useTeamId();
-  const { availableDigests, futureDigests } = useDigestsCards();
+  const { availableDigests, futureDigests } = useDigestCards();
   const { digests, isLoading } = useDigests({ teamId });
   const { integration } = useMessagingIntegration();
 

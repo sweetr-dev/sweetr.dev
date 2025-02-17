@@ -32,14 +32,13 @@ export const authorizeWorkspaceOrThrow = async ({
 };
 
 export const isActiveCustomer = (
-  workspace: Workspace,
-  subscription?: Subscription | null
+  workspace: Workspace & { subscription?: Subscription | null }
 ) => {
   if (isAppSelfHosted()) {
     return true;
   }
 
-  if (subscription && isSubscriptionActive(subscription)) {
+  if (workspace.subscription && isSubscriptionActive(workspace.subscription)) {
     return true;
   }
 

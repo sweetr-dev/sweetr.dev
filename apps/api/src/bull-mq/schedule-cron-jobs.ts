@@ -25,4 +25,10 @@ export const scheduleCronJobs = async () => {
       pattern: "*/15 * * * *",
     },
   });
+
+  await addJob(SweetQueue.CRON_SCHEDULE_ALERTS, null, {
+    repeat: {
+      pattern: "*/15 * * * *",
+    },
+  });
 };

@@ -21,7 +21,12 @@ import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
 import { MyAccountPage } from "./app/settings/my-account/page";
 import { SettingsPage } from "./app/settings/page";
 import { PullRequestSettingsPage } from "./app/settings/pull-request-settings/page";
+import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
 import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
+import { TeamAlertsPage } from "./app/teams/[id]/alerts/page";
+import { MergedWithoutApprovalAlertPage } from "./app/teams/[id]/alerts/settings/merged-without-approval/page";
+import { SlowMergeAlertPage } from "./app/teams/[id]/alerts/settings/slow-merge/page";
+import { SlowReviewAlertPage } from "./app/teams/[id]/alerts/settings/slow-review/page";
 import { TeamDigestsPage } from "./app/teams/[id]/digests/page";
 import { TeamMetricsDigestPage } from "./app/teams/[id]/digests/settings/team-metrics/page";
 import { TeamWipDigestPage } from "./app/teams/[id]/digests/settings/team-wip/page";
@@ -42,12 +47,11 @@ import {
   redirectIfNoCredentials,
 } from "./providers/auth.provider";
 import {
-  installGitAppIfNoWorkspaces,
   handleOAuthRedirect,
+  installGitAppIfNoWorkspaces,
 } from "./providers/github.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
-import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
 
 export const router = createBrowserRouter([
   {
@@ -177,6 +181,24 @@ export const router = createBrowserRouter([
               {
                 path: "/teams/:teamId/pull-requests",
                 element: <TeamPullRequestsPage />,
+              },
+              {
+                path: "/teams/:teamId/alerts",
+                element: <TeamAlertsPage />,
+                children: [
+                  {
+                    path: "/teams/:teamId/alerts/slow-merge",
+                    element: <SlowMergeAlertPage />,
+                  },
+                  {
+                    path: "/teams/:teamId/alerts/slow-review",
+                    element: <SlowReviewAlertPage />,
+                  },
+                  {
+                    path: "/teams/:teamId/alerts/merged-without-approval",
+                    element: <MergedWithoutApprovalAlertPage />,
+                  },
+                ],
               },
               {
                 path: "/teams/:teamId/digests",

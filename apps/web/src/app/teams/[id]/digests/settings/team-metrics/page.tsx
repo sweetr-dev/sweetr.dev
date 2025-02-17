@@ -13,13 +13,11 @@ import {
   DigestFrequency,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
-import {
-  DigestBaseFields,
-  DigestLoadingSkeleton,
-} from "../components/digest-base-fields";
-import { AlertEnableSlack } from "../components/alert-enable-slack";
+import { DigestBaseFields } from "../components/digest-base-fields";
+import { AlertEnableSlack } from "../../../../../../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
 import { getBrowserTimezone } from "../../../../../../providers/date.provider";
+import { DigestLoadingSkeleton } from "../components/digest-loading-skeleton";
 
 export const TeamMetricsDigestPage = () => {
   const teamId = useTeamId();
@@ -64,8 +62,8 @@ export const TeamMetricsDigestPage = () => {
       timeOfDay: digest.timeOfDay ?? "09:00",
       timezone: digest.timezone ?? getBrowserTimezone(),
     };
-    form.setInitialValues(values);
     form.setValues(values);
+    form.resetDirty();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [digestQuery.isFetched]);

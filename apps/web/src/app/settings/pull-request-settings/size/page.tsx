@@ -48,6 +48,7 @@ export const PullRequestSizePage = () => {
       workspaceId: workspace.id,
       settings,
     });
+    form.resetDirty();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 

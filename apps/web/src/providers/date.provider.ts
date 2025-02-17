@@ -1,3 +1,4 @@
+import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
 import {
   differenceInDays,
   DurationUnit,
@@ -14,6 +15,14 @@ export const msToHour = 1000 * 60 * 60;
 export const humanizeDuration = (durationInMs: number) => {
   return formatDistanceToNow(new Date(Date.now() - durationInMs));
 };
+
+export const weekDays = [
+  DayOfTheWeek.MONDAY,
+  DayOfTheWeek.TUESDAY,
+  DayOfTheWeek.WEDNESDAY,
+  DayOfTheWeek.THURSDAY,
+  DayOfTheWeek.FRIDAY,
+];
 
 export const formatMsDuration = (
   durationInMs: number,

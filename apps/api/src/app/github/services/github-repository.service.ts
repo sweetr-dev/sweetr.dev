@@ -3,11 +3,12 @@ import {
   GITHUB_MAX_PAGE_LIMIT,
   getInstallationGraphQLOctoKit,
 } from "../../../lib/octokit";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { logger } from "../../../lib/logger";
 import { SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { isRepositorySyncable } from "../../repositories/services/repository.service";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -130,18 +131,9 @@ const upsertRepositories = async (
 };
 
 const findWorkspace = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
 
   if (!workspace) return null;
   if (!workspace.gitProfile && !workspace.organization) return null;

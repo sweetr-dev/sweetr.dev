@@ -6,8 +6,7 @@ import {
   findDigestsByTeam,
 } from "../../services/digest.service";
 import { Digest } from "../../services/digest.types";
-
-import { transformDigest } from "../../transformers/digest.transformer";
+import { transformDigest } from "../transformers/digest.transformer";
 
 export const teamDigestsQuery = createFieldResolver("Team", {
   digest: async (team, { input }, context) => {

@@ -93,15 +93,16 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
                 </Tooltip>
               </Group>
             </Input.Wrapper>
+
+            <Group gap={5}>
+              <IconInfoCircle size={16} stroke={1.5} />
+              <Text c="dimmed" size="xs">
+                Tip: Sweetr is only able to auto join public channels. You must
+                manually invite @Sweetr to private channels.
+              </Text>
+            </Group>
           </>
         )}
-        <Group gap={5}>
-          <IconInfoCircle size={16} stroke={1.5} />
-          <Text c="dimmed" size="xs">
-            Tip: Sweetr is only able to auto join public channels. You must
-            manually invite @Sweetr to private channels.
-          </Text>
-        </Group>
       </Stack>
 
       {isEnabled && (
