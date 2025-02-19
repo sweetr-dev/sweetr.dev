@@ -12,7 +12,7 @@ import {
   IconFocus,
   IconHeartHandshake,
   IconPlugConnected,
-  IconRefreshDot,
+  IconRocket,
   IconShieldHeart,
   IconSteam,
   IconTableShortcut,
@@ -246,10 +246,10 @@ export default function FeaturesTraits() {
                 icon: IconSteam,
               },
               {
-                title: "CI Insights",
+                title: "Deployments",
                 description:
-                  "Integration with your CI/CD for insights on failure rates, runtime, and correlation with other metrics.",
-                icon: IconRefreshDot,
+                  "Track release frequency and log releases. Alert pending releases stacking up.",
+                icon: IconRocket,
               },
               {
                 title: "Wellbeing",
