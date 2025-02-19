@@ -69,8 +69,8 @@ Find bottlenecks; understand the team's flow and impact of process changes; impr
 Improve Developer Experience with automations.
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/team/cycle-time" target="_blank">PR Size Labeler</a></th>
-    <th><a href="https://docs.sweetr.dev/features/team/cycle-time" target="_blank">PR Title Check</a></th>
+    <th><a href="http://localhost:3000/features/automations/pr-size-labeler" target="_blank">PR Size Labeler</a></th>
+    <th><a href="http://localhost:3000/features/automations/pr-title-check" target="_blank">PR Title Check</a></th>
   </tr>
   <tr>
     <td><kbd><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/1b5f646d-6b9c-4f3f-b992-aa5ed4495dbf"></kbd></td>
