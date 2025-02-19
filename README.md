@@ -16,9 +16,49 @@
   <a href="https://sweetr.featurebase.app/">Feedback</a>
 </p>
 
-<p align="center">
-  <img width="1640" alt="screenshot" src="https://sweetr.dev/images/demo.gif">
-</p>
+## Activity
+Spot work that needs attention; unblock your team; gather data for retros, 1:1s and performance reviews.
+<table>
+  <tr>
+    <th><a href="https://docs.sweetr.dev/features/pull-requests">Pull Requests</a></th>
+    <th><a href="https://docs.sweetr.dev/features/code-reviews">Code Reviews</a></th>
+  </tr>
+  <tr>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/ed91ec67-c945-47b7-acb2-27d365bb9a96"></td>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/758edd71-c464-4b84-993b-cd2375e34caf"></td>
+  </tr>
+</table>
+
+## Slack Notifications
+Keep your team on the loop; unblock work; speed up reviews and releases.
+<table>
+  <tr>
+    <th><a href="https://docs.sweetr.dev/features/digests">Digests</a></th>
+    <th><a href="https://docs.sweetr.dev/features/alerts">Pull Request Alerts</a></th>
+  </tr>
+  <tr>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/d92d06f0-055f-4086-ab53-3089d3bd3b83"></td>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/e827bc68-e715-4a9e-a71e-1e0579ef7604"></td>
+  </tr>
+</table>
+
+## Metrics
+Find bottlenecks; understand the team's flow and impact of process changes; improve continuously.
+<table>
+  <tr>
+    <th><a href="https://docs.sweetr.dev/features/team/cycle-time">PR Cycle Time</a></th>
+    <th><a href="https://docs.sweetr.dev/features/team/pr-size-distribution">PR Size</a></th>
+    <th><a href="https://docs.sweetr.dev/features/team/code-review-distribution">Code Review Distribution</a></th>
+  </tr>
+  <tr>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/579808e3-6998-4c73-8360-0893b96464e2"></td>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/dc2f6635-7c66-46ca-9b02-d6eecc176323"></td>
+    <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/07cd033b-7255-4e3d-99af-1a9ef7398e84"></td>
+  </tr>
+</table>
+
+> [!TIP]  
+> There are more features not highlighted in this README. Check out [docs](https://docs.sweetr.dev/) for the full list of features.
 
 # License
 
