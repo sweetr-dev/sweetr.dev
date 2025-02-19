@@ -20,8 +20,8 @@
 Spot work that needs attention; unblock your team; gather data for retros, 1:1s and performance reviews.
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/pull-requests">Pull Requests</a></th>
-    <th><a href="https://docs.sweetr.dev/features/code-reviews">Code Reviews</a></th>
+    <th><a href="https://docs.sweetr.dev/features/pull-requests" target="_blank">Pull Requests</a></th>
+    <th><a href="https://docs.sweetr.dev/features/code-reviews" target="_blank">Code Reviews</a></th>
   </tr>
   <tr>
     <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/ed91ec67-c945-47b7-acb2-27d365bb9a96"></td>
@@ -33,8 +33,8 @@ Spot work that needs attention; unblock your team; gather data for retros, 1:1s 
 Keep your team on the loop; unblock work; speed up reviews and releases.
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/digests">Digests</a></th>
-    <th><a href="https://docs.sweetr.dev/features/alerts">Pull Request Alerts</a></th>
+    <th><a href="https://docs.sweetr.dev/features/digests" target="_blank">Digests</a></th>
+    <th><a href="https://docs.sweetr.dev/features/alerts" target="_blank">Pull Request Alerts</a></th>
   </tr>
   <tr>
     <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/d92d06f0-055f-4086-ab53-3089d3bd3b83"></td>
@@ -46,9 +46,9 @@ Keep your team on the loop; unblock work; speed up reviews and releases.
 Find bottlenecks; understand the team's flow and impact of process changes; improve continuously.
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/team/cycle-time">PR Cycle Time</a></th>
-    <th><a href="https://docs.sweetr.dev/features/team/pr-size-distribution">PR Size</a></th>
-    <th><a href="https://docs.sweetr.dev/features/team/code-review-distribution">Code Review Distribution</a></th>
+    <th><a href="https://docs.sweetr.dev/features/team/cycle-time" target="_blank">PR Cycle Time</a></th>
+    <th><a href="https://docs.sweetr.dev/features/team/pr-size-distribution" target="_blank">PR Size</a></th>
+    <th><a href="https://docs.sweetr.dev/features/team/code-review-distribution" target="_blank">Code Review Distribution</a></th>
   </tr>
   <tr>
     <td><img width="100%" alt="screenshot" src="https://github.com/user-attachments/assets/579808e3-6998-4c73-8360-0893b96464e2"></td>
