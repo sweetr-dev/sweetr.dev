@@ -4,7 +4,7 @@
   </a>
 <h3 align="center">sweetr.dev</h3>
 <p align="center">
-  <i>Enable your software engineering teams to optimize and speed up development while improving developer experience.</i>
+  <i>Optimize delivery, enhance developer experience, and foster team growth with the sweetest Developer Intelligence Platform.</i>
 </p>
 
 <p align="center">
