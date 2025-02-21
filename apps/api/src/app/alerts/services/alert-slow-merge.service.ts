@@ -5,6 +5,8 @@ import { isBefore, subHours } from "date-fns";
 import { sendAlert } from "./send-alert.service";
 import { sleep } from "radash";
 import { PullRequestWithRelations } from "./alert-slow-merge.types";
+import { subBusinessHours } from "../../../lib/date";
+import { UTCDate } from "@date-fns/utc";
 
 export const processSlowMergeAlert = async (
   alert: AlertWithRelations<"SLOW_MERGE">
@@ -54,7 +56,7 @@ const findAlertableMergeReviewPullRequests = async (
       },
       tracking: {
         firstApprovalAt: {
-          lt: subHours(new Date(), maxWaitInHours),
+          lt: subBusinessHours(new UTCDate(), maxWaitInHours),
         },
       },
     },
@@ -76,7 +78,7 @@ const findAlertableMergeReviewPullRequests = async (
 
     if (!lastEvent) return true;
 
-    return isBefore(lastEvent.createdAt, subHours(new Date(), 24));
+    return isBefore(lastEvent.createdAt, subHours(new UTCDate(), 24));
   });
 
   return pullRequestsToAlert;

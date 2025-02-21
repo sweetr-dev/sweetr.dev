@@ -6,11 +6,6 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { AlertType, CodeReviewState, PullRequestState } from "@prisma/client";
 import { findTeamActiveAlerts } from "./alert.service";
 import { unique } from "radash";
-import {
-  getWorkspaceSlackClient,
-  joinSlackChannelOrThrow,
-  sendSlackMessage,
-} from "../../integrations/slack/services/slack-client.service";
 import { AlertWithTeam } from "./alert.types";
 import { PullRequestWithRelations } from "./alert-merged-without-approval.types";
 import { sendAlert } from "./send-alert.service";

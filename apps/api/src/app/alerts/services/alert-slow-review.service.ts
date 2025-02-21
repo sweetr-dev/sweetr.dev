@@ -5,6 +5,8 @@ import { isBefore, subHours } from "date-fns";
 import { PullRequestWithRelations } from "./alert-slow-review.types";
 import { sendAlert } from "./send-alert.service";
 import { sleep } from "radash";
+import { UTCDate } from "@date-fns/utc";
+import { subBusinessHours } from "../../../lib/date";
 
 export const processSlowReviewAlert = async (
   alert: AlertWithRelations<"SLOW_REVIEW">
@@ -55,7 +57,7 @@ export const findAlertableSlowReviewPullRequests = async (
       tracking: {
         firstApprovalAt: null, // TO-DO: Change to fullyApprovedAt once we support it
         firstReadyAt: {
-          lte: subHours(new Date(), maxWaitInHours),
+          lte: subBusinessHours(new UTCDate(), maxWaitInHours),
         },
       },
       OR: [
@@ -64,7 +66,7 @@ export const findAlertableSlowReviewPullRequests = async (
           codeReviews: {
             every: {
               updatedAt: {
-                lte: subHours(new Date(), maxWaitInHours),
+                lte: subBusinessHours(new UTCDate(), maxWaitInHours),
               },
             },
           },
@@ -95,7 +97,7 @@ export const findAlertableSlowReviewPullRequests = async (
 
     if (!lastEvent) return true;
 
-    return isBefore(lastEvent.createdAt, subHours(new Date(), 24));
+    return isBefore(lastEvent.createdAt, subHours(new UTCDate(), 24));
   });
 
   return pullRequestsToAlert;

@@ -1,14 +1,22 @@
 import {
+  addMinutes,
   differenceInBusinessDays,
+  differenceInHours,
   differenceInMilliseconds,
+  differenceInMinutes,
   DurationUnit,
   endOfDay,
   formatDuration,
   intervalToDuration,
   isSameDay,
+  isSaturday,
+  isSunday,
   isWeekend,
   parseISO,
   startOfDay,
+  subDays,
+  subHours,
+  subMinutes,
 } from "date-fns";
 
 const msInADay = 86400000;
@@ -61,4 +69,32 @@ export const differenceInBusinessMilliseconds = (
   }
 
   return difference;
+};
+
+export const subBusinessHours = (date: Date, hours: number): Date => {
+  let remainingHours = hours;
+  let currentDate = date;
+  let minutesDiff = 0;
+
+  while (remainingHours > 0) {
+    if (isWeekend(currentDate) && minutesDiff === 0) {
+      minutesDiff += currentDate.getMinutes();
+    }
+
+    if (isSunday(currentDate)) {
+      currentDate = endOfDay(subDays(currentDate, 2));
+    }
+
+    if (isSaturday(currentDate)) {
+      currentDate = endOfDay(subDays(currentDate, 1));
+    }
+
+    currentDate = subHours(currentDate, 1);
+
+    if (!isWeekend(currentDate) || minutesDiff) {
+      remainingHours--;
+    }
+  }
+
+  return addMinutes(currentDate, minutesDiff);
 };
