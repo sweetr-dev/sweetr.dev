@@ -52,9 +52,13 @@ export const isPullRequestApproved = (
     (review) => review.state === CodeReviewState.APPROVED
   ).length;
 
-  const changesRequested = codeReviews.filter(
-    (review) => review.state === CodeReviewState.CHANGES_REQUESTED
-  ).length;
+  return approvals > 0 && !isPullRequestPendingChangesRequested(codeReviews);
+};
 
-  return approvals > 0 && changesRequested === 0;
+export const isPullRequestPendingChangesRequested = (
+  codeReviews: Pick<CodeReview, "state">[]
+) => {
+  return codeReviews.some(
+    (review) => review.state === CodeReviewState.CHANGES_REQUESTED
+  );
 };

@@ -13,7 +13,10 @@ import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
-import { isPullRequestApproved } from "../../code-reviews/services/code-review.service";
+import {
+  isPullRequestApproved,
+  isPullRequestPendingChangesRequested,
+} from "../../code-reviews/services/code-review.service";
 import { logger } from "../../../lib/logger";
 
 export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
@@ -43,10 +46,8 @@ export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
 const getDigestMessageBlocks = async (
   digest: DigestWithRelations
 ): Promise<AnyBlock[]> => {
-  const { drafted, open, approved } = await getPullRequestsGroupedByState(
-    digest.workspaceId,
-    digest.teamId
-  );
+  const { drafted, open, approved, changesRequested } =
+    await getPullRequestsGroupedByState(digest.workspaceId, digest.teamId);
 
   return [
     {
@@ -68,6 +69,7 @@ const getDigestMessageBlocks = async (
     },
     ...getPullRequestSectionBlock("🚧 Drafted:", drafted),
     ...getPullRequestSectionBlock("⏳ Awaiting Review:", open),
+    ...getPullRequestSectionBlock("📝 Changes Requested:", changesRequested),
     ...getPullRequestSectionBlock("🚀 Awaiting Merge:", approved),
     {
       type: "actions",
@@ -198,10 +200,15 @@ const getPullRequestsGroupedByState = async (
   const drafted: typeof pullRequests = [];
   const open: typeof pullRequests = [];
   const approved: typeof pullRequests = [];
+  const changesRequested: typeof pullRequests = [];
 
   for (const pullRequest of pullRequests) {
     if (pullRequest.state === PullRequestState.DRAFT) {
       drafted.push(pullRequest);
+      continue;
+    }
+    if (isPullRequestPendingChangesRequested(pullRequest.codeReviews)) {
+      changesRequested.push(pullRequest);
       continue;
     }
 
@@ -213,5 +220,5 @@ const getPullRequestsGroupedByState = async (
     open.push(pullRequest);
   }
 
-  return { drafted, open, approved };
+  return { drafted, open, approved, changesRequested };
 };
