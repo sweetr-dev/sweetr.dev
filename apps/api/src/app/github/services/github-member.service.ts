@@ -63,6 +63,16 @@ export const syncOrganizationMembers = async (
       },
     },
   });
+
+  // Remove team memberships that are no longer part of the organization
+  await getPrisma(workspace.id).teamMember.deleteMany({
+    where: {
+      workspaceId: workspace.id,
+      gitProfileId: {
+        notIn: workspaceGitProfiles.map((profile) => profile.id),
+      },
+    },
+  });
 };
 
 const fetchGitHubOrganizationMembers = async (
