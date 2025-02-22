@@ -133,7 +133,8 @@ export default function PricingSection() {
               Pricing
             </h2>
             <h3 className="text-lg text-dark-100">
-              No credit card required to get started. Self-host for free.
+              No credit card required to get started.{" "}
+              <span className="text-green-400">Self-host for free.</span>
             </h3>
           </div>
 
