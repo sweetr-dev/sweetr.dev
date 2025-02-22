@@ -109,7 +109,7 @@ const getPullRequestSectionBlock = (
           elements: [
             {
               type: "text",
-              text: header,
+              text: `${header}\n`,
               style: { bold: true },
             },
           ],
