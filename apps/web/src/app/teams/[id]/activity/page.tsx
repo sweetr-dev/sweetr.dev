@@ -65,7 +65,7 @@ export const TeamActivityPage = () => {
                     <Divider
                       label={
                         <>
-                          <Group gap={5}>
+                          <Group gap={5} align="center">
                             {title}
                             <Badge variant="default" size="xs">
                               {pullRequests.length}

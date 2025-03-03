@@ -74,6 +74,14 @@ const getDigestMessageBlocks = async (
           type: "button",
           text: {
             type: "plain_text",
+            text: "Open Dashboard",
+          },
+          url: `${env.FRONTEND_URL}/teams/${encodeId(digest.teamId)}`,
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
             text: "Manage Digest",
           },
           url: `${env.FRONTEND_URL}/teams/${encodeId(digest.teamId)}/digests/wip`,
