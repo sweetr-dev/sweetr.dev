@@ -9,5 +9,11 @@ export const transformTeam = (team: DatabaseTeam): ApiTeam => {
     members: [],
     alerts: [],
     digests: [],
+    pullRequestsInProgress: {
+      changesRequested: [],
+      drafted: [],
+      pendingMerge: [],
+      pendingReview: [],
+    },
   };
 };
