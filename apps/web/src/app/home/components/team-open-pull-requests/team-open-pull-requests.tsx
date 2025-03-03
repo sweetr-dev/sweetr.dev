@@ -78,14 +78,12 @@ export const TeamOpenPullRequests = () => {
     <Stack>
       <Divider
         label={
-          <>
-            <Group gap={5} align="center">
-              💪 The team&apos;s open work
-              <Badge variant="default" size="xs">
-                {pullRequests?.length || 0}
-              </Badge>
-            </Group>
-          </>
+          <Group gap={5} align="center">
+            💪 The team&apos;s open work
+            <Badge variant="default" size="xs">
+              {pullRequests?.length || 0}
+            </Badge>
+          </Group>
         }
         labelPosition="left"
         styles={{
