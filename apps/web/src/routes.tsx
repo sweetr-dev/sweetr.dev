@@ -52,6 +52,7 @@ import {
 } from "./providers/github.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
+import { TeamActivityPage } from "./app/teams/[id]/activity/page";
 
 export const router = createBrowserRouter([
   {
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "/teams/:teamId",
+                element: <TeamActivityPage />,
+              },
+              {
+                path: "/teams/:teamId/members",
                 element: <TeamMembersPage />,
               },
               {

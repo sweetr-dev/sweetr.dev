@@ -1,4 +1,3 @@
-import { PullRequestState } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
@@ -13,11 +12,8 @@ import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
-import {
-  isPullRequestApproved,
-  isPullRequestPendingChangesRequested,
-} from "../../code-reviews/services/code-review.service";
 import { logger } from "../../../lib/logger";
+import { groupPullRequestByState } from "../../pull-requests/services/pull-request.service";
 
 export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
   logger.info("sendTeamWipDigest", { digest });
@@ -46,7 +42,7 @@ export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
 const getDigestMessageBlocks = async (
   digest: DigestWithRelations
 ): Promise<AnyBlock[]> => {
-  const { drafted, open, approved, changesRequested } =
+  const { drafted, pendingReview, pendingMerge, changesRequested } =
     await getPullRequestsGroupedByState(digest.workspaceId, digest.teamId);
 
   return [
@@ -68,9 +64,9 @@ const getDigestMessageBlocks = async (
       type: "divider",
     },
     ...getPullRequestSectionBlock("🚧 Drafted:", drafted),
-    ...getPullRequestSectionBlock("⏳ Awaiting Review:", open),
+    ...getPullRequestSectionBlock("⏳ Pending Review:", pendingReview),
     ...getPullRequestSectionBlock("📝 Changes Requested:", changesRequested),
-    ...getPullRequestSectionBlock("🚀 Awaiting Merge:", approved),
+    ...getPullRequestSectionBlock("🚀 Pending Merge:", pendingMerge),
     {
       type: "actions",
       elements: [
@@ -197,28 +193,5 @@ const getPullRequestsGroupedByState = async (
     },
   });
 
-  const drafted: typeof pullRequests = [];
-  const open: typeof pullRequests = [];
-  const approved: typeof pullRequests = [];
-  const changesRequested: typeof pullRequests = [];
-
-  for (const pullRequest of pullRequests) {
-    if (pullRequest.state === PullRequestState.DRAFT) {
-      drafted.push(pullRequest);
-      continue;
-    }
-    if (isPullRequestPendingChangesRequested(pullRequest.codeReviews)) {
-      changesRequested.push(pullRequest);
-      continue;
-    }
-
-    if (isPullRequestApproved(pullRequest.codeReviews)) {
-      approved.push(pullRequest);
-      continue;
-    }
-
-    open.push(pullRequest);
-  }
-
-  return { drafted, open, approved, changesRequested };
+  return groupPullRequestByState(pullRequests);
 };

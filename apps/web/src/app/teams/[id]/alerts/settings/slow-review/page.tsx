@@ -113,7 +113,7 @@ export const SlowReviewAlertPage = () => {
                       <Title order={5}>Trigger</Title>
                       <Input.Wrapper>
                         <Input.Label>
-                          A Pull Request is awaiting review for more than{" "}
+                          A Pull Request is pending review for more than{" "}
                           <Text
                             component="span"
                             c="green"

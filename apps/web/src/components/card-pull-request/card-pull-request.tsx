@@ -13,7 +13,7 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
 import { IconPullRequestState } from "./icon-pull-request-state";
-import { PullRequest } from "@sweetr/graphql-types/frontend/graphql";
+import { Person, PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
 import { BadgePullRequestSize } from "../badge-pull-request-size/badge-pull-request-size";
 import classes from "./card-pull-request.module.css";
@@ -24,7 +24,9 @@ import { BadgeData, useBadges } from "./use-badges";
 import { TimelinePullRequest } from "./timeline-pull-request";
 
 interface CardPullRequestProps {
-  pullRequest: PullRequest;
+  pullRequest: Omit<PullRequest, "author"> & {
+    author: Pick<Person, "name" | "avatar">;
+  };
 }
 
 export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {

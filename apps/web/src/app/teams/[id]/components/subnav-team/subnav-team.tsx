@@ -1,10 +1,12 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
+  IconActivity,
   IconBell,
   IconChartArcs,
   IconForms,
   IconGitPullRequest,
   IconMessage,
+  IconProgress,
   IconTarget,
   IconUsers,
 } from "@tabler/icons-react";
@@ -32,6 +34,14 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
       <NavLink
         to={getLink("")}
         active={pathname === getLink("")}
+        component={Link}
+        label="Work In Progress"
+        leftSection={<IconProgress stroke={1.5} size={18} />}
+      />
+
+      <NavLink
+        to={getLink("members")}
+        active={pathname === getLink("members")}
         component={Link}
         label="Members"
         leftSection={<IconUsers stroke={1.5} size={18} />}

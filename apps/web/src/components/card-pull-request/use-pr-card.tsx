@@ -6,7 +6,12 @@ import {
 import { parseISO, formatRelative } from "date-fns";
 import { parseNullableISO } from "../../providers/date.provider";
 
-export const usePrCard = (pullRequest: PullRequest) => {
+export const usePrCard = (
+  pullRequest: Pick<
+    PullRequest,
+    "mergedAt" | "closedAt" | "createdAt" | "state"
+  >,
+) => {
   const theme = useMantineTheme();
 
   const mergedAt = parseNullableISO(pullRequest.mergedAt);

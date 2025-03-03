@@ -23,7 +23,12 @@ export type BadgeData = null | {
   icon: React.ComponentType<TablerIconsProps>;
 };
 
-export const useBadges = (pullRequest: PullRequest) => {
+export const useBadges = (
+  pullRequest: Pick<
+    PullRequest,
+    "state" | "tracking" | "createdAt" | "mergedAt" | "closedAt"
+  >,
+) => {
   const badges: Record<string, BadgeData> = {
     staleDraft: getStaleDraftBadge(pullRequest),
     reviewed: getReviewBadge(pullRequest),
@@ -51,7 +56,9 @@ export const useBadges = (pullRequest: PullRequest) => {
   };
 };
 
-const getReviewBadge = (pullRequest: PullRequest) => {
+const getReviewBadge = (
+  pullRequest: Pick<PullRequest, "state" | "tracking">,
+) => {
   if ([PullRequestState.CLOSED].includes(pullRequest.state)) {
     return null;
   }
@@ -92,7 +99,9 @@ const getReviewBadge = (pullRequest: PullRequest) => {
   };
 };
 
-const getApprovalBadge = (pullRequest: PullRequest) => {
+const getApprovalBadge = (
+  pullRequest: Pick<PullRequest, "state" | "tracking" | "mergedAt">,
+) => {
   if (
     [PullRequestState.CLOSED, PullRequestState.DRAFT].includes(
       pullRequest.state,
@@ -135,7 +144,9 @@ const getApprovalBadge = (pullRequest: PullRequest) => {
   };
 };
 
-const getMergeBadge = (pullRequest: PullRequest) => {
+const getMergeBadge = (
+  pullRequest: Pick<PullRequest, "state" | "tracking" | "mergedAt">,
+) => {
   if (
     ![PullRequestState.OPEN, PullRequestState.MERGED].includes(
       pullRequest.state,
@@ -160,7 +171,9 @@ const getMergeBadge = (pullRequest: PullRequest) => {
   };
 };
 
-const getStaleDraftBadge = (pullRequest: PullRequest) => {
+const getStaleDraftBadge = (
+  pullRequest: Pick<PullRequest, "state" | "createdAt">,
+) => {
   if (pullRequest.state !== PullRequestState.DRAFT) return null;
 
   const isStale = isBefore(

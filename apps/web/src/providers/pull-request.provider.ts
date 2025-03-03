@@ -1,6 +1,11 @@
 import { PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 
-export const getPullRequestChanges = (pullRequest: PullRequest) => {
+export const getPullRequestChanges = (
+  pullRequest: Pick<
+    PullRequest,
+    "linesAddedCount" | "linesDeletedCount" | "changedFilesCount" | "tracking"
+  >,
+) => {
   if (
     pullRequest.tracking.linesAddedCount === 0 &&
     pullRequest.tracking.linesDeletedCount === 0
