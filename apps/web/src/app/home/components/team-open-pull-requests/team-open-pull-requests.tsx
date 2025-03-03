@@ -1,4 +1,12 @@
-import { Box, BoxProps, Button, Skeleton, Stack } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Button,
+  Divider,
+  Group,
+  Skeleton,
+  Stack,
+} from "@mantine/core";
 import { CardPullRequest } from "../../../../components/card-pull-request";
 import {
   PullRequest,
@@ -8,15 +16,12 @@ import {
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { usePullRequestsInfiniteQuery } from "../../../../api/pull-request.api";
 import { useAuthenticatedUser } from "../../../../providers/auth.provider";
-import { parseISO } from "date-fns";
-import { parseNullableISO } from "../../../../providers/date.provider";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { PageEmptyState } from "../../../../components/page-empty-state";
-import { IconMoodCheck } from "@tabler/icons-react";
+import { IconChecks } from "@tabler/icons-react";
 import { useTeammatesQuery } from "../../../../api/teams.api";
-import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
-export const TeamOpenPullRequests = (props: BoxProps) => {
+export const TeamOpenPullRequests = () => {
   const { user } = useAuthenticatedUser();
   const { workspace } = useWorkspace();
 
@@ -70,45 +75,61 @@ export const TeamOpenPullRequests = (props: BoxProps) => {
   const isEmpty = !!(pullRequests && pullRequests.length === 0 && !isLoading);
 
   return (
-    <LoadableContent
-      {...props}
-      isLoading={isLoading}
-      isEmpty={isEmpty}
-      whenEmpty={
-        <Box mt="lg">
+    <Stack>
+      <Divider
+        label={
+          <>
+            <Group gap={5} align="center">
+              💪 The team&apos;s open work
+              <Badge variant="default" size="xs">
+                {pullRequests?.length || 0}
+              </Badge>
+            </Group>
+          </>
+        }
+        labelPosition="left"
+        styles={{
+          label: { fontSize: "var(--mantine-font-size-md)" },
+        }}
+      />
+      <LoadableContent
+        isLoading={isLoading}
+        isEmpty={isEmpty}
+        whenEmpty={
           <PageEmptyState
-            message="Sweet, there are no PRs waiting."
-            icon={IconMoodCheck}
+            message="Sweet, no team work waiting action."
+            icon={IconChecks}
+            iconColor="var(--mantine-color-green-5)"
           />
-        </Box>
-      }
-      whenLoading={
-        <Stack>
-          <Skeleton height={85} />
-          <Skeleton height={85} />
-        </Stack>
-      }
-      content={
-        <Stack {...props}>
-          {pullRequests?.map((pr) => (
-            <CardPullRequest key={pr.id} pullRequest={pr} />
-          ))}
-          {hasNextPage && (
-            <Box ta="center">
-              <Button
-                variant="outline"
-                fullWidth={false}
-                onClick={() => {
-                  fetchNextPage();
-                }}
-                loading={isFetchingNextPage}
-              >
-                Load more
-              </Button>
-            </Box>
-          )}
-        </Stack>
-      }
-    />
+        }
+        whenLoading={
+          <Stack>
+            <Skeleton height={85} />
+            <Skeleton height={85} />
+          </Stack>
+        }
+        content={
+          <Stack>
+            {pullRequests?.map((pr) => (
+              <CardPullRequest key={pr.id} pullRequest={pr} />
+            ))}
+            {hasNextPage && (
+              <Box ta="center">
+                <Button
+                  variant="outline"
+                  fullWidth={false}
+                  onClick={() => {
+                    fetchNextPage();
+                  }}
+                  loading={isFetchingNextPage}
+                >
+                  Load more
+                </Button>
+              </Box>
+            )}
+          </Stack>
+        }
+      />
+    </Stack>
   );
 };
