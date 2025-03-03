@@ -27,9 +27,13 @@ interface CardPullRequestProps {
   pullRequest: Omit<PullRequest, "author"> & {
     author: Pick<Person, "name" | "avatar">;
   };
+  timeFormat?: "ago" | "relative";
 }
 
-export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
+export const CardPullRequest = ({
+  pullRequest,
+  timeFormat = "relative",
+}: CardPullRequestProps) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -38,6 +42,8 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
   const { getCardColor, badges } = useBadges(pullRequest);
 
   const cardColor = getCardColor();
+
+  const { timeLabel, timeTooltipLabel } = getTimeLabel(timeFormat);
 
   return (
     <HoverCard position="right" offset={5} withArrow>
@@ -78,9 +84,15 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
                   <Group gap="xs">
                     <Group justify="center" align="center" gap={5}>
                       <IconPullRequestState state={pullRequest.state} />
-                      <Text size="sm" c="dimmed">
-                        {getTimeLabel()}
-                      </Text>
+                      <Tooltip
+                        label={timeTooltipLabel}
+                        withArrow
+                        position="bottom"
+                      >
+                        <Text size="sm" c="dimmed">
+                          {timeLabel}
+                        </Text>
+                      </Tooltip>
                     </Group>
 
                     {(

@@ -3,8 +3,16 @@ import {
   PullRequest,
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { parseISO, formatRelative } from "date-fns";
-import { parseNullableISO } from "../../providers/date.provider";
+import {
+  parseISO,
+  formatRelative,
+  formatDistanceToNow,
+  format,
+} from "date-fns";
+import {
+  getTimezoneGmtLabel,
+  parseNullableISO,
+} from "../../providers/date.provider";
 
 export const usePrCard = (
   pullRequest: Pick<
@@ -30,16 +38,46 @@ export const usePrCard = (
     return { color: theme.colors.red[4] };
   };
 
-  const getTimeLabel = () => {
-    const openedAtLabel = `Opened ${formatRelative(createdAt, new Date())}`;
+  const formatDate = (date: Date, type: "relative" | "ago") => {
+    if (type === "ago") {
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+      });
+    }
 
-    if (mergedAt) return `Merged ${formatRelative(mergedAt, new Date())}`;
+    return formatRelative(date, new Date());
+  };
 
-    if (closedAt) return `Closed ${formatRelative(closedAt, new Date())}`;
+  const getTimeTooltipLabel = (date: Date) => {
+    return `${format(date, "MMMM do, yyyy")} at ${format(date, "hh:mm a")} (${getTimezoneGmtLabel()})`;
+  };
 
-    if (pullRequest.state === PullRequestState.DRAFT)
-      return `Drafted ${formatRelative(createdAt, new Date())}`;
-    return openedAtLabel;
+  const getTimeLabel = (type: "relative" | "ago") => {
+    if (mergedAt) {
+      return {
+        timeLabel: `Merged ${formatDate(mergedAt, type)}`,
+        timeTooltipLabel: getTimeTooltipLabel(mergedAt),
+      };
+    }
+
+    if (closedAt) {
+      return {
+        timeLabel: `Closed ${formatDate(closedAt, type)}`,
+        timeTooltipLabel: getTimeTooltipLabel(closedAt),
+      };
+    }
+
+    if (pullRequest.state === PullRequestState.DRAFT) {
+      return {
+        timeLabel: `Drafted ${formatDate(createdAt, type)}`,
+        timeTooltipLabel: getTimeTooltipLabel(createdAt),
+      };
+    }
+
+    return {
+      timeLabel: `Opened ${formatDate(createdAt, type)}`,
+      timeTooltipLabel: getTimeTooltipLabel(createdAt),
+    };
   };
 
   return {

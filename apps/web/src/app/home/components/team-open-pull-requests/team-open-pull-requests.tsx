@@ -110,8 +110,12 @@ export const TeamOpenPullRequests = () => {
         }
         content={
           <Stack>
-            {pullRequests?.map((pr) => (
-              <CardPullRequest key={pr.id} pullRequest={pr} />
+            {pullRequests?.map((pullRequest) => (
+              <CardPullRequest
+                key={pullRequest.id}
+                pullRequest={pullRequest}
+                timeFormat="ago"
+              />
             ))}
             {hasNextPage && (
               <Box ta="center">

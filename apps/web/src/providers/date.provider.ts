@@ -54,3 +54,9 @@ export const formatDate = (
 export const getBrowserTimezone = () => {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
+
+export const getTimezoneGmtLabel = () => {
+  const offset = new Date().getTimezoneOffset() / -60;
+
+  return `GMT${offset > 0 ? "+" : ""}${offset}`;
+};

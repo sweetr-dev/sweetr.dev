@@ -13,7 +13,7 @@ type PullRequestGroup = Exclude<
   "__typename"
 >;
 
-export const TeamActivityPage = () => {
+export const TeamWorkInProgressPage = () => {
   const teamId = useTeamId();
   const { workspace } = useWorkspace();
 
@@ -85,6 +85,7 @@ export const TeamActivityPage = () => {
                           <CardPullRequest
                             key={pullRequest.id}
                             pullRequest={pullRequest}
+                            timeFormat="ago"
                           />
                         ))}
                       </Stack>
