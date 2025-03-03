@@ -45,7 +45,7 @@ export default function FeaturesSlack() {
           <div>
             {/* Tabs buttons */}
 
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               <button
                 className={`flex flex-col gap-1 items-center text-center hover:scale-105 transition-all duration-200 text-left py-6 px-10 border border-dark-400 rounded ${tab !== 1 ? "" : "shadow-lg shadow-green-400/20 border-green-400"}`}
                 onClick={(e) => {
