@@ -109,7 +109,7 @@ export const SlowMergeAlertPage = () => {
                       <Title order={5}>Trigger</Title>
                       <Input.Wrapper>
                         <Input.Label>
-                          An approved Pull Request is awaiting merge for more
+                          An approved Pull Request is pending merge for more
                           than{" "}
                           <Text
                             component="span"

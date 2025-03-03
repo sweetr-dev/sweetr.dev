@@ -40,6 +40,7 @@ import { TeamPullRequestsTimeToMergePage } from "./app/teams/[id]/health-and-per
 import { TeamMembersPage } from "./app/teams/[id]/members/page";
 import { TeamPage } from "./app/teams/[id]/page";
 import { TeamPullRequestsPage } from "./app/teams/[id]/pull-requests/page";
+import { TeamWorkInProgressPage } from "./app/teams/[id]/work-in-progress/page";
 import { TeamsPage } from "./app/teams/page";
 import {
   isAuthError,
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "/teams/:teamId",
+                element: <TeamWorkInProgressPage />,
+              },
+              {
+                path: "/teams/:teamId/members",
                 element: <TeamMembersPage />,
               },
               {

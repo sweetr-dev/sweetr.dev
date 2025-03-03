@@ -13,7 +13,7 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
 import { IconPullRequestState } from "./icon-pull-request-state";
-import { PullRequest } from "@sweetr/graphql-types/frontend/graphql";
+import { Person, PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
 import { BadgePullRequestSize } from "../badge-pull-request-size/badge-pull-request-size";
 import classes from "./card-pull-request.module.css";
@@ -24,10 +24,16 @@ import { BadgeData, useBadges } from "./use-badges";
 import { TimelinePullRequest } from "./timeline-pull-request";
 
 interface CardPullRequestProps {
-  pullRequest: PullRequest;
+  pullRequest: Omit<PullRequest, "author"> & {
+    author: Pick<Person, "name" | "avatar">;
+  };
+  timeFormat?: "ago" | "relative";
 }
 
-export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
+export const CardPullRequest = ({
+  pullRequest,
+  timeFormat = "relative",
+}: CardPullRequestProps) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -36,6 +42,8 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
   const { getCardColor, badges } = useBadges(pullRequest);
 
   const cardColor = getCardColor();
+
+  const { timeLabel, timeTooltipLabel } = getTimeLabel(timeFormat);
 
   return (
     <HoverCard position="right" offset={5} withArrow>
@@ -76,9 +84,15 @@ export const CardPullRequest = ({ pullRequest }: CardPullRequestProps) => {
                   <Group gap="xs">
                     <Group justify="center" align="center" gap={5}>
                       <IconPullRequestState state={pullRequest.state} />
-                      <Text size="sm" c="dimmed">
-                        {getTimeLabel()}
-                      </Text>
+                      <Tooltip
+                        label={timeTooltipLabel}
+                        withArrow
+                        position="bottom"
+                      >
+                        <Text size="sm" c="dimmed">
+                          {timeLabel}
+                        </Text>
+                      </Tooltip>
                     </Group>
 
                     {(

@@ -19,6 +19,8 @@ import {
   MutationUnarchiveTeamArgs,
   TeammatesQuery,
   TeammatesQueryVariables,
+  TeamPullRequestsInProgressQueryVariables,
+  TeamPullRequestsInProgressQuery,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { queryClient } from "./clients/query-client";
 
@@ -86,6 +88,179 @@ export const useTeamQuery = (
                     avatar
                     handle
                     name
+                  }
+                }
+              }
+            }
+          }
+        `),
+        args,
+      ),
+    ...options,
+  });
+
+export const useTeamPullRequestsInProgressQuery = (
+  args: TeamPullRequestsInProgressQueryVariables,
+  options?: UseQueryOptions<TeamPullRequestsInProgressQuery>,
+) =>
+  useQuery({
+    queryKey: [
+      "team",
+      "pull-requests-in-progress",
+      args.workspaceId,
+      args.teamId,
+    ],
+    queryFn: () =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          query TeamPullRequestsInProgress(
+            $workspaceId: SweetID!
+            $teamId: SweetID!
+          ) {
+            workspace(workspaceId: $workspaceId) {
+              id
+              team(teamId: $teamId) {
+                id
+                pullRequestsInProgress {
+                  drafted {
+                    id
+                    title
+                    gitUrl
+                    commentCount
+                    changedFilesCount
+                    linesAddedCount
+                    linesDeletedCount
+                    state
+                    createdAt
+                    mergedAt
+                    closedAt
+                    tracking {
+                      size
+                      changedFilesCount
+                      linesAddedCount
+                      linesDeletedCount
+                      timeToFirstReview
+                      timeToMerge
+                      timeToFirstApproval
+                      firstReviewAt
+                      firstApprovalAt
+                    }
+                    author {
+                      id
+                      avatar
+                      handle
+                      name
+                    }
+                    repository {
+                      id
+                      name
+                      fullName
+                    }
+                  }
+                  pendingReview {
+                    id
+                    title
+                    gitUrl
+                    commentCount
+                    changedFilesCount
+                    linesAddedCount
+                    linesDeletedCount
+                    state
+                    createdAt
+                    mergedAt
+                    closedAt
+                    tracking {
+                      size
+                      changedFilesCount
+                      linesAddedCount
+                      linesDeletedCount
+                      timeToFirstReview
+                      timeToMerge
+                      timeToFirstApproval
+                      firstReviewAt
+                      firstApprovalAt
+                    }
+                    author {
+                      id
+                      avatar
+                      handle
+                      name
+                    }
+                    repository {
+                      id
+                      name
+                      fullName
+                    }
+                  }
+                  changesRequested {
+                    id
+                    title
+                    gitUrl
+                    commentCount
+                    changedFilesCount
+                    linesAddedCount
+                    linesDeletedCount
+                    state
+                    createdAt
+                    mergedAt
+                    closedAt
+                    tracking {
+                      size
+                      changedFilesCount
+                      linesAddedCount
+                      linesDeletedCount
+                      timeToFirstReview
+                      timeToMerge
+                      timeToFirstApproval
+                      firstReviewAt
+                      firstApprovalAt
+                    }
+                    author {
+                      id
+                      avatar
+                      handle
+                      name
+                    }
+                    repository {
+                      id
+                      name
+                      fullName
+                    }
+                  }
+                  pendingMerge {
+                    id
+                    title
+                    gitUrl
+                    commentCount
+                    changedFilesCount
+                    linesAddedCount
+                    linesDeletedCount
+                    state
+                    createdAt
+                    mergedAt
+                    closedAt
+                    tracking {
+                      size
+                      changedFilesCount
+                      linesAddedCount
+                      linesDeletedCount
+                      timeToFirstReview
+                      timeToMerge
+                      timeToFirstApproval
+                      firstReviewAt
+                      firstApprovalAt
+                    }
+                    author {
+                      id
+                      avatar
+                      handle
+                      name
+                    }
+                    repository {
+                      id
+                      name
+                      fullName
+                    }
                   }
                 }
               }

@@ -481,6 +481,14 @@ export type PullRequestTrendInput = {
   state?: InputMaybe<PullRequestState>;
 };
 
+export type PullRequestsInProgressResponse = {
+  __typename?: 'PullRequestsInProgressResponse';
+  changesRequested: Array<PullRequest>;
+  drafted: Array<PullRequest>;
+  pendingMerge: Array<PullRequest>;
+  pendingReview: Array<PullRequest>;
+};
+
 export type PullRequestsQueryInput = {
   /** The time range the pull request was created in */
   createdAt?: InputMaybe<DateTimeRange>;
@@ -571,6 +579,7 @@ export type Team = {
   id: Scalars['SweetID']['output'];
   members: Array<TeamMember>;
   name: Scalars['String']['output'];
+  pullRequestsInProgress: PullRequestsInProgressResponse;
   startColor: Scalars['String']['output'];
 };
 
@@ -902,6 +911,7 @@ export type ResolversTypes = {
   PullRequestState: ResolverTypeWrapper<DeepPartial<PullRequestState>>;
   PullRequestTracking: ResolverTypeWrapper<DeepPartial<PullRequestTracking>>;
   PullRequestTrendInput: ResolverTypeWrapper<DeepPartial<PullRequestTrendInput>>;
+  PullRequestsInProgressResponse: ResolverTypeWrapper<DeepPartial<PullRequestsInProgressResponse>>;
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
   Query: ResolverTypeWrapper<{}>;
@@ -981,6 +991,7 @@ export type ResolversParentTypes = {
   PullRequest: DeepPartial<PullRequest>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
   PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
+  PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
   Query: {};
@@ -1248,6 +1259,14 @@ export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentTyp
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PullRequestsInProgressResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestsInProgressResponse'] = ResolversParentTypes['PullRequestsInProgressResponse']> = {
+  changesRequested?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  drafted?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  pendingMerge?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  pendingReview?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PurchasablePlansResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PurchasablePlans'] = ResolversParentTypes['PurchasablePlans']> = {
   cloud?: Resolver<ResolversTypes['PlanKeys'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1287,6 +1306,7 @@ export type TeamResolvers<ContextType = GraphQLContext, ParentType extends Resol
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['TeamMember']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pullRequestsInProgress?: Resolver<ResolversTypes['PullRequestsInProgressResponse'], ParentType, ContextType>;
   startColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1388,6 +1408,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   PlanKeys?: PlanKeysResolvers<ContextType>;
   PullRequest?: PullRequestResolvers<ContextType>;
   PullRequestTracking?: PullRequestTrackingResolvers<ContextType>;
+  PullRequestsInProgressResponse?: PullRequestsInProgressResponseResolvers<ContextType>;
   PurchasablePlans?: PurchasablePlansResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Repository?: RepositoryResolvers<ContextType>;

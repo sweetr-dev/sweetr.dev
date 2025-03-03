@@ -27,8 +27,8 @@ const digestCards: Record<DigestType, DigestCardData> = {
     type: DigestType.TEAM_WIP,
     title: "Work In Progress Digest",
     description:
-      "Sends a digest of Pull Requests that are in draft or awaiting for review or merge.",
-    shortDescription: "Summary of Pull Requests open or awaiting review.",
+      "Sends a digest of Pull Requests that are in draft or pending review or merge.",
+    shortDescription: "Summary of Pull Requests open or pending review.",
     imageUrl: "/images/digests/wip.webp",
     getRoute: (teamId) => `/teams/${teamId}/digests/wip`,
   },

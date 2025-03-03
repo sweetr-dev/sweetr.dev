@@ -15,7 +15,10 @@ import {
 import { useBadges } from "./use-badges";
 
 interface TimeLinePullRequestProps {
-  pullRequest: PullRequest;
+  pullRequest: Pick<
+    PullRequest,
+    "state" | "tracking" | "createdAt" | "mergedAt"
+  >;
 }
 
 export const TimelinePullRequest = ({
