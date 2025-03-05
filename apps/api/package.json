@@ -63,7 +63,8 @@
     "resend": "^3.4.0",
     "semver": "^7.5.4",
     "stripe": "^16.6.0",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
