@@ -13,6 +13,7 @@ WORKDIR /app
 
 # Copy ESLint configuration files
 COPY .eslintrc.js /app/
+COPY ./apps/web/nginx.conf /app/apps/web/nginx.conf
 
 # First install dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
@@ -28,6 +29,9 @@ WORKDIR /app
 
 # Copy the built app from the previous stage
 COPY --from=installer /app/apps/web/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration
+COPY ./apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose the port the app runs on
 EXPOSE 80
