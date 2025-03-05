@@ -1,6 +1,7 @@
 import { SimpleGrid } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import {
+  IconActivity,
   IconAspectRatio,
   IconClock,
   IconEyeCheck,
@@ -17,15 +18,19 @@ export const TeamHealthAndPerformancePage = () => {
 
   return (
     <>
-      <PaperTitle mb={4} color="red">
-        Health
-      </PaperTitle>
+      <PaperTitle mb={4}>Activity</PaperTitle>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xs">
+        <CardChart
+          icon={IconActivity}
+          label="Work log"
+          description="Daily activity of the team."
+          href={`/teams/${teamId}/health-and-performance/activity/work-log`}
+        />
         <CardChart
           icon={IconEyeDiscount}
           label="Code review distribution"
           description="Is anyone handling majority of reviews by themselves?"
-          href={`/teams/${teamId}/health-and-performance/health/code-review-distribution`}
+          href={`/teams/${teamId}/health-and-performance/activity/code-review-distribution`}
         />
       </SimpleGrid>
 

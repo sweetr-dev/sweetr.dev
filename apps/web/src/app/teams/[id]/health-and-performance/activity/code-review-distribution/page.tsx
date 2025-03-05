@@ -17,7 +17,7 @@ import { ButtonDocs } from "../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
 import { startOfDay, subDays, endOfToday } from "date-fns";
 
-export const TeamHealthCodeReviewDistributionPage = () => {
+export const TeamCodeReviewDistributionPage = () => {
   const teamId = useTeamId();
   const { workspace } = useWorkspace();
   const drawerProps = useDrawerPage({
