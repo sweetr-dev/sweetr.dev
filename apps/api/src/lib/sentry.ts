@@ -1,6 +1,5 @@
 import * as Sentry from "@sentry/node";
 import { env, isDev } from "../env";
-import { ScopeContext } from "@sentry/types";
 import { BaseException } from "../app/errors/exceptions/base.exception";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { logger } from "./logger";
@@ -27,7 +26,7 @@ export const initSentry = () => {
 
 export const captureException = (
   exception: Error,
-  captureContext?: Partial<ScopeContext>
+  captureContext?: Sentry.EventHint["captureContext"]
 ): string => {
   logger.error(exception.message, exception);
 
