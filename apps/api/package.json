@@ -36,8 +36,8 @@
     "@graphql-tools/merge": "^9.0.0",
     "@logtail/pino": "^0.4.15",
     "@prisma/client": "^5.5.2",
-    "@sentry/node": "^8.25.0",
-    "@sentry/profiling-node": "^8.25.0",
+    "@sentry/node": "^9.3.0",
+    "@sentry/profiling-node": "^9.3.0",
     "@slack/web-api": "^7.3.4",
     "@sweetr/email-templates": "*",
     "@sweetr/graphql-types": "*",
@@ -63,7 +63,8 @@
     "resend": "^3.4.0",
     "semver": "^7.5.4",
     "stripe": "^16.6.0",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
@@ -78,5 +79,6 @@
     "prisma": "^5.5.2",
     "tsx": "^4.15.9",
     "typescript": "^5.2.2"
-  }
+  },
+  "packageManager": "npm@8.5.5"
 }
