@@ -149,7 +149,7 @@ export const protectWithPaywall = async (workspaceId: number) => {
     });
   }
 
-  if (!isActiveCustomer(workspace, workspace.subscription)) {
+  if (!isActiveCustomer(workspace)) {
     throw new SubscriptionRequiredException();
   }
 };

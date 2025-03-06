@@ -3,7 +3,6 @@ import { fork } from "radash";
 
 interface DigestCardData {
   type: DigestType;
-  enabled: boolean;
   available: boolean;
   title: string;
   description: string;
@@ -16,7 +15,6 @@ const digestCards: Record<DigestType, DigestCardData> = {
   [DigestType.TEAM_METRICS]: {
     available: true,
     type: DigestType.TEAM_METRICS,
-    enabled: false,
     title: "Metrics Digest",
     description:
       "Sends a digest of key metrics and how they have changed since last period.",
@@ -27,11 +25,10 @@ const digestCards: Record<DigestType, DigestCardData> = {
   [DigestType.TEAM_WIP]: {
     available: true,
     type: DigestType.TEAM_WIP,
-    enabled: false,
     title: "Work In Progress Digest",
     description:
-      "Sends a digest of Pull Requests that are in draft or awaiting for review or merge.",
-    shortDescription: "Summary of Pull Requests open or awaiting review.",
+      "Sends a digest of Pull Requests that are in draft or pending review or merge.",
+    shortDescription: "Summary of Pull Requests open or pending review.",
     imageUrl: "/images/digests/wip.webp",
     getRoute: (teamId) => `/teams/${teamId}/digests/wip`,
   },
@@ -45,7 +42,7 @@ interface UseDigestCards {
   futureDigests: DigestCard[];
 }
 
-export const useDigestsCards = (): UseDigestCards => {
+export const useDigestCards = (): UseDigestCards => {
   const [availableDigests, futureDigests] = fork(
     Object.values(digestCards),
     (digestCard) => digestCard.available,

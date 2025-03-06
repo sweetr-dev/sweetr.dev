@@ -36,17 +36,18 @@ export default async function Hero() {
             <div className="mx-auto relative">
               <div className="text-center pb-4 z-10">
                 <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent text-white mb-2">
-                  The developer platform for
+                  The open platform for
                   <em
                     className={`italic flex relative justify-center items-center text-green-400`}
                   >
-                    continuous improvement
+                    developer productivity++;
                   </em>
                 </h1>
                 <div className="max-w-2xl mx-auto">
                   <h2 className="text-lg text-dark-100 mb-12">
-                    Enable your development teams to optimize and speed up
-                    development while improving developer experience.
+                    Optimize delivery, enhance developer experience, and foster
+                    team growth with the sweetest Developer Intelligence
+                    Platform.
                   </h2>
                 </div>
                 <div className="pb-12 md:mb-16 max-w-xs mx-auto sm:max-w-none sm:inline-flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4">

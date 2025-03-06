@@ -1,0 +1,64 @@
+services:
+  api:
+    container_name: sweetr-api
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    env_file:
+      - ./apps/api/.env
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - app_network
+    depends_on:
+      - postgres
+      - dragonfly
+  web:
+    container_name: sweetr-web
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    env_file:
+      - ./apps/web/.env
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - api
+  postgres:
+    image: postgres
+    restart: always
+    env_file:
+      - ./apps/api/.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - docker-sweetr-db:/var/lib/postgresql/data
+      - ./apps/api/init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
+    networks:
+      - app_network
+  dragonfly:
+    image: "docker.dragonflydb.io/dragonflydb/dragonfly"
+    ulimits:
+      memlock: -1
+    command:
+      ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=4"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonflydata:/data
+    networks:
+      - app_network
+volumes:
+  docker-sweetr-db:
+  dragonflydata:
+networks:
+  app_network:
+    driver: bridge

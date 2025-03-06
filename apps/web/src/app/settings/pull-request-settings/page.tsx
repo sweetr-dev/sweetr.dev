@@ -2,7 +2,7 @@ import { Box, Title, Stack } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
 import { IconAspectRatio } from "@tabler/icons-react";
-import { CardOpenableSettings } from "../components/card-openable-settings";
+import { CardOpenableSettings } from "../../../components/card-openable-settings";
 import { Outlet } from "react-router-dom";
 
 export const PullRequestSettingsPage = () => {
@@ -17,11 +17,11 @@ export const PullRequestSettingsPage = () => {
 
         <Stack>
           <CardOpenableSettings
-            icon={
+            left={
               <IconAspectRatio
-                stroke={1.5}
+                stroke={1}
                 size={28}
-                color="var(--mantine-color-green-5)"
+                color="var(--mantine-color-green-4)"
               />
             }
             title="Size Calculation"

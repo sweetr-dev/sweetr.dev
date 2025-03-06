@@ -1,0 +1,59 @@
+---
+title: Alerts
+description: Real time alerts for Pull Requests needing attention.
+icon: "bell"
+---
+
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { ColorBadge } from "/snippets/color-badge.mdx";
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+<Tip>You must enable Slack integration in order to enable alerts.</Tip>
+
+## Demo
+
+<Frame>
+  <img src="/images/alerts.png" />
+</Frame>
+<br />
+<Frame>
+  <img src="/images/alert-slack.png" />
+</Frame>
+Alerts are team scoped, and must be enabled individually for each team. Each
+alert can be toggled on or off individually, and their Slack channels can be
+customized independently.
+
+## Alert Types
+
+<Card title="Slow review" icon="code" horizontal>
+  Alert when an open Pull Request has been waiting for review for too long. You
+  can setup the minimum idle time to trigger the alert.
+  <br />
+  <p>`Improves cycle time` `Improves time to approval`</p>
+</Card>
+
+<Card title="Slow merge" icon="code-merge" horizontal>
+  Alert when an approved Pull Request has been waiting for merge for too long.
+  You can setup the minimum idle time to trigger the alert.
+  <br />
+  <p>`Improves cycle time` `Improves time to merge`</p>
+</Card>
+
+<Card title="Merged without approval" icon="x" horizontal>
+  Alert when a Pull Request is merged without approvals.
+  <br />
+  <p>`Improves failure rate`</p>
+</Card>
+
+<Card title="(Coming Soon) Hot Pull Request" icon="fire" horizontal>
+  Alert when a Pull Request has lot of comments or back-and-forth.
+</Card>
+
+<Card
+  title="(Coming Soon) Too many unreleased changes"
+  icon="rocket"
+  horizontal
+>
+  Alert when many merged Pull Requests are pending release.
+</Card>
+<CtaGetStarted />

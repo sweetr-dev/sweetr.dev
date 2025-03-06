@@ -1,11 +1,11 @@
-import { AutomationType, GitProvider, Installation } from "@prisma/client";
+import { AutomationType, Installation } from "@prisma/client";
 import { logger } from "../../../../lib/logger";
-import { getBypassRlsPrisma } from "../../../../prisma";
 import { isActiveCustomer } from "../../../workspace-authorization.service";
 import { findAutomationByType } from "../../services/automation.service";
 import { PullRequest } from "@octokit/webhooks-types";
 import { getInstallationOctoKit } from "../../../../lib/octokit";
 import { env } from "../../../../env";
+import { findWorkspaceByGitInstallationId } from "../../../workspaces/services/workspace.service";
 
 export const runPrTitleCheckAutomation = async (
   gitInstallationId: number,
@@ -74,20 +74,12 @@ const hasScope = (installation: Installation) => {
 };
 
 const findWorkspace = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      organization: true,
-      gitProfile: true,
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString(),
+    {
       subscription: true,
-      installation: true,
-    },
-  });
+    }
+  );
 
   if (!workspace) return null;
 

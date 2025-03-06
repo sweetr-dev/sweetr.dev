@@ -63,6 +63,7 @@ export const usePullRequestsInfiniteQuery = (
                   timeToMerge
                   timeToFirstApproval
                   firstReviewAt
+                  firstApprovalAt
                 }
                 author {
                   id

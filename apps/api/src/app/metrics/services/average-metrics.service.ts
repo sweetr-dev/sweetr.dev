@@ -109,3 +109,24 @@ export const getAveragePullRequestSize = async (
 
   return results.at(0)?.value || 0;
 };
+
+export const getPullRequestCount = async (filters: AverageMetricFilters) => {
+  const query = Prisma.sql`
+      SELECT COUNT(*) AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE p."mergedAt" >= ${new Date(filters.startDate)}
+        AND p."mergedAt" <= ${new Date(filters.endDate)}
+        AND p."mergedAt" IS NOT NULL
+        AND tm."teamId" = ${filters.teamId}
+        AND wm."workspaceId" = ${filters.workspaceId}
+    `;
+
+  const results = await getPrisma(filters.workspaceId).$queryRaw<
+    { value: bigint }[]
+  >(query);
+
+  const value = results.at(0)?.value || 0n;
+
+  return Number(value);
+};

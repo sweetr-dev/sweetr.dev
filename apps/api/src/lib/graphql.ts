@@ -1,8 +1,4 @@
-import {
-  MutationResolvers,
-  QueryResolvers,
-  Resolvers,
-} from "@sweetr/graphql-types/dist/api";
+import { MutationResolvers, QueryResolvers, Resolvers } from "../graphql-types";
 
 export const createQueryResolver = (resolvers: QueryResolvers): Resolvers => {
   return {

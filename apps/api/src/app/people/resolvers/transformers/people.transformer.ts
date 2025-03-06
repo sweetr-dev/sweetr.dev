@@ -1,5 +1,5 @@
 import { GitProfile, User } from "@prisma/client";
-import { Person } from "@sweetr/graphql-types/dist/api";
+import { Person } from "../../../../graphql-types";
 
 export const transformPerson = (
   person: GitProfile & { user?: User | null }

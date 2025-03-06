@@ -1,4 +1,5 @@
 import {
+  PullRequestClosedEvent,
   PullRequestOpenedEvent,
   PullRequestSynchronizeEvent,
 } from "@octokit/webhooks-types";
@@ -13,7 +14,11 @@ export const syncPullRequestWorker = createWorker(
   SweetQueue.GITHUB_SYNC_PULL_REQUEST,
   async (
     job: Job<
-      (PullRequestSynchronizeEvent | PullRequestOpenedEvent) & {
+      (
+        | PullRequestSynchronizeEvent
+        | PullRequestOpenedEvent
+        | PullRequestClosedEvent
+      ) & {
         syncReviews?: boolean;
         initialSync?: boolean;
       }
@@ -52,6 +57,10 @@ export const syncPullRequestWorker = createWorker(
     );
 
     await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
+
+    if (job.data.action === "closed") {
+      await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
+    }
   },
   {
     limiter: {

@@ -6,12 +6,12 @@ import { OauthV2AccessResponse } from "@slack/web-api";
 import { omit } from "radash";
 import { SlackIntegrationData } from "./slack.types";
 import { JsonObject } from "@prisma/client/runtime/library";
-import { IntegrationApp } from "@sweetr/graphql-types/dist/api";
+import { IntegrationApp } from "../../../../graphql-types";
 import {
   authorizeSlackWorkspace,
   getSlackClient,
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
   uninstallSlackWorkspace,
 } from "./slack-client.service";
@@ -129,7 +129,7 @@ export const getInstallUrl = (): string => {
 export const sendTestMessage = async (workspaceId: number, channel: string) => {
   const { slackClient } = await getWorkspaceSlackClient(workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, channel);
+  const slackChannel = await joinSlackChannelOrThrow(slackClient, channel);
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");

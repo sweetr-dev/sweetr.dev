@@ -1,4 +1,4 @@
-import { Period } from "@sweetr/graphql-types/dist/api";
+import { Period } from "../../../graphql-types";
 
 export interface CodeReviewChartFilters {
   workspaceId: number;

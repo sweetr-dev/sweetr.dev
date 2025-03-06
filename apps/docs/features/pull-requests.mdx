@@ -32,15 +32,15 @@ Customize how PR size is calculated in your workspace settings.
 Each pull request has indicators regarding the time to review, approve and merge.
 
 <CardGroup cols={2}>
-  <Card title="Review badge">
+  <Card title="Informational">
     <PrBadge color="#a6a7ab" type="no-review" />
     <PrBadge color="#a6a7ab" type="reviewed" />
     <PrBadge color="#a6a7ab" type="approved" />
-    <PrBadge color="#C92A2A" type="merged-no-review" />
   </Card>
-  <Card title="Merge badge">
-    <PrBadge color="#a6a7ab" type="open" />
-    <PrBadge color="#a6a7ab" type="merged" />
+  <Card title="Alerts">
+    <PrBadge color="#C92A2A" type="merged-no-review" />
+    <PrBadge color="#C92A2A" type="stuck-review" />
+    <PrBadge color="#C92A2A" type="stuck-merge" />
   </Card>
 </CardGroup>
 

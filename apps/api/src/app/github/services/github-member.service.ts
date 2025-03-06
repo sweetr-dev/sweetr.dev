@@ -3,10 +3,11 @@ import {
   GITHUB_MAX_PAGE_LIMIT,
   getInstallationGraphQLOctoKit,
 } from "../../../lib/octokit";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { logger } from "../../../lib/logger";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 type GitOrganizationMember = {
   id: string;
@@ -55,6 +56,16 @@ export const syncOrganizationMembers = async (
 
   // Remove memberships that are no longer part of the organization
   await getPrisma(workspace.id).workspaceMembership.deleteMany({
+    where: {
+      workspaceId: workspace.id,
+      gitProfileId: {
+        notIn: workspaceGitProfiles.map((profile) => profile.id),
+      },
+    },
+  });
+
+  // Remove team memberships that are no longer part of the organization
+  await getPrisma(workspace.id).teamMember.deleteMany({
     where: {
       workspaceId: workspace.id,
       gitProfileId: {
@@ -119,14 +130,9 @@ const fetchGitHubOrganizationMembers = async (
 };
 
 const findWorkspaceOrThrow = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirst({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
 
   if (!workspace) {
     throw new ResourceNotFoundException("Could not find workspace", {

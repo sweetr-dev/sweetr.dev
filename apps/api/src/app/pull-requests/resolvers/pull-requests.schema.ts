@@ -114,8 +114,19 @@ export default /* GraphQL */ `
     sizes: [PullRequestSize!]
   }
 
+  type PullRequestsInProgressResponse {
+    drafted: [PullRequest!]!
+    pendingReview: [PullRequest!]!
+    changesRequested: [PullRequest!]!
+    pendingMerge: [PullRequest!]!
+  }
+
   extend type Workspace {
     pullRequests(input: PullRequestsQueryInput!): [PullRequest!]!
+  }
+
+  extend type Team {
+    pullRequestsInProgress: PullRequestsInProgressResponse!
   }
 
   extend type CodeReview {

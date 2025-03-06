@@ -2,7 +2,7 @@ import { AnyBlock, RichTextElement } from "@slack/web-api";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
 import { DigestWithRelations } from "./digest.types";
@@ -20,11 +20,17 @@ import { getPullRequestSize } from "../../github/services/github-pull-request-tr
 import { UTCDate } from "@date-fns/utc";
 import { formatMsDuration } from "../../../lib/date";
 import { AverageMetricFilters } from "../../metrics/services/average-metrics.types";
+import { logger } from "../../../lib/logger";
 
 export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
+  logger.info("sendTeamMetricsDigest", { digest });
+
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, digest.channel);
+  const slackChannel = await joinSlackChannelOrThrow(
+    slackClient,
+    digest.channel
+  );
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");
@@ -66,6 +72,7 @@ const getTeamMetrics = async (digest: DigestWithRelations) => {
   const { latest, previous } = getChartFilters(digest);
 
   const latestResults: Record<DigestMetricType, number> = await all({
+    prCount: averageMetricsService.getPullRequestCount(latest),
     cycleTime: averageMetricsService.getAverageCycleTime(latest),
     timeForFirstReview:
       averageMetricsService.getAverageTimeForFirstReview(latest),
@@ -75,6 +82,7 @@ const getTeamMetrics = async (digest: DigestWithRelations) => {
   });
 
   const previousResults: Record<DigestMetricType, number> = await all({
+    prCount: averageMetricsService.getPullRequestCount(previous),
     cycleTime: averageMetricsService.getAverageCycleTime(previous),
     timeForFirstReview:
       averageMetricsService.getAverageTimeForFirstReview(previous),
@@ -114,6 +122,7 @@ const getTeamMetrics = async (digest: DigestWithRelations) => {
   };
 
   return {
+    ...buildMetric("prCount"),
     ...buildMetric("cycleTime"),
     ...buildMetric("timeForFirstReview"),
     ...buildMetric("timeForApproval"),
@@ -153,7 +162,7 @@ const getDigestMessageBlocks = async (
           elements: [
             {
               type: "text",
-              text: `Avg of ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")} (vs ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")})`,
+              text: `Avg of ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")} (vs ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")}) • ${metrics.prCount.latest.value} PRs from current period analyzed`,
             },
           ],
         },
@@ -193,7 +202,7 @@ const getDigestMessageBlocks = async (
           type: "rich_text_section",
           elements: getMetricLineElements({
             label: "⏱️ PR Cycle Time",
-            value: `${formatMsDuration(Number(metrics.cycleTime.latest.value), dateFormatter)}`,
+            value: `${formatMsDuration(Number(metrics.cycleTime.latest.value), dateFormatter) || "N/A"}`,
             change: metrics.cycleTime.change,
           }),
         },
@@ -204,10 +213,12 @@ const getDigestMessageBlocks = async (
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to First Review",
-                value: `${formatMsDuration(
-                  Number(metrics.timeForFirstReview.latest.value),
-                  dateFormatter
-                )}`,
+                value: `${
+                  formatMsDuration(
+                    Number(metrics.timeForFirstReview.latest.value),
+                    dateFormatter
+                  ) || "N/A"
+                }`,
                 change: metrics.timeForFirstReview.change,
               }),
             },
@@ -215,10 +226,12 @@ const getDigestMessageBlocks = async (
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to Approve",
-                value: `${formatMsDuration(
-                  Number(metrics.timeForApproval.latest.value),
-                  dateFormatter
-                )}`,
+                value: `${
+                  formatMsDuration(
+                    Number(metrics.timeForApproval.latest.value),
+                    dateFormatter
+                  ) || "N/A"
+                }`,
                 change: metrics.timeForApproval.change,
               }),
             },
@@ -226,10 +239,12 @@ const getDigestMessageBlocks = async (
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Time to Merge",
-                value: `${formatMsDuration(
-                  Number(metrics.timeToMerge.latest.value),
-                  dateFormatter
-                )}`,
+                value: `${
+                  formatMsDuration(
+                    Number(metrics.timeToMerge.latest.value),
+                    dateFormatter
+                  ) || "N/A"
+                }`,
                 change: metrics.timeToMerge.change,
               }),
             },

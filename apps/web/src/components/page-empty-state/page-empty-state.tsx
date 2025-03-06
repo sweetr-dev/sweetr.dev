@@ -12,6 +12,7 @@ interface PageEmptyStateProps {
   }>;
   onClick?: () => void;
   onResetFilter?: () => void;
+  iconColor?: string;
 }
 
 export const PageEmptyState: FC<PageEmptyStateProps> = ({
@@ -21,12 +22,13 @@ export const PageEmptyState: FC<PageEmptyStateProps> = ({
   isFiltering = false,
   icon,
   onResetFilter,
+  iconColor,
 }) => {
   const Icon = icon ? icon : isFiltering ? IconFilterX : IconStack2;
 
   return (
     <Stack align="center" gap={0}>
-      <Icon stroke={0.5} size={90} />
+      <Icon stroke={0.5} size={90} color={iconColor} />
 
       <Text c="dimmed" size="lg">
         {isFiltering ? "No results found" : message}

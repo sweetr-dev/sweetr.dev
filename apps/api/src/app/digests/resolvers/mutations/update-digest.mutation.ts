@@ -4,10 +4,10 @@ import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
 import { upsertDigest } from "../../services/digest.service";
-import { transformDigest } from "../../transformers/digest.transformer";
 import { z } from "zod";
+import { transformDigest } from "../transformers/digest.transformer";
 
-export const updateDigest = createMutationResolver({
+export const updateDigestMutation = createMutationResolver({
   updateDigest: async (_, { input }, context) => {
     logger.info("mutation.updateDigest", { input });
 

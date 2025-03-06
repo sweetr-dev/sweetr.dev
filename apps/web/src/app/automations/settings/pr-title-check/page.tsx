@@ -36,6 +36,7 @@ export const AutomationPrTitleCheckPage = () => {
         regexExample: settings?.regexExample || "",
       },
     });
+    form.resetDirty();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [automationSettings]);
 

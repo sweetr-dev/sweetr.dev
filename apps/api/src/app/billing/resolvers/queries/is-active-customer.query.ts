@@ -16,6 +16,6 @@ export const isActiveCustomerQuery = createFieldResolver("Workspace", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return isActiveCustomer(workspace, workspace.subscription);
+    return isActiveCustomer(workspace);
   },
 });

@@ -1,7 +1,17 @@
-import { getPrisma } from "../../../prisma";
-import { Prisma } from "@prisma/client";
+import { getPrisma, take } from "../../../prisma";
+import {
+  CodeReview,
+  Prisma,
+  PullRequest,
+  PullRequestState,
+} from "@prisma/client";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { PaginatePullRequestsArgs } from "./pull-request.types";
+import {
+  isPullRequestApproved,
+  isPullRequestPendingChangesRequested,
+} from "../../code-reviews/services/code-review.service";
+import { subMonths } from "date-fns";
 
 export const paginatePullRequests = async (
   workspaceId: number,
@@ -133,4 +143,69 @@ export const findPullRequestTracking = async (
   return getPrisma(workspaceId)
     .pullRequest.findUnique({ where: { id: pullRequestId } })
     .tracking();
+};
+
+export const findTeamPullRequestsInProgress = async (
+  workspaceId: number,
+  teamId: number
+) => {
+  return getPrisma(workspaceId).pullRequest.findMany({
+    where: {
+      author: {
+        teamMemberships: {
+          some: {
+            teamId,
+          },
+        },
+      },
+      mergedAt: null,
+      closedAt: null,
+      createdAt: {
+        gte: subMonths(new Date(), 3),
+      },
+    },
+    take: take(100),
+    include: {
+      codeReviews: true,
+      author: true,
+      tracking: true,
+    },
+  });
+};
+
+export const groupPullRequestByState = <
+  T extends PullRequest & { codeReviews: CodeReview[] },
+>(
+  pullRequests: T[]
+) => {
+  const drafted: typeof pullRequests = [];
+  const pendingReview: typeof pullRequests = [];
+  const pendingMerge: typeof pullRequests = [];
+  const changesRequested: typeof pullRequests = [];
+
+  for (const pullRequest of pullRequests) {
+    if (pullRequest.state === PullRequestState.DRAFT) {
+      drafted.push(pullRequest);
+      continue;
+    }
+
+    if (isPullRequestPendingChangesRequested(pullRequest.codeReviews)) {
+      changesRequested.push(pullRequest);
+      continue;
+    }
+
+    if (isPullRequestApproved(pullRequest.codeReviews)) {
+      pendingMerge.push(pullRequest);
+      continue;
+    }
+
+    pendingReview.push(pullRequest);
+  }
+
+  return {
+    drafted,
+    pendingReview,
+    pendingMerge,
+    changesRequested,
+  };
 };

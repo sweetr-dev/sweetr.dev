@@ -1,4 +1,4 @@
-import { Person } from "@sweetr/graphql-types/dist/api";
+import { Person } from "../../../../graphql-types";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";

@@ -2,6 +2,7 @@ import {
   GitProfile,
   Installation,
   Organization,
+  Prisma,
   Workspace,
 } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
@@ -28,7 +29,10 @@ export const findWorkspaceById = (workspaceId: number) => {
   });
 };
 
-export const findWorkspaceByGitInstallationId = (gitInstallationId: string) => {
+export const findWorkspaceByGitInstallationId = (
+  gitInstallationId: string,
+  include: Partial<Prisma.WorkspaceInclude> = {}
+) => {
   return getBypassRlsPrisma().workspace.findFirst({
     where: {
       installation: {
@@ -36,11 +40,10 @@ export const findWorkspaceByGitInstallationId = (gitInstallationId: string) => {
       },
     },
     include: {
-      repositories: true,
       organization: true,
       installation: true,
-      memberships: true,
       gitProfile: true,
+      ...include,
     },
   });
 };

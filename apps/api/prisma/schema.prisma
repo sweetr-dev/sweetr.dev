@@ -65,6 +65,14 @@ enum DigestType {
   TEAM_WIP
 }
 
+enum AlertType {
+  SLOW_REVIEW
+  SLOW_MERGE
+  MERGED_WITHOUT_APPROVAL
+  HOT_PR
+  UNRELEASED_CHANGES
+}
+
 enum DayOfTheWeek {
   SUNDAY
   MONDAY
@@ -168,8 +176,10 @@ model Workspace {
 
   // A personal workspace can become orphan when an user revokes their OAuth
   // Re-authenticating creates a new user and reconnects 
-  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
+  gitProfile   GitProfile?  @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
+  Alert        Alert[]
+  AlertEvent   AlertEvent[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -300,6 +310,7 @@ model PullRequest {
   authorId           Int
   codeReviews        CodeReview[]
   codeReviewRequests CodeReviewRequest[]
+  alertEvents        AlertEvent[]
 
   tracking PullRequestTracking?
 
@@ -410,6 +421,7 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   Digest    Digest[]
+  Alert     Alert[]
 
   @@index([workspaceId])
 }
@@ -461,6 +473,49 @@ model Digest {
   @@unique([teamId, type])
   @@index([workspaceId])
   @@index([teamId])
+}
+
+model Alert {
+  id       Int       @id @default(autoincrement())
+  type     AlertType
+  enabled  Boolean
+  channel  String
+  settings Json
+
+  teamId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  AlertEvent AlertEvent[]
+
+  @@unique([teamId, type])
+  @@index([workspaceId])
+  @@index([teamId])
+}
+
+model AlertEvent {
+  id Int @id @default(autoincrement())
+
+  alertId Int
+  alert   Alert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([workspaceId])
+  @@index([pullRequestId])
+  @@index([alertId])
 }
 
 model Automation {

@@ -140,11 +140,10 @@ export const IntegrationSlackPage = () => {
                     Send weekly digest of teams&apos; relevant metrics.
                   </List.Item>
                   <List.Item>
-                    (Coming Soon) Remind reviewers about PRs awaiting their
-                    review.
+                    Remind reviewers about PRs pending their review.
                   </List.Item>
                   <List.Item>
-                    (Coming Soon) Remind developers about their stale PRs.
+                    Remind developers about their stale PRs.
                   </List.Item>
                 </List>
               </Paper>

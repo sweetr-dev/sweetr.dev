@@ -1,5 +1,5 @@
 import { Team as DatabaseTeam } from "@prisma/client";
-import { Team as ApiTeam } from "@sweetr/graphql-types/dist/api";
+import { Team as ApiTeam } from "../../../../graphql-types";
 
 export const transformTeam = (team: DatabaseTeam): ApiTeam => {
   return {
@@ -7,6 +7,13 @@ export const transformTeam = (team: DatabaseTeam): ApiTeam => {
     id: team.id,
     archivedAt: team.archivedAt?.toISOString(),
     members: [],
+    alerts: [],
     digests: [],
+    pullRequestsInProgress: {
+      changesRequested: [],
+      drafted: [],
+      pendingMerge: [],
+      pendingReview: [],
+    },
   };
 };

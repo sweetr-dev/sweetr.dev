@@ -10,8 +10,9 @@ export default function FeaturesAutomations() {
               Automations
             </h2>
             <h3 className="text-lg text-dark-100">
-              Configurable no-code routines to improve productivity and
-              developer experience.
+              Configurable no-code routines to improve{" "}
+              <span className="text-green-400">productivity</span> and{" "}
+              <span className="text-green-400">developer experience</span>.
             </h3>
           </div>
           <div>

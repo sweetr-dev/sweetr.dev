@@ -1,12 +1,11 @@
-import { GitProvider } from "@prisma/client";
 import {
   GITHUB_MAX_PAGE_LIMIT,
   getInstallationGraphQLOctoKit,
 } from "../../../lib/octokit";
-import { getBypassRlsPrisma } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { logger } from "../../../lib/logger";
 import {
+  findWorkspaceByGitInstallationId,
   getWorkspaceHandle,
   incrementInitialSyncProgress,
 } from "../../workspaces/services/workspace.service";
@@ -146,19 +145,15 @@ const isWithinSyncRange = (createdAt: string, sinceDaysAgo: number | null) => {
 };
 
 const findWorkspaceOrThrow = async (gitInstallationId: number) => {
-  const workspace = await getBypassRlsPrisma().workspace.findFirstOrThrow({
-    where: {
-      installation: {
-        gitInstallationId: gitInstallationId.toString(),
-        gitProvider: GitProvider.GITHUB,
-      },
-    },
-    include: {
-      installation: true,
-      gitProfile: true,
-      organization: true,
-    },
-  });
+  const workspace = await findWorkspaceByGitInstallationId(
+    gitInstallationId.toString()
+  );
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found", {
+      gitInstallationId,
+    });
+  }
 
   if (!workspace.installation) {
     throw new ResourceNotFoundException("Workspace has no installation", {

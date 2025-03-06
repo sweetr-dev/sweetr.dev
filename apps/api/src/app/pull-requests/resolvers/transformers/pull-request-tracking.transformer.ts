@@ -5,7 +5,7 @@ import {
 import {
   PullRequestTracking as ApiPullRequestTracking,
   PullRequestSize,
-} from "@sweetr/graphql-types/dist/api";
+} from "../../../../graphql-types";
 import { differenceInBusinessMilliseconds } from "../../../../lib/date";
 
 export const transformPullRequestTracking = (
@@ -34,7 +34,11 @@ export const transformPullRequestTracking = (
     linesDeletedCount: tracking.linesDeletedCount,
     firstApprovalAt: tracking.firstApprovalAt?.toISOString(),
     firstReviewAt: tracking.firstReviewAt?.toISOString(),
-    timeToFirstApproval: tracking.timeToFirstApproval,
+    timeToFirstApproval: calculateTimeForEvent(
+      tracking.firstApprovalAt || tracking.firstReadyAt || prCreatedAt,
+      tracking.timeToFirstApproval,
+      prState
+    ),
     timeToFirstReview: calculateTimeForEvent(
       tracking.firstReadyAt || prCreatedAt,
       tracking.timeToFirstReview,

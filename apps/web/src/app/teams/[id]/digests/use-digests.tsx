@@ -1,6 +1,5 @@
-import { Digest } from "@sweetr/graphql-types/frontend/graphql";
+import { Digest, DigestType } from "@sweetr/graphql-types/frontend/graphql";
 import { objectify } from "radash";
-import { DigestType } from "@sweetr/graphql-types/api";
 import { useTeamDigestsQuery } from "../../../../api/digest.api";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 

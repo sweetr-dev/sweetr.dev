@@ -65,6 +65,7 @@
         "features/people",
         "features/pull-requests",
         "features/code-reviews",
+        "features/alerts",
         "features/digests",
         {
           "group": "Team Insights",

@@ -102,24 +102,7 @@ export const PersonPullRequestsPage = () => {
                     labelPosition="left"
                   />
                 )}
-                <CardPullRequest
-                  title={pr.title}
-                  state={pr.state}
-                  url={pr.gitUrl}
-                  repositoryName={pr.repository.name}
-                  createdAt={createdAt}
-                  closedAt={parseNullableISO(pr.closedAt)}
-                  mergedAt={parseNullableISO(pr.mergedAt)}
-                  firstReviewAt={parseNullableISO(pr.tracking.firstReviewAt)}
-                  comments={pr.commentCount}
-                  size={pr.tracking.size}
-                  timeToFirstReview={pr.tracking.timeToFirstReview || undefined}
-                  timeToFirstApproval={
-                    pr.tracking.timeToFirstApproval || undefined
-                  }
-                  timeToMerge={pr.tracking.timeToMerge || undefined}
-                  changes={getPullRequestChanges(pr)}
-                />
+                <CardPullRequest pullRequest={pr} />
               </Fragment>
             );
           })}

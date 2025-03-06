@@ -1,9 +1,8 @@
-import { PullRequestState } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
-  joinSlackChannel,
+  joinSlackChannelOrThrow,
   sendSlackMessage,
 } from "../../integrations/slack/services/slack-client.service";
 import { DigestWithRelations } from "./digest.types";
@@ -13,12 +12,18 @@ import { env } from "../../../env";
 import { encodeId } from "../../../lib/hash-id";
 import { capitalize } from "radash";
 import { subMonths } from "date-fns";
-import { isPullRequestApproved } from "../../code-reviews/services/code-review.service";
+import { logger } from "../../../lib/logger";
+import { groupPullRequestByState } from "../../pull-requests/services/pull-request.service";
 
 export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
+  logger.info("sendTeamWipDigest", { digest });
+
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
-  const slackChannel = await joinSlackChannel(slackClient, digest.channel);
+  const slackChannel = await joinSlackChannelOrThrow(
+    slackClient,
+    digest.channel
+  );
 
   if (!slackChannel?.id) {
     throw new ResourceNotFoundException("Slack channel not found");
@@ -37,10 +42,8 @@ export const sendTeamWipDigest = async (digest: DigestWithRelations) => {
 const getDigestMessageBlocks = async (
   digest: DigestWithRelations
 ): Promise<AnyBlock[]> => {
-  const { drafted, open, approved } = await getPullRequestsGroupedByState(
-    digest.workspaceId,
-    digest.teamId
-  );
+  const { drafted, pendingReview, pendingMerge, changesRequested } =
+    await getPullRequestsGroupedByState(digest.workspaceId, digest.teamId);
 
   return [
     {
@@ -61,11 +64,20 @@ const getDigestMessageBlocks = async (
       type: "divider",
     },
     ...getPullRequestSectionBlock("🚧 Drafted:", drafted),
-    ...getPullRequestSectionBlock("⏳ Awaiting Review:", open),
-    ...getPullRequestSectionBlock("🚀 Awaiting Merge:", approved),
+    ...getPullRequestSectionBlock("⏳ Pending Review:", pendingReview),
+    ...getPullRequestSectionBlock("📝 Changes Requested:", changesRequested),
+    ...getPullRequestSectionBlock("🚀 Pending Merge:", pendingMerge),
     {
       type: "actions",
       elements: [
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Open Dashboard",
+          },
+          url: `${env.FRONTEND_URL}/teams/${encodeId(digest.teamId)}`,
+        },
         {
           type: "button",
           text: {
@@ -101,7 +113,7 @@ const getPullRequestSectionBlock = (
           elements: [
             {
               type: "text",
-              text: header,
+              text: `${header}\n`,
               style: { bold: true },
             },
           ],
@@ -189,23 +201,5 @@ const getPullRequestsGroupedByState = async (
     },
   });
 
-  const drafted: typeof pullRequests = [];
-  const open: typeof pullRequests = [];
-  const approved: typeof pullRequests = [];
-
-  for (const pullRequest of pullRequests) {
-    if (pullRequest.state === PullRequestState.DRAFT) {
-      drafted.push(pullRequest);
-      continue;
-    }
-
-    if (isPullRequestApproved(pullRequest.codeReviews)) {
-      approved.push(pullRequest);
-      continue;
-    }
-
-    open.push(pullRequest);
-  }
-
-  return { drafted, open, approved };
+  return groupPullRequestByState(pullRequests);
 };
