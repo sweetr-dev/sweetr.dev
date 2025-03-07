@@ -19,8 +19,7 @@ export const handleOAuthRedirect: LoaderFunction = async ({ request }) => {
     });
     return redirect(`/`);
   }
-  `
-  `;
+
   if (!isAuthenticated()) return null;
 
   if (isGithubInstallSuccessCallback(url)) {

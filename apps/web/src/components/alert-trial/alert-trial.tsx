@@ -4,7 +4,7 @@ import classes from "./alert-trial.module.css";
 import { Link } from "react-router-dom";
 import { useBilling, useTrial } from "../../providers/billing.provider";
 
-interface AlertTrialProps extends BoxProps {}
+type AlertTrialProps = BoxProps;
 
 export const AlertTrial = ({ ...props }: AlertTrialProps) => {
   const { hasActiveSubscription } = useBilling();

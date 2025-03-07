@@ -75,7 +75,7 @@
     "@octokit/webhooks-types": "^7.3.1",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20.9.0",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
     "pino-pretty": "^10.2.3",
     "prisma": "^5.5.2",
     "tsx": "^4.15.9",
