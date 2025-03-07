@@ -15,8 +15,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@react-email/components": "0.0.21",
-    "react-email": "2.1.5",
+    "@react-email/components": "0.0.30",
+    "react-email": "3.0.3",
     "react": "^18.2.0"
   },
   "devDependencies": {
