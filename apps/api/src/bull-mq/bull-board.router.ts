@@ -5,6 +5,7 @@ import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { queues } from "./queues";
 import auth from "basic-auth";
 import { env } from "../env";
+import { rateLimit } from "express-rate-limit";
 
 export const bullBoardRouter = Router();
 
@@ -17,20 +18,28 @@ if (env.BULLBOARD_PATH) {
     serverAdapter: serverAdapter,
   });
 
-  bullBoardRouter.use(
-    env.BULLBOARD_PATH,
-    (req, res, next) => {
-      const user = auth(req);
-      const username = env.BULLBOARD_USERNAME;
-      const password = env.BULLBOARD_PASSWORD;
+  bullBoardRouter
+    .use(
+      rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 100,
+        message: "Too many requests, please try again later.",
+      })
+    )
+    .use(
+      env.BULLBOARD_PATH,
+      (req, res, next) => {
+        const user = auth(req);
+        const username = env.BULLBOARD_USERNAME;
+        const password = env.BULLBOARD_PASSWORD;
 
-      if (!user || user.name !== username || user.pass !== password) {
-        res.set("WWW-Authenticate", 'Basic realm="BullBoard"');
-        return res.status(401).send("Authentication required.");
-      }
+        if (!user || user.name !== username || user.pass !== password) {
+          res.set("WWW-Authenticate", 'Basic realm="BullBoard"');
+          return res.status(401).send("Authentication required.");
+        }
 
-      next();
-    },
-    serverAdapter.getRouter()
-  );
+        next();
+      },
+      serverAdapter.getRouter()
+    );
 }
