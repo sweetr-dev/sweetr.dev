@@ -20,6 +20,7 @@ if (env.BULLBOARD_PATH) {
 
   bullBoardRouter
     .use(
+      env.BULLBOARD_PATH,
       rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
         max: 100,
