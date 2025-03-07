@@ -16,6 +16,7 @@ merging future enhancements rests entirely with you.
 - Postgres
 - Redis
 - GitHub App
+- Slack App
 
 ## Prepare the environment
 
@@ -57,8 +58,33 @@ merging future enhancements rests entirely with you.
         </Tab>
     </Tabs>
   </Step>
+  <Step title="Create a Slack App">
+    Create a Slack app on https://api.slack.com/apps/new, and add the settings below:
+      <Tabs>
+          <Tab title="OAuth & Permissions">
+              - Create a Redirect URL: https://your-web-app.com/settings/integrations/slack
+              - Add the following Bot Token Scopes:
+                - app_mentions:read
+                - channels:join
+                - channels:read
+                - chat:write
+                - groups:read
+                - im:read
+                - im:write
+                - mpim:read
+                - reactions:read
+                - users.profile:read
+                - users:read
+                - users:read.email
+          </Tab>
+          <Tab title="Event Subscriptions">
+            - Set "Enable Events" to ON
+            - Change the "Request URL" to https://your-api.com/slack/webhook
+          </Tab>
+      </Tabs>
+  </Step>
   <Step title="Host API">
-    Secondly, you'll need to setup hosting for the API application.
+    Setup hosting for the API application.
 
     #### Update the .env file
     Make it production-ready.
@@ -94,6 +120,13 @@ merging future enhancements rests entirely with you.
     GITHUB_APP_ID=
     GITHUB_APP_HANDLE=
     GITHUB_APP_PRIVATE_KEY=
+    ```
+    Set your Slack App credentials.
+    ```
+    # Slack
+    SLACK_CLIENT_ID=
+    SLACK_CLIENT_SECRET=
+    SLACK_WEBHOOK_SECRET=
     ```
 
   </Step>
