@@ -45,6 +45,11 @@ export const IntegrationSlackPage = () => {
       }
       actions={
         <>
+          {!query.isLoading && !integration && (
+            <Button fullWidth disabled>
+              Could not find Slack App integration settings.
+            </Button>
+          )}
           {integration && !integration?.isEnabled && integration.installUrl && (
             <Button
               fullWidth
