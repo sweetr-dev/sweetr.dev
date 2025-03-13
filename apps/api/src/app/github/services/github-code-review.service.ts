@@ -6,12 +6,14 @@ import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
 import { getPrisma } from "../../../prisma";
 import {
+  ActivityEventType,
   CodeReviewState,
+  GitProfile,
   GitProvider,
   PullRequest,
   PullRequestTracking,
 } from "@prisma/client";
-import { parallel } from "radash";
+import { parallel, pick } from "radash";
 import {
   getReviewCompareTime,
   getTimeForReview,
@@ -30,11 +32,15 @@ interface Author {
 }
 
 interface ReviewData {
-  author: Author;
+  gitProfileId: number;
   commentCount: number;
   state: CodeReviewState;
   createdAt: string;
 }
+
+type ReviewDataWithId = ReviewData & {
+  reviewId: string;
+};
 
 interface ReviewRequestData {
   createdAt: Date;
@@ -91,7 +97,7 @@ export const syncCodeReviews = async (
     return;
   }
 
-  const { reviews, firstReviewerRequestedAt, reviewRequests } =
+  const { reviews, reviewEvents, firstReviewerRequestedAt, reviewRequests } =
     await fetchPullRequestReviews(gitInstallationId, pullRequestId);
 
   await upsertCodeReviewRequests(pullRequest, reviewRequests);
@@ -101,12 +107,14 @@ export const syncCodeReviews = async (
     reviews,
     parseNullableISO(firstReviewerRequestedAt)
   );
+  await upsertActivityEvents(pullRequest, reviewEvents);
 };
 
 const fetchPullRequestReviews = async (
   installationId: number,
   pullRequestId: string
 ): Promise<{
+  reviewEvents: ReviewDataWithId[];
   reviews: ReviewData[];
   reviewRequests: ReviewRequestData[];
   firstReviewerRequestedAt: string | null;
@@ -118,6 +126,19 @@ const fetchPullRequestReviews = async (
   const isFirstRequest = cursor === null;
   let firstReviewerRequestedAt = null;
   let reviewRequests: ReviewRequestData[] = [];
+  let reviewEvents: ReviewDataWithId[] = [];
+  const gitProfiles = new Map<string, GitProfile>();
+
+  const getGitProfileId = async (author: Author) => {
+    if (gitProfiles.has(author.id)) {
+      return gitProfiles.get(author.id)!.id;
+    }
+
+    const gitProfile = await upsertGitProfile(author);
+    gitProfiles.set(author.id, gitProfile);
+
+    return gitProfile.id;
+  };
 
   const timelineItemsFragment = `timelineItems(itemTypes: [REVIEW_REQUESTED_EVENT, REVIEW_REQUEST_REMOVED_EVENT], last: ${GITHUB_MAX_PAGE_LIMIT}) {
     nodes {
@@ -227,7 +248,21 @@ const fetchPullRequestReviews = async (
       // Ignore non-user reviews (i.e. bots)
       if (pullRequest.author.__typename !== "User") continue;
 
+      // Ignore unknown authors
+      if (!review.author?.id || !review.author?.login) continue;
+
+      const gitProfileId = await getGitProfileId(review.author);
+
       const bodyComment = review.body ? 1 : 0;
+
+      reviewEvents.push({
+        reviewId: review.id,
+        gitProfileId,
+        commentCount: review.comments.totalCount + bodyComment,
+        state: review.state,
+        createdAt: review.submittedAt,
+      });
+
       const oldCommentCount = reviews[authorHandle]?.commentCount ?? 0;
       const oldState = reviews[authorHandle]?.state ?? null;
       const newState = calculateReviewState(oldState, review.state);
@@ -237,7 +272,7 @@ const fetchPullRequestReviews = async (
           : reviews[authorHandle].createdAt;
 
       reviews[review.author.login] = {
-        author: review.author,
+        gitProfileId,
         commentCount:
           oldCommentCount + review.comments.totalCount + bodyComment,
         state: calculateReviewState(oldState, review.state),
@@ -250,6 +285,7 @@ const fetchPullRequestReviews = async (
   }
 
   return {
+    reviewEvents,
     reviews: Object.values(reviews),
     reviewRequests,
     firstReviewerRequestedAt,
@@ -333,14 +369,6 @@ const upsertCodeReviewRequests = async (
   logger.debug("upsertCodeReviewRequests", { pullRequest, reviewRequests });
 
   return parallel(10, reviewRequests, async (reviewRequest) => {
-    if (!reviewRequest.author?.id) {
-      logger.info("syncCodeReviews: Skipping unknown author", {
-        reviewRequest,
-      });
-
-      return;
-    }
-
     const gitProfile = await upsertGitProfile(reviewRequest.author);
 
     const data = {
@@ -371,26 +399,16 @@ const upsertCodeReviews = async (
   logger.debug("upsertCodeReviews", { pullRequest, reviews });
 
   return parallel(10, reviews, async (review) => {
-    if (!review.author?.id || !review.author?.login) {
-      logger.info("syncCodeReviews: Skipping unknown author", {
-        review,
-      });
-
-      return;
-    }
-
-    const gitProfile = await upsertGitProfile(review.author);
-
     return await getPrisma(pullRequest.workspaceId).codeReview.upsert({
       where: {
         pullRequestId_authorId: {
-          authorId: gitProfile.id,
+          authorId: review.gitProfileId,
           pullRequestId: pullRequest.id,
         },
       },
       create: {
         workspaceId: pullRequest.workspaceId,
-        authorId: gitProfile.id,
+        authorId: review.gitProfileId,
         pullRequestId: pullRequest.id,
         commentCount: review.commentCount,
         state: review.state,
@@ -500,4 +518,37 @@ const findWorkspace = async (gitInstallationId: number) => {
   if (!workspace.gitProfile && !workspace.organization) return null;
 
   return workspace;
+};
+
+const upsertActivityEvents = async (
+  pullRequest: PullRequest,
+  reviewEvents: ReviewDataWithId[]
+) => {
+  // Do not save "DISMISSED" and "PENDING" events.
+  const events = reviewEvents.filter((event) =>
+    ["APPROVED", "CHANGES_REQUESTED", "COMMENTED"].includes(event.state)
+  );
+
+  return parallel(10, events, async (event) => {
+    const data = {
+      type: ActivityEventType.CODE_REVIEW_SUBMITTED,
+      metadata: JSON.stringify(pick(event, ["commentCount", "state"])),
+      eventId: `review:${event.reviewId}`,
+      eventAt: new Date(event.createdAt),
+      gitProfileId: event.gitProfileId,
+      workspaceId: pullRequest.workspaceId,
+      pullRequestId: pullRequest.id,
+    };
+
+    return await getPrisma(pullRequest.workspaceId).activityEvent.upsert({
+      where: {
+        workspaceId_eventId: {
+          workspaceId: pullRequest.workspaceId,
+          eventId: data.eventId,
+        },
+      },
+      create: data,
+      update: data,
+    });
+  });
 };

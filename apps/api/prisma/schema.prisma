@@ -88,6 +88,10 @@ enum Frequency {
   MONTHLY
 }
 
+enum ActivityEventType {
+  CODE_REVIEW_SUBMITTED
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -104,11 +108,12 @@ model GitProfile {
   userId Int?
 
   // A single user might have multiple git profiles, with multiple personal workspaces.
-  workspace         Workspace?
-  pullRequests      PullRequest[]
-  teamMemberships   TeamMember[]
-  codeReviews       CodeReview[]
-  CodeReviewRequest CodeReviewRequest[]
+  workspace          Workspace?
+  pullRequests       PullRequest[]
+  teamMemberships    TeamMember[]
+  codeReviews        CodeReview[]
+  codeReviewRequests CodeReviewRequest[]
+  activityEvents     ActivityEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -156,19 +161,8 @@ model Workspace {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now()) @updatedAt
 
-  subscription        Subscription?
-  installation        Installation?
-  memberships         WorkspaceMembership[]
-  repositories        Repository[]
-  teams               Team[]
-  Automation          Automation[]
-  CodeReview          CodeReview[]
-  CodeReviewRequest   CodeReviewRequest[]
-  PullRequestTracking PullRequestTracking[]
-  PullRequest         PullRequest[]
-  TeamMember          TeamMember[]
-  Integration         Integration[]
-  Digest              Digest[]
+  subscription Subscription?
+  installation Installation?
 
   // A workspace can belong either to an Organization or an User
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -176,10 +170,23 @@ model Workspace {
 
   // A personal workspace can become orphan when an user revokes their OAuth
   // Re-authenticating creates a new user and reconnects 
-  gitProfile   GitProfile?  @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
+  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
-  Alert        Alert[]
-  AlertEvent   AlertEvent[]
+
+  memberships          WorkspaceMembership[]
+  repositories         Repository[]
+  teams                Team[]
+  automations          Automation[]
+  codeReviews          CodeReview[]
+  codeReviewRequests   CodeReviewRequest[]
+  pullRequestTrackings PullRequestTracking[]
+  pullRequests         PullRequest[]
+  teamMembers          TeamMember[]
+  integrations         Integration[]
+  digests              Digest[]
+  alerts               Alert[]
+  alertEvents          AlertEvent[]
+  activityEvents       ActivityEvent[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -269,15 +276,46 @@ model Repository {
   starCount   Int
   createdAt   DateTime
 
-  pullRequests PullRequest[]
-
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
   updatedAt DateTime @default(now()) @updatedAt
 
+  pullRequests   PullRequest[]
+  activityEvents ActivityEvent[]
+
   @@unique([gitProvider, gitRepositoryId])
   @@index([workspaceId])
+}
+
+model ActivityEvent {
+  id Int @id @default(autoincrement())
+
+  type     ActivityEventType
+  metadata Json
+  eventId  String?
+  eventAt  DateTime          @default(now())
+
+  gitProfile   GitProfile @relation(fields: [gitProfileId], references: [id], onDelete: Cascade)
+  gitProfileId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  pullRequest   PullRequest? @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequestId Int?
+
+  repository   Repository? @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  repositoryId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([workspaceId, eventId])
+  @@index([workspaceId])
+  @@index([gitProfileId])
+  @@index([pullRequestId])
+  @@index([repositoryId])
 }
 
 model PullRequest {
@@ -306,16 +344,18 @@ model PullRequest {
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   repositoryId Int
 
-  author             GitProfile          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId           Int
-  codeReviews        CodeReview[]
-  codeReviewRequests CodeReviewRequest[]
-  alertEvents        AlertEvent[]
+  author   GitProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int
 
   tracking PullRequestTracking?
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
+
+  codeReviews        CodeReview[]
+  codeReviewRequests CodeReviewRequest[]
+  alertEvents        AlertEvent[]
+  activityEvents     ActivityEvent[]
 
   @@unique([gitProvider, gitPullRequestId])
   @@index([workspaceId])
@@ -433,8 +473,8 @@ model TeamMember {
   team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId Int
 
-  gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id])
-  gitProfileId Int?
+  gitProfile   GitProfile @relation(fields: [gitProfileId], references: [id])
+  gitProfileId Int
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
