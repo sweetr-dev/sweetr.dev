@@ -90,6 +90,8 @@ enum Frequency {
 
 enum ActivityEventType {
   CODE_REVIEW_SUBMITTED
+  PULL_REQUEST_MERGED
+  PULL_REQUEST_CREATED
 }
 
 // User git profiles. Public data. May not have an associated user. 

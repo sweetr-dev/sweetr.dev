@@ -538,6 +538,7 @@ const upsertActivityEvents = async (
       gitProfileId: event.gitProfileId,
       workspaceId: pullRequest.workspaceId,
       pullRequestId: pullRequest.id,
+      repositoryId: pullRequest.repositoryId,
     };
 
     return await getPrisma(pullRequest.workspaceId).activityEvent.upsert({
