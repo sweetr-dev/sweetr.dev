@@ -36,18 +36,18 @@
     "@graphql-tools/merge": "^9.0.0",
     "@logtail/pino": "^0.4.15",
     "@prisma/client": "^5.5.2",
-    "@sentry/node": "^8.25.0",
-    "@sentry/profiling-node": "^8.25.0",
+    "@sentry/node": "^9.3.0",
+    "@sentry/profiling-node": "^9.3.0",
     "@slack/web-api": "^7.3.4",
     "@sweetr/email-templates": "*",
     "@sweetr/graphql-types": "*",
-    "@yarnpkg/lockfile": "^1.1.0",
     "basic-auth": "^2.0.1",
     "bullmq": "^5.2.0",
     "date-fns": "^4.0.0",
     "dotenv": "^16.3.1",
     "envsafe": "^2.0.3",
     "express": "^4.20.0",
+    "express-rate-limit": "^7.5.0",
     "got": "^11.8.3",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
@@ -55,7 +55,6 @@
     "hashids": "^2.3.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
-    "markdown-table": "2.0.0",
     "micromatch": "^4.0.8",
     "octokit": "^3.2.1",
     "pino": "^8.16.1",
@@ -63,7 +62,8 @@
     "resend": "^3.4.0",
     "semver": "^7.5.4",
     "stripe": "^16.6.0",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
@@ -73,10 +73,11 @@
     "@octokit/webhooks-types": "^7.3.1",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20.9.0",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
     "pino-pretty": "^10.2.3",
     "prisma": "^5.5.2",
     "tsx": "^4.15.9",
     "typescript": "^5.2.2"
-  }
+  },
+  "packageManager": "npm@8.5.5"
 }

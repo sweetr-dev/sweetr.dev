@@ -1,6 +1,5 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
-  IconActivity,
   IconBell,
   IconChartArcs,
   IconForms,

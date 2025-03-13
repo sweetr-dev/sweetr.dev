@@ -1,6 +1,12 @@
 // https://github.com/component/escape-html/blob/master/index.js
 
+import { InputValidationException } from "../app/errors/exceptions/input-validation.exception";
+
 export const escapeHtml = (value: string) => {
+  if (value.length > 10000) {
+    throw new InputValidationException("Value is too long");
+  }
+
   const str = "" + value;
   const match = /["'&<>]/.exec(str);
 

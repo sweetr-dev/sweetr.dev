@@ -1,4 +1,4 @@
-import { Anchor, Group, Paper, Stack, Title, Text, Badge } from "@mantine/core";
+import { Anchor, Group, Paper, Stack, Title, Text } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 

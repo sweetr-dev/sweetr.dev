@@ -8,7 +8,6 @@ import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler, useEffect, useMemo } from "react";
 import { FormWipDigest } from "../types";
 import {
-  DayOfTheWeek,
   DigestType,
   DigestFrequency,
 } from "@sweetr/graphql-types/frontend/graphql";

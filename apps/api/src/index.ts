@@ -11,7 +11,7 @@ import { closeAllQueueWorkers } from "./bull-mq/workers";
 
 initSentry();
 
-const server = env.USE_SSL
+const server = env.USE_SELF_SIGNED_SSL
   ? createSslServer(
       {
         key: readFileSync(resolve(__dirname, "../../../certs/tls.key")),

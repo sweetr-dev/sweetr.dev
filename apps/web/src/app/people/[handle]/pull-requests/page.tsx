@@ -15,9 +15,7 @@ import {
 import { usePullRequestsInfiniteQuery } from "../../../../api/pull-request.api";
 import { PageEmptyState } from "../../../../components/page-empty-state";
 import { useWorkspace } from "../../../../providers/workspace.provider";
-import { parseNullableISO } from "../../../../providers/date.provider";
 import { LoadableContent } from "../../../../components/loadable-content";
-import { getPullRequestChanges } from "../../../../providers/pull-request.provider";
 
 export const PersonPullRequestsPage = () => {
   const { workspace } = useWorkspace();

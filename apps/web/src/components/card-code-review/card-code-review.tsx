@@ -10,7 +10,7 @@ import {
   Anchor,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconMessage, IconMessage2, IconPencil } from "@tabler/icons-react";
+import { IconMessage, IconPencil } from "@tabler/icons-react";
 import { IconCodeReview } from "./icon-code-review";
 import {
   CodeReviewState,
