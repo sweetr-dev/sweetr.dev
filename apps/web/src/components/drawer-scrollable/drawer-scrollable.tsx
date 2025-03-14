@@ -60,6 +60,7 @@ export const DrawerScrollable = ({
           <Divider />
 
           <ScrollArea
+            data-autofocus
             style={{
               height: actions ? "calc(100vh - 138px)" : "calc(100vh - 69px)",
             }}

@@ -5,9 +5,7 @@ import {
 } from "../../../../graphql-types";
 
 export const transformPullRequest = (
-  pullRequest: DatabasePullRequest & {
-    author: GitProfile;
-  }
+  pullRequest: DatabasePullRequest
 ): Omit<ApiPullRequest, "repository" | "tracking" | "author"> => {
   return {
     ...pullRequest,

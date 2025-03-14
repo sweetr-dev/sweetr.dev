@@ -1,21 +1,25 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
-import { findPullRequestByCodeReviewId } from "../../services/pull-request.service";
+import { findPullRequestById } from "../../services/pull-request.service";
 import { transformPullRequest } from "../transformers/pull-request.transformer";
 
 export const codeReviewPullRequestsQuery = createFieldResolver("CodeReview", {
   pullRequest: async (codeReview) => {
     logger.info("query.pullRequests", { codeReview });
 
-    if (!codeReview.id || !codeReview["workspaceId"]) {
-      throw new ResourceNotFoundException("Code Review not found");
+    if (!codeReview["pullRequestId"] || !codeReview["workspaceId"]) {
+      throw new ResourceNotFoundException("Code Review Pull Request not found");
     }
 
-    const pullRequest = await findPullRequestByCodeReviewId(
+    const pullRequest = await findPullRequestById(
       codeReview["workspaceId"],
-      codeReview.id
+      codeReview["pullRequestId"]
     );
+
+    if (!pullRequest) {
+      throw new ResourceNotFoundException("Pull Request not found");
+    }
 
     return transformPullRequest(pullRequest);
   },

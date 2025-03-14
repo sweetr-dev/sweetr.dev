@@ -581,6 +581,7 @@ export type Team = {
   name: Scalars['String']['output'];
   pullRequestsInProgress: PullRequestsInProgressResponse;
   startColor: Scalars['String']['output'];
+  workLog: TeamWorkLogResponse;
 };
 
 
@@ -591,6 +592,11 @@ export type TeamAlertArgs = {
 
 export type TeamDigestArgs = {
   input: DigestQueryInput;
+};
+
+
+export type TeamWorkLogArgs = {
+  input: TeamWorkLogInput;
 };
 
 export type TeamMember = {
@@ -609,6 +615,17 @@ export enum TeamMemberRole {
   PRODUCT = 'PRODUCT',
   QA = 'QA'
 }
+
+export type TeamWorkLogInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+};
+
+export type TeamWorkLogResponse = {
+  __typename?: 'TeamWorkLogResponse';
+  columns: Array<Scalars['DateTime']['output']>;
+  data: Array<WorkLogData>;
+};
 
 export type TeamsQueryInput = {
   /** The amount of records to return. */
@@ -681,6 +698,13 @@ export type UpsertTeamInput = {
 export type UpsertTeamMemberInput = {
   personId: Scalars['SweetID']['input'];
   role: TeamMemberRole;
+};
+
+export type WorkLogData = {
+  __typename?: 'WorkLogData';
+  codeReviews: Array<CodeReview>;
+  createdPullRequests: Array<PullRequest>;
+  mergedPullRequests: Array<PullRequest>;
 };
 
 export type Workspace = {
@@ -925,6 +949,8 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
+  TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
+  TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<TeamWorkLogResponse>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
   TimeZone: ResolverTypeWrapper<DeepPartial<Scalars['TimeZone']['output']>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
@@ -937,6 +963,7 @@ export type ResolversTypes = {
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
+  WorkLogData: ResolverTypeWrapper<DeepPartial<WorkLogData>>;
   Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
   WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
   WorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsInput>>;
@@ -1004,6 +1031,8 @@ export type ResolversParentTypes = {
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
+  TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
+  TeamWorkLogResponse: DeepPartial<TeamWorkLogResponse>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
   TimeZone: DeepPartial<Scalars['TimeZone']['output']>;
   Token: DeepPartial<Token>;
@@ -1016,6 +1045,7 @@ export type ResolversParentTypes = {
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
+  WorkLogData: DeepPartial<WorkLogData>;
   Workspace: DeepPartial<Workspace>;
   WorkspaceSettings: DeepPartial<WorkspaceSettings>;
   WorkspaceSettingsInput: DeepPartial<WorkspaceSettingsInput>;
@@ -1308,6 +1338,7 @@ export type TeamResolvers<ContextType = GraphQLContext, ParentType extends Resol
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pullRequestsInProgress?: Resolver<ResolversTypes['PullRequestsInProgressResponse'], ParentType, ContextType>;
   startColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  workLog?: Resolver<ResolversTypes['TeamWorkLogResponse'], ParentType, ContextType, RequireFields<TeamWorkLogArgs, 'input'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1316,6 +1347,12 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TeamMemberRole'], ParentType, ContextType>;
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamWorkLogResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamWorkLogResponse'] = ResolversParentTypes['TeamWorkLogResponse']> = {
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['WorkLogData']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1336,6 +1373,13 @@ export type TrialResolvers<ContextType = GraphQLContext, ParentType extends Reso
 export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Void'], any> {
   name: 'Void';
 }
+
+export type WorkLogDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkLogData'] = ResolversParentTypes['WorkLogData']> = {
+  codeReviews?: Resolver<Array<ResolversTypes['CodeReview']>, ParentType, ContextType>;
+  createdPullRequests?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  mergedPullRequests?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']> = {
   automation?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<WorkspaceAutomationArgs, 'input'>>;
@@ -1416,10 +1460,12 @@ export type Resolvers<ContextType = GraphQLContext> = {
   SweetID?: GraphQLScalarType;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;
   Trial?: TrialResolvers<ContextType>;
   Void?: GraphQLScalarType;
+  WorkLogData?: WorkLogDataResolvers<ContextType>;
   Workspace?: WorkspaceResolvers<ContextType>;
   WorkspaceSettings?: WorkspaceSettingsResolvers<ContextType>;
   WorkspaceSettingsPullRequest?: WorkspaceSettingsPullRequestResolvers<ContextType>;
