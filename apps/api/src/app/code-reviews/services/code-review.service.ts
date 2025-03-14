@@ -23,9 +23,6 @@ export const paginateCodeReviews = async (
     orderBy: {
       createdAt: "desc",
     },
-    include: {
-      author: true,
-    },
   };
 
   if (args.from) {

@@ -34,6 +34,10 @@ export const formatMsDuration = (
   return formatDuration(duration, { format, delimiter: ", " });
 };
 
+export const getDateYmd = (date: Date) => {
+  return date.toISOString().split("T")[0];
+};
+
 export const differenceInBusinessMilliseconds = (
   startDate: Date,
   endDate: Date

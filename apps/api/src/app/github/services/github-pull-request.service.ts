@@ -39,7 +39,7 @@ import {
 } from "../../email/services/send-email.service";
 import { captureException } from "@sentry/node";
 import { EmailTemplate } from "../../email/services/email-template.service";
-import { getActivityEventId } from "../../activity-events/activity-events.service";
+import { getActivityEventId } from "../../activity-events/services/activity-events.service";
 
 interface Author {
   id: string;

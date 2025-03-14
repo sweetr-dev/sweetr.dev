@@ -14,13 +14,27 @@ import { LoadableContent } from "../../../../../../components/loadable-content";
 import { useDrawerPage } from "../../../../../../providers/drawer-page.provider";
 import { useTeamId } from "../../../use-team";
 import { GitActivity } from "./components/git-activity";
+import { useTeamWorkLogQuery } from "../../../../../../api/work-log.api";
+import { useWorkspace } from "../../../../../../providers/workspace.provider";
+import { subDays } from "date-fns";
 
 export const TeamWorkLogPage = () => {
   const teamId = useTeamId();
+  const { workspace } = useWorkspace();
   const drawerProps = useDrawerPage({
     closeUrl: `/teams/${teamId}/health-and-performance/`,
   });
-  const isLoading = false;
+
+  const { data, isLoading } = useTeamWorkLogQuery({
+    workspaceId: workspace.id,
+    teamId: teamId,
+    input: {
+      dateRange: {
+        from: subDays(new Date(), 7).toISOString(),
+        to: new Date().toISOString(),
+      },
+    },
+  });
 
   return (
     <>
