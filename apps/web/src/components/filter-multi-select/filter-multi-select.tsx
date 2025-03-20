@@ -6,10 +6,11 @@ import {
   Group,
   CloseButton,
 } from "@mantine/core";
+import { IconProps } from "@tabler/icons-react";
 
 interface FilterMultiSelectProps {
   label: string;
-  icon: React.ComponentType<{ size?: number }>;
+  icon: React.ComponentType<IconProps>;
   items: string[];
   initialValue?: string[];
   onChange?: (value: string[]) => void;

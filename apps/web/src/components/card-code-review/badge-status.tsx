@@ -1,10 +1,10 @@
 import { Group, Text } from "@mantine/core";
-import { TablerIconsProps } from "@tabler/icons-react";
+import { IconProps } from "@tabler/icons-react";
 
 interface BadgeStatusProps {
   variant?: "success" | "warning" | "error" | "default";
   children: React.ReactNode;
-  icon: React.ComponentType<TablerIconsProps>;
+  icon: React.ComponentType<IconProps>;
 }
 
 const getLabelColor = (variant: BadgeStatusProps["variant"]) => {

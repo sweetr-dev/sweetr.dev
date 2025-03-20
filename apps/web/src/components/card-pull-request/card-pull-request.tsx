@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
-import { IconPullRequestState } from "./icon-pull-request-state";
+import { IconPullRequestState } from "../icon-pull-request-state";
 import { Person, PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
 import { BadgePullRequestSize } from "../badge-pull-request-size/badge-pull-request-size";

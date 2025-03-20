@@ -6,7 +6,7 @@ import {
   IconGavel,
   IconKeyboardHide,
   IconLock,
-  TablerIconsProps,
+  IconProps,
 } from "@tabler/icons-react";
 import { ReactElement } from "react";
 import { benefitLabels } from "../../../../providers/automation.provider";
@@ -18,10 +18,10 @@ interface IconAutomationBenefitProps {
   enabled: boolean;
   showTooltip?: boolean;
   themeIconProps?: ThemeIconProps;
-  iconProps?: TablerIconsProps;
+  iconProps?: IconProps;
 }
 
-const getIcon = (benefit: AutomationBenefit, iconProps?: TablerIconsProps) => {
+const getIcon = (benefit: AutomationBenefit, iconProps?: IconProps) => {
   const icons: Record<AutomationBenefit, () => ReactElement> = {
     cycleTime: () => <IconClockBolt stroke={1.5} size="16" {...iconProps} />,
     failureRate: () => <IconBug stroke={1.5} size="16" {...iconProps} />,

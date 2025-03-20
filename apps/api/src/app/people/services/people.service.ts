@@ -72,11 +72,6 @@ export const findGitProfileById = async ({
   return getPrisma(workspaceId).gitProfile.findUnique({
     where: {
       id: gitProfileId,
-      workspaceMemberships: {
-        some: {
-          workspaceId,
-        },
-      },
     },
     include: {
       user: true,

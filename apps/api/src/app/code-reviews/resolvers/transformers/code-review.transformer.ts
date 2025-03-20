@@ -5,9 +5,7 @@ import {
 } from "../../../../graphql-types";
 
 export const transformCodeReview = (
-  codeReview: DatabaseCodeReview & {
-    author: GitProfile;
-  }
+  codeReview: DatabaseCodeReview
 ): Omit<ApiCodeReview, "pullRequest" | "author"> => {
   return {
     ...codeReview,

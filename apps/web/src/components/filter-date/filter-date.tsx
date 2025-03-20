@@ -3,6 +3,7 @@ import {
   Button,
   CloseButton,
   Grid,
+  Group,
   NavLink,
   Popover,
   Stack,
@@ -11,10 +12,11 @@ import { CalendarLevel, DatePicker } from "@mantine/dates";
 import { useState } from "react";
 import classNames from "./filter-date.module.css";
 import { endOfDay, endOfToday, format, startOfDay, subDays } from "date-fns";
+import { IconProps } from "@tabler/icons-react";
 
 interface FilterDateProps {
   label: string;
-  icon: React.ComponentType<{ size?: number }>;
+  icon: React.ComponentType<IconProps>;
   onChange?: (value: [Date | null, Date | null]) => void;
   value: [Date | null, Date | null];
   clearable?: boolean;
@@ -134,7 +136,9 @@ export const FilterDate = ({
               )
             }
           >
-            <strong style={{ marginRight: 4 }}>{label}</strong> {getTimeLabel()}
+            <Group gap={4}>
+              <strong>{label}</strong> {getTimeLabel()}
+            </Group>
           </Button>
         </Popover.Target>
 
@@ -168,7 +172,6 @@ export const FilterDate = ({
                   onLevelChange={setDisplayedLevel}
                   date={displayedDate}
                   onChange={handleDateSelected}
-                  color="red"
                 />
               </Box>
             </Grid.Col>

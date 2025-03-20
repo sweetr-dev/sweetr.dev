@@ -15,7 +15,12 @@ export const pullRequestAuthorQuery = createFieldResolver("PullRequest", {
     });
 
     if (!gitProfile) {
-      throw new ResourceNotFoundException("Git Profile not found");
+      throw new ResourceNotFoundException("Git Profile not found", {
+        extra: {
+          workspaceId: context.workspaceId,
+          gitProfileId: pullRequest["authorId"],
+        },
+      });
     }
 
     return transformPerson(gitProfile);
