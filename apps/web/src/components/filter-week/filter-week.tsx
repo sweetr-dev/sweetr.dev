@@ -1,8 +1,19 @@
 import { Box, Button, CloseButton, Group, Popover } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import { useState } from "react";
-import { endOfWeek, format, getWeek, startOfWeek } from "date-fns";
-import { IconProps } from "@tabler/icons-react";
+import {
+  addWeeks,
+  endOfWeek,
+  format,
+  getWeek,
+  startOfWeek,
+  subWeeks,
+} from "date-fns";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconProps,
+} from "@tabler/icons-react";
 
 interface FilterWeekProps {
   label: string;
@@ -56,36 +67,75 @@ export const FilterWeek = ({
     ${format(endDate, "MMM d, yyyy")}`;
   };
 
+  const moveWeek = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    direction: "back" | "forward",
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!selectedDate[0]) return;
+    const date =
+      direction === "back"
+        ? subWeeks(selectedDate[0], 1)
+        : addWeeks(selectedDate[0], 1);
+
+    onChange?.([
+      startOfWeek(date, { weekStartsOn: 1 }),
+      endOfWeek(date, { weekStartsOn: 1 }),
+    ]);
+  };
+
   return (
     <>
       <Popover position="bottom" shadow="md" trapFocus keepMounted>
         <Popover.Target>
-          <Button
-            color="var(--mantine-color-body)"
-            leftSection={<Icon size={16} />}
-            style={{
-              fontWeight: 400,
-              border:
-                "calc(.0625rem*var(--mantine-scale)) solid var(--mantine-color-dark-4)",
-            }}
-            rightSection={
-              selectedDate[1] !== null &&
-              clearable && (
-                <CloseButton
-                  size="xs"
-                  aria-label="Clear filter"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onChange?.([null, null]);
-                  }}
-                />
-              )
-            }
-          >
-            <Group gap={4}>
-              <strong>{label}</strong> {getTimeLabel()}
-            </Group>
-          </Button>
+          <Button.Group>
+            <Button
+              variant="default"
+              onClick={(event) => moveWeek(event, "back")}
+              px="xs"
+              style={{ borderRight: "none" }}
+            >
+              <IconChevronLeft stroke={1.5} size={16} />
+            </Button>
+
+            <Button
+              color="var(--mantine-color-body)"
+              leftSection={<Icon size={16} />}
+              style={{
+                fontWeight: 400,
+                border:
+                  "calc(.0625rem*var(--mantine-scale)) solid var(--mantine-color-dark-4)",
+              }}
+              rightSection={
+                selectedDate[1] !== null &&
+                clearable && (
+                  <CloseButton
+                    size="xs"
+                    aria-label="Clear filter"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onChange?.([null, null]);
+                    }}
+                  />
+                )
+              }
+            >
+              <Group gap={4}>
+                <strong>{label}</strong> {getTimeLabel()}
+              </Group>
+            </Button>
+
+            <Button
+              variant="default"
+              px="xs"
+              style={{ borderLeft: "none" }}
+              onClick={(event) => moveWeek(event, "forward")}
+            >
+              <IconChevronRight stroke={1.5} size={16} />
+            </Button>
+          </Button.Group>
         </Popover.Target>
 
         <Popover.Dropdown bg="var(--mantine-color-body)" p={0}>

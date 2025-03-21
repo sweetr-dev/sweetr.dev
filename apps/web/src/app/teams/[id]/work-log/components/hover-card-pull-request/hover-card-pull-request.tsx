@@ -7,10 +7,10 @@ import {
   Text,
 } from "@mantine/core";
 import { PullRequest } from "@sweetr/graphql-types/frontend/graphql";
-import { IconPullRequestState } from "../../../../../../../../components/icon-pull-request-state";
-import { BadgePullRequestSize } from "../../../../../../../../components/badge-pull-request-size";
-import { LinesChanged } from "../../../../../../../../components/lines-changed/lines-changed";
-import { getPullRequestChanges } from "../../../../../../../../providers/pull-request.provider";
+import { IconPullRequestState } from "../../../../../../components/icon-pull-request-state";
+import { BadgePullRequestSize } from "../../../../../../components/badge-pull-request-size";
+import { LinesChanged } from "../../../../../../components/lines-changed/lines-changed";
+import { getPullRequestChanges } from "../../../../../../providers/pull-request.provider";
 import { IconBrandGithub } from "@tabler/icons-react";
 
 interface HoverCardPullRequestProps extends HoverCardProps {

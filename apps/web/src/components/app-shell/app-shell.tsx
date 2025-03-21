@@ -1,8 +1,9 @@
 import { AppShell as MantineAppShell, useMantineTheme } from "@mantine/core";
 import { Header } from "./header";
 import { Navbar } from "../navbar";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { useNavStore } from "../../providers/nav.provider";
+import { useScreenSize } from "../../providers/screen.provider";
 
 interface Props {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ interface Props {
 
 export const AppShell = ({ children }: Props) => {
   const theme = useMantineTheme();
-  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { isSmallScreen } = useScreenSize();
   const [isMobileNavOpen, handlers] = useDisclosure(false);
   const { hasSubnav } = useNavStore();
 
@@ -19,6 +20,7 @@ export const AppShell = ({ children }: Props) => {
       styles={{
         main: {
           background: theme.colors.dark[8],
+          overflowX: "auto",
         },
       }}
       layout={isSmallScreen ? "default" : "alt"}

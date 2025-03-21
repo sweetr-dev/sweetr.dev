@@ -34,7 +34,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
 
   return (
     <Stack gap="xs">
-      <Group gap={5} wrap="nowrap" h={sizes[PullRequestSize.HUGE]}>
+      <Group gap={5} wrap="nowrap" mih={sizes[PullRequestSize.HUGE]}>
         {groupedEvents.CodeReviewSubmittedEvent?.map((event, index) => {
           const codeReview = (event as CodeReviewSubmittedEvent).codeReview;
 
@@ -88,7 +88,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
           );
         })}
       </Group>
-      <Group gap={5} wrap="nowrap" h={sizes[PullRequestSize.HUGE]}>
+      <Group gap={5} wrap="nowrap" mih={sizes[PullRequestSize.HUGE]}>
         {groupedEvents.PullRequestCreatedEvent?.map((event, index) => {
           const pullRequest = (event as PullRequestCreatedEvent).pullRequest;
           return (
@@ -112,7 +112,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
           );
         })}
       </Group>
-      <Group gap={5} wrap="nowrap" h={sizes[PullRequestSize.HUGE]}>
+      <Group gap={5} wrap="nowrap" mih={sizes[PullRequestSize.HUGE]}>
         {groupedEvents.PullRequestMergedEvent?.map((event, index) => {
           const pullRequest = (event as PullRequestMergedEvent).pullRequest;
           return (

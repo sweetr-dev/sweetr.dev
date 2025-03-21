@@ -6,13 +6,14 @@ import {
   ThemeIcon,
   Text,
 } from "@mantine/core";
+import { IconProps } from "@tabler/icons-react";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface CardChartProps extends PaperProps {
   label: string;
   description: string;
-  icon: React.ComponentType<{ stroke: number; size: number }>;
+  icon: React.ComponentType<IconProps>;
   href: string;
 }
 

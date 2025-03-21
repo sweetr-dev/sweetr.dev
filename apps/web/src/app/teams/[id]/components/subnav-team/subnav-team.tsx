@@ -1,5 +1,6 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
+  IconActivity,
   IconBell,
   IconChartArcs,
   IconForms,
@@ -36,6 +37,14 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
         component={Link}
         label="Work In Progress"
         leftSection={<IconProgress stroke={1.5} size={18} />}
+      />
+
+      <NavLink
+        to={getLink("work-log")}
+        active={pathname === getLink("work-log")}
+        component={Link}
+        label="Work Log"
+        leftSection={<IconActivity stroke={1.5} size={18} />}
       />
 
       <NavLink

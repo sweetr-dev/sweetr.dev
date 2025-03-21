@@ -4,10 +4,10 @@ import {
   TeamMemberRole,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { startOfDay, subDays, endOfToday } from "date-fns";
-import { useTeamWorkLogQuery } from "../../../../../../api/work-log.api";
-import { useFilterSearchParameters } from "../../../../../../providers/filter.provider";
-import { useWorkspace } from "../../../../../../providers/workspace.provider";
-import { useTeamId } from "../../../use-team";
+import { useTeamWorkLogQuery } from "../../../../api/work-log.api";
+import { useFilterSearchParameters } from "../../../../providers/filter.provider";
+import { useWorkspace } from "../../../../providers/workspace.provider";
+import { useTeamId } from "../use-team";
 import { useMemo } from "react";
 
 type WorkLogData = Record<

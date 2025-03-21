@@ -5,11 +5,9 @@ import {
   Title,
   Text,
   Avatar,
-  useMantineTheme,
   Tooltip,
   Anchor,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { IconMessage, IconPencil } from "@tabler/icons-react";
 import { IconCodeReview } from "./icon-code-review";
 import {
@@ -21,6 +19,7 @@ import { BadgeFirstReview } from "./badge-code-review-time";
 import { BadgePullRequestSize } from "../badge-pull-request-size";
 import { formatRelative } from "date-fns";
 import { BadgeStatus } from "./badge-status";
+import { useScreenSize } from "../../providers/screen.provider";
 
 interface CardCodeReviewProps {
   title: string;
@@ -58,8 +57,7 @@ export const CardCodeReview = ({
   prGitUrl,
   prComments,
 }: CardCodeReviewProps) => {
-  const theme = useMantineTheme();
-  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { isSmallScreen } = useScreenSize();
   const isFirstPRReview = prFirstReviewAt?.getTime() === createdAt.getTime();
 
   return (
