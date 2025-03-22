@@ -11,10 +11,10 @@ interface WithDelayedRetryOnRateLimitArgs {
   installationId: number;
   jobToken?: string;
 }
-export const withDelayedRetryOnRateLimit = async (
-  callback: () => Promise<void>,
+export const withDelayedRetryOnRateLimit = async <T>(
+  callback: () => Promise<T>,
   { job, jobToken, installationId }: WithDelayedRetryOnRateLimitArgs
-) => {
+): Promise<T> => {
   try {
     const rateLimitResetAtInMs =
       await getGitInstallationRateLimitEpochInMs(installationId);
@@ -33,7 +33,7 @@ export const withDelayedRetryOnRateLimit = async (
       throw new DelayedError();
     }
 
-    await callback();
+    return await callback();
   } catch (error) {
     // Primary rate limit
     if ("headers" in error && error.headers["x-ratelimit-remaining"] === "0") {

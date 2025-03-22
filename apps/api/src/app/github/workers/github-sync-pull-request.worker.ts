@@ -9,6 +9,7 @@ import { createWorker } from "../../../bull-mq/workers";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { syncPullRequest } from "../services/github-pull-request.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
+import { PullRequestState } from "@prisma/client";
 
 export const syncPullRequestWorker = createWorker(
   SweetQueue.GITHUB_SYNC_PULL_REQUEST,
@@ -46,7 +47,7 @@ export const syncPullRequestWorker = createWorker(
       failCount: job.attemptsMade,
     };
 
-    await withDelayedRetryOnRateLimit(
+    const pullRequest = await withDelayedRetryOnRateLimit(
       () =>
         syncPullRequest(installationId, job.data.pull_request.node_id, options),
       {
@@ -56,10 +57,12 @@ export const syncPullRequestWorker = createWorker(
       }
     );
 
-    await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
+    if (pullRequest) {
+      await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
 
-    if (job.data.action === "closed") {
-      await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
+      if (pullRequest.state === PullRequestState.CLOSED) {
+        await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
+      }
     }
   },
   {

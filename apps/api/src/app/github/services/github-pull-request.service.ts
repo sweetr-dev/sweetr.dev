@@ -75,7 +75,7 @@ export const syncPullRequest = async (
       syncReviews,
     });
 
-    return;
+    return null;
   }
 
   if (initialSync && failCount === 0) {
@@ -89,7 +89,7 @@ export const syncPullRequest = async (
       gitPrData,
     });
 
-    return;
+    return null;
   }
 
   if (!gitPrData.author?.id || !gitPrData.author?.login) {
@@ -97,7 +97,7 @@ export const syncPullRequest = async (
       gitPrData,
     });
 
-    return;
+    return null;
   }
 
   const gitProfile = await upsertGitProfile(gitPrData.author);
@@ -137,6 +137,8 @@ export const syncPullRequest = async (
 
     if (shouldSendEmail) sendSyncCompleteEmail(workspace.id);
   }
+
+  return pullRequest;
 };
 
 const fetchPullRequest = async (
