@@ -5,12 +5,11 @@ import {
   Anchor,
   Group,
   Badge,
-  useMantineTheme,
 } from "@mantine/core";
 import { FC, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../providers/app.provider";
-import { useMediaQuery } from "@mantine/hooks";
+import { useScreenSize } from "../../providers/screen.provider";
 
 interface BreadcrumbsProps extends Omit<MantineBreadcrumbsProps, "children"> {
   items: {
@@ -23,8 +22,7 @@ interface BreadcrumbsProps extends Omit<MantineBreadcrumbsProps, "children"> {
 export const Breadcrumbs: FC<BreadcrumbsProps> = ({ items, children }) => {
   const navigate = useNavigate();
   const { workspace } = useAppStore();
-  const theme = useMantineTheme();
-  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { isSmallScreen } = useScreenSize();
 
   return (
     <Portal target="#breadcrumbs">

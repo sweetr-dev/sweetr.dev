@@ -33,9 +33,6 @@ export const paginatePullRequests = async (
     orderBy: {
       createdAt: "desc",
     },
-    include: {
-      author: true,
-    },
   };
 
   if (args.teamIds) {
@@ -118,20 +115,13 @@ export const paginatePullRequests = async (
   return getPrisma(workspaceId).pullRequest.findMany(query);
 };
 
-export const findPullRequestByCodeReviewId = async (
+export const findPullRequestById = async (
   workspaceId: number,
-  codeReviewId: number
+  pullRequestId: number
 ) => {
-  return getPrisma(workspaceId).pullRequest.findFirstOrThrow({
+  return getPrisma(workspaceId).pullRequest.findUnique({
     where: {
-      codeReviews: {
-        some: {
-          id: codeReviewId,
-        },
-      },
-    },
-    include: {
-      author: true,
+      id: pullRequestId,
     },
   });
 };
@@ -167,7 +157,6 @@ export const findTeamPullRequestsInProgress = async (
     take: take(100),
     include: {
       codeReviews: true,
-      author: true,
       tracking: true,
     },
   });

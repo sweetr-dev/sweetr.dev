@@ -8,6 +8,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -24,6 +25,14 @@ export type Scalars = {
   TimeZone: { input: string; output: string; }
   Void: { input: null; output: null; }
 };
+
+export type ActivityEvent = CodeReviewSubmittedEvent | PullRequestCreatedEvent | PullRequestMergedEvent;
+
+export enum ActivityEventType {
+  CODE_REVIEW_SUBMITTED = 'CODE_REVIEW_SUBMITTED',
+  PULL_REQUEST_CREATED = 'PULL_REQUEST_CREATED',
+  PULL_REQUEST_MERGED = 'PULL_REQUEST_MERGED'
+}
 
 export type Alert = {
   __typename?: 'Alert';
@@ -163,6 +172,12 @@ export enum CodeReviewState {
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
   COMMENTED = 'COMMENTED'
 }
+
+export type CodeReviewSubmittedEvent = {
+  __typename?: 'CodeReviewSubmittedEvent';
+  codeReview: CodeReview;
+  eventAt: Scalars['DateTime']['output'];
+};
 
 export type CodeReviewsInput = {
   /** The pagination cursor */
@@ -435,6 +450,18 @@ export type PullRequest = {
   tracking: PullRequestTracking;
 };
 
+export type PullRequestCreatedEvent = {
+  __typename?: 'PullRequestCreatedEvent';
+  eventAt: Scalars['DateTime']['output'];
+  pullRequest: PullRequest;
+};
+
+export type PullRequestMergedEvent = {
+  __typename?: 'PullRequestMergedEvent';
+  eventAt: Scalars['DateTime']['output'];
+  pullRequest: PullRequest;
+};
+
 export enum PullRequestOwnerType {
   PERSON = 'PERSON',
   TEAM = 'TEAM'
@@ -581,6 +608,7 @@ export type Team = {
   name: Scalars['String']['output'];
   pullRequestsInProgress: PullRequestsInProgressResponse;
   startColor: Scalars['String']['output'];
+  workLog: TeamWorkLogResponse;
 };
 
 
@@ -591,6 +619,11 @@ export type TeamAlertArgs = {
 
 export type TeamDigestArgs = {
   input: DigestQueryInput;
+};
+
+
+export type TeamWorkLogArgs = {
+  input: TeamWorkLogInput;
 };
 
 export type TeamMember = {
@@ -609,6 +642,17 @@ export enum TeamMemberRole {
   PRODUCT = 'PRODUCT',
   QA = 'QA'
 }
+
+export type TeamWorkLogInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+};
+
+export type TeamWorkLogResponse = {
+  __typename?: 'TeamWorkLogResponse';
+  columns: Array<Scalars['DateTime']['output']>;
+  data: Array<ActivityEvent>;
+};
 
 export type TeamsQueryInput = {
   /** The amount of records to return. */
@@ -852,10 +896,16 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
+  ActivityEvent: ( DeepPartial<CodeReviewSubmittedEvent> ) | ( DeepPartial<PullRequestCreatedEvent> ) | ( DeepPartial<PullRequestMergedEvent> );
+};
 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  ActivityEvent: DeepPartial<ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['ActivityEvent']>>;
+  ActivityEventType: ResolverTypeWrapper<DeepPartial<ActivityEventType>>;
   Alert: ResolverTypeWrapper<DeepPartial<Alert>>;
   AlertQueryInput: ResolverTypeWrapper<DeepPartial<AlertQueryInput>>;
   AlertType: ResolverTypeWrapper<DeepPartial<AlertType>>;
@@ -877,6 +927,7 @@ export type ResolversTypes = {
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
+  CodeReviewSubmittedEvent: ResolverTypeWrapper<DeepPartial<CodeReviewSubmittedEvent>>;
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
@@ -906,6 +957,8 @@ export type ResolversTypes = {
   PersonalMetrics: ResolverTypeWrapper<DeepPartial<PersonalMetrics>>;
   PlanKeys: ResolverTypeWrapper<DeepPartial<PlanKeys>>;
   PullRequest: ResolverTypeWrapper<DeepPartial<PullRequest>>;
+  PullRequestCreatedEvent: ResolverTypeWrapper<DeepPartial<PullRequestCreatedEvent>>;
+  PullRequestMergedEvent: ResolverTypeWrapper<DeepPartial<PullRequestMergedEvent>>;
   PullRequestOwnerType: ResolverTypeWrapper<DeepPartial<PullRequestOwnerType>>;
   PullRequestSize: ResolverTypeWrapper<DeepPartial<PullRequestSize>>;
   PullRequestState: ResolverTypeWrapper<DeepPartial<PullRequestState>>;
@@ -925,6 +978,8 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
+  TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
+  TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
   TimeZone: ResolverTypeWrapper<DeepPartial<Scalars['TimeZone']['output']>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
@@ -948,6 +1003,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  ActivityEvent: DeepPartial<ResolversUnionTypes<ResolversParentTypes>['ActivityEvent']>;
   Alert: DeepPartial<Alert>;
   AlertQueryInput: DeepPartial<AlertQueryInput>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
@@ -965,6 +1021,7 @@ export type ResolversParentTypes = {
   CodeReview: DeepPartial<CodeReview>;
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
+  CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
@@ -989,6 +1046,8 @@ export type ResolversParentTypes = {
   PersonalMetrics: DeepPartial<PersonalMetrics>;
   PlanKeys: DeepPartial<PlanKeys>;
   PullRequest: DeepPartial<PullRequest>;
+  PullRequestCreatedEvent: DeepPartial<PullRequestCreatedEvent>;
+  PullRequestMergedEvent: DeepPartial<PullRequestMergedEvent>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
   PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
   PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
@@ -1004,6 +1063,8 @@ export type ResolversParentTypes = {
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
+  TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
+  TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
   TimeZone: DeepPartial<Scalars['TimeZone']['output']>;
   Token: DeepPartial<Token>;
@@ -1038,6 +1099,10 @@ export type RateLimitDirectiveResolver<Result, Parent, ContextType = GraphQLCont
 export type SkipAuthDirectiveArgs = { };
 
 export type SkipAuthDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = SkipAuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ActivityEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ActivityEvent'] = ResolversParentTypes['ActivityEvent']> = {
+  __resolveType: TypeResolveFn<'CodeReviewSubmittedEvent' | 'PullRequestCreatedEvent' | 'PullRequestMergedEvent', ParentType, ContextType>;
+};
 
 export type AlertResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Alert'] = ResolversParentTypes['Alert']> = {
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1120,6 +1185,12 @@ export type CodeReviewDistributionEntityResolvers<ContextType = GraphQLContext, 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   reviewCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   reviewSharePercentage?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CodeReviewSubmittedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewSubmittedEvent'] = ResolversParentTypes['CodeReviewSubmittedEvent']> = {
+  codeReview?: Resolver<ResolversTypes['CodeReview'], ParentType, ContextType>;
+  eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1246,6 +1317,18 @@ export type PullRequestResolvers<ContextType = GraphQLContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestCreatedEvent'] = ResolversParentTypes['PullRequestCreatedEvent']> = {
+  eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  pullRequest?: Resolver<ResolversTypes['PullRequest'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PullRequestMergedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestMergedEvent'] = ResolversParentTypes['PullRequestMergedEvent']> = {
+  eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  pullRequest?: Resolver<ResolversTypes['PullRequest'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestTracking'] = ResolversParentTypes['PullRequestTracking']> = {
   changedFilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   firstApprovalAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1308,6 +1391,7 @@ export type TeamResolvers<ContextType = GraphQLContext, ParentType extends Resol
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pullRequestsInProgress?: Resolver<ResolversTypes['PullRequestsInProgressResponse'], ParentType, ContextType>;
   startColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  workLog?: Resolver<ResolversTypes['TeamWorkLogResponse'], ParentType, ContextType, RequireFields<TeamWorkLogArgs, 'input'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1316,6 +1400,12 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TeamMemberRole'], ParentType, ContextType>;
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamWorkLogResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamWorkLogResponse'] = ResolversParentTypes['TeamWorkLogResponse']> = {
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['ActivityEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1381,6 +1471,7 @@ export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLConte
 };
 
 export type Resolvers<ContextType = GraphQLContext> = {
+  ActivityEvent?: ActivityEventResolvers<ContextType>;
   Alert?: AlertResolvers<ContextType>;
   AuthProviderResponse?: AuthProviderResponseResolvers<ContextType>;
   Automation?: AutomationResolvers<ContextType>;
@@ -1392,6 +1483,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReview?: CodeReviewResolvers<ContextType>;
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
+  CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Digest?: DigestResolvers<ContextType>;
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
@@ -1407,6 +1499,8 @@ export type Resolvers<ContextType = GraphQLContext> = {
   PersonalMetrics?: PersonalMetricsResolvers<ContextType>;
   PlanKeys?: PlanKeysResolvers<ContextType>;
   PullRequest?: PullRequestResolvers<ContextType>;
+  PullRequestCreatedEvent?: PullRequestCreatedEventResolvers<ContextType>;
+  PullRequestMergedEvent?: PullRequestMergedEventResolvers<ContextType>;
   PullRequestTracking?: PullRequestTrackingResolvers<ContextType>;
   PullRequestsInProgressResponse?: PullRequestsInProgressResponseResolvers<ContextType>;
   PurchasablePlans?: PurchasablePlansResolvers<ContextType>;
@@ -1416,6 +1510,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   SweetID?: GraphQLScalarType;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;
   Trial?: TrialResolvers<ContextType>;

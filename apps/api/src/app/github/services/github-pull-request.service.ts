@@ -7,6 +7,7 @@ import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import {
+  ActivityEventType,
   GitProvider,
   Prisma,
   PullRequest,
@@ -38,6 +39,7 @@ import {
 } from "../../email/services/send-email.service";
 import { captureException } from "@sentry/node";
 import { EmailTemplate } from "../../email/services/email-template.service";
+import { getActivityEventId } from "../../activity-events/services/activity-events.service";
 
 interface Author {
   id: string;
@@ -107,6 +109,7 @@ export const syncPullRequest = async (
     repository,
     gitPrData
   );
+  await upsertActivityEvents(pullRequest);
 
   if (syncReviews) {
     logger.debug("syncPullRequest: Adding job to sync reviews", {
@@ -562,4 +565,60 @@ const sendSyncCompleteEmail = async (workspaceId: number) => {
 
   const oneDayInSeconds = 60 * 60 * 24;
   await markEmailAsSent(emailKey, oneDayInSeconds);
+};
+
+const upsertActivityEvents = async (pullRequest: PullRequest) => {
+  const data = {
+    gitProfileId: pullRequest.authorId,
+    workspaceId: pullRequest.workspaceId,
+    pullRequestId: pullRequest.id,
+    repositoryId: pullRequest.repositoryId,
+    metadata: {},
+  };
+
+  await getPrisma(pullRequest.workspaceId).activityEvent.upsert({
+    where: {
+      workspaceId_eventId: {
+        workspaceId: pullRequest.workspaceId,
+        eventId: getActivityEventId(
+          ActivityEventType.PULL_REQUEST_CREATED,
+          pullRequest.id
+        ),
+      },
+    },
+    create: {
+      type: ActivityEventType.PULL_REQUEST_CREATED,
+      eventAt: new Date(pullRequest.createdAt),
+      eventId: getActivityEventId(
+        ActivityEventType.PULL_REQUEST_CREATED,
+        pullRequest.id
+      ),
+      ...data,
+    },
+    update: {},
+  });
+
+  if (pullRequest.mergedAt) {
+    await getPrisma(pullRequest.workspaceId).activityEvent.upsert({
+      where: {
+        workspaceId_eventId: {
+          workspaceId: pullRequest.workspaceId,
+          eventId: getActivityEventId(
+            ActivityEventType.PULL_REQUEST_MERGED,
+            pullRequest.id
+          ),
+        },
+      },
+      create: {
+        type: ActivityEventType.PULL_REQUEST_MERGED,
+        eventAt: new Date(pullRequest.mergedAt),
+        eventId: getActivityEventId(
+          ActivityEventType.PULL_REQUEST_MERGED,
+          pullRequest.id
+        ),
+        ...data,
+      },
+      update: {},
+    });
+  }
 };

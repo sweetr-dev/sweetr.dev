@@ -1,6 +1,10 @@
 import { Text, Paper, Group } from "@mantine/core";
 import classes from "./card-stat.module.css";
-import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons-react";
+import {
+  IconArrowDownRight,
+  IconArrowUpRight,
+  IconProps,
+} from "@tabler/icons-react";
 
 interface CardStatProps {
   name: string;
@@ -8,11 +12,7 @@ interface CardStatProps {
   previous: number;
   change: number;
   changePrefix?: boolean;
-  icon: React.ComponentType<{
-    stroke: number;
-    size: number;
-    className: string;
-  }>;
+  icon: React.ComponentType<IconProps>;
 }
 
 export const CardStat = ({

@@ -5,7 +5,7 @@ import {
   IconGitMerge,
   IconMessage2Exclamation,
   IconRocketOff,
-  TablerIconsProps,
+  IconProps,
 } from "@tabler/icons-react";
 import { fork } from "radash";
 
@@ -14,7 +14,7 @@ interface AlertCardData {
   available: boolean;
   title: string;
   description: string;
-  icon: React.ComponentType<TablerIconsProps>;
+  icon: React.ComponentType<IconProps>;
   getRoute: (teamId: string) => string;
 }
 

@@ -30,9 +30,9 @@ import { SlowReviewAlertPage } from "./app/teams/[id]/alerts/settings/slow-revie
 import { TeamDigestsPage } from "./app/teams/[id]/digests/page";
 import { TeamMetricsDigestPage } from "./app/teams/[id]/digests/settings/team-metrics/page";
 import { TeamWipDigestPage } from "./app/teams/[id]/digests/settings/team-wip/page";
+import { TeamCodeReviewDistributionPage } from "./app/teams/[id]/health-and-performance/activity/code-review-distribution/page";
 import { TeamCodeReviewsTimeToApprovePage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
 import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
-import { TeamHealthCodeReviewDistributionPage } from "./app/teams/[id]/health-and-performance/health/code-review-distribution/page";
 import { TeamHealthAndPerformancePage } from "./app/teams/[id]/health-and-performance/page";
 import { TeamPullRequestsCycleTimePage } from "./app/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
 import { TeamPullRequestsSizeDistribution } from "./app/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
@@ -41,6 +41,7 @@ import { TeamMembersPage } from "./app/teams/[id]/members/page";
 import { TeamPage } from "./app/teams/[id]/page";
 import { TeamPullRequestsPage } from "./app/teams/[id]/pull-requests/page";
 import { TeamWorkInProgressPage } from "./app/teams/[id]/work-in-progress/page";
+import { TeamWorkLogPage } from "./app/teams/[id]/work-log/page";
 import { TeamsPage } from "./app/teams/page";
 import {
   isAuthError,
@@ -180,6 +181,13 @@ export const router = createBrowserRouter([
                 element: <TeamWorkInProgressPage />,
               },
               {
+                path: "/teams/:teamId/work-log",
+                element: <TeamWorkLogPage />,
+                meta: {
+                  fluid: true,
+                },
+              },
+              {
                 path: "/teams/:teamId/members",
                 element: <TeamMembersPage />,
               },
@@ -224,8 +232,8 @@ export const router = createBrowserRouter([
                 element: <TeamHealthAndPerformancePage />,
                 children: [
                   {
-                    path: "/teams/:teamId/health-and-performance/health/code-review-distribution",
-                    element: <TeamHealthCodeReviewDistributionPage />,
+                    path: "/teams/:teamId/health-and-performance/activity/code-review-distribution",
+                    element: <TeamCodeReviewDistributionPage />,
                   },
                   {
                     path: "/teams/:teamId/health-and-performance/pull-requests/cycle-time",

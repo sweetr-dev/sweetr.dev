@@ -6,13 +6,11 @@ import {
   Text,
   Tooltip,
   Avatar,
-  useMantineTheme,
   Anchor,
   HoverCard,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
-import { IconPullRequestState } from "./icon-pull-request-state";
+import { IconPullRequestState } from "../icon-pull-request-state";
 import { Person, PullRequest } from "@sweetr/graphql-types/frontend/graphql";
 import { LinesChanged } from "../lines-changed/lines-changed";
 import { BadgePullRequestSize } from "../badge-pull-request-size/badge-pull-request-size";
@@ -22,6 +20,7 @@ import { usePrCard } from "./use-pr-card";
 import { BadgeStatus } from "./badge-status";
 import { BadgeData, useBadges } from "./use-badges";
 import { TimelinePullRequest } from "./timeline-pull-request";
+import { useScreenSize } from "../../providers/screen.provider";
 
 interface CardPullRequestProps {
   pullRequest: Omit<PullRequest, "author"> & {
@@ -34,9 +33,7 @@ export const CardPullRequest = ({
   pullRequest,
   timeFormat = "relative",
 }: CardPullRequestProps) => {
-  const theme = useMantineTheme();
-  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-
+  const { isSmallScreen } = useScreenSize();
   const { getCommentFlameProps, getTimeLabel } = usePrCard(pullRequest);
 
   const { getCardColor, badges } = useBadges(pullRequest);

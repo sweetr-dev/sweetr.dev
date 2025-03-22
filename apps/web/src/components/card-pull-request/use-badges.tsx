@@ -3,7 +3,7 @@ import {
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
 import {
-  TablerIconsProps,
+  IconProps,
   IconGitMerge,
   IconClock,
   IconEyeCheck,
@@ -20,7 +20,7 @@ type Variant = "success" | "warning" | "error" | "default";
 export type BadgeData = null | {
   variant: Variant;
   label: string;
-  icon: React.ComponentType<TablerIconsProps>;
+  icon: React.ComponentType<IconProps>;
 };
 
 export const useBadges = (

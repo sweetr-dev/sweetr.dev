@@ -1,11 +1,11 @@
 import { SpotlightActionData } from "@mantine/spotlight";
-import { TablerIconsProps } from "@tabler/icons-react";
+import { IconProps } from "@tabler/icons-react";
 import React, { useEffect } from "react";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 type Action = Omit<SpotlightActionData, "id"> & {
-  icon: React.ComponentType<TablerIconsProps>;
+  icon: React.ComponentType<IconProps>;
 };
 
 interface AppStore {

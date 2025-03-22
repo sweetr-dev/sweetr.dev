@@ -25,7 +25,7 @@ export const TeamHealthAndPerformancePage = () => {
           icon={IconEyeDiscount}
           label="Code review distribution"
           description="Is anyone handling majority of reviews by themselves?"
-          href={`/teams/${teamId}/health-and-performance/health/code-review-distribution`}
+          href={`/teams/${teamId}/health-and-performance/activity/code-review-distribution`}
         />
       </SimpleGrid>
 

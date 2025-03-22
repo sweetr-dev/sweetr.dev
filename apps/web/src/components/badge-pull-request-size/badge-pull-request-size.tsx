@@ -18,7 +18,7 @@ export const BadgePullRequestSize = ({
       disabled={!tooltip}
       arrowSize={8}
       bg="dark.7"
-      style={{ border: "1px solid var(--mantine-color-dark-4)" }}
+      bd="1px solid var(--mantine-color-dark-4)"
     >
       <Badge c={getSizeColor(size)} variant="default" miw={72}>
         {size}
