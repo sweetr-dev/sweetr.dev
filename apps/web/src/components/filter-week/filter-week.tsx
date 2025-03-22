@@ -6,6 +6,7 @@ import {
   endOfWeek,
   format,
   getWeek,
+  isFuture,
   startOfWeek,
   subWeeks,
 } from "date-fns";
@@ -132,6 +133,7 @@ export const FilterWeek = ({
               px="xs"
               style={{ borderLeft: "none" }}
               onClick={(event) => moveWeek(event, "forward")}
+              disabled={!!selectedDate[1] && isFuture(selectedDate[1])}
             >
               <IconChevronRight stroke={1.5} size={16} />
             </Button>

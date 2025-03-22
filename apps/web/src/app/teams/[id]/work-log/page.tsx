@@ -25,6 +25,7 @@ import { useWorkLog } from "./use-work-log";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
 import { teamRoleColorMap } from "../../../../providers/team-role.provider";
 import { useFullWidthPage } from "../../../../providers/page.provider";
+import { formatISO } from "date-fns";
 
 export const TeamWorkLogPage = () => {
   const searchParams = useFilterSearchParameters();
@@ -39,8 +40,8 @@ export const TeamWorkLogPage = () => {
             label="Week of"
             icon={IconCalendar}
             onChange={(dates) => {
-              const from = dates[0]?.toISOString() || null;
-              const to = dates[1]?.toISOString() || null;
+              const from = dates[0] ? formatISO(dates[0]) : null;
+              const to = dates[1] ? formatISO(dates[1]) : null;
 
               filters.setFieldValue("from", from);
               filters.setFieldValue("to", to);
