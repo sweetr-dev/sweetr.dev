@@ -5,6 +5,7 @@ import {
   useMantineTheme,
   Burger,
 } from "@mantine/core";
+import { usePageStore } from "../../providers/page.provider";
 
 interface HeaderProps {
   onToggleMenu: () => void;
@@ -18,6 +19,7 @@ export const Header = ({
   isMobile,
 }: HeaderProps): React.ReactElement => {
   const theme = useMantineTheme();
+  const { fullWidth } = usePageStore();
 
   return (
     <AppShell.Header px={0} bg={theme.colors.dark[8]}>
@@ -39,6 +41,7 @@ export const Header = ({
         )}
 
         <Container
+          fluid={fullWidth}
           w={isMobile ? undefined : "100%"}
           m={isMobile ? 0 : undefined}
         >

@@ -1,31 +1,20 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  Group,
-  Paper,
-  Skeleton,
-  Stack,
-  Table,
-  Text,
-} from "@mantine/core";
+import { Group, Paper, Skeleton, Table } from "@mantine/core";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { GitActivity } from "./components/git-activity";
 import {
   formatDate,
   parseNullableISO,
 } from "../../../../providers/date.provider";
-import {
-  IconCalendar,
-  IconHexagonFilled,
-  IconMessageFilled,
-} from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import { FilterWeek } from "../../../../components/filter-week";
 import { useWorkLog } from "./use-work-log";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
-import { teamRoleColorMap } from "../../../../providers/team-role.provider";
 import { useFullWidthPage } from "../../../../providers/page.provider";
 import { formatISO } from "date-fns";
+import { CellAuthor } from "./components/cell-author/cell-author";
+import { IconCodeReview } from "./components/icon-code-review";
+import { IconOpenedPR } from "./components/icon-opened-pr";
+import { IconMergedPR } from "./components/icon-merged-pr";
 
 export const TeamWorkLogPage = () => {
   const searchParams = useFilterSearchParameters();
@@ -56,35 +45,17 @@ export const TeamWorkLogPage = () => {
         </Group>
         <Group>
           <Group gap={5} ml={5}>
-            <IconMessageFilled
-              stroke={1.5}
-              size={20}
-              style={{ color: "white", opacity: 0.8 }}
-            />
+            <IconCodeReview size={20} />
             Code review
           </Group>
           •
           <Group gap={5}>
-            <IconHexagonFilled
-              stroke={1.5}
-              size={20}
-              style={{
-                color: "var(--mantine-color-green-4)",
-                opacity: 0.8,
-              }}
-            />
+            <IconOpenedPR size={20} />
             Opened PR
           </Group>
           •
           <Group gap={5}>
-            <IconHexagonFilled
-              stroke={1.5}
-              size={20}
-              style={{
-                color: "var(--mantine-color-violet-4)",
-                opacity: 0.8,
-              }}
-            />
+            <IconMergedPR size={20} />
             Merged PR
           </Group>
         </Group>
@@ -106,69 +77,24 @@ export const TeamWorkLogPage = () => {
                 <Table.Thead bg="dark.6">
                   <Table.Tr>
                     <Table.Th>Member</Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[0], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[1], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[2], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[3], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[4], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[5], "dd/MM EEE")}
-                    </Table.Th>
-                    <Table.Th>
-                      {formatDate(workLog.columns[6], "dd/MM EEE")}
-                    </Table.Th>
+                    {workLog.columns.map((column, index) => (
+                      <Table.Th key={index}>
+                        {formatDate(column, "dd/MM EEE")}
+                      </Table.Th>
+                    ))}
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                   {Object.entries(workLog.data).map(([authorId, author]) => (
                     <Table.Tr key={authorId}>
                       <Table.Td w={160}>
-                        <Stack gap={5} align="center">
-                          <Avatar src={author.avatar} size={40} />
-                          <Text style={{ whiteSpace: "nowrap" }}>
-                            {author.name}
-                          </Text>
-
-                          <Badge
-                            variant="light"
-                            size="sm"
-                            color={teamRoleColorMap[author.role]}
-                          >
-                            {author.role}
-                          </Badge>
-                        </Stack>
+                        <CellAuthor author={author} />
                       </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[0]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[1]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[2]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[3]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[4]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[5]} />
-                      </Table.Td>
-                      <Table.Td>
-                        <GitActivity events={author.events[6]} />
-                      </Table.Td>
+                      {workLog.columns.map((_, index) => (
+                        <Table.Td key={index}>
+                          <GitActivity events={author.events[index]} />
+                        </Table.Td>
+                      ))}
                     </Table.Tr>
                   ))}
                 </Table.Tbody>

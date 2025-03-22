@@ -16,6 +16,9 @@ import {
 } from "@tabler/icons-react";
 import { group } from "radash";
 import { HoverCardPullRequest } from "../hover-card-pull-request";
+import { IconCodeReview } from "../icon-code-review";
+import { IconOpenedPR } from "../icon-opened-pr";
+import { IconMergedPR } from "../icon-merged-pr";
 
 interface GitActivityProps {
   events: ActivityEvent[];
@@ -44,10 +47,8 @@ export const GitActivity = ({ events }: GitActivityProps) => {
               pullRequest={codeReview.pullRequest}
               target={
                 <Anchor href={codeReview.pullRequest.gitUrl} target="_blank">
-                  <IconMessageFilled
-                    stroke={1.5}
+                  <IconCodeReview
                     size={sizes[codeReview.pullRequest.tracking.size]}
-                    style={{ color: "white", opacity: 0.8 }}
                   />
                 </Anchor>
               }
@@ -97,15 +98,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
               pullRequest={pullRequest}
               target={
                 <Anchor href={pullRequest.gitUrl} target="_blank">
-                  <IconHexagonFilled
-                    key={index}
-                    stroke={1.5}
-                    size={sizes[pullRequest.tracking.size]}
-                    style={{
-                      color: "var(--mantine-color-green-4)",
-                      opacity: 0.8,
-                    }}
-                  />
+                  <IconOpenedPR size={sizes[pullRequest.tracking.size]} />
                 </Anchor>
               }
             />
@@ -121,15 +114,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
               pullRequest={pullRequest}
               target={
                 <Anchor href={pullRequest.gitUrl} target="_blank">
-                  <IconHexagonFilled
-                    key={index}
-                    stroke={1.5}
-                    size={sizes[pullRequest.tracking.size]}
-                    style={{
-                      color: "var(--mantine-color-violet-4)",
-                      opacity: 0.8,
-                    }}
-                  />
+                  <IconMergedPR size={sizes[pullRequest.tracking.size]} />
                 </Anchor>
               }
             />

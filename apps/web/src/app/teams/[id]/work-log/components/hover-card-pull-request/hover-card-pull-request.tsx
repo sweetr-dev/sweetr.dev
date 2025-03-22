@@ -26,7 +26,7 @@ export const HoverCardPullRequest = ({
   ...props
 }: HoverCardPullRequestProps) => {
   return (
-    <HoverCard {...props}>
+    <HoverCard {...props} transitionProps={{ duration: 0 }} withArrow>
       <HoverCard.Target>{target}</HoverCard.Target>
       <HoverCard.Dropdown bg="dark.7">
         <Stack gap="xs">

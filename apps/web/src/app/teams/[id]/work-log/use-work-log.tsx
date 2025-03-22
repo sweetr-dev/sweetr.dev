@@ -18,6 +18,7 @@ type WorkLogData = Record<
     handle: string;
     role: TeamMemberRole;
     events: ActivityEvent[][];
+    totals: Record<NonNullable<ActivityEvent["__typename"]>, number>;
   }
 >;
 
@@ -69,6 +70,11 @@ export const useWorkLog = () => {
         handle: member.person.handle,
         role: member.role,
         events: [...Array.from({ length: columns.length }, () => [])],
+        totals: {
+          CodeReviewSubmittedEvent: 0,
+          PullRequestCreatedEvent: 0,
+          PullRequestMergedEvent: 0,
+        },
       };
     });
 
@@ -81,7 +87,11 @@ export const useWorkLog = () => {
       const eventDay = getDateYmd(event.eventAt);
       const index = columns.findIndex((column) => column === eventDay);
 
+      if (!data[author.id]) return;
+
       data[author.id].events[index]?.push(event as ActivityEvent);
+
+      data[author.id].totals[event.__typename]++;
     });
 
     return data;
