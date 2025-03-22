@@ -27,7 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bull-board/express": "^5.14.1",
+    "@bull-board/express": "^6.7.10",
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
     "@envelop/generic-auth": "^7.0.0",

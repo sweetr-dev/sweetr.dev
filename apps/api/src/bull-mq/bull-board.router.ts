@@ -22,8 +22,8 @@ if (env.BULLBOARD_PATH) {
     .use(
       env.BULLBOARD_PATH,
       rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 100,
+        windowMs: 60, // 15 minutes
+        max: 200,
         message: "Too many requests, please try again later.",
       })
     )
