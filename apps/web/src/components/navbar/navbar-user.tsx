@@ -13,6 +13,7 @@ import {
   IconBuilding,
   IconBook2,
   IconLifebuoy,
+  IconExchange,
 } from "@tabler/icons-react";
 import { FC } from "react";
 import { logout } from "../../providers/auth.provider";
@@ -108,6 +109,16 @@ export const NavbarUser: FC<NavbarUserProps> = () => {
             target="_blank"
           >
             Give feedback
+          </Menu.Item>
+
+          <Menu.Item
+            leftSection={<IconExchange size={14} stroke={1.5} />}
+            component="a"
+            href="https://sweetr.featurebase.app/changelog"
+            rel="nofollow"
+            target="_blank"
+          >
+            Changelog
           </Menu.Item>
 
           <Menu.Divider mx={-4} />
