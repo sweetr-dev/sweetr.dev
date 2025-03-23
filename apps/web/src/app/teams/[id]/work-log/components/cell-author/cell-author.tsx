@@ -31,7 +31,7 @@ export const CellAuthor = ({ author }: CellAuthorProps) => {
           {author.role}
         </Badge>
       </Stack>
-      <Group gap="xs" justify="center" mt="sm">
+      <Group gap="xs" justify="center" mt="sm" wrap="nowrap">
         <Group gap={5} align="center" wrap="nowrap">
           <IconCodeReview size={16} />
           {author.totals.CodeReviewSubmittedEvent.toString()}
