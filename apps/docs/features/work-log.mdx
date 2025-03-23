@@ -1,0 +1,50 @@
+---
+title: Work Log
+description: Turn daily work into insights for better feedback and progress tracking.
+icon: "wave-pulse"
+---
+
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { ColorBadge } from "/snippets/color-badge.mdx";
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/work-log.png" />
+</Frame>
+
+## How it works
+
+The Work Log provides a real-time snapshot of your team’s ongoing work, displaying daily activity for each contributor. This feature helps improve visibility into contributions across the team, offering valuable insights for both managers and developers.
+
+The Work Log displays contributions from each team member, organized by day and grouped into three categories:
+
+- **Opened PRs** (green hexagons)
+- **Merged PRs** (purple hexagons)
+- **Code reviews** (speech bubble icons)
+
+The size of each icon varies based on the PR size, giving a clear indication of the effort involved. Hovering over an icon provides additional details, including the PR title, repository name, number of comments, and size.
+
+### Insights
+
+#### For leaders
+
+- **Improve workload distribution:** Gain context to better balance workloads if someone is regularly overloaded.
+- **Prepare for 1:1s & retrospectives:** Gather concrete, data-backed insights to support feedback, career growth discussions, and workload adjustments.
+- **Recognize effort, not just volume:** Ensure complex, high-effort contributions are properly acknowledged.
+- **Detect when someone might be struggling:** Spot low activity from a developer over several days, which could indicate they’re stuck or facing challenges, allowing you to proactively offer support.
+
+#### For individual contributors
+
+- **Make your work visible:** Use the Work Log as a “brag document” to highlight significant contributions during 1:1s or performance reviews.
+- **Support promotion cases:** Provide concrete evidence of high-impact work and consistency over time.
+- **Document growth:** Track your progress over time and identify areas where you've improved or taken on more complex tasks.
+
+### Bad practices
+
+It’s very important to know how this data should not be used. The Work Log is **not intended to measure individual productivity.** It only reflects activity related to PRs and code reviews. It doesn’t account for essential work outside of code contributions, like planning, meetings, research, or documentation.
+
+Use it as a tool to improve collaboration, provide feedback, and recognize effort — not as a singular performance metric.
+
+<CtaGetStarted />

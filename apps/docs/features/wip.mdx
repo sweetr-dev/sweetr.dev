@@ -1,0 +1,39 @@
+---
+title: Work In Progress
+description: Real-time view of the team's open Pull Requests, grouped by status.
+icon: "loader"
+---
+
+import { PrBadge } from "/snippets/pr-badge.mdx";
+import { ColorBadge } from "/snippets/color-badge.mdx";
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/pr-wip.png" />
+</Frame>
+
+## How it works
+
+The Work in Progress page provides a real-time view of all the team's open Pull Requests, grouping it by their status.
+
+This is a focused view of the [Pull Requests](/features/pull-requests) page, and can be used to get a quick overview of the team's work in progress.
+
+## Use cases
+
+- Facilitate daily meetings.
+- Identify blocked PRs.
+- Identify PRs with a lot of comments that might need attention.
+
+## Use it with
+
+<Card
+  title="Slack WIP Digest"
+  icon="newspaper"
+  href="/features/digests#work-in-progress-digest"
+>
+  Send daily snapshots of your team's Work In Progress to a channel in Slack.
+</Card>
+
+<CtaGetStarted />

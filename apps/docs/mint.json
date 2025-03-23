@@ -61,12 +61,14 @@
     {
       "group": "Features",
       "pages": [
-        "features/teams",
-        "features/people",
-        "features/pull-requests",
-        "features/code-reviews",
         "features/alerts",
         "features/digests",
+        "features/work-log",
+        "features/pull-requests",
+        "features/wip",
+        "features/teams",
+        "features/people",
+        "features/code-reviews",
         {
           "group": "Team Insights",
           "icon": "chart-simple",
