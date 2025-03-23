@@ -14,6 +14,7 @@ import { useRef, useEffect } from "react";
 import { BoxSetting } from "../../../../../../components/box-setting";
 import { useSendTestMessage } from "../../../use-send-test-message";
 import { BaseFormAlert } from "../../settings/types";
+import { Tip } from "../../../../../../components/tip";
 
 interface AlertBaseFieldsProps<T> {
   form: UseFormReturnType<T>;
@@ -80,13 +81,10 @@ export const AlertBaseFields = <T extends BaseFormAlert>({
               </Group>
             </Input.Wrapper>
 
-            <Group gap={5}>
-              <IconInfoCircle size={16} stroke={1.5} />
-              <Text c="dimmed" size="xs">
-                Tip: Sweetr is only able to auto join public channels. You must
-                manually invite @Sweetr to private channels.
-              </Text>
-            </Group>
+            <Tip>
+              Sweetr is only able to auto join public channels. You must
+              manually invite @Sweetr to private channels.
+            </Tip>
           </>
         )}
       </Stack>

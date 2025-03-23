@@ -30,6 +30,7 @@ import {
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useEffect, useRef } from "react";
 import { useSendTestMessage } from "../../../../use-send-test-message";
+import { Tip } from "../../../../../../../components/tip";
 
 interface DigestBaseFieldsProps {
   form: UseFormReturnType<FormDigest>;
@@ -94,13 +95,10 @@ export const DigestBaseFields = ({ form }: DigestBaseFieldsProps) => {
               </Group>
             </Input.Wrapper>
 
-            <Group gap={5}>
-              <IconInfoCircle size={16} stroke={1.5} />
-              <Text c="dimmed" size="xs">
-                Tip: Sweetr is only able to auto join public channels. You must
-                manually invite @Sweetr to private channels.
-              </Text>
-            </Group>
+            <Tip>
+              Sweetr is only able to auto join public channels. You must
+              manually invite @Sweetr to private channels.
+            </Tip>
           </>
         )}
       </Stack>
