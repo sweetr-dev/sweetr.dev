@@ -3,7 +3,7 @@ import {
   ActivityEvent,
   TeamMemberRole,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { startOfDay, subDays, endOfToday, formatISO } from "date-fns";
 import { useTeamWorkLogQuery } from "../../../../api/work-log.api";
 import { useFilterSearchParameters } from "../../../../providers/filter.provider";
 import { useWorkspace } from "../../../../providers/workspace.provider";
@@ -33,8 +33,8 @@ export const useWorkLog = () => {
     initialValues: {
       from:
         searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 6)).toISOString(),
-      to: searchParams.get("to") || endOfToday().toISOString(),
+        formatISO(startOfDay(subDays(new Date(), 6))),
+      to: searchParams.get("to") || formatISO(endOfToday()),
     },
   });
 
