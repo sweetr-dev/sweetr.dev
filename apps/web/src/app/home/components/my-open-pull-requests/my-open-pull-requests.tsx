@@ -69,7 +69,7 @@ export const MyOpenPullRequests = () => {
       <Divider
         label={
           <Group gap={5} align="center">
-            🫵 My open work
+            🫵 Your open work
             <Badge variant="default" size="xs">
               {pullRequests?.length || 0}
             </Badge>
