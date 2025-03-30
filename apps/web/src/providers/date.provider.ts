@@ -5,6 +5,7 @@ import {
   format,
   formatDistanceToNow,
   formatDuration,
+  formatRelative,
   intervalToDuration,
   isPast,
   parseISO,
@@ -59,4 +60,14 @@ export const getTimezoneGmtLabel = () => {
   const offset = new Date().getTimezoneOffset() / -60;
 
   return `GMT${offset > 0 ? "+" : ""}${offset}`;
+};
+
+export const formatDateAgo = (date: Date, type: "relative" | "ago") => {
+  if (type === "ago") {
+    return formatDistanceToNow(date, {
+      addSuffix: true,
+    });
+  }
+
+  return formatRelative(date, new Date());
 };
