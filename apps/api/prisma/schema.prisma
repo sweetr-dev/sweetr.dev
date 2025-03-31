@@ -116,10 +116,10 @@ model GitProfile {
   codeReviews        CodeReview[]
   codeReviewRequests CodeReviewRequest[]
   activityEvents     ActivityEvent[]
+  apiKeys            ApiKey[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-  ApiKey    ApiKey[]
 
   @@unique([gitProvider, gitUserId])
   @@unique([gitProvider, userId])
