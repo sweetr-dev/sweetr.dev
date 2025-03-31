@@ -116,6 +116,7 @@ model GitProfile {
   codeReviews        CodeReview[]
   codeReviewRequests CodeReviewRequest[]
   activityEvents     ActivityEvent[]
+  apiKeys            ApiKey[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -189,6 +190,7 @@ model Workspace {
   alerts               Alert[]
   alertEvents          AlertEvent[]
   activityEvents       ActivityEvent[]
+  apiKeys              ApiKey[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -589,4 +591,25 @@ model Integration {
 
   @@unique([workspaceId, app])
   @@index([workspaceId, app])
+}
+
+model ApiKey {
+  id   Int    @id @default(autoincrement())
+  key  String @unique
+  name String
+
+  lastUsedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  creatorId Int
+  creator   GitProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([key])
+  @@index([creatorId])
 }

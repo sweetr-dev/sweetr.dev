@@ -54,6 +54,15 @@ export enum AlertType {
   UNRELEASED_CHANGES = 'UNRELEASED_CHANGES'
 }
 
+export type ApiKey = {
+  __typename?: 'ApiKey';
+  createdAt: Scalars['DateTime']['output'];
+  creator: Person;
+  id: Scalars['SweetID']['output'];
+  lastUsedAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+};
+
 export type ArchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -281,6 +290,7 @@ export type Mutation = {
   installIntegration?: Maybe<Scalars['Void']['output']>;
   loginToStripe?: Maybe<Scalars['String']['output']>;
   loginWithGithub: LoginWithGithubResponse;
+  regenerateApiKey: Scalars['String']['output'];
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
   unarchiveTeam: Team;
@@ -309,6 +319,11 @@ export type MutationLoginToStripeArgs = {
 
 export type MutationLoginWithGithubArgs = {
   input: LoginWithGithubInput;
+};
+
+
+export type MutationRegenerateApiKeyArgs = {
+  input: RegenerateApiKeyInput;
 };
 
 
@@ -561,6 +576,10 @@ export type QueryWorkspaceByInstallationIdArgs = {
   gitInstallationId: Scalars['String']['input'];
 };
 
+export type RegenerateApiKeyInput = {
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type RemoveIntegrationInput = {
   app: IntegrationApp;
   workspaceId: Scalars['SweetID']['input'];
@@ -729,6 +748,7 @@ export type UpsertTeamMemberInput = {
 
 export type Workspace = {
   __typename?: 'Workspace';
+  apiKey?: Maybe<ApiKey>;
   automation?: Maybe<Automation>;
   automations: Array<Automation>;
   avatar?: Maybe<Scalars['String']['output']>;
@@ -909,6 +929,7 @@ export type ResolversTypes = {
   Alert: ResolverTypeWrapper<DeepPartial<Alert>>;
   AlertQueryInput: ResolverTypeWrapper<DeepPartial<AlertQueryInput>>;
   AlertType: ResolverTypeWrapper<DeepPartial<AlertType>>;
+  ApiKey: ResolverTypeWrapper<DeepPartial<ApiKey>>;
   ArchiveTeamInput: ResolverTypeWrapper<DeepPartial<ArchiveTeamInput>>;
   AuthProvider: ResolverTypeWrapper<DeepPartial<AuthProvider>>;
   AuthProviderInput: ResolverTypeWrapper<DeepPartial<AuthProviderInput>>;
@@ -968,6 +989,7 @@ export type ResolversTypes = {
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
   Query: ResolverTypeWrapper<{}>;
+  RegenerateApiKeyInput: ResolverTypeWrapper<DeepPartial<RegenerateApiKeyInput>>;
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
@@ -1006,6 +1028,7 @@ export type ResolversParentTypes = {
   ActivityEvent: DeepPartial<ResolversUnionTypes<ResolversParentTypes>['ActivityEvent']>;
   Alert: DeepPartial<Alert>;
   AlertQueryInput: DeepPartial<AlertQueryInput>;
+  ApiKey: DeepPartial<ApiKey>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
   AuthProviderInput: DeepPartial<AuthProviderInput>;
   AuthProviderResponse: DeepPartial<AuthProviderResponse>;
@@ -1054,6 +1077,7 @@ export type ResolversParentTypes = {
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
   Query: {};
+  RegenerateApiKeyInput: DeepPartial<RegenerateApiKeyInput>;
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
@@ -1109,6 +1133,15 @@ export type AlertResolvers<ContextType = GraphQLContext, ParentType extends Reso
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AlertType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ApiKeyResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ApiKey'] = ResolversParentTypes['ApiKey']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  creator?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  lastUsedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1245,6 +1278,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   installIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
+  regenerateApiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRegenerateApiKeyArgs, 'input'>>;
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
@@ -1428,6 +1462,7 @@ export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']> = {
+  apiKey?: Resolver<Maybe<ResolversTypes['ApiKey']>, ParentType, ContextType>;
   automation?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<WorkspaceAutomationArgs, 'input'>>;
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1473,6 +1508,7 @@ export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLConte
 export type Resolvers<ContextType = GraphQLContext> = {
   ActivityEvent?: ActivityEventResolvers<ContextType>;
   Alert?: AlertResolvers<ContextType>;
+  ApiKey?: ApiKeyResolvers<ContextType>;
   AuthProviderResponse?: AuthProviderResponseResolvers<ContextType>;
   Automation?: AutomationResolvers<ContextType>;
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;

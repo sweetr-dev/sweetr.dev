@@ -12,6 +12,7 @@ import { AvatarUser } from "../../../components/avatar-user";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { PageContainer } from "../../../components/page-container";
+import { SettingsApiKey } from "./components/settings-api-key";
 
 export const WorkspaceSettingsPage = () => {
   const { workspace } = useWorkspace();
@@ -38,10 +39,16 @@ export const WorkspaceSettingsPage = () => {
             leftSection={<IconUser size={16} stroke={1.5} />}
             disabled
           />
-          <Text color="dimmed" size="xs" mt="md">
+          <Text color="dimmed" size="sm" mt="md">
             Your workspace data is automatically synced with GitHub.
           </Text>
         </Paper>
+
+        <Title order={3} mt={40}>
+          API
+        </Title>
+
+        <SettingsApiKey />
 
         <Title order={3} c="red" mt={40}>
           Danger Zone

@@ -16,6 +16,8 @@ const documents = {
     "\n          query TeamAlerts($workspaceId: SweetID!, $teamId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alerts {\n                  type\n                  enabled\n                }\n              }\n            }\n          }\n        ": types.TeamAlertsDocument,
     "\n          query TeamAlert(\n            $workspaceId: SweetID!\n            $teamId: SweetID!\n            $input: AlertQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              team(teamId: $teamId) {\n                alert(input: $input) {\n                  type\n                  enabled\n                  channel\n                  settings\n                }\n              }\n            }\n          }\n        ": types.TeamAlertDocument,
     "\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        ": types.UpdateAlertDocument,
+    "\n          query WorkspaceApiKey($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              apiKey {\n                id\n                createdAt\n                lastUsedAt\n                creator {\n                  id\n                  handle\n                  name\n                }\n              }\n            }\n          }\n        ": types.WorkspaceApiKeyDocument,
+    "\n          mutation RegenerateApiKey($input: RegenerateApiKeyInput!) {\n            regenerateApiKey(input: $input)\n          }\n        ": types.RegenerateApiKeyDocument,
     "\n          mutation LoginWithGithub($input: LoginWithGithubInput!) {\n            loginWithGithub(input: $input) {\n              token {\n                accessToken\n              }\n            }\n          }\n        ": types.LoginWithGithubDocument,
     "\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        ": types.AuthProviderDocument,
     "\n          query WorkspaceAutomation(\n            $workspaceId: SweetID!\n            $input: AutomationQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              automation(input: $input) {\n                type\n                enabled\n                settings\n              }\n            }\n          }\n        ": types.WorkspaceAutomationDocument,
@@ -84,6 +86,14 @@ export function graphql(source: "\n          query TeamAlert(\n            $work
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        "): (typeof documents)["\n          mutation UpdateAlert($input: UpdateAlertInput!) {\n            updateAlert(input: $input) {\n              type\n              enabled\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          query WorkspaceApiKey($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              apiKey {\n                id\n                createdAt\n                lastUsedAt\n                creator {\n                  id\n                  handle\n                  name\n                }\n              }\n            }\n          }\n        "): (typeof documents)["\n          query WorkspaceApiKey($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              apiKey {\n                id\n                createdAt\n                lastUsedAt\n                creator {\n                  id\n                  handle\n                  name\n                }\n              }\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          mutation RegenerateApiKey($input: RegenerateApiKeyInput!) {\n            regenerateApiKey(input: $input)\n          }\n        "): (typeof documents)["\n          mutation RegenerateApiKey($input: RegenerateApiKeyInput!) {\n            regenerateApiKey(input: $input)\n          }\n        "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

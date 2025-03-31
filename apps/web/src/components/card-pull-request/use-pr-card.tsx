@@ -10,6 +10,7 @@ import {
   format,
 } from "date-fns";
 import {
+  formatDateAgo,
   getTimezoneGmtLabel,
   parseNullableISO,
 } from "../../providers/date.provider";
@@ -38,16 +39,6 @@ export const usePrCard = (
     return { color: theme.colors.red[4] };
   };
 
-  const formatDate = (date: Date, type: "relative" | "ago") => {
-    if (type === "ago") {
-      return formatDistanceToNow(date, {
-        addSuffix: true,
-      });
-    }
-
-    return formatRelative(date, new Date());
-  };
-
   const getTimeTooltipLabel = (date: Date) => {
     return `${format(date, "MMMM do, yyyy")} at ${format(date, "hh:mm a")} (${getTimezoneGmtLabel()})`;
   };
@@ -55,27 +46,27 @@ export const usePrCard = (
   const getTimeLabel = (type: "relative" | "ago") => {
     if (mergedAt) {
       return {
-        timeLabel: `Merged ${formatDate(mergedAt, type)}`,
+        timeLabel: `Merged ${formatDateAgo(mergedAt, type)}`,
         timeTooltipLabel: getTimeTooltipLabel(mergedAt),
       };
     }
 
     if (closedAt) {
       return {
-        timeLabel: `Closed ${formatDate(closedAt, type)}`,
+        timeLabel: `Closed ${formatDateAgo(closedAt, type)}`,
         timeTooltipLabel: getTimeTooltipLabel(closedAt),
       };
     }
 
     if (pullRequest.state === PullRequestState.DRAFT) {
       return {
-        timeLabel: `Drafted ${formatDate(createdAt, type)}`,
+        timeLabel: `Drafted ${formatDateAgo(createdAt, type)}`,
         timeTooltipLabel: getTimeTooltipLabel(createdAt),
       };
     }
 
     return {
-      timeLabel: `Opened ${formatDate(createdAt, type)}`,
+      timeLabel: `Opened ${formatDateAgo(createdAt, type)}`,
       timeTooltipLabel: getTimeTooltipLabel(createdAt),
     };
   };
