@@ -9,7 +9,6 @@ export const apiKeyCreatorQuery = createFieldResolver("ApiKey", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    console.log(apiKey, apiKey["creatorId"]);
     const gitProfile = await findGitProfileById({
       workspaceId: context.workspaceId,
       gitProfileId: apiKey["creatorId"],
