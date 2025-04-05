@@ -28,7 +28,7 @@ export const useApiKeyQuery = (
   options?: UseQueryOptions<WorkspaceApiKeyQuery>,
 ) =>
   useQuery({
-    queryKey: ["apiKey"],
+    queryKey: ["apiKey", args.workspaceId],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
@@ -70,8 +70,10 @@ export const useRegenerateApiKeyMutation = (
         `),
         args,
       ),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["apiKey"] });
+    onSettled: (_data, __error, args) => {
+      queryClient.invalidateQueries({
+        queryKey: ["apiKey", args.input.workspaceId],
+      });
     },
     ...options,
   });

@@ -7,8 +7,6 @@ export const regenerateApiKeyMutation = createMutationResolver({
   regenerateApiKey: async (_, { input }, context) => {
     logger.info("mutation.regenerateApiKey", { input });
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     await authorizeWorkspaceOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,

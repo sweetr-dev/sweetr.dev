@@ -48,7 +48,7 @@ export const WorkspaceSettingsPage = () => {
           API
         </Title>
 
-        <SettingsApiKey />
+        <SettingsApiKey mt="xs" />
 
         <Title order={3} c="red" mt={40}>
           Danger Zone

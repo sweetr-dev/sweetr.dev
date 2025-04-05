@@ -8,27 +8,31 @@ import {
   Skeleton,
   Title,
   Alert,
+  BoxProps,
 } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
 import { useApiKey } from "./use-api-key";
 import { ButtonCopy } from "../../../../components/button-copy";
 import { formatDateAgo } from "../../../../providers/date.provider";
 import { parseISO } from "date-fns";
-import { Tip } from "../../../../components/tip";
 
-export const SettingsApiKey = () => {
+export const SettingsApiKey = (props: BoxProps) => {
   const { apiKey, isGenerating, isLoading, generatedKey, regenerate } =
     useApiKey();
 
   if (isLoading) {
-    return <Skeleton h={180} />;
+    return (
+      <Box {...props}>
+        <Skeleton h={180} />
+      </Box>
+    );
   }
 
   return (
-    <>
+    <Box {...props}>
       {generatedKey && (
         <Alert
-          mt="xs"
+          mb="xs"
           color="blue"
           icon={<IconInfoCircle size={16} />}
           bd="1px solid var(--mantine-color-blue-outline)"
@@ -37,7 +41,7 @@ export const SettingsApiKey = () => {
         </Alert>
       )}
 
-      <Paper mt="xs" p="md" withBorder>
+      <Paper p="md" withBorder>
         <Box flex="1 1">
           <Title order={5}>API Key</Title>
           <Text c="dimmed" size="sm">
@@ -81,6 +85,6 @@ export const SettingsApiKey = () => {
           )}
         </Box>
       </Paper>
-    </>
+    </Box>
   );
 };
