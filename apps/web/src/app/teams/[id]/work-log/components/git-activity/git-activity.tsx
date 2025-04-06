@@ -19,6 +19,7 @@ import { HoverCardPullRequest } from "../hover-card-pull-request";
 import { IconCodeReview } from "../icon-code-review";
 import { IconOpenedPR } from "../icon-opened-pr";
 import { IconMergedPR } from "../icon-merged-pr";
+import { parseISO } from "date-fns";
 
 interface GitActivityProps {
   events: ActivityEvent[];
@@ -45,6 +46,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
             <HoverCardPullRequest
               key={index}
               pullRequest={codeReview.pullRequest}
+              eventAt={parseISO(event.eventAt)}
               target={
                 <Anchor href={codeReview.pullRequest.gitUrl} target="_blank">
                   <IconCodeReview
@@ -95,6 +97,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
           return (
             <HoverCardPullRequest
               key={index}
+              eventAt={parseISO(event.eventAt)}
               pullRequest={pullRequest}
               target={
                 <Anchor href={pullRequest.gitUrl} target="_blank">
@@ -111,6 +114,7 @@ export const GitActivity = ({ events }: GitActivityProps) => {
           return (
             <HoverCardPullRequest
               key={index}
+              eventAt={parseISO(event.eventAt)}
               pullRequest={pullRequest}
               target={
                 <Anchor href={pullRequest.gitUrl} target="_blank">

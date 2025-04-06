@@ -11,10 +11,12 @@ import { IconPullRequestState } from "../../../../../../components/icon-pull-req
 import { BadgePullRequestSize } from "../../../../../../components/badge-pull-request-size";
 import { LinesChanged } from "../../../../../../components/lines-changed/lines-changed";
 import { getPullRequestChanges } from "../../../../../../providers/pull-request.provider";
-import { IconBrandGithub } from "@tabler/icons-react";
+import { IconBrandGithub, IconClock } from "@tabler/icons-react";
+import { format } from "date-fns";
 
 interface HoverCardPullRequestProps extends HoverCardProps {
   target: React.ReactNode;
+  eventAt: Date;
   pullRequest: PullRequest;
   children?: React.ReactNode;
 }
@@ -22,6 +24,7 @@ interface HoverCardPullRequestProps extends HoverCardProps {
 export const HoverCardPullRequest = ({
   target,
   pullRequest,
+  eventAt,
   children,
   ...props
 }: HoverCardPullRequestProps) => {
@@ -55,6 +58,13 @@ export const HoverCardPullRequest = ({
             </Group>
           </Group>
           {children}
+
+          <Group justify="space-between">
+            <Group gap={5}>
+              <IconClock stroke={1.5} size={20} />
+              <Text>{format(eventAt, "MMM d, HH:mm")}</Text>
+            </Group>
+          </Group>
         </Stack>
       </HoverCard.Dropdown>
     </HoverCard>
