@@ -98,7 +98,7 @@ export const getTeamWorkLog = async ({
   };
 };
 
-const REVIEW_GROUPING_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
+export const REVIEW_GROUPING_WINDOW_MINS = 45;
 
 export const groupSerialReviews = (data: ActivityEventData[]) => {
   // Sort events by timestamp to make grouping easier
@@ -120,6 +120,7 @@ export const groupSerialReviews = (data: ActivityEventData[]) => {
       totalComments: number;
       firstEventTime: number;
       firstEventIndex: number;
+      state: CodeReviewState;
     }
   >();
 
@@ -142,6 +143,7 @@ export const groupSerialReviews = (data: ActivityEventData[]) => {
         totalComments: event.codeReview.commentCount,
         firstEventTime: eventTime,
         firstEventIndex: i,
+        state: event.codeReview.state as CodeReviewState,
       });
       continue;
     }
@@ -149,10 +151,11 @@ export const groupSerialReviews = (data: ActivityEventData[]) => {
     // If this event is within the time window of the first review
     if (
       eventTime - existingReview.firstEventTime <=
-      REVIEW_GROUPING_INTERVAL_MS
+      REVIEW_GROUPING_WINDOW_MINS * 60 * 1000
     ) {
       // Update the existing review with new comments
       existingReview.totalComments += event.codeReview.commentCount;
+      existingReview.state = event.codeReview.state as CodeReviewState;
       mappedEvents[i] = null;
       continue;
     }
@@ -172,6 +175,7 @@ export const groupSerialReviews = (data: ActivityEventData[]) => {
       totalComments: event.codeReview.commentCount,
       firstEventTime: eventTime,
       firstEventIndex: i,
+      state: event.codeReview.state as CodeReviewState,
     });
   }
 
@@ -182,6 +186,7 @@ export const groupSerialReviews = (data: ActivityEventData[]) => {
       codeReview: {
         ...review.firstEvent.codeReview,
         commentCount: review.totalComments,
+        state: review.state,
       },
     };
   }

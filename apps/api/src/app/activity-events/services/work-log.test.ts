@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { groupSerialReviews } from "./work-log.service";
+import {
+  groupSerialReviews,
+  REVIEW_GROUPING_WINDOW_MINS,
+} from "./work-log.service";
 import { ActivityEventType, PullRequestState } from "@prisma/client";
 import { addMinutes, addSeconds } from "date-fns";
 import { CodeReviewState } from "../../../graphql-types";
@@ -78,7 +81,7 @@ describe("groupSerialReviews", () => {
   });
 
   describe("should group", () => {
-    it("code reviews within 30 minutes for same PR and author", () => {
+    it(`code reviews within ${REVIEW_GROUPING_WINDOW_MINS} minutes for same PR and author`, () => {
       const baseDate = new Date("2024-01-01T00:00:00Z");
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
@@ -107,7 +110,7 @@ describe("groupSerialReviews", () => {
       }
     });
 
-    it("reviews that are within 30 minutes of the first review in a session", () => {
+    it(`reviews that are within ${REVIEW_GROUPING_WINDOW_MINS} minutes of the first review in a session`, () => {
       const baseDate = new Date("2024-01-01T00:00:00Z");
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
@@ -127,7 +130,7 @@ describe("groupSerialReviews", () => {
           },
         }),
         createCodeReviewEvent({
-          eventAt: addMinutes(baseDate, 30),
+          eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
           codeReview: {
             pullRequestId: 1,
             authorId: John,
@@ -135,7 +138,7 @@ describe("groupSerialReviews", () => {
           },
         }),
         createCodeReviewEvent({
-          eventAt: addMinutes(baseDate, 35),
+          eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS + 5),
           codeReview: {
             pullRequestId: 1,
             authorId: John,
@@ -258,7 +261,8 @@ describe("groupSerialReviews", () => {
       }
     });
 
-    it("should group reviews that are exactly 30 minutes apart", () => {
+    it(`should group reviews that are exactly ${REVIEW_GROUPING_WINDOW_MINS} minutes apart`, () => {
+      const baseDate = new Date("2024-01-01T00:00:00Z");
       const events = [
         createCodeReviewEvent({
           codeReview: {
@@ -266,7 +270,7 @@ describe("groupSerialReviews", () => {
             authorId: John,
             commentCount: 1,
           },
-          eventAt: new Date("2024-01-01T00:00:00Z"),
+          eventAt: baseDate,
         }),
         createCodeReviewEvent({
           codeReview: {
@@ -274,7 +278,7 @@ describe("groupSerialReviews", () => {
             authorId: John,
             commentCount: 1,
           },
-          eventAt: new Date("2024-01-01T00:30:00Z"),
+          eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
         }),
       ];
 
@@ -382,7 +386,7 @@ describe("groupSerialReviews", () => {
       }
     });
 
-    it("reviews that are exactly 30 minutes and one second apart", () => {
+    it(`reviews that are exactly ${REVIEW_GROUPING_WINDOW_MINS} minutes and one second apart`, () => {
       const baseDate = new Date("2024-01-01T00:00:00Z");
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
@@ -394,7 +398,10 @@ describe("groupSerialReviews", () => {
           },
         }),
         createCodeReviewEvent({
-          eventAt: addSeconds(addMinutes(baseDate, 30), 1),
+          eventAt: addSeconds(
+            addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
+            1
+          ),
           codeReview: {
             pullRequestId: 1,
             authorId: John,
