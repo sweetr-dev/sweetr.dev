@@ -5,6 +5,8 @@ import {
   ActivityEventCodeReviewSubmitedMetadata,
   ActivityEventData,
   GetTeamWorkLogArgs,
+  isCodeReviewActivityEvent,
+  CodeReviewActivityEvent,
 } from "../services/activity-events.types";
 import { CodeReviewState } from "../../../graphql-types";
 
@@ -88,8 +90,103 @@ export const getTeamWorkLog = async ({
     });
   }
 
+  const activities = groupSerialReviews(data);
+
   return {
     columns: columns.map((column) => column.toISOString()),
-    data,
+    data: activities,
   };
+};
+
+const REVIEW_GROUPING_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+export const groupSerialReviews = (data: ActivityEventData[]) => {
+  // Sort events by timestamp to make grouping easier
+  const sortedEvents = [...data].sort(
+    (a, b) => a.eventAt.getTime() - b.eventAt.getTime()
+  );
+
+  // Create a new array of same length as input
+  const mappedEvents: (ActivityEventData | null)[] = new Array(
+    sortedEvents.length
+  );
+
+  // Map to track reviews by PR and author within the time window
+  type ReviewKey = `${number}-${number}`; // PR ID and author ID
+  const reviewsInWindow = new Map<
+    ReviewKey,
+    {
+      firstEvent: CodeReviewActivityEvent;
+      totalComments: number;
+      firstEventTime: number;
+      firstEventIndex: number;
+    }
+  >();
+
+  for (let i = 0; i < sortedEvents.length; i++) {
+    const event = sortedEvents[i];
+
+    if (!isCodeReviewActivityEvent(event)) {
+      mappedEvents[i] = event;
+      continue;
+    }
+
+    const key: ReviewKey = `${event.codeReview.pullRequestId}-${event.codeReview.authorId}`;
+    const eventTime = event.eventAt.getTime();
+
+    const existingReview = reviewsInWindow.get(key);
+
+    if (!existingReview) {
+      reviewsInWindow.set(key, {
+        firstEvent: event,
+        totalComments: event.codeReview.commentCount,
+        firstEventTime: eventTime,
+        firstEventIndex: i,
+      });
+      continue;
+    }
+
+    // If this event is within the time window of the first review
+    if (
+      eventTime - existingReview.firstEventTime <=
+      REVIEW_GROUPING_INTERVAL_MS
+    ) {
+      // Update the existing review with new comments
+      existingReview.totalComments += event.codeReview.commentCount;
+      mappedEvents[i] = null;
+      continue;
+    }
+
+    // This event is outside the window, so add the existing review to results
+    mappedEvents[existingReview.firstEventIndex] = {
+      ...existingReview.firstEvent,
+      codeReview: {
+        ...existingReview.firstEvent.codeReview,
+        commentCount: existingReview.totalComments,
+      },
+    };
+
+    // Start a new window with this event
+    reviewsInWindow.set(key, {
+      firstEvent: event,
+      totalComments: event.codeReview.commentCount,
+      firstEventTime: eventTime,
+      firstEventIndex: i,
+    });
+  }
+
+  // Add any remaining reviews in the window to the results
+  for (const review of reviewsInWindow.values()) {
+    mappedEvents[review.firstEventIndex] = {
+      ...review.firstEvent,
+      codeReview: {
+        ...review.firstEvent.codeReview,
+        commentCount: review.totalComments,
+      },
+    };
+  }
+
+  return mappedEvents.filter(
+    (event): event is ActivityEventData => event !== null
+  );
 };
