@@ -24,6 +24,9 @@ export enum SweetQueue {
   GITHUB_SYNC_CODE_REVIEW = "{github.sync.code_review}",
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
 
+  // Sync Batch
+  SYNC_BATCH = "{sync.batch}",
+
   // Stripe
   STRIPE_SUBSCRIPTION_UPDATED = "{stripe.subscription.updated}",
 
@@ -88,6 +91,22 @@ export const addJob = async <T>(
   const queue = queues[queueName];
 
   return queue.add(`${queue.name}-job`, data, options);
+};
+
+export const addDelayedJob = async <T>(
+  date: Date,
+  queueName: SweetQueue,
+  data: T,
+  options?: JobsOptions
+) => {
+  logger.info(`🐂📅 BullMQ: Adding delayed job to ${queueName}`);
+
+  const queue = queues[queueName];
+
+  return queue.add(`${queue.name}-job`, data, {
+    delay: date.getTime() - Date.now(),
+    ...options,
+  });
 };
 
 export const addJobs = async <T>(

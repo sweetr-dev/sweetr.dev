@@ -191,6 +191,7 @@ model Workspace {
   alertEvents          AlertEvent[]
   activityEvents       ActivityEvent[]
   apiKeys              ApiKey[]
+  syncTasks            SyncBatch[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -244,6 +245,25 @@ model Installation {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([workspaceId])
+}
+
+model SyncBatch {
+  id Int @id @default(autoincrement())
+
+  sinceDaysAgo Int
+
+  scheduledAt DateTime
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  metadata    Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  @@index([workspaceId])
 }
 
 model WorkspaceMembership {

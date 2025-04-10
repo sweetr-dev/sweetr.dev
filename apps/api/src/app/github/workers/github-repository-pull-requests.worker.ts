@@ -11,23 +11,27 @@ export const githubRepositoryPullRequestsSyncWorker = createWorker(
   async (
     job: Job<{
       gitInstallationId: number;
-      repository: Repository;
-      sinceDaysAgo?: number;
+      repositoryName: string;
+      sinceDaysAgo: number;
+      syncBatchId: number;
+      isOnboarding: boolean;
     }>,
     token?: string
   ) => {
     const installationId = job.data.gitInstallationId;
 
-    if (!installationId || !job.data.repository.name) {
+    if (!installationId || !job.data.repositoryName) {
       throw new InputValidationException("Missing job data", { job });
     }
 
     await withDelayedRetryOnRateLimit(
       () =>
         syncGitHubRepositoryPullRequests(
-          job.data.repository.name,
+          job.data.repositoryName,
           installationId,
-          job.data.sinceDaysAgo
+          job.data.sinceDaysAgo,
+          job.data.syncBatchId,
+          job.data.isOnboarding
         ),
       {
         job,
