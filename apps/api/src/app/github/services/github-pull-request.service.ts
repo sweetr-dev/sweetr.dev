@@ -28,8 +28,6 @@ import {
 import {
   findWorkspaceByGitInstallationId,
   findWorkspaceUsers,
-  getInitialSyncProgress,
-  incrementInitialSyncProgress,
 } from "../../workspaces/services/workspace.service";
 import { parseNullableISO } from "../../../lib/date";
 import {
@@ -40,6 +38,12 @@ import {
 import { captureException } from "@sentry/node";
 import { EmailTemplate } from "../../email/services/email-template.service";
 import { getActivityEventId } from "../../activity-events/services/activity-events.service";
+import { SyncPullRequestOptions } from "./github-pull-request.types";
+import {
+  updateSyncBatch,
+  getSyncBatchProgress,
+  incrementSyncBatchProgress,
+} from "../../sync-batch/services/sync-batch.service";
 
 interface Author {
   id: string;
@@ -55,11 +59,7 @@ type RepositoryData = Omit<
 export const syncPullRequest = async (
   gitInstallationId: number,
   pullRequestId: string,
-  { syncReviews, initialSync, failCount } = {
-    syncReviews: false,
-    initialSync: false,
-    failCount: 0,
-  }
+  { failCount, syncBatchId }: SyncPullRequestOptions
 ) => {
   logger.info("syncPullRequest", {
     installationId: gitInstallationId,
@@ -72,14 +72,13 @@ export const syncPullRequest = async (
     logger.info("syncPullRequest: Could not find Workspace", {
       gitInstallationId,
       pullRequestId,
-      syncReviews,
     });
 
     return null;
   }
 
-  if (initialSync && failCount === 0) {
-    await incrementInitialSyncProgress(workspace.id, "done", 1);
+  if (syncBatchId && failCount === 0) {
+    await incrementSyncBatchProgress(syncBatchId, "done", 1);
   }
 
   const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
@@ -111,31 +110,8 @@ export const syncPullRequest = async (
   );
   await upsertActivityEvents(pullRequest);
 
-  if (syncReviews) {
-    logger.debug("syncPullRequest: Adding job to sync reviews", {
-      gitPrData,
-    });
-
-    await addJob(
-      SweetQueue.GITHUB_SYNC_CODE_REVIEW,
-      {
-        pull_request: {
-          node_id: pullRequest.gitPullRequestId,
-        },
-        installation: {
-          id: gitInstallationId,
-        },
-      },
-      {
-        priority: JobPriority.LOW,
-      }
-    );
-  }
-
-  if (initialSync) {
-    const shouldSendEmail = await isSyncComplete(workspace.id);
-
-    if (shouldSendEmail) sendSyncCompleteEmail(workspace.id);
+  if (syncBatchId) {
+    await updateSyncBatch(syncBatchId);
   }
 
   return pullRequest;
@@ -519,55 +495,6 @@ function getPullRequestState(
   if (state === "OPEN") return PullRequestState.OPEN;
   throw new BusinessRuleException(`Unknown pull request state: ${state}`);
 }
-
-const isSyncComplete = async (workspaceId: number) => {
-  const progress = await getInitialSyncProgress(workspaceId);
-
-  return progress >= 100;
-};
-
-const sendSyncCompleteEmail = async (workspaceId: number) => {
-  const emailTemplate: EmailTemplate = "InitialSyncCompleteEmail";
-  const emailKey = `workspace:${workspaceId}:email:${emailTemplate}`;
-
-  const isDuplicateEmail = await hasSentEmail(emailKey);
-  if (isDuplicateEmail) return;
-
-  const members = await findWorkspaceUsers(workspaceId);
-
-  if (!members.length) {
-    captureException(
-      new BusinessRuleException(
-        "Attempted to send sync complete email to workspace with no members.",
-        {
-          extra: {
-            workspaceId,
-          },
-        }
-      )
-    );
-
-    return;
-  }
-
-  for (const member of members) {
-    if (!member.user) continue;
-
-    await enqueueEmail({
-      to: member.user.email,
-      subject: "Sync complete.",
-      template: {
-        type: emailTemplate,
-        props: {
-          username: member.name,
-        },
-      },
-    });
-  }
-
-  const oneDayInSeconds = 60 * 60 * 24;
-  await markEmailAsSent(emailKey, oneDayInSeconds);
-};
 
 const upsertActivityEvents = async (pullRequest: PullRequest) => {
   const data = {

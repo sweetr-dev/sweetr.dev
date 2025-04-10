@@ -1,7 +1,7 @@
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { RepositoryEvent } from "@octokit/webhooks-types";
+import { InstallationRepositoriesEvent } from "@octokit/webhooks-types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { syncGitHubRepositories } from "../services/github-repository.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
@@ -9,7 +9,7 @@ import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.servi
 export const githubRepositoriesSyncWorker = createWorker(
   SweetQueue.GITHUB_REPOSITORIES_SYNC,
   async (
-    job: Job<RepositoryEvent & { syncPullRequests?: boolean }>,
+    job: Job<InstallationRepositoriesEvent | { installation?: { id: number } }>,
     token?: string
   ) => {
     const installationId = job.data.installation?.id;
@@ -21,12 +21,13 @@ export const githubRepositoriesSyncWorker = createWorker(
       );
     }
 
+    const syncRepositories =
+      "repositories_added" in job.data
+        ? job.data.repositories_added?.map((repository) => repository.name)
+        : undefined;
+
     await withDelayedRetryOnRateLimit(
-      () =>
-        syncGitHubRepositories(
-          installationId,
-          job.data.syncPullRequests || false
-        ),
+      () => syncGitHubRepositories(installationId, syncRepositories),
       {
         job,
         jobToken: token,

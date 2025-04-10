@@ -1,7 +1,10 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
-import { getInitialSyncProgress } from "../../services/workspace.service";
+import {
+  findOnboardingSyncBatch,
+  getSyncBatchProgress,
+} from "../../../sync-batch/services/sync-batch.service";
 
 export const workspaceSyncProgressQuery = createFieldResolver("Workspace", {
   initialSyncProgress: async (workspace) => {
@@ -11,6 +14,14 @@ export const workspaceSyncProgressQuery = createFieldResolver("Workspace", {
       throw new ResourceNotFoundException("Could not find workspace");
     }
 
-    return getInitialSyncProgress(workspace.id);
+    const syncBatch = await findOnboardingSyncBatch(workspace.id);
+
+    if (!syncBatch) {
+      return 100;
+    }
+
+    const { progress } = await getSyncBatchProgress(syncBatch.id);
+
+    return progress;
   },
 });

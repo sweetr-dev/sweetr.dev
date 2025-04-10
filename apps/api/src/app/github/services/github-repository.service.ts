@@ -6,9 +6,8 @@ import {
 import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { logger } from "../../../lib/logger";
-import { SweetQueue, addJobs } from "../../../bull-mq/queues";
-import { isRepositorySyncable } from "../../repositories/services/repository.service";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
+import { scheduleSyncBatch } from "../../sync-batch/services/sync-batch.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -17,7 +16,7 @@ type RepositoryData = Omit<
 
 export const syncGitHubRepositories = async (
   gitInstallationId: number,
-  syncPullRequests: boolean
+  targetRepositories?: string[]
 ): Promise<void> => {
   logger.info("syncGitHubRepositories", { gitInstallationId });
 
@@ -30,15 +29,22 @@ export const syncGitHubRepositories = async (
     return;
   }
 
+  const isOnboarding = targetRepositories === undefined;
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
 
-  if (syncPullRequests) {
-    const nonArchivedRepositories = repositories.filter(
-      (repository) => !repository.archivedAt
-    );
-
-    await enqueuePullRequestsSync(nonArchivedRepositories, gitInstallationId);
+  if (targetRepositories === undefined || targetRepositories.length > 0) {
+    await scheduleSyncBatch({
+      workspaceId: workspace.id,
+      scheduledAt: new Date(),
+      metadata: {
+        isOnboarding,
+        repositories:
+          targetRepositories ??
+          repositories.map((repository) => repository.name),
+        gitProvider: GitProvider.GITHUB,
+      },
+    });
   }
 };
 
@@ -139,21 +145,4 @@ const findWorkspace = async (gitInstallationId: number) => {
   if (!workspace.gitProfile && !workspace.organization) return null;
 
   return workspace;
-};
-
-const enqueuePullRequestsSync = async (
-  repositories: Repository[],
-  gitInstallationId: number
-) => {
-  const syncableRepositories = repositories.filter(isRepositorySyncable);
-
-  if (syncableRepositories.length === 0) return;
-
-  return addJobs(
-    SweetQueue.GITHUB_SYNC_REPOSITORY_PULL_REQUESTS,
-    syncableRepositories.map((repository) => ({
-      gitInstallationId,
-      repository,
-    }))
-  );
 };
