@@ -1,21 +1,10 @@
-import {
-  Stack,
-  Skeleton,
-  Divider,
-  Group,
-  Badge,
-  Text,
-  Alert,
-  Anchor,
-} from "@mantine/core";
+import { Stack, Skeleton, Divider, Group, Badge, Anchor } from "@mantine/core";
 import { CardPullRequest } from "../../../../components/card-pull-request";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { LoadableContent } from "../../../../components/loadable-content/loadable-content";
 import { useTeamId } from "../use-team";
 import { useTeamPullRequestsInProgressQuery } from "../../../../api/teams.api";
 import { TeamPullRequestsInProgressQuery } from "@sweetr/graphql-types/frontend/graphql";
-import { AlertEnableSlack } from "../../../../components/alert-enable-slack";
-import { IconInfoCircle } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import { Tip } from "../../../../components/tip";
 
