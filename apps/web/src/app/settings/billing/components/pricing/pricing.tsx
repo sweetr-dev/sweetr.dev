@@ -51,7 +51,7 @@ export const Pricing = ({ plan, currentUsage }: PricingProps) => {
               label: (
                 <Group wrap="nowrap" gap={5}>
                   <Box>Yearly </Box>
-                  <Badge size="xs" color="green.6">
+                  <Badge size="xs" color="green.6" miw={60}>
                     20% off
                   </Badge>
                 </Group>
@@ -112,7 +112,6 @@ export const Pricing = ({ plan, currentUsage }: PricingProps) => {
         </Box>
         <Group>
           <CardCloud
-            price={49}
             period={period}
             contributors={contributors}
             plan={plan}

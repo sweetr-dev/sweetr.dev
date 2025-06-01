@@ -29,7 +29,7 @@
     "dotenv-cli": "^7.4.2",
     "prettier": "latest",
     "turbo": "latest",
-    "vitest": "^3.0.8"
+    "vitest": "^3.1.4"
   },
   "engines": {
     "node": ">=20"
