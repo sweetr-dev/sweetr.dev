@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build API (Prisma)
-        run: npm run build --filter api
+      - name: Build
+        run: npm run build
 
       - name: Run Vitest tests
         run: npm run test
