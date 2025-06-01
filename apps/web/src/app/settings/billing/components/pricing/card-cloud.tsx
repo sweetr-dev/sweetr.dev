@@ -14,7 +14,6 @@ import { SubscriptionPeriod } from "./types";
 import { useState } from "react";
 
 interface CardCloudProps {
-  price: number;
   period: SubscriptionPeriod;
   contributors: number;
   disabled: boolean;
@@ -25,7 +24,6 @@ interface CardCloudProps {
 }
 
 export const CardCloud = ({
-  price,
   period,
   contributors,
   disabled,
@@ -33,11 +31,8 @@ export const CardCloud = ({
 }: CardCloudProps) => {
   const { workspace } = useWorkspace();
   const discount = period === "yearly" ? 0.8 : 1;
-  const pricePerExtraContributor = 7 * discount;
-  const discountedPrice = Math.floor(price * discount);
-  const extraContributors = Math.max(contributors - 5, 0);
-  const totalPrice =
-    discountedPrice + extraContributors * pricePerExtraContributor;
+  const pricePerContributor = 10 * discount;
+  const totalPrice = Math.floor(pricePerContributor * contributors);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   return (
@@ -63,11 +58,9 @@ export const CardCloud = ({
           }
         >
           <List.Item>
-            {Math.floor(discountedPrice)}$ for first 5 contributors
+            {pricePerContributor.toFixed(2)}$ per contributor
           </List.Item>
-          <List.Item>
-            {pricePerExtraContributor.toFixed(2)}$ per extra contributor
-          </List.Item>
+          <List.Item>Regular support</List.Item>
           <List.Item>1 year data retention</List.Item>
           <List.Item>All features included</List.Item>
         </List>
