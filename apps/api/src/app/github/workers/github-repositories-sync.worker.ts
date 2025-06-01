@@ -21,6 +21,8 @@ export const githubRepositoriesSyncWorker = createWorker(
       );
     }
 
+    // This job is triggered by GitHub repository webhooks, or when the user is first installing Sweetr.
+    // On first installation, repositories_added is not present.
     const syncRepositories =
       "repositories_added" in job.data
         ? job.data.repositories_added?.map((repository) => repository.name)
