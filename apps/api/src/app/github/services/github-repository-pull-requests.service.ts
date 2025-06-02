@@ -13,10 +13,7 @@ import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
 import { isAfter, parseISO, startOfDay, subDays } from "date-fns";
 import { isAppSelfHosted } from "../../../lib/self-host";
-import {
-  incrementSyncBatchProgress,
-  maybeFinishSyncBatch,
-} from "../../sync-batch/services/sync-batch.service";
+import { incrementSyncBatchProgress } from "../../sync-batch/services/sync-batch.service";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
@@ -46,12 +43,7 @@ export const syncGitHubRepositoryPullRequests = async (
   );
 
   if (!gitHubPullRequests.length) {
-    // There may be multiple jobs running in parallel for the same installation.
-    // If the first repository has no PRs, there's risk of setting the batch as finished before checking other repositories.
-    // We are sleeping for 5 seconds as a temporary workaround. Also, maybeFinishSyncBatch is idempotent, so it's fine for now.
-    // TO-DO: Save repositories synced in the progress data in addition to number of PRs to control this flow.
-    await sleep(5000);
-    await maybeFinishSyncBatch(syncBatchId);
+    // TO-DO: A sync batch of repositories with no PRs never calls maybeFinishSyncBatch.
     return;
   }
 

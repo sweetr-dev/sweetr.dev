@@ -11,6 +11,10 @@ import { syncPullRequest } from "../services/github-pull-request.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 import { PullRequestState } from "@prisma/client";
 import { logger } from "../../../lib/logger";
+import {
+  incrementSyncBatchProgress,
+  maybeFinishSyncBatch,
+} from "../../sync-batch/services/sync-batch.service";
 
 export const syncPullRequestWorker = createWorker(
   SweetQueue.GITHUB_SYNC_PULL_REQUEST,
@@ -42,20 +46,24 @@ export const syncPullRequestWorker = createWorker(
     }
 
     const installationId = job.data.installation.id;
-    const options = {
-      syncBatchId: job.data.syncBatchId || undefined,
-      failCount: job.attemptsMade,
-    };
+    const syncBatchId = job.data.syncBatchId;
+
+    if (syncBatchId && job.attemptsMade === 0) {
+      await incrementSyncBatchProgress(syncBatchId, "done", 1);
+    }
 
     const pullRequest = await withDelayedRetryOnRateLimit(
-      () =>
-        syncPullRequest(installationId, job.data.pull_request.node_id, options),
+      () => syncPullRequest(installationId, job.data.pull_request.node_id),
       {
         job,
         jobToken: token,
         installationId,
       }
     );
+
+    if (syncBatchId) {
+      await maybeFinishSyncBatch(syncBatchId);
+    }
 
     if (pullRequest) {
       if (job.data.syncReviews) {

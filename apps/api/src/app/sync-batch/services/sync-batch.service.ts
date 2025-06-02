@@ -146,7 +146,6 @@ export const startSyncBatch = async (syncBatchId: number) => {
   );
 };
 
-// Must be idempotent. See apps/api/src/app/github/services/github-repository-pull-requests.service.ts
 export const maybeFinishSyncBatch = async (syncBatchId: number) => {
   const { progress, done } = await getSyncBatchProgress(syncBatchId);
 

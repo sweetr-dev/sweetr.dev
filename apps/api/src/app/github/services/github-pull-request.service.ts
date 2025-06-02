@@ -27,11 +27,6 @@ import {
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import { parseNullableISO } from "../../../lib/date";
 import { getActivityEventId } from "../../activity-events/services/activity-events.service";
-import { SyncPullRequestOptions } from "./github-pull-request.types";
-import {
-  maybeFinishSyncBatch,
-  incrementSyncBatchProgress,
-} from "../../sync-batch/services/sync-batch.service";
 
 interface Author {
   id: string;
@@ -46,8 +41,7 @@ type RepositoryData = Omit<
 
 export const syncPullRequest = async (
   gitInstallationId: number,
-  pullRequestId: string,
-  { failCount, syncBatchId }: SyncPullRequestOptions
+  pullRequestId: string
 ) => {
   logger.info("syncPullRequest", {
     installationId: gitInstallationId,
@@ -63,10 +57,6 @@ export const syncPullRequest = async (
     });
 
     return null;
-  }
-
-  if (syncBatchId && failCount === 0) {
-    await incrementSyncBatchProgress(syncBatchId, "done", 1);
   }
 
   const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
@@ -97,10 +87,6 @@ export const syncPullRequest = async (
     gitPrData
   );
   await upsertActivityEvents(pullRequest);
-
-  if (syncBatchId) {
-    await maybeFinishSyncBatch(syncBatchId);
-  }
 
   return pullRequest;
 };
