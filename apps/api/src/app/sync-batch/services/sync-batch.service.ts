@@ -146,7 +146,8 @@ export const startSyncBatch = async (syncBatchId: number) => {
   );
 };
 
-export const updateSyncBatch = async (syncBatchId: number) => {
+// Must be idempotent. See apps/api/src/app/github/services/github-repository-pull-requests.service.ts
+export const maybeFinishSyncBatch = async (syncBatchId: number) => {
   const { progress, done } = await getSyncBatchProgress(syncBatchId);
 
   const isFinished = progress >= 100;
@@ -176,10 +177,9 @@ export const updateSyncBatch = async (syncBatchId: number) => {
   await getPrisma(syncBatch.workspaceId).syncBatch.update({
     where: { id: syncBatchId },
     data: {
-      finishedAt: isFinished ? new Date() : null,
+      finishedAt: new Date(),
       metadata: {
         ...(syncBatch.metadata as SyncBatchMetadata),
-        isOnboarding: false,
         pullRequestsSynced: done,
       },
     },

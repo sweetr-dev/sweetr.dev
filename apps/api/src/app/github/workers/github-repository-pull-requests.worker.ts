@@ -1,7 +1,6 @@
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { Repository } from "@prisma/client";
 import { syncGitHubRepositoryPullRequests } from "../services/github-repository-pull-requests.service";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";

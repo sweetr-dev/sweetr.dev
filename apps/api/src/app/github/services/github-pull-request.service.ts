@@ -5,7 +5,7 @@ import {
 } from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
 import { logger } from "../../../lib/logger";
-import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { getPrisma } from "../../../prisma";
 import {
   ActivityEventType,
   GitProvider,
@@ -16,7 +16,6 @@ import {
   Workspace,
 } from "@prisma/client";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
-import { JobPriority, SweetQueue, addJob } from "../../../bull-mq/queues";
 import {
   getCycleTime,
   getFirstDraftAndReadyDates,
@@ -25,23 +24,12 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
-import {
-  findWorkspaceByGitInstallationId,
-  findWorkspaceUsers,
-} from "../../workspaces/services/workspace.service";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import { parseNullableISO } from "../../../lib/date";
-import {
-  enqueueEmail,
-  hasSentEmail,
-  markEmailAsSent,
-} from "../../email/services/send-email.service";
-import { captureException } from "@sentry/node";
-import { EmailTemplate } from "../../email/services/email-template.service";
 import { getActivityEventId } from "../../activity-events/services/activity-events.service";
 import { SyncPullRequestOptions } from "./github-pull-request.types";
 import {
-  updateSyncBatch,
-  getSyncBatchProgress,
+  maybeFinishSyncBatch,
   incrementSyncBatchProgress,
 } from "../../sync-batch/services/sync-batch.service";
 
@@ -111,7 +99,7 @@ export const syncPullRequest = async (
   await upsertActivityEvents(pullRequest);
 
   if (syncBatchId) {
-    await updateSyncBatch(syncBatchId);
+    await maybeFinishSyncBatch(syncBatchId);
   }
 
   return pullRequest;
