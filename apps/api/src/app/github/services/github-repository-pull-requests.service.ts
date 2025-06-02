@@ -7,22 +7,25 @@ import { logger } from "../../../lib/logger";
 import {
   findWorkspaceByGitInstallationId,
   getWorkspaceHandle,
-  incrementInitialSyncProgress,
 } from "../../workspaces/services/workspace.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
 import { isAfter, parseISO, startOfDay, subDays } from "date-fns";
 import { isAppSelfHosted } from "../../../lib/self-host";
+import { incrementSyncBatchProgress } from "../../sync-batch/services/sync-batch.service";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
   gitInstallationId: number,
-  sinceDaysAgo?: number
+  sinceDaysAgo: number,
+  syncBatchId: number,
+  isOnboarding: boolean
 ): Promise<void> => {
   logger.info("syncGitHubRepositoryPullRequests", {
     repositoryName,
     gitInstallationId,
+    syncBatchId,
   });
 
   const workspace = await findWorkspaceOrThrow(gitInstallationId);
@@ -36,13 +39,16 @@ export const syncGitHubRepositoryPullRequests = async (
     repositoryName,
     handle,
     gitInstallationId,
-    isAppSelfHosted() ? null : sinceDaysAgo || 365
+    isAppSelfHosted() ? null : sinceDaysAgo
   );
 
-  if (!gitHubPullRequests.length) return;
+  if (!gitHubPullRequests.length) {
+    // TO-DO: A sync batch of repositories with no PRs never calls maybeFinishSyncBatch.
+    return;
+  }
 
-  await incrementInitialSyncProgress(
-    workspace.id,
+  await incrementSyncBatchProgress(
+    syncBatchId,
     "waiting",
     gitHubPullRequests.length
   );
@@ -53,7 +59,8 @@ export const syncGitHubRepositoryPullRequests = async (
       installation: { id: gitInstallationId },
       pull_request: { node_id: pullRequest.id },
       syncReviews: true,
-      initialSync: true,
+      isOnboarding,
+      syncBatchId,
     })),
     {
       priority: JobPriority.LOW,

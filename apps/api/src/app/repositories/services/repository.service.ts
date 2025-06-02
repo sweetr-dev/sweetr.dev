@@ -41,5 +41,9 @@ export const findRepositoryById = async (
 };
 
 export const isRepositorySyncable = async (repository: Repository) => {
-  return repository.isFork === false && repository.isMirror === false;
+  return (
+    repository.isFork === false &&
+    repository.isMirror === false &&
+    !repository.archivedAt
+  );
 };

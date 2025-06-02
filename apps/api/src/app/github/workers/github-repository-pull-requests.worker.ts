@@ -1,7 +1,6 @@
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { Repository } from "@prisma/client";
 import { syncGitHubRepositoryPullRequests } from "../services/github-repository-pull-requests.service";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
@@ -11,23 +10,27 @@ export const githubRepositoryPullRequestsSyncWorker = createWorker(
   async (
     job: Job<{
       gitInstallationId: number;
-      repository: Repository;
-      sinceDaysAgo?: number;
+      repositoryName: string;
+      sinceDaysAgo: number;
+      syncBatchId: number;
+      isOnboarding: boolean;
     }>,
     token?: string
   ) => {
     const installationId = job.data.gitInstallationId;
 
-    if (!installationId || !job.data.repository.name) {
+    if (!installationId || !job.data.repositoryName) {
       throw new InputValidationException("Missing job data", { job });
     }
 
     await withDelayedRetryOnRateLimit(
       () =>
         syncGitHubRepositoryPullRequests(
-          job.data.repository.name,
+          job.data.repositoryName,
           installationId,
-          job.data.sinceDaysAgo
+          job.data.sinceDaysAgo,
+          job.data.syncBatchId,
+          job.data.isOnboarding
         ),
       {
         job,

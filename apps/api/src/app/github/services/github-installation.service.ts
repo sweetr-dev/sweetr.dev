@@ -14,7 +14,6 @@ import {
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
 import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
-import { setInitialSyncProgress } from "../../workspaces/services/workspace.service";
 import { addDays, endOfDay } from "date-fns";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
@@ -29,15 +28,12 @@ export const syncGitHubInstallation = async (
 
   const gitProfile = await upsertGitProfile(gitUser);
   const workspace = await upsertWorkspace(gitInstallation, gitProfile);
-  const installation = await upsertInstallation(gitInstallation, workspace);
+  const installation = await upsertInstallation(gitInstallation, workspace.id);
 
   await connectUserToWorkspace(gitProfile, workspace);
 
-  await setInitialSyncProgress(workspace.id);
-
   await addJob(SweetQueue.GITHUB_REPOSITORIES_SYNC, {
     installation: { id: parseInt(installation.gitInstallationId) },
-    syncPullRequests: true,
   });
 
   if (workspace.organization) {
@@ -83,9 +79,9 @@ const upsertOrganization = async (login: string) => {
   });
 };
 
-const upsertInstallation = async (
+export const upsertInstallation = async (
   gitInstallation: GitHubInstallation,
-  workspace: Workspace
+  workspaceId: number
 ): Promise<Installation> => {
   const installationData = {
     gitProvider: GitProvider.GITHUB,
@@ -97,10 +93,10 @@ const upsertInstallation = async (
     repositorySelection: gitInstallation.repository_selection,
     permissions: gitInstallation.permissions,
     events: gitInstallation.events,
-    workspaceId: workspace.id,
+    workspaceId,
   };
 
-  return getPrisma(workspace.id).installation.upsert({
+  return getPrisma(workspaceId).installation.upsert({
     where: {
       // TO-DO: Unique should be targetId?
       gitInstallationId: gitInstallation.id.toString(),
