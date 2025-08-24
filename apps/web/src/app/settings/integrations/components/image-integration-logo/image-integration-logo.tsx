@@ -8,5 +8,7 @@ export const ImageIntegrationLogo = ({
   brand,
   ...props
 }: ImageIntegrationLogoProps) => {
-  return <Image src={`/images/logos/${brand}.svg`} h={100} {...props} />;
+  return (
+    <Image src={`/images/logos/${brand}.svg`} h={100} w="auto" {...props} />
+  );
 };
