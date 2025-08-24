@@ -11,8 +11,17 @@ import {
 import { CalendarLevel, DatePicker } from "@mantine/dates";
 import { useState } from "react";
 import classNames from "./filter-date.module.css";
-import { endOfDay, endOfToday, format, startOfDay, subDays } from "date-fns";
+import {
+  endOfDay,
+  endOfToday,
+  format,
+  parse,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import { IconProps } from "@tabler/icons-react";
+import { UTCDate } from "@date-fns/utc";
+import { parseYyMmDd } from "../../providers/date.provider";
 
 interface FilterDateProps {
   label: string;
@@ -56,11 +65,13 @@ export const FilterDate = ({
   const [displayedLevel, setDisplayedLevel] = useState<CalendarLevel>("year");
 
   const handleDateSelected = (
-    value: [Date | null, Date | null],
+    value: [string | null, string | null],
     changeDisplayeDate?: boolean,
   ) => {
-    const startDate = value[0] ? startOfDay(value[0]) : null;
-    const endDate = value[1] ? endOfDay(value[1]) : null;
+    const startDate = value[0]
+      ? parse(value[0], "yyyy-MM-dd", startOfDay(new Date()))
+      : null;
+    const endDate = value[1] ? endOfDay(new UTCDate(value[1])) : null;
 
     setDisplayedLevel("month");
 
@@ -75,11 +86,11 @@ export const FilterDate = ({
     );
   };
 
-  const getShortcutValue = (days: number): [Date, Date] => {
+  const getShortcutValue = (days: number): [string, string] => {
     const startDate = startOfDay(subDays(new Date(), days));
     const endDate = endOfToday();
 
-    return [startDate, endDate];
+    return [format(startDate, "yyyy-MM-dd"), format(endDate, "yyyy-MM-dd")];
   };
 
   const getTimeLabel = () => {
@@ -168,7 +179,7 @@ export const FilterDate = ({
                   level={displayedLevel}
                   maxDate={new Date()}
                   value={selectedDate}
-                  onDateChange={setDisplayedDate}
+                  onDateChange={(date) => setDisplayedDate(new Date(date))}
                   onLevelChange={setDisplayedLevel}
                   date={displayedDate}
                   onChange={handleDateSelected}

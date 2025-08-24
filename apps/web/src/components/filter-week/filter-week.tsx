@@ -15,6 +15,7 @@ import {
   IconChevronRight,
   IconProps,
 } from "@tabler/icons-react";
+import { UTCDate } from "@date-fns/utc";
 
 interface FilterWeekProps {
   label: string;
@@ -33,9 +34,10 @@ export const FilterWeek = ({
 }: FilterWeekProps) => {
   const [hovered, setHovered] = useState<Date | null>(null);
 
-  const handleDateSelected = (value: Date) => {
-    const startDate = startOfWeek(value, { weekStartsOn: 1 });
-    const endDate = endOfWeek(value, { weekStartsOn: 1 });
+  const handleDateSelected = (value: string) => {
+    const date = new Date(value);
+    const startDate = startOfWeek(date, { weekStartsOn: 1 });
+    const endDate = endOfWeek(date, { weekStartsOn: 1 });
 
     onChange?.([startDate, endDate]);
   };
@@ -146,7 +148,9 @@ export const FilterWeek = ({
               defaultLevel="year"
               maxDate={new Date()}
               withCellSpacing={false}
-              getDayProps={(date) => {
+              getDayProps={(dateString) => {
+                const date = new UTCDate(dateString);
+
                 const isHovered = isSameWeek(date, hovered);
                 const isSelected = isSameWeek(date, selectedDate[0]);
                 const isInRange = isHovered || isSelected;
@@ -157,7 +161,7 @@ export const FilterWeek = ({
                   firstInRange: isInRange && date.getDay() === 1,
                   lastInRange: isInRange && date.getDay() === 0,
                   selected: isSelected,
-                  onClick: () => handleDateSelected(date),
+                  onClick: () => handleDateSelected(date.toISOString()),
                   bg: isHovered
                     ? "var(--mantine-color-green-light)"
                     : undefined,
