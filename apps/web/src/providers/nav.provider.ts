@@ -4,6 +4,16 @@ import {
   IconUsers,
   IconBrandGithub,
   IconBolt,
+  IconBox,
+  IconStack,
+  IconStack2,
+  IconStackFront,
+  IconStack2Filled,
+  IconStackBackward,
+  IconStackBack,
+  IconStackPop,
+  IconStackForward,
+  IconStack3,
 } from "@tabler/icons-react";
 import { NavbarItemProps } from "../components/navbar/navbar-item";
 import { useEffect } from "react";
@@ -25,8 +35,8 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
     href: "/people",
   },
   {
-    icon: IconBrandGithub,
-    label: "Repositories",
+    icon: IconStack3,
+    label: "Systems",
     href: "/repositories",
   },
   {
