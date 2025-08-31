@@ -10,26 +10,29 @@ export const validateWebhook = (
   _res: Response,
   next: NextFunction
 ): void => {
-  if (!req.body) {
+  if (!req.rawBody) {
     return next("Request body empty");
   }
 
   // Skip validation when in dev environment
-  if (!isLive) return next();
+  if (!isLive && 0) return next();
 
-  const data = JSON.stringify(req.body);
-  const signature = Buffer.from(req.get(signatureHeader) || "", "utf8");
-  const hmac = crypto.createHmac(hashAlgorithm, env.GITHUB_WEBHOOK_SECRET);
-  const digest = Buffer.from(
-    `${hashAlgorithm}=${hmac.update(data).digest("hex")}`,
-    "utf8"
-  );
+  const signature = req.get(signatureHeader) || "";
+  const calculatedSignature =
+    `${hashAlgorithm}=` +
+    crypto
+      .createHmac(hashAlgorithm, env.GITHUB_WEBHOOK_SECRET)
+      .update(req.rawBody)
+      .digest("hex");
 
   if (
-    signature.length !== digest.length ||
-    !crypto.timingSafeEqual(digest, signature)
+    signature.length !== calculatedSignature.length ||
+    !crypto.timingSafeEqual(
+      Buffer.from(calculatedSignature),
+      Buffer.from(signature)
+    )
   ) {
-    return next(`GitHub webhook signature mismatch.`);
+    return next("GitHub webhook signature mismatch.");
   }
 
   return next();
