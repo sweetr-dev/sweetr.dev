@@ -37,7 +37,7 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
   {
     icon: IconStack3,
     label: "Systems",
-    href: "/repositories",
+    href: "/systems",
   },
   {
     icon: IconBolt,

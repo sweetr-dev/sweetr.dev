@@ -14,7 +14,6 @@ import { PersonOverviewPage } from "./app/people/[handle]/overview/page";
 import { PersonPage } from "./app/people/[handle]/page";
 import { PersonPullRequestsPage } from "./app/people/[handle]/pull-requests/page";
 import { PeoplePage } from "./app/people/page";
-import { RepositoriesPage } from "./app/repositories/page";
 import { BillingPage } from "./app/settings/billing/page";
 import { IntegrationsPage } from "./app/settings/integrations/page";
 import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
@@ -23,6 +22,8 @@ import { SettingsPage } from "./app/settings/page";
 import { PullRequestSettingsPage } from "./app/settings/pull-request-settings/page";
 import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
 import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
+import { SystemsPage } from "./app/systems/page";
+import { RepositoriesPage } from "./app/systems/repositories/page";
 import { TeamAlertsPage } from "./app/teams/[id]/alerts/page";
 import { MergedWithoutApprovalAlertPage } from "./app/teams/[id]/alerts/settings/merged-without-approval/page";
 import { SlowMergeAlertPage } from "./app/teams/[id]/alerts/settings/slow-merge/page";
@@ -127,8 +128,14 @@ export const router = createBrowserRouter([
             element: <HomePage />,
           },
           {
-            path: "/repositories",
-            element: <RepositoriesPage />,
+            path: "/systems/",
+            element: <SystemsPage />,
+            children: [
+              {
+                path: "/systems/repositories",
+                element: <RepositoriesPage />,
+              },
+            ],
           },
           {
             path: "/settings",

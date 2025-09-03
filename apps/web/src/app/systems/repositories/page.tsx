@@ -1,13 +1,13 @@
 import { Anchor, Box, Skeleton, Stack } from "@mantine/core";
-import { Breadcrumbs } from "../../components/breadcrumbs";
+import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { CardRepository } from "./components/card-repository";
-import { useRepositoriesQuery } from "../../api/repositories.api";
-import { IconInfo } from "../../components/icon-info";
-import { HeaderActions } from "../../components/header-actions";
-import { InputSearch } from "../../components/input-search";
-import { PageEmptyState } from "../../components/page-empty-state";
-import { useWorkspace } from "../../providers/workspace.provider";
-import { PageContainer } from "../../components/page-container";
+import { useRepositoriesQuery } from "../../../api/repositories.api";
+import { IconInfo } from "../../../components/icon-info";
+import { HeaderActions } from "../../../components/header-actions";
+import { InputSearch } from "../../../components/input-search";
+import { PageEmptyState } from "../../../components/page-empty-state";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { PageContainer } from "../../../components/page-container";
 
 export const RepositoriesPage = () => {
   const { workspace } = useWorkspace();
