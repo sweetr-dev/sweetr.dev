@@ -4,8 +4,6 @@ import {
   IconBolt,
   IconStack3,
   IconChartPie,
-  IconActivityHeartbeat,
-  IconChartBar,
 } from "@tabler/icons-react";
 import { NavbarItemProps } from "../components/navbar/navbar-item";
 import { useEffect } from "react";

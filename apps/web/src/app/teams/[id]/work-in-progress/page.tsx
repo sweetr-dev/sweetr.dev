@@ -63,8 +63,7 @@ export const TeamWorkInProgressPage = () => {
               underline="hover"
             >
               <Tip justify="end">
-                Schedule WIP Digest to send this report to your team&apos;s
-                Slack channel.
+                Send this report to your team&apos;s Slack channel.
               </Tip>
             </Anchor>
             {groupedPullRequests &&
