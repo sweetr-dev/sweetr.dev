@@ -23,7 +23,7 @@ export const CardPerson = ({ name, handle, role, avatar }: CardTeamProps) => {
   return (
     <Anchor
       component={Link}
-      to={`/people/${handle}`}
+      to={`/humans/people/${handle}`}
       underline="never"
       c="var(--mantine-color-text)"
     >

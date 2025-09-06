@@ -1,23 +1,10 @@
-import { Badge, Divider, Title, NavLink } from "@mantine/core";
-import {
-  IconApps,
-  IconBox,
-  IconBrandGithub,
-  IconBuildingCommunity,
-  IconCash,
-  IconGitPullRequest,
-  IconRocket,
-  IconServerBolt,
-  IconUser,
-  IconUsers,
-} from "@tabler/icons-react";
+import { Divider, Title, NavLink } from "@mantine/core";
+import { IconBox, IconBrandGithub, IconRocket } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
-import { useWorkspace } from "../../../../providers/workspace.provider";
 import { Subnav } from "../../../../components/subnav";
 
 export const SubnavSystems = () => {
   const { pathname } = useLocation();
-  const { workspace } = useWorkspace();
 
   // TO-DO: Add menus to spotlight.
   return (

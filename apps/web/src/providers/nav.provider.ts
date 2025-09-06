@@ -1,9 +1,9 @@
 import {
   IconHome2,
-  IconCircles,
   IconBolt,
   IconStack3,
   IconChartPie,
+  IconHeartHandshake,
 } from "@tabler/icons-react";
 import { NavbarItemProps } from "../components/navbar/navbar-item";
 import { useEffect } from "react";
@@ -17,12 +17,12 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
   {
     icon: IconChartPie,
     label: "Metrics & Insights",
-    href: "/people",
+    href: "/metrics-and-insights",
   },
   {
-    icon: IconCircles,
-    label: "Teams",
-    href: "/teams",
+    icon: IconHeartHandshake,
+    label: "Humans",
+    href: "/humans",
   },
   {
     icon: IconStack3,

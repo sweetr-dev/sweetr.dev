@@ -117,7 +117,7 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           description: person.name ? person.handle : undefined,
           leftSection: <IconUsers size={18} stroke={1.5} />,
           onClick: () => {
-            navigate(`/people/${person.handle}`);
+            navigate(`/humans/people/${person.handle}`);
           },
         })) || [],
     },
@@ -131,7 +131,7 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           description: team.description,
           leftSection: <IconCircles size={18} stroke={1.5} />,
           onClick: () => {
-            navigate(`/teams/${team.id}`);
+            navigate(`/humans/teams/${team.id}`);
           },
         })) || [],
     },

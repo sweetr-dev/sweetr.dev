@@ -266,7 +266,7 @@ const getDigestMessageBlocks = async (
             type: "plain_text",
             text: "Explore Metrics",
           },
-          url: `${env.FRONTEND_URL}/teams/${encodeId(digest.teamId)}/digests/wip`,
+          url: `${env.FRONTEND_URL}/humans/teams/${encodeId(digest.teamId)}/digests/wip`,
         },
       ],
     },
