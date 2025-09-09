@@ -14,8 +14,8 @@ export const SubnavSystems = () => {
       </Title>
       <Divider label="Services" labelPosition="left" mt="sm" />
       <NavLink
-        to="/systems/apps"
-        active={pathname === "/systems/apps"}
+        to="/systems/applications"
+        active={pathname === "/systems/applications"}
         component={Link}
         label="Applications"
         leftSection={<IconBox stroke={1.5} size={18} />}
