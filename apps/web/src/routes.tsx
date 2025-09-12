@@ -59,6 +59,7 @@ import { showInfoNotification } from "./providers/notification.provider";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { DeploymentsPage } from "./app/systems/deployments/page";
 import { ApplicationsPage } from "./app/systems/applications/page";
+import { IncidentsPage } from "./app/systems/incidents/page";
 
 export const router = createBrowserRouter([
   {
@@ -146,6 +147,10 @@ export const router = createBrowserRouter([
               {
                 path: "/systems/deployments",
                 element: <DeploymentsPage />,
+              },
+              {
+                path: "/systems/incidents",
+                element: <IncidentsPage />,
               },
             ],
           },
