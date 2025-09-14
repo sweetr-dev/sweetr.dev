@@ -3,14 +3,15 @@ import { LoadableContent } from "../../../../../components/loadable-content";
 import { GitActivity } from "./components/git-activity";
 import {
   formatDate,
+  formatLocaleDate,
   parseNullableISO,
 } from "../../../../../providers/date.provider";
-import { IconCalendar } from "@tabler/icons-react";
+import { IconCalendarFilled } from "@tabler/icons-react";
 import { FilterWeek } from "../../../../../components/filter-week";
 import { useWorkLog } from "./use-work-log";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 import { useFullWidthPage } from "../../../../../providers/page.provider";
-import { formatISO } from "date-fns";
+import { formatISO, parseISO } from "date-fns";
 import { CellAuthor } from "./components/cell-author/cell-author";
 import { IconCodeReview } from "./components/icon-code-review";
 import { IconOpenedPR } from "./components/icon-opened-pr";
@@ -27,7 +28,7 @@ export const TeamWorkLogPage = () => {
         <Group wrap="nowrap" gap={5}>
           <FilterWeek
             label="Week of"
-            icon={IconCalendar}
+            icon={IconCalendarFilled}
             onChange={(dates) => {
               const from = dates[0] ? formatISO(dates[0]) : null;
               const to = dates[1] ? formatISO(dates[1]) : null;
@@ -79,7 +80,11 @@ export const TeamWorkLogPage = () => {
                     <Table.Th>Member</Table.Th>
                     {workLog.columns.map((column, index) => (
                       <Table.Th key={index}>
-                        {formatDate(column, "dd/MM EEE")}
+                        {formatLocaleDate(parseISO(column), {
+                          day: "2-digit",
+                          month: "2-digit",
+                        })}{" "}
+                        {formatDate(column, "EEE")}
                       </Table.Th>
                     ))}
                   </Table.Tr>

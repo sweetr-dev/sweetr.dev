@@ -3,7 +3,7 @@ import { Avatar, Box, Group, Paper, Skeleton, Table } from "@mantine/core";
 import { useDrawerPage } from "../../../../../../../providers/drawer-page.provider";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
-import { IconCalendar } from "@tabler/icons-react";
+import { IconCalendarFilled } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
@@ -16,6 +16,7 @@ import { ChartCodeReviewDistribution } from "../../components/chart-code-review-
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
 import { startOfDay, subDays, endOfToday } from "date-fns";
+import { AvatarUser } from "../../../../../../../components/avatar-user";
 
 export const TeamCodeReviewDistributionPage = () => {
   const teamId = useTeamId();
@@ -74,7 +75,7 @@ export const TeamCodeReviewDistributionPage = () => {
           <Group mt="md" wrap="nowrap" gap={5}>
             <FilterDate
               label="Date range"
-              icon={IconCalendar}
+              icon={IconCalendarFilled}
               onChange={(dates) => {
                 const from = dates[0]?.toISOString() || null;
                 const to = dates[1]?.toISOString() || null;
@@ -127,7 +128,11 @@ export const TeamCodeReviewDistributionPage = () => {
                     <Table.Tr key={reviewer.id}>
                       <Table.Td>
                         <Group gap="xs">
-                          <Avatar src={reviewer.image} size={24} />
+                          <AvatarUser
+                            src={reviewer.image}
+                            size={24}
+                            name={reviewer.name}
+                          />
                           {reviewer.name}
                         </Group>
                       </Table.Td>

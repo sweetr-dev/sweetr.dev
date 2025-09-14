@@ -3,7 +3,6 @@ import {
   IconActivity,
   IconBell,
   IconChartArcs,
-  IconForms,
   IconGitPullRequest,
   IconMessage,
   IconProgress,
@@ -69,19 +68,6 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
         component={Link}
         label="Health & Performance"
         leftSection={<IconChartArcs stroke={1.5} size={18} />}
-      />
-      <NavLink
-        to={getLink("dx-surveys")}
-        active={pathname.startsWith(getLink("dx-surveys"))}
-        component={Link}
-        label="DX Surveys"
-        leftSection={<IconForms stroke={1.5} size={18} />}
-        disabled
-        rightSection={
-          <Badge size="xs" variant="default">
-            Soon
-          </Badge>
-        }
       />
 
       <Divider label="Improve" labelPosition="left" mt="sm" />

@@ -18,6 +18,7 @@ import { useWorkspace } from "../../../../providers/workspace.provider";
 import { PageContainer } from "../../../../components/page-container";
 import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";
 import { SubnavPerson } from "../components/subnav-person";
+import { AvatarUser } from "../../../../components/avatar-user";
 
 export const PersonPage = () => {
   const { handle } = useParams();
@@ -52,7 +53,12 @@ export const PersonPage = () => {
       <PageTitle
         title={
           <Group mb="xs">
-            <Avatar src={person.avatar} radius="50%" size={80} />
+            <AvatarUser
+              src={person.avatar}
+              radius="50%"
+              size={80}
+              name={person.name}
+            />
 
             <Stack gap={2}>
               <Title order={3}>{person.name}</Title>

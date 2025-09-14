@@ -4,7 +4,7 @@ import { useDrawerPage } from "../../../../../../../providers/drawer-page.provid
 import { FilterSelect } from "../../../../../../../components/filter-select";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
-import { IconCalendar, IconRefresh } from "@tabler/icons-react";
+import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
@@ -76,7 +76,7 @@ export const TeamPullRequestsSizeDistribution = () => {
           <Group mt="md" wrap="nowrap" gap={5}>
             <FilterDate
               label="Date range"
-              icon={IconCalendar}
+              icon={IconCalendarFilled}
               onChange={(dates) => {
                 const from = dates[0]?.toISOString() || null;
                 const to = dates[1]?.toISOString() || null;

@@ -19,7 +19,7 @@ export const RepositoriesPage = () => {
   const repositories = data?.workspace.repositories;
   const breadcrumbs = (
     <Breadcrumbs items={[{ label: "Repositories" }]}>
-      <IconInfo tooltip="This is a read-only list for now. We'll introduce repository insights & settings soon." />
+      <IconInfo tooltip="This is a read-only list for now. We'll introduce repository insights soon." />
     </Breadcrumbs>
   );
 

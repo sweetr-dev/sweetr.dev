@@ -11,6 +11,7 @@ import {
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 import { teamRoleColorMap } from "../../providers/team-role.provider";
 import { Link } from "react-router-dom";
+import { AvatarUser } from "../avatar-user";
 
 interface CardTeamProps {
   handle?: string;
@@ -29,7 +30,13 @@ export const CardPerson = ({ name, handle, role, avatar }: CardTeamProps) => {
     >
       <Paper radius="md" withBorder p="lg" className="grow-on-hover">
         <Stack gap="xs">
-          <Avatar src={avatar} size={120} radius={120} mx="auto" />
+          <AvatarUser
+            name={name || handle || ""}
+            src={avatar}
+            size={120}
+            radius={120}
+            mx="auto"
+          />
           <Box mt="sm">
             <Text ta="center" fz="lg" fw={500}>
               {name}

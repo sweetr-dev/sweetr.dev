@@ -215,10 +215,6 @@ export const router = createBrowserRouter([
                   {
                     path: "/humans/teams/:teamId/work-log",
                     element: <TeamWorkLogPage />,
-                    // @ts-expect-error Types are missing meta, but it works
-                    meta: {
-                      fluid: true,
-                    },
                   },
                   {
                     path: "/humans/teams/:teamId/members",

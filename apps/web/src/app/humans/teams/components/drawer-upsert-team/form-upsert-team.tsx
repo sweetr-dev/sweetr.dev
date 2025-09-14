@@ -22,6 +22,7 @@ import { IconTrash } from "@tabler/icons-react";
 import { InputSelectPerson } from "./input-select-person";
 import { InputSelectRole } from "./input-select-role";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
+import { AvatarUser } from "../../../../../components/avatar-user";
 
 export interface FormUpsertTeamProps {
   form: UseFormReturnType<TeamForm>;
@@ -130,7 +131,11 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
               <Paper withBorder p="sm" key={member.id} radius="sm">
                 <Group justify="space-between">
                   <Group style={{ flexGrow: 1 }}>
-                    <Avatar size="md" src={member.person.avatar} />
+                    <AvatarUser
+                      name={member.person.name || ""}
+                      size="md"
+                      src={member.person.avatar}
+                    />
                     {member.person.name || member.person.handle}
                   </Group>
                   <InputSelectRole {...roleInputProps} />

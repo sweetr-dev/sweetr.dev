@@ -20,6 +20,7 @@ import { BadgePullRequestSize } from "../badge-pull-request-size";
 import { formatRelative } from "date-fns";
 import { BadgeStatus } from "./badge-status";
 import { useScreenSize } from "../../providers/screen.provider";
+import { AvatarUser } from "../avatar-user";
 
 interface CardCodeReviewProps {
   title: string;
@@ -109,7 +110,11 @@ export const CardCodeReview = ({
             </Group>
 
             <Tooltip label={prAuthor.name} withArrow position="top">
-              <Avatar src={prAuthor.avatar} size={40} />
+              <AvatarUser
+                name={prAuthor.name}
+                src={prAuthor.avatar}
+                size={40}
+              />
             </Tooltip>
 
             <BadgePullRequestSize

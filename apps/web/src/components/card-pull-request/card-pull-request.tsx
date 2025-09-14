@@ -21,6 +21,7 @@ import { BadgeStatus } from "./badge-status";
 import { BadgeData, useBadges } from "./use-badges";
 import { TimelinePullRequest } from "./timeline-pull-request";
 import { useScreenSize } from "../../providers/screen.provider";
+import { AvatarUser } from "../avatar-user";
 
 interface CardPullRequestProps {
   pullRequest: Omit<PullRequest, "author"> & {
@@ -115,13 +116,12 @@ export const CardPullRequest = ({
                 justify={isSmallScreen ? "center" : "flex-end"}
               >
                 {pullRequest.author && (
-                  <Tooltip
-                    label={pullRequest.author.name}
-                    withArrow
-                    position="top"
-                  >
-                    <Avatar src={pullRequest.author.avatar} size={40} />
-                  </Tooltip>
+                  <AvatarUser
+                    name={pullRequest.author.name}
+                    src={pullRequest.author.avatar}
+                    size={40}
+                    withTooltip
+                  />
                 )}
 
                 <Group gap={5} miw={40} justify="flex-start" align="center">

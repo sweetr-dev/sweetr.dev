@@ -42,5 +42,6 @@ export const useFilterSearchParameters = () => {
         { replace: true },
       );
     },
+    hasAny: searchParameters.entries().toArray().length > 0,
   };
 };

@@ -9,3 +9,35 @@
     cursor: pointer;
   }
 }
+
+.subgrid {
+  display: grid;
+  grid-template-columns: subgrid;
+}
+.subgrid[data-columns="2"] {
+  grid-column: span 2;
+}
+.subgrid[data-columns="3"] {
+  grid-column: span 3;
+}
+.subgrid[data-columns="4"] {
+  grid-column: span 4;
+}
+.subgrid[data-columns="5"] {
+  grid-column: span 5;
+}
+.subgrid[data-columns="6"] {
+  grid-column: span 6;
+}
+.subgrid[data-columns="7"] {
+  grid-column: span 7;
+}
+.subgrid[data-columns="8"] {
+  grid-column: span 8;
+}
+.subgrid[data-columns="9"] {
+  grid-column: span 9;
+}
+.subgrid[data-columns="10"] {
+  grid-column: span 10;
+}

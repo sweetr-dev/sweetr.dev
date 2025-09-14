@@ -15,6 +15,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { IconUserQuestion } from "@tabler/icons-react";
 import { PersonData } from "./types";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { AvatarUser } from "../../../../../components/avatar-user";
 
 interface InputSelectPersonProps extends ComboboxProps {
   onSubmit: (person: PersonData) => void;
@@ -66,7 +67,7 @@ export const InputSelectPerson = ({
     <Combobox.Option value={person.id} key={person.id}>
       <Group justify="space-between">
         <Group>
-          <Avatar src={person.avatar} />
+          <AvatarUser src={person.avatar} name={person.name} />
           <Text>{person.name}</Text>
         </Group>
         <Text size="xs">@{person.handle}</Text>

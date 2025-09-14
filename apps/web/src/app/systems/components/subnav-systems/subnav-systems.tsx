@@ -1,8 +1,9 @@
-import { Divider, Title, NavLink } from "@mantine/core";
+import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
   IconBox,
   IconBrandGithub,
   IconFlame,
+  IconForms,
   IconRocket,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
@@ -17,7 +18,7 @@ export const SubnavSystems = () => {
       <Title order={3} mt={34}>
         Systems
       </Title>
-      <Divider label="Services" labelPosition="left" mt="sm" />
+      <Divider label="Catalog" labelPosition="left" mt="sm" />
       <NavLink
         to="/systems/applications"
         active={pathname === "/systems/applications"}
@@ -39,13 +40,26 @@ export const SubnavSystems = () => {
         label="Incidents"
         leftSection={<IconFlame stroke={1.5} size={18} />}
       />
-      <Divider label="Source Code" labelPosition="left" mt="sm" />
       <NavLink
         to="/systems/repositories"
         active={pathname === "/systems/repositories"}
         component={Link}
         label="Repositories"
         leftSection={<IconBrandGithub stroke={1.5} size={18} />}
+      />
+      <Divider label="Improve" labelPosition="left" mt="sm" />
+
+      <NavLink
+        to="#"
+        component={Link}
+        label="DX Surveys"
+        leftSection={<IconForms stroke={1.5} size={18} />}
+        disabled
+        rightSection={
+          <Badge size="xs" variant="default">
+            Soon
+          </Badge>
+        }
       />
     </Subnav>
   );

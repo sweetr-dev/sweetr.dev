@@ -20,7 +20,7 @@ import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../../providers/date.provider";
 import {
   IconAspectRatio,
-  IconCalendar,
+  IconCalendarFilled,
   IconStatusChange,
 } from "@tabler/icons-react";
 import { FilterMultiSelect } from "../../../../../components/filter-multi-select";
@@ -106,7 +106,7 @@ export const TeamPullRequestsPage = () => {
       <Group gap={5}>
         <FilterDate
           label="Created"
-          icon={IconCalendar}
+          icon={IconCalendarFilled}
           onChange={(dates) => {
             const createdAtFrom = dates[0]?.toISOString() || null;
             const createdAtTo = dates[1]?.toISOString() || null;

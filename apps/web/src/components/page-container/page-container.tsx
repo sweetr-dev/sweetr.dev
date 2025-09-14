@@ -10,8 +10,8 @@ interface PageContainerProps {
 
 export const PageContainer = ({
   children,
-  pt = 48,
-  pb = 48,
+  pt = 40,
+  pb = 40,
 }: PageContainerProps) => {
   const { fullWidth } = usePageStore();
   const { isSmallScreen } = useScreenSize();
