@@ -1,7 +1,7 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
   IconCircles,
-  IconRelationOneToOne,
+  IconHeartHandshake,
   IconUsers,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
@@ -31,7 +31,7 @@ export const SubnavHumans = () => {
         leftSection={<IconUsers stroke={1.5} size={18} />}
       />
 
-      <Divider label="Mentoring" labelPosition="left" mt="sm" />
+      <Divider label="Improve" labelPosition="left" mt="sm" />
       <NavLink
         to="#"
         component={Link}
@@ -42,7 +42,7 @@ export const SubnavHumans = () => {
             Soon
           </Badge>
         }
-        leftSection={<IconRelationOneToOne stroke={1.5} size={18} />}
+        leftSection={<IconHeartHandshake stroke={1.5} size={18} />}
       />
     </Subnav>
   );
