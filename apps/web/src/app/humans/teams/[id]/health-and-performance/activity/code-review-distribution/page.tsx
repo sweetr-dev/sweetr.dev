@@ -1,5 +1,5 @@
 import { DrawerScrollable } from "../../../../../../../components/drawer-scrollable";
-import { Avatar, Box, Group, Paper, Skeleton, Table } from "@mantine/core";
+import { Box, Group, Paper, Skeleton, Table } from "@mantine/core";
 import { useDrawerPage } from "../../../../../../../providers/drawer-page.provider";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";

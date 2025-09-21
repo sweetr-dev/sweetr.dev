@@ -5,14 +5,12 @@ import {
   ComboboxProps,
   Button,
   Group,
-  Avatar,
   Text,
   Loader,
   ScrollArea,
 } from "@mantine/core";
 import { useSearchPeopleQuery } from "../../../../../api/people.api";
 import { useDebouncedValue } from "@mantine/hooks";
-import { IconUserQuestion } from "@tabler/icons-react";
 import { PersonData } from "./types";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { AvatarUser } from "../../../../../components/avatar-user";
@@ -116,18 +114,13 @@ export const InputSelectPerson = ({
             {isLoading && (
               <Combobox.Empty>
                 <Group justify="center" align="center" gap="xs">
-                  <Loader size="sm" type="dots" />
+                  <Loader size="sm" type="dots" color="green.4" />
                   Loading
                 </Group>
               </Combobox.Empty>
             )}
             {!isLoading && options.length === 0 && (
-              <Combobox.Empty>
-                <Group justify="center" align="center" gap={4}>
-                  <IconUserQuestion stroke={1.5} size={20} />
-                  Nothing found
-                </Group>
-              </Combobox.Empty>
+              <Combobox.Empty>Nothing found</Combobox.Empty>
             )}
             {options?.length > 0 && options}
           </ScrollArea.Autosize>

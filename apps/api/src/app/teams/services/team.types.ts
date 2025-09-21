@@ -26,6 +26,7 @@ export interface UpsertTeamInput {
 
 export interface FindTeamsByWorkspaceInput {
   workspaceId: number;
+  teamIds?: number[];
   query?: string;
   limit?: number;
 }

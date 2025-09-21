@@ -60,6 +60,8 @@ import { loadUserWithWorkspaces } from "./providers/workspace.provider";
 import { DeploymentsPage } from "./app/systems/deployments/page";
 import { ApplicationsPage } from "./app/systems/applications/page";
 import { IncidentsPage } from "./app/systems/incidents/page";
+import { ApplicationsCreatePage } from "./app/systems/applications/upsert/create/page";
+import { ApplicationsUpdatePage } from "./app/systems/applications/upsert/update/page";
 
 export const router = createBrowserRouter([
   {
@@ -143,6 +145,16 @@ export const router = createBrowserRouter([
               {
                 path: "/systems/applications",
                 element: <ApplicationsPage />,
+                children: [
+                  {
+                    path: "/systems/applications/new",
+                    element: <ApplicationsCreatePage />,
+                  },
+                  {
+                    path: "/systems/applications/:applicationId",
+                    element: <ApplicationsUpdatePage />,
+                  },
+                ],
               },
               {
                 path: "/systems/deployments",

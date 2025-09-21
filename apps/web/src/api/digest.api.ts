@@ -97,9 +97,9 @@ export const useUpdateDigestMutation = (
         `),
         args,
       ),
-    onSettled: (_data, __error, variables) => {
+    onSettled: (_data, __error, args) => {
       queryClient.invalidateQueries({
-        queryKey: ["digests", variables.input.teamId],
+        queryKey: ["digests", args.input.teamId],
       });
     },
     ...options,

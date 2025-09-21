@@ -28,6 +28,7 @@ export const teamsQuery = createFieldResolver("Workspace", {
 
     const teams = await findTeamsByWorkspace({
       workspaceId: workspace.id,
+      teamIds: input?.ids || undefined,
       query: input?.query || undefined,
       limit: input?.limit || undefined,
     });

@@ -15,8 +15,9 @@ CREATE TABLE "Environment" (
 CREATE TABLE "Application" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "repositoryId" INTEGER NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "teamId" INTEGER,
     "deploymentSettings" JSONB NOT NULL,
     "workspaceId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -8,9 +8,9 @@ import {
   ActionIcon,
   ColorInput,
   Text,
-  Avatar,
   Paper,
   Button,
+  FocusTrap,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useEffect } from "react";
@@ -52,16 +52,18 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
     <>
       <Stack p="md">
         <Title order={5}>Details</Title>
-        <TextInput
-          placeholder="Super squad"
-          label="Team name"
-          withAsterisk
-          data-autofocus
-          {...form.getInputProps("name")}
-        />
+        <FocusTrap>
+          <TextInput
+            placeholder="Super squad"
+            label="Team name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+        </FocusTrap>
         <TextInput
           placeholder="We use our super powers to create awesome products"
           label="Description"
+          maxLength={150}
           {...form.getInputProps("description")}
         />
       </Stack>

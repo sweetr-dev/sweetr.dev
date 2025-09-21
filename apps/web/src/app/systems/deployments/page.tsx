@@ -14,6 +14,7 @@ import { PageEmptyState } from "../../../components/page-empty-state";
 import { useListGroupedByYearMonth } from "../../../providers/pagination.provider";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
 import { CardDeployment } from "./components/card-deployment";
+import { useApplicationAsyncOptions } from "../../../providers/async-options.provider";
 
 export const DeploymentsPage = () => {
   const { workspace } = useWorkspace();
@@ -21,10 +22,12 @@ export const DeploymentsPage = () => {
   const filters = useForm<{
     createdAtFrom: string | null;
     createdAtTo: string | null;
+    applicationIds: string[];
   }>({
     initialValues: {
       createdAtFrom: searchParams.get("createdAtFrom"),
       createdAtTo: searchParams.get("createdAtTo"),
+      applicationIds: searchParams.getAll("application"),
     },
   });
 
@@ -234,8 +237,14 @@ export const DeploymentsPage = () => {
         <FilterMultiSelect
           label="Application"
           icon={IconBox}
-          items={["production", "staging"]}
-          value={[]}
+          asyncController={useApplicationAsyncOptions}
+          withSearch
+          value={filters.values.applicationIds}
+          onChange={(value) => {
+            filters.setFieldValue("applicationIds", value);
+            searchParams.set("application", value);
+          }}
+          capitalize={false}
         />
         <FilterMultiSelect
           label="Environment"

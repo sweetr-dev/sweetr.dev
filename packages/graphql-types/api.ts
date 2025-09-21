@@ -63,6 +63,36 @@ export type ApiKey = {
   name: Scalars['String']['output'];
 };
 
+export type Application = {
+  __typename?: 'Application';
+  /** The time the application was archived */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The deployment settings for the application */
+  deploymentSettings: DeploymentSettings;
+  /** The description of the application */
+  description?: Maybe<Scalars['String']['output']>;
+  /** The id of the application */
+  id: Scalars['SweetID']['output'];
+  /** The name of the application */
+  name: Scalars['String']['output'];
+  /** The repository that the application is in */
+  repository: Repository;
+  team?: Maybe<Team>;
+};
+
+export type ApplicationsQueryInput = {
+  /** The pagination cursor */
+  cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The ids to filter by */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The amount of records to return. */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** The query to search by. Looks up by name. */
+  query?: InputMaybe<Scalars['String']['input']>;
+  /** The teams to filter by */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+};
+
 export type ArchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -216,6 +246,58 @@ export enum DayOfTheWeek {
   WEDNESDAY = 'WEDNESDAY'
 }
 
+export type Deployment = {
+  __typename?: 'Deployment';
+  /** The application that was deployed */
+  application: Application;
+  /** The time the deployment was archived */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The person who triggered the deployment */
+  author?: Maybe<Person>;
+  /** The time the deployment was triggered */
+  deployedAt: Scalars['DateTime']['output'];
+  /** The description of the deployment */
+  description?: Maybe<Scalars['String']['output']>;
+  /** The environment that the deployment was deployed to */
+  environment: Environment;
+  id: Scalars['SweetID']['output'];
+  /** The version of the deployment */
+  version: Scalars['String']['output'];
+};
+
+export type DeploymentSettings = {
+  __typename?: 'DeploymentSettings';
+  /** The subdirectory of the application. Useful for monorepos. */
+  subdirectory?: Maybe<Scalars['String']['output']>;
+  /** The trigger for the deployment */
+  trigger: DeploymentSettingsTrigger;
+};
+
+export type DeploymentSettingsInput = {
+  /** The subdirectory of the application. Useful for monorepos. */
+  subdirectory?: InputMaybe<Scalars['String']['input']>;
+  /** The trigger for the deployment */
+  trigger: DeploymentSettingsTrigger;
+};
+
+/** The trigger for the deployment. */
+export enum DeploymentSettingsTrigger {
+  GIT_DEPLOYMENT = 'GIT_DEPLOYMENT',
+  MERGE = 'MERGE',
+  WEBHOOK = 'WEBHOOK'
+}
+
+export type DeploymentsQueryInput = {
+  /** The applications to filter by */
+  applicationIds: Array<Scalars['SweetID']['input']>;
+  /** The pagination cursor */
+  cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The time range the deployment went live */
+  deployedAt?: InputMaybe<DateTimeRange>;
+  /** The environments to filter by */
+  environmentIds: Array<Scalars['SweetID']['input']>;
+};
+
 export type Digest = {
   __typename?: 'Digest';
   channel: Scalars['String']['output'];
@@ -242,11 +324,54 @@ export enum DigestType {
   TEAM_WIP = 'TEAM_WIP'
 }
 
+export type Environment = {
+  __typename?: 'Environment';
+  /** The time the environment was archived */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['SweetID']['output'];
+  /** Whether the environment is production */
+  isProduction: Scalars['Boolean']['output'];
+  /** The name of the environment */
+  name: Scalars['String']['output'];
+};
+
 export type GraphChartLink = {
   __typename?: 'GraphChartLink';
   source: Scalars['String']['output'];
   target: Scalars['String']['output'];
   value: Scalars['Int']['output'];
+};
+
+export type Incident = {
+  __typename?: 'Incident';
+  /** The time the incident was archived */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The deployment that caused the incident */
+  causeDeployment: Deployment;
+  /** The time the incident was detected */
+  detectedAt: Scalars['DateTime']['output'];
+  /** The deployment that fixed the incident */
+  fixDeployment?: Maybe<Deployment>;
+  id: Scalars['SweetID']['output'];
+  /** The incident leader */
+  leader?: Maybe<Person>;
+  /** The url to the postmortem */
+  postmortemUrl?: Maybe<Scalars['String']['output']>;
+  /** The time the incident was resolved */
+  resolvedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The team responsible for handling the incident */
+  team: Team;
+};
+
+export type IncidentsQueryInput = {
+  /** The applications to filter by */
+  applicationIds: Array<Scalars['SweetID']['input']>;
+  /** The pagination cursor */
+  cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The time range the incident was detected in */
+  detectedAt?: InputMaybe<DateTimeRange>;
+  /** The environments to filter by */
+  environmentIds: Array<Scalars['SweetID']['input']>;
 };
 
 export type InstallIntegrationInput = {
@@ -298,6 +423,7 @@ export type Mutation = {
   updateAutomation: Automation;
   updateDigest: Digest;
   updateWorkspaceSettings: Workspace;
+  upsertApplication: Application;
   upsertTeam: Team;
 };
 
@@ -359,6 +485,11 @@ export type MutationUpdateDigestArgs = {
 
 export type MutationUpdateWorkspaceSettingsArgs = {
   input: UpdateWorkspaceSettingsInput;
+};
+
+
+export type MutationUpsertApplicationArgs = {
+  input: UpsertApplicationInput;
 };
 
 
@@ -588,6 +719,8 @@ export type RemoveIntegrationInput = {
 export type RepositoriesQueryInput = {
   /** The pagination cursor. */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The ids to filter by. */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name. */
@@ -674,6 +807,8 @@ export type TeamWorkLogResponse = {
 };
 
 export type TeamsQueryInput = {
+  /** The ids to filter by. */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name. */
@@ -729,6 +864,23 @@ export type UpdateWorkspaceSettingsInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
 
+export type UpsertApplicationInput = {
+  /** The application id, specify when updating an existing application. */
+  applicationId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The deployment settings for the application */
+  deploymentSettings: DeploymentSettingsInput;
+  /** The description of the application */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the application */
+  name: Scalars['String']['input'];
+  /** The repository id */
+  repositoryId: Scalars['SweetID']['input'];
+  /** The team id, specify when updating an existing team. */
+  teamId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The workspace id */
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UpsertTeamInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   endColor: Scalars['String']['input'];
@@ -749,15 +901,19 @@ export type UpsertTeamMemberInput = {
 export type Workspace = {
   __typename?: 'Workspace';
   apiKey?: Maybe<ApiKey>;
+  application?: Maybe<Application>;
+  applications: Array<Application>;
   automation?: Maybe<Automation>;
   automations: Array<Automation>;
   avatar?: Maybe<Scalars['String']['output']>;
   billing?: Maybe<Billing>;
   charts?: Maybe<Charts>;
+  deployments: Array<Deployment>;
   /** The git provider URL to uninstall the sweetr app */
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
+  incidents: Array<Incident>;
   /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
   initialSyncProgress: Scalars['Int']['output'];
   integrations: Array<Integration>;
@@ -775,6 +931,16 @@ export type Workspace = {
 };
 
 
+export type WorkspaceApplicationArgs = {
+  applicationId: Scalars['SweetID']['input'];
+};
+
+
+export type WorkspaceApplicationsArgs = {
+  input: ApplicationsQueryInput;
+};
+
+
 export type WorkspaceAutomationArgs = {
   input: AutomationQueryInput;
 };
@@ -782,6 +948,16 @@ export type WorkspaceAutomationArgs = {
 
 export type WorkspaceChartsArgs = {
   input: ChartInput;
+};
+
+
+export type WorkspaceDeploymentsArgs = {
+  input: DeploymentsQueryInput;
+};
+
+
+export type WorkspaceIncidentsArgs = {
+  input: IncidentsQueryInput;
 };
 
 
@@ -930,6 +1106,8 @@ export type ResolversTypes = {
   AlertQueryInput: ResolverTypeWrapper<DeepPartial<AlertQueryInput>>;
   AlertType: ResolverTypeWrapper<DeepPartial<AlertType>>;
   ApiKey: ResolverTypeWrapper<DeepPartial<ApiKey>>;
+  Application: ResolverTypeWrapper<DeepPartial<Application>>;
+  ApplicationsQueryInput: ResolverTypeWrapper<DeepPartial<ApplicationsQueryInput>>;
   ArchiveTeamInput: ResolverTypeWrapper<DeepPartial<ArchiveTeamInput>>;
   AuthProvider: ResolverTypeWrapper<DeepPartial<AuthProvider>>;
   AuthProviderInput: ResolverTypeWrapper<DeepPartial<AuthProviderInput>>;
@@ -953,13 +1131,21 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
+  Deployment: ResolverTypeWrapper<DeepPartial<Deployment>>;
+  DeploymentSettings: ResolverTypeWrapper<DeepPartial<DeploymentSettings>>;
+  DeploymentSettingsInput: ResolverTypeWrapper<DeepPartial<DeploymentSettingsInput>>;
+  DeploymentSettingsTrigger: ResolverTypeWrapper<DeepPartial<DeploymentSettingsTrigger>>;
+  DeploymentsQueryInput: ResolverTypeWrapper<DeepPartial<DeploymentsQueryInput>>;
   Digest: ResolverTypeWrapper<DeepPartial<Digest>>;
   DigestFrequency: ResolverTypeWrapper<DeepPartial<DigestFrequency>>;
   DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
   DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
+  Environment: ResolverTypeWrapper<DeepPartial<Environment>>;
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
+  Incident: ResolverTypeWrapper<DeepPartial<Incident>>;
+  IncidentsQueryInput: ResolverTypeWrapper<DeepPartial<IncidentsQueryInput>>;
   InstallIntegrationInput: ResolverTypeWrapper<DeepPartial<InstallIntegrationInput>>;
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
   Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
@@ -1011,6 +1197,7 @@ export type ResolversTypes = {
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
   UpdateDigestInput: ResolverTypeWrapper<DeepPartial<UpdateDigestInput>>;
   UpdateWorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<UpdateWorkspaceSettingsInput>>;
+  UpsertApplicationInput: ResolverTypeWrapper<DeepPartial<UpsertApplicationInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
@@ -1029,6 +1216,8 @@ export type ResolversParentTypes = {
   Alert: DeepPartial<Alert>;
   AlertQueryInput: DeepPartial<AlertQueryInput>;
   ApiKey: DeepPartial<ApiKey>;
+  Application: DeepPartial<Application>;
+  ApplicationsQueryInput: DeepPartial<ApplicationsQueryInput>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
   AuthProviderInput: DeepPartial<AuthProviderInput>;
   AuthProviderResponse: DeepPartial<AuthProviderResponse>;
@@ -1048,11 +1237,18 @@ export type ResolversParentTypes = {
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
+  Deployment: DeepPartial<Deployment>;
+  DeploymentSettings: DeepPartial<DeploymentSettings>;
+  DeploymentSettingsInput: DeepPartial<DeploymentSettingsInput>;
+  DeploymentsQueryInput: DeepPartial<DeploymentsQueryInput>;
   Digest: DeepPartial<Digest>;
   DigestQueryInput: DeepPartial<DigestQueryInput>;
+  Environment: DeepPartial<Environment>;
   Float: DeepPartial<Scalars['Float']['output']>;
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
+  Incident: DeepPartial<Incident>;
+  IncidentsQueryInput: DeepPartial<IncidentsQueryInput>;
   InstallIntegrationInput: DeepPartial<InstallIntegrationInput>;
   Int: DeepPartial<Scalars['Int']['output']>;
   Integration: DeepPartial<Integration>;
@@ -1098,6 +1294,7 @@ export type ResolversParentTypes = {
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
   UpdateDigestInput: DeepPartial<UpdateDigestInput>;
   UpdateWorkspaceSettingsInput: DeepPartial<UpdateWorkspaceSettingsInput>;
+  UpsertApplicationInput: DeepPartial<UpsertApplicationInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
@@ -1142,6 +1339,17 @@ export type ApiKeyResolvers<ContextType = GraphQLContext, ParentType extends Res
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   lastUsedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ApplicationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Application'] = ResolversParentTypes['Application']> = {
+  archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  deploymentSettings?: Resolver<ResolversTypes['DeploymentSettings'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  repository?: Resolver<ResolversTypes['Repository'], ParentType, ContextType>;
+  team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1231,6 +1439,24 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Deployment'] = ResolversParentTypes['Deployment']> = {
+  application?: Resolver<ResolversTypes['Application'], ParentType, ContextType>;
+  archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  author?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
+  deployedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  environment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DeploymentSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentSettings'] = ResolversParentTypes['DeploymentSettings']> = {
+  subdirectory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  trigger?: Resolver<ResolversTypes['DeploymentSettingsTrigger'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DigestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Digest'] = ResolversParentTypes['Digest']> = {
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   dayOfTheWeek?: Resolver<Array<ResolversTypes['DayOfTheWeek']>, ParentType, ContextType>;
@@ -1240,6 +1466,14 @@ export type DigestResolvers<ContextType = GraphQLContext, ParentType extends Res
   timeOfDay?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DigestType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Environment'] = ResolversParentTypes['Environment']> = {
+  archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  isProduction?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1253,6 +1487,19 @@ export type GraphChartLinkResolvers<ContextType = GraphQLContext, ParentType ext
 export interface HexColorCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['HexColorCode'], any> {
   name: 'HexColorCode';
 }
+
+export type IncidentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Incident'] = ResolversParentTypes['Incident']> = {
+  archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  causeDeployment?: Resolver<ResolversTypes['Deployment'], ParentType, ContextType>;
+  detectedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  fixDeployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  leader?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
+  postmortemUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  resolvedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = {
   app?: Resolver<ResolversTypes['IntegrationApp'], ParentType, ContextType>;
@@ -1286,6 +1533,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;
   updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
   updateWorkspaceSettings?: Resolver<ResolversTypes['Workspace'], ParentType, ContextType, RequireFields<MutationUpdateWorkspaceSettingsArgs, 'input'>>;
+  upsertApplication?: Resolver<ResolversTypes['Application'], ParentType, ContextType, RequireFields<MutationUpsertApplicationArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;
 };
 
@@ -1463,14 +1711,18 @@ export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']> = {
   apiKey?: Resolver<Maybe<ResolversTypes['ApiKey']>, ParentType, ContextType>;
+  application?: Resolver<Maybe<ResolversTypes['Application']>, ParentType, ContextType, RequireFields<WorkspaceApplicationArgs, 'applicationId'>>;
+  applications?: Resolver<Array<ResolversTypes['Application']>, ParentType, ContextType, RequireFields<WorkspaceApplicationsArgs, 'input'>>;
   automation?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<WorkspaceAutomationArgs, 'input'>>;
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
   charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
+  deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  incidents?: Resolver<Array<ResolversTypes['Incident']>, ParentType, ContextType, RequireFields<WorkspaceIncidentsArgs, 'input'>>;
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;
   isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -1509,6 +1761,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   ActivityEvent?: ActivityEventResolvers<ContextType>;
   Alert?: AlertResolvers<ContextType>;
   ApiKey?: ApiKeyResolvers<ContextType>;
+  Application?: ApplicationResolvers<ContextType>;
   AuthProviderResponse?: AuthProviderResponseResolvers<ContextType>;
   Automation?: AutomationResolvers<ContextType>;
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;
@@ -1521,9 +1774,13 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  Deployment?: DeploymentResolvers<ContextType>;
+  DeploymentSettings?: DeploymentSettingsResolvers<ContextType>;
   Digest?: DigestResolvers<ContextType>;
+  Environment?: EnvironmentResolvers<ContextType>;
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
+  Incident?: IncidentResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   JSONObject?: GraphQLScalarType;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;

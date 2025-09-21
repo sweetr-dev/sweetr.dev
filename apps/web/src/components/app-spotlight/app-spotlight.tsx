@@ -5,6 +5,7 @@ import {
   SpotlightActionGroupData,
 } from "@mantine/spotlight";
 import {
+  IconBox,
   IconBrandGithub,
   IconCircles,
   IconSearch,
@@ -121,7 +122,19 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           },
         })) || [],
     },
-
+    {
+      group: "Applications",
+      actions:
+        data?.workspace.applications.map((application) => ({
+          id: `application-${application.id}`,
+          label: application.name,
+          description: application.description,
+          leftSection: <IconBox size={18} stroke={1.5} />,
+          onClick: () => {
+            navigate(`/systems/applications/${application.id}`);
+          },
+        })) || [],
+    },
     {
       group: "Teams",
       actions:

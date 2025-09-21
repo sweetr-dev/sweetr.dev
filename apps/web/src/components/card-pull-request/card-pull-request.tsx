@@ -5,7 +5,6 @@ import {
   Title,
   Text,
   Tooltip,
-  Avatar,
   Anchor,
   HoverCard,
 } from "@mantine/core";

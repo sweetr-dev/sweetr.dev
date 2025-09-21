@@ -13,7 +13,7 @@ export const findTeamById = async ({
   teamId,
   workspaceId,
 }: FindTeamByIdInput): Promise<Team | null> => {
-  return getPrisma(workspaceId).team.findFirst({
+  return getPrisma(workspaceId).team.findUnique({
     where: {
       id: teamId,
       workspaceId,
@@ -43,6 +43,13 @@ export const findTeamsByWorkspace = async ({
         contains: args.query,
         mode: "insensitive",
       },
+    };
+  }
+
+  if (args.teamIds && args.teamIds.length) {
+    query.where = {
+      ...query.where,
+      id: { in: args.teamIds },
     };
   }
 

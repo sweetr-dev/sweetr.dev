@@ -1,4 +1,4 @@
-import { Avatar, Badge, Group, Stack, Text } from "@mantine/core";
+import { Badge, Group, Stack, Text } from "@mantine/core";
 import { teamRoleColorMap } from "../../../../../../../providers/team-role.provider";
 import { ActivityEvent } from "@sweetr/graphql-types/frontend/graphql";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";

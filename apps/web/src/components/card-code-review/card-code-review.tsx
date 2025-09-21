@@ -4,7 +4,6 @@ import {
   Stack,
   Title,
   Text,
-  Avatar,
   Tooltip,
   Anchor,
 } from "@mantine/core";

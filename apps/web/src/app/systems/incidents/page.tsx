@@ -191,7 +191,7 @@ export const IncidentsPage = () => {
         whenEmpty={
           <Box mt={80}>
             <PageEmptyState
-              message="No deployments found."
+              message="No incidents found."
               isFiltering={searchParams.hasAny}
               onResetFilter={() => {
                 filters.reset();

@@ -1,6 +1,5 @@
 import {
   Anchor,
-  Avatar,
   Box,
   Grid,
   Group,

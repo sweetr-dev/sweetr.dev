@@ -667,13 +667,14 @@ model Environment {
 model Application {
   id Int @id @default(autoincrement())
 
-  name String @unique
+  name        String  @unique
+  description String?
 
   repositoryId Int
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
 
-  teamId Int
-  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId Int?
+  team   Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   deploymentSettings Json
 

@@ -56,6 +56,9 @@ export default /* GraphQL */ `
   }
 
   input TeamsQueryInput {
+    "The ids to filter by."
+    ids: [SweetID!]
+
     "The query to search by. Looks up by name."
     query: String
 
@@ -71,6 +74,10 @@ export default /* GraphQL */ `
   extend type Person {
     teamMemberships: [TeamMember!]!
     teammates: [TeamMember!]!
+  }
+
+  extend type Application {
+    team: Team
   }
 
   type Mutation {

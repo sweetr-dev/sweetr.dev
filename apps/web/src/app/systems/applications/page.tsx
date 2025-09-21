@@ -1,5 +1,5 @@
 import { Box, Button, Group, Skeleton, Stack } from "@mantine/core";
-import { IconCircles } from "@tabler/icons-react";
+import { IconBox, IconCircles } from "@tabler/icons-react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
 import { LoadableContent } from "../../../components/loadable-content";
@@ -7,99 +7,118 @@ import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
 import { CardApplication } from "./components/card-application";
 import { HeaderActions } from "../../../components/header-actions";
+import { Application } from "@sweetr/graphql-types/frontend/graphql";
+import { useInfiniteLoading } from "../../../providers/pagination.provider";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { useForm } from "@mantine/form";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useContextualActions } from "../../../providers/contextual-actions.provider";
+import { useHotkeys } from "@mantine/hooks";
+import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
+import { useTeamAsyncOptions } from "../../../providers/async-options.provider";
 
 export const ApplicationsPage = () => {
-  const searchParams = { hasAny: false };
-  const applications = [
+  const { workspace } = useWorkspace();
+  const searchParams = useFilterSearchParameters();
+  const filters = useForm<{
+    teamIds: string[];
+  }>({
+    initialValues: {
+      teamIds: searchParams.getAll<string[]>("team") || [],
+    },
+  });
+  const navigate = useNavigate();
+
+  useHotkeys([
+    [
+      "n",
+      () => {
+        navigate(`/systems/applications/new/?${searchParams.toString()}`);
+      },
+    ],
+  ]);
+
+  useContextualActions(
     {
-      id: "1",
-      name: "www.sweetr.dev",
-      repository: {
-        name: "www.sweetr.dev",
-      },
-      team: {
-        name: "Growth",
-        icon: "🚀",
-      },
-      lastDeployment: {
-        version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-        deployedAt: "2025-09-12 12:35:13",
+      newApplication: {
+        label: "New application",
+        description: "Create a new application",
+        icon: IconBox,
+        onClick: () => {
+          navigate(`/systems/applications/new/?${searchParams.toString()}`);
+        },
       },
     },
+    [searchParams.toString()],
+  );
 
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isFetchedAfterMount,
+  } = useApplicationsInfiniteQuery(
     {
-      id: "2",
-      name: "api",
-      repository: {
-        name: "sweetr",
+      input: {
+        teamIds: filters.values.teamIds,
       },
-      team: {
-        name: "Growth",
-        icon: "🚀",
-      },
-      lastDeployment: {
-        version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-        deployedAt: "2025-09-12 12:35:13",
+      workspaceId: workspace?.id,
+    },
+    {
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => {
+        const lastApplication = lastPage.workspace.applications.at(-1);
+
+        return lastApplication?.id || undefined;
       },
     },
+  );
 
-    {
-      id: "3",
-      name: "email",
-      repository: {
-        name: "sweetr",
-      },
-      team: {
-        name: "Core",
-        icon: "⚡",
-      },
-      lastDeployment: {
-        version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-        deployedAt: "2025-09-12 12:35:13",
-      },
+  const { ref } = useInfiniteLoading({
+    onIntersect: () => {
+      if (isFetching || isFetchingNextPage) return;
+
+      fetchNextPage();
     },
+  });
 
-    {
-      id: "3",
-      name: "data-sync",
-      repository: {
-        name: "sweetr",
-      },
-      team: {
-        name: "Core",
-        icon: "⚡",
-      },
-      lastDeployment: {
-        version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-        deployedAt: "2025-09-12 12:35:13",
-      },
-    },
-  ];
+  const applications = data?.pages
+    .flatMap((page) => page.workspace.applications)
+    .filter((application): application is Application => !!application);
 
-  const isLoading = false;
-  const isEmpty = false;
+  const isLoading =
+    (isFetching && !applications) ||
+    (isFetchedAfterMount &&
+      isFetching &&
+      (applications?.length === 0 || !applications));
+  const isEmpty = !!(applications && applications.length === 0 && !isLoading);
+  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Applications" }]} />
 
       <HeaderActions>
-        <Button
-          variant="light"
-          onClick={() => {
-            alert("TO-DO");
-          }}
-        >
-          New
-        </Button>
+        <Link to={`/systems/applications/new/?${searchParams.toString()}`}>
+          <Button variant="light">New</Button>
+        </Link>
       </HeaderActions>
 
       <Group gap={5}>
         <FilterMultiSelect
           label="Owner"
           icon={IconCircles}
-          items={["Growth", "Core", "Marketing"]}
-          value={[]}
+          asyncController={useTeamAsyncOptions}
+          withSearch
+          value={filters.values.teamIds}
+          onChange={(value) => {
+            filters.setFieldValue("teamIds", value);
+            searchParams.set("team", value);
+          }}
         />
       </Group>
 
@@ -121,30 +140,42 @@ export const ApplicationsPage = () => {
         whenEmpty={
           <Box mt={80}>
             <PageEmptyState
-              message="No deployments found."
-              isFiltering={searchParams.hasAny}
+              message="No applications found."
+              isFiltering={isFiltering}
               onResetFilter={() => {
-                // Reset filters logic would go here
+                filters.setValues({
+                  teamIds: [],
+                });
+                searchParams.reset();
               }}
             />
           </Box>
         }
         content={
-          <Box
-            display="grid"
-            style={{
-              gridTemplateColumns: "auto auto auto",
-              justifyContent: "space-between",
-              gap: "var(--stack-gap, var(--mantine-spacing-md))",
-            }}
-            mt="md"
-          >
-            {applications?.map((application) => (
-              <CardApplication key={application.id} application={application} />
-            ))}
-          </Box>
+          <Stack>
+            <Box
+              display="grid"
+              style={{
+                gridTemplateColumns: "auto auto auto",
+                justifyContent: "space-between",
+                gap: "var(--stack-gap, var(--mantine-spacing-md))",
+              }}
+              mt="md"
+            >
+              {applications?.map((application) => (
+                <CardApplication
+                  key={application.id}
+                  application={application}
+                />
+              ))}
+            </Box>
+
+            {hasNextPage && <LoaderInfiniteScroll ref={ref} />}
+          </Stack>
         }
       />
+
+      <Outlet />
     </PageContainer>
   );
 };

@@ -1,6 +1,9 @@
 import { Prisma, Repository } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
-import { FindRepositoriesByWorkspaceArgs } from "./repository.types";
+import {
+  FindRepositoriesByWorkspaceArgs,
+  FindRepositoryByIdArgs,
+} from "./repository.types";
 
 export const findRepositoriesByWorkspace = async ({
   workspaceId,
@@ -26,13 +29,20 @@ export const findRepositoriesByWorkspace = async ({
     };
   }
 
+  if (args.repositoriesIds) {
+    query.where = {
+      ...query.where,
+      id: { in: args.repositoriesIds },
+    };
+  }
+
   return getPrisma(workspaceId).repository.findMany(query);
 };
 
-export const findRepositoryById = async (
-  workspaceId: number,
-  repositoryId: number
-): Promise<Repository | null> => {
+export const findRepositoryById = async ({
+  workspaceId,
+  repositoryId,
+}: FindRepositoryByIdArgs): Promise<Repository | null> => {
   return getPrisma(workspaceId).repository.findUnique({
     where: {
       id: repositoryId,

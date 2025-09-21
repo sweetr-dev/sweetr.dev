@@ -21,28 +21,28 @@ export const SubnavSystems = () => {
       <Divider label="Catalog" labelPosition="left" mt="sm" />
       <NavLink
         to="/systems/applications"
-        active={pathname === "/systems/applications"}
+        active={pathname.startsWith("/systems/applications")}
         component={Link}
         label="Applications"
         leftSection={<IconBox stroke={1.5} size={18} />}
       />
       <NavLink
         to="/systems/deployments"
-        active={pathname === "/systems/deployments"}
+        active={pathname.startsWith("/systems/deployments")}
         component={Link}
         label="Deployments"
         leftSection={<IconRocket stroke={1.5} size={18} />}
       />
       <NavLink
         to="/systems/incidents"
-        active={pathname === "/systems/incidents"}
+        active={pathname.startsWith("/systems/incidents")}
         component={Link}
         label="Incidents"
         leftSection={<IconFlame stroke={1.5} size={18} />}
       />
       <NavLink
         to="/systems/repositories"
-        active={pathname === "/systems/repositories"}
+        active={pathname.startsWith("/systems/repositories")}
         component={Link}
         label="Repositories"
         leftSection={<IconBrandGithub stroke={1.5} size={18} />}
