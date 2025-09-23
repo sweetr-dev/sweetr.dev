@@ -6,7 +6,7 @@ export const SystemsPage = () => {
   const { pathname } = useLocation();
 
   if (pathname === "/systems") {
-    return <Navigate to="/systems/repositories" />;
+    return <Navigate to="/systems/applications" />;
   }
 
   return (

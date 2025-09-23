@@ -6,6 +6,7 @@ import { useWorkspace } from "./workspace.provider";
 import { useTeamOptionsQuery } from "../api/teams.api";
 import { useApplicationOptionsQuery } from "../api/applications.api";
 import { useRunOnce } from "./run-once.provider";
+import { useEnvironmentOptionsQuery } from "../api/environments.api";
 
 export const DEFAULT_MAX_OPTIONS = 10;
 
@@ -193,6 +194,71 @@ export const useApplicationAsyncOptions: UseAsyncFilterHook = ({
       value: option.id,
     }));
   }, [data?.workspace.applications, selectedData?.workspace.applications]);
+
+  return useMemo(
+    () => ({
+      options,
+      isLoading,
+      refetch,
+    }),
+    [options, isLoading, refetch],
+  );
+};
+
+export const useEnvironmentAsyncOptions: UseAsyncFilterHook = ({
+  query,
+  ids,
+}) => {
+  const { workspace } = useWorkspace();
+  const [hasPrefetchedOptions, markPrefetchDone] = useRunOnce();
+
+  const { data, isLoading, refetch } = useEnvironmentOptionsQuery({
+    input: {
+      query,
+      limit: DEFAULT_MAX_OPTIONS,
+    },
+    workspaceId: workspace?.id,
+  });
+
+  const { data: selectedData, refetch: prefetchSelectedOptions } =
+    useEnvironmentOptionsQuery(
+      {
+        input: {
+          ids,
+        },
+        workspaceId: workspace?.id,
+      },
+      {
+        enabled: false,
+      },
+    );
+
+  useEffect(() => {
+    if (!hasPrefetchedOptions && ids?.length) {
+      prefetchSelectedOptions();
+      markPrefetchDone();
+    }
+  }, [
+    hasPrefetchedOptions,
+    prefetchSelectedOptions,
+    ids?.length,
+    markPrefetchDone,
+  ]);
+
+  const options = useMemo(() => {
+    const searchedOptions = data?.workspace.environments || [];
+    const selectedOptions = selectedData?.workspace.environments || [];
+
+    const options = unique(
+      [...selectedOptions, ...searchedOptions],
+      (option) => option.id,
+    );
+
+    return options.map((option) => ({
+      label: option.name,
+      value: option.id,
+    }));
+  }, [data?.workspace.environments, selectedData?.workspace.environments]);
 
   return useMemo(
     () => ({

@@ -11,206 +11,90 @@ import { parseISO, format } from "date-fns";
 import { Fragment } from "react/jsx-runtime";
 import { LoadableContent } from "../../../components/loadable-content";
 import { PageEmptyState } from "../../../components/page-empty-state";
-import { useListGroupedByYearMonth } from "../../../providers/pagination.provider";
+import {
+  useInfiniteLoading,
+  useListGroupedByYearMonth,
+} from "../../../providers/pagination.provider";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
 import { CardDeployment } from "./components/card-deployment";
-import { useApplicationAsyncOptions } from "../../../providers/async-options.provider";
+import {
+  useApplicationAsyncOptions,
+  useEnvironmentAsyncOptions,
+} from "../../../providers/async-options.provider";
+import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
+import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 
 export const DeploymentsPage = () => {
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
   const filters = useForm<{
-    createdAtFrom: string | null;
-    createdAtTo: string | null;
+    deployedAtFrom: string | null;
+    deployedAtTo: string | null;
     applicationIds: string[];
+    environmentIds: string[];
   }>({
     initialValues: {
-      createdAtFrom: searchParams.get("createdAtFrom"),
-      createdAtTo: searchParams.get("createdAtTo"),
+      deployedAtFrom: searchParams.get("deployedAtFrom"),
+      deployedAtTo: searchParams.get("deployedAtTo"),
       applicationIds: searchParams.getAll("application"),
+      environmentIds: searchParams.getAll("environment"),
     },
   });
 
-  const deployments = [
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isFetchedAfterMount,
+  } = useDeploymentsInfiniteQuery(
     {
-      id: "1",
-      application: {
-        name: "is-services",
-      },
-      version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      deployedAt: "2025-09-12 12:35:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
+      input: {
+        deployedAt: {
+          from: filters.values.deployedAtFrom,
+          to: filters.values.deployedAtTo,
         },
-      ],
+        applicationIds: filters.values.applicationIds,
+        environmentIds: filters.values.environmentIds,
+      },
+      workspaceId: workspace?.id,
     },
     {
-      id: "2",
-      application: {
-        name: "www.currents.dev",
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => {
+        const lastDeployment = lastPage.workspace.deployments.at(-1);
+
+        return lastDeployment?.id || undefined;
       },
-      version: "0b52d613f2a8a31bd100776cd425d261ed7dc261",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      deployedAt: "2025-09-12 12:32:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
     },
-    {
-      id: "3",
-      application: {
-        name: "api",
-      },
-      version: "v41.21.36",
-      environment: {
-        name: "staging",
-        isProduction: false,
-      },
-      deployedAt: "2025-09-12 12:31:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
+  );
+
+  const { ref } = useInfiniteLoading({
+    onIntersect: () => {
+      if (isFetching || isFetchingNextPage) return;
+
+      fetchNextPage();
     },
-    {
-      id: "4",
-      application: {
-        name: "www.currents.dev",
-      },
-      version: "v1.0.0",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      deployedAt: "2025-09-12 12:32:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
-    },
-    {
-      id: "5",
-      application: {
-        name: "www.currents.dev",
-      },
-      deployedAt: "2025-07-12 12:32:13",
-      version: "v1.0.0",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
-    },
-    {
-      id: "6",
-      application: {
-        name: "www.currents.dev",
-      },
-      version: "v1.0.0",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      deployedAt: "2025-07-12 12:32:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
-    },
-    {
-      id: "7",
-      application: {
-        name: "www.currents.dev",
-      },
-      version: "v1.0.0",
-      environment: {
-        name: "production",
-        isProduction: true,
-      },
-      deployedAt: "2025-07-12 12:32:13",
-      pullRequests: [
-        {
-          id: "1",
-          title: "Fix bug",
-        },
-      ],
-    },
-  ];
+  });
+
+  const deployments = data?.pages
+    .flatMap((page) => page.workspace.deployments)
+    .filter((deployment): deployment is Deployment => !!deployment);
+
+  const isLoading =
+    (isFetching && !deployments) ||
+    (isFetchedAfterMount &&
+      isFetching &&
+      (deployments?.length === 0 || !deployments));
+  const isEmpty = !!(deployments && deployments.length === 0 && !isLoading);
+  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   const { isFirstOfYearMonth } = useListGroupedByYearMonth(
     deployments,
     (deployment) => deployment.deployedAt,
   );
-
-  const isLoading = false;
-  const isEmpty = false;
 
   return (
     <PageContainer>
@@ -221,17 +105,17 @@ export const DeploymentsPage = () => {
           label="Deployed"
           icon={IconCalendarFilled}
           onChange={(dates) => {
-            const createdAtFrom = dates[0]?.toISOString() || null;
-            const createdAtTo = dates[1]?.toISOString() || null;
+            const deployedAtFrom = dates[0]?.toISOString() || null;
+            const deployedAtTo = dates[1]?.toISOString() || null;
 
-            filters.setFieldValue("createdAtFrom", createdAtFrom);
-            filters.setFieldValue("createdAtTo", createdAtTo);
-            searchParams.set("createdAtFrom", createdAtFrom);
-            searchParams.set("createdAtTo", createdAtTo);
+            filters.setFieldValue("deployedAtFrom", deployedAtFrom);
+            filters.setFieldValue("deployedAtTo", deployedAtTo);
+            searchParams.set("deployedAtFrom", deployedAtFrom);
+            searchParams.set("deployedAtTo", deployedAtTo);
           }}
           value={[
-            parseNullableISO(filters.values.createdAtFrom) || null,
-            parseNullableISO(filters.values.createdAtTo) || null,
+            parseNullableISO(filters.values.deployedAtFrom) || null,
+            parseNullableISO(filters.values.deployedAtTo) || null,
           ]}
         />
         <FilterMultiSelect
@@ -246,11 +130,17 @@ export const DeploymentsPage = () => {
           }}
           capitalize={false}
         />
+
         <FilterMultiSelect
           label="Environment"
           icon={IconServer}
-          items={["production", "staging"]}
-          value={[]}
+          asyncController={useEnvironmentAsyncOptions}
+          withSearch
+          value={filters.values.environmentIds}
+          onChange={(value) => {
+            filters.setFieldValue("environmentIds", value);
+            searchParams.set("environment", value);
+          }}
         />
       </Group>
 
@@ -273,43 +163,51 @@ export const DeploymentsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No deployments found."
-              isFiltering={searchParams.hasAny}
+              isFiltering={isFiltering}
               onResetFilter={() => {
-                filters.reset();
+                filters.setValues({
+                  deployedAtFrom: null,
+                  deployedAtTo: null,
+                  applicationIds: [],
+                  environmentIds: [],
+                });
                 searchParams.reset();
               }}
             />
           </Box>
         }
         content={
-          <Box
-            display="grid"
-            style={{
-              gridTemplateColumns: "auto auto auto auto auto",
-              justifyContent: "space-between",
-              gap: "var(--stack-gap, var(--mantine-spacing-md))",
-            }}
-            mt="md"
-          >
-            {deployments?.map((deployment) => {
-              const createdAt = parseISO(deployment.deployedAt);
+          <Stack>
+            <Box
+              display="grid"
+              style={{
+                gridTemplateColumns: "auto auto auto auto auto",
+                justifyContent: "space-between",
+                gap: "var(--stack-gap, var(--mantine-spacing-md))",
+              }}
+              mt="md"
+            >
+              {deployments?.map((deployment) => {
+                const deployedAt = parseISO(deployment.deployedAt);
 
-              return (
-                <Fragment key={deployment.id}>
-                  {isFirstOfYearMonth(createdAt, deployment.id) && (
-                    <Divider
-                      label={format(createdAt, "MMMM yyyy")}
-                      labelPosition="left"
-                      style={{
-                        gridColumn: "span 5",
-                      }}
-                    />
-                  )}
-                  <CardDeployment deployment={deployment} />
-                </Fragment>
-              );
-            })}
-          </Box>
+                return (
+                  <Fragment key={deployment.id}>
+                    {isFirstOfYearMonth(deployedAt, deployment.id) && (
+                      <Divider
+                        label={format(deployedAt, "MMMM yyyy")}
+                        labelPosition="left"
+                        style={{
+                          gridColumn: "span 5",
+                        }}
+                      />
+                    )}
+                    <CardDeployment deployment={deployment} />
+                  </Fragment>
+                );
+              })}
+            </Box>
+            {hasNextPage && <LoaderInfiniteScroll ref={ref} />}
+          </Stack>
         }
       />
     </PageContainer>

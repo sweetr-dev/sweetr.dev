@@ -28,6 +28,9 @@ export default /* GraphQL */ `
     "The pagination cursor"
     cursor: SweetID
 
+    "The amount of records to return."
+    limit: Int
+
     "The time range the deployment went live"
     deployedAt: DateTimeRange
 

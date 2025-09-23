@@ -296,6 +296,8 @@ export type DeploymentsQueryInput = {
   deployedAt?: InputMaybe<DateTimeRange>;
   /** The environments to filter by */
   environmentIds: Array<Scalars['SweetID']['input']>;
+  /** The amount of records to return. */
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Digest = {
@@ -333,6 +335,17 @@ export type Environment = {
   isProduction: Scalars['Boolean']['output'];
   /** The name of the environment */
   name: Scalars['String']['output'];
+};
+
+export type EnvironmentsQueryInput = {
+  /** The pagination cursor */
+  cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The ids to filter by */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The amount of records to return. */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** The query to search by. Looks up by name. */
+  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GraphChartLink = {
@@ -909,6 +922,7 @@ export type Workspace = {
   billing?: Maybe<Billing>;
   charts?: Maybe<Charts>;
   deployments: Array<Deployment>;
+  environments: Array<Environment>;
   /** The git provider URL to uninstall the sweetr app */
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
@@ -953,6 +967,11 @@ export type WorkspaceChartsArgs = {
 
 export type WorkspaceDeploymentsArgs = {
   input: DeploymentsQueryInput;
+};
+
+
+export type WorkspaceEnvironmentsArgs = {
+  input: EnvironmentsQueryInput;
 };
 
 
@@ -1141,6 +1160,7 @@ export type ResolversTypes = {
   DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
   DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
   Environment: ResolverTypeWrapper<DeepPartial<Environment>>;
+  EnvironmentsQueryInput: ResolverTypeWrapper<DeepPartial<EnvironmentsQueryInput>>;
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
@@ -1244,6 +1264,7 @@ export type ResolversParentTypes = {
   Digest: DeepPartial<Digest>;
   DigestQueryInput: DeepPartial<DigestQueryInput>;
   Environment: DeepPartial<Environment>;
+  EnvironmentsQueryInput: DeepPartial<EnvironmentsQueryInput>;
   Float: DeepPartial<Scalars['Float']['output']>;
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
@@ -1719,6 +1740,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
   charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
   deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
+  environments?: Resolver<Array<ResolversTypes['Environment']>, ParentType, ContextType, RequireFields<WorkspaceEnvironmentsArgs, 'input'>>;
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;

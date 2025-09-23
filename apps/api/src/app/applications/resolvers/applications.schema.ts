@@ -82,6 +82,10 @@ export default /* GraphQL */ `
     deploymentSettings: DeploymentSettingsInput!
   }
 
+  extend type Deployment {
+    application: Application!
+  }
+
   extend type Workspace {
     application(applicationId: SweetID!): Application
     applications(input: ApplicationsQueryInput!): [Application!]!

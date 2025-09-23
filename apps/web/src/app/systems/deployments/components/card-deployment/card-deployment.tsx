@@ -2,24 +2,13 @@ import { Anchor, Badge, Box, Code, Group, Paper, Text } from "@mantine/core";
 import { IconCalendarFilled, IconGitPullRequest } from "@tabler/icons-react";
 import { parseISO } from "date-fns";
 import { formatLocaleDate } from "../../../../../providers/date.provider";
+import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 
-type Deployment = {
-  application: {
-    name: string;
-  };
-  version: string;
-  environment: {
-    name: string;
-    isProduction: boolean;
-  };
-  deployedAt: string;
-  pullRequests: {
-    id: string;
-    title: string;
-  }[];
-};
+interface CardDeploymentProps {
+  deployment: Deployment;
+}
 
-export const CardDeployment = ({ deployment }: { deployment: Deployment }) => {
+export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
   const formatVersion = (version: string) => {
     if (version.includes(".") || version.startsWith("v")) return version;
 
@@ -28,7 +17,7 @@ export const CardDeployment = ({ deployment }: { deployment: Deployment }) => {
 
   return (
     <Anchor
-      href={`/systems/deployments/1`}
+      href={`/systems/deployments/${deployment.id}`}
       underline="never"
       c="dark.0"
       target="_blank"
@@ -63,7 +52,7 @@ export const CardDeployment = ({ deployment }: { deployment: Deployment }) => {
         <Text lineClamp={1}>{formatVersion(deployment.version)}</Text>
         <Group gap={5}>
           <IconGitPullRequest stroke={1.5} size={20} />
-          <Text>{deployment.pullRequests.length}</Text>
+          <Text>5</Text>
         </Group>
         <Badge
           variant="light"
