@@ -1,5 +1,9 @@
 import { Anchor, Box, Code, Group, Paper, Text, Tooltip } from "@mantine/core";
-import { IconCalendarFilled, IconFireExtinguisher } from "@tabler/icons-react";
+import {
+  IconCalendarFilled,
+  IconFireExtinguisher,
+  IconFlame,
+} from "@tabler/icons-react";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import {
   formatLocaleDate,
@@ -7,37 +11,15 @@ import {
   humanizeDuration,
 } from "../../../../../providers/date.provider";
 import { differenceInMilliseconds, parseISO } from "date-fns";
-
-type Incident = {
-  fixDeployment: {
-    application: {
-      name: string;
-    };
-    version: string;
-  };
-  causeDeployment: {
-    application: {
-      name: string;
-    };
-    version: string;
-  };
-  leader: {
-    name: string;
-    avatar: string;
-  };
-  team: {
-    name: string;
-    icon: string;
-  };
-  detectedAt: string;
-  resolvedAt: string;
-};
+import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 
 export const CardIncident = ({ incident }: { incident: Incident }) => {
-  const durationInMs = differenceInMilliseconds(
-    parseISO(incident.resolvedAt),
-    parseISO(incident.detectedAt),
-  );
+  const durationInMs = incident.resolvedAt
+    ? differenceInMilliseconds(
+        parseISO(incident.resolvedAt),
+        parseISO(incident.detectedAt),
+      )
+    : 0;
 
   return (
     <Anchor
@@ -46,7 +28,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
       c="dark.0"
       target="_blank"
       className="subgrid"
-      data-columns="5"
+      data-columns="4"
     >
       <Paper
         p="md"
@@ -54,7 +36,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
         radius="md"
         withBorder
         className={`grow-on-hover subgrid`}
-        data-columns="5"
+        data-columns="4"
       >
         <Group gap={5}>
           <IconCalendarFilled stroke={1.5} size={20} />
@@ -75,21 +57,37 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
           </Code>
         </Box>
         <Text>
-          {incident.team.icon} {incident.team.name}
+          {incident.team && (
+            <>
+              {incident.team?.icon} {incident.team?.name}
+            </>
+          )}
+          {!incident.team && <Text>Unassigned</Text>}
         </Text>
-        <AvatarUser
-          name={incident.leader.name}
-          src={incident.leader.avatar}
-          size="sm"
-          tooltip
-        />
+        {incident.leader && (
+          <AvatarUser
+            name={incident.leader.name}
+            src={incident.leader.avatar || undefined}
+            size="sm"
+            tooltip
+          />
+        )}
 
-        <Tooltip label={formatMsDuration(durationInMs)} withArrow>
-          <Group gap={5}>
-            <IconFireExtinguisher stroke={1.5} size={20} />
-            <Text>Fixed in {humanizeDuration(durationInMs)}</Text>
-          </Group>
-        </Tooltip>
+        <Box ta="right">
+          {incident.resolvedAt ? (
+            <Tooltip label={formatMsDuration(durationInMs)} withArrow>
+              <Group gap={5}>
+                <IconFireExtinguisher stroke={1.5} size={20} />
+                <Text>Fixed in {humanizeDuration(durationInMs)}</Text>
+              </Group>
+            </Tooltip>
+          ) : (
+            <Group gap={5} c="red">
+              <IconFlame stroke={1.5} size={20} />
+              <Text>Ongoing</Text>
+            </Group>
+          )}
+        </Box>
       </Paper>
     </Anchor>
   );

@@ -161,7 +161,6 @@ export const ApplicationsPage = () => {
             <Box
               display="grid"
               style={{
-                gridTemplateColumns: "auto auto auto",
                 justifyContent: "space-between",
                 gap: "var(--stack-gap, var(--mantine-spacing-md))",
               }}

@@ -1,3 +1,8 @@
+interface DateTimeRange {
+  from?: string;
+  to?: string;
+}
+
 export interface PaginateIncidentsArgs {
   cursor?: number;
   environmentIds?: number[];

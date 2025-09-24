@@ -17,7 +17,7 @@ export const TeamHealthAndPerformancePage = () => {
 
   return (
     <>
-      <PaperTitle mb={4} color="red">
+      <PaperTitle mb={5} color="red">
         Health
       </PaperTitle>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xs">
@@ -29,7 +29,7 @@ export const TeamHealthAndPerformancePage = () => {
         />
       </SimpleGrid>
 
-      <PaperTitle mb={4} mt="xl">
+      <PaperTitle mb={5} mt="xl">
         Pull Request
       </PaperTitle>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xs">
@@ -54,7 +54,7 @@ export const TeamHealthAndPerformancePage = () => {
         />
       </SimpleGrid>
 
-      <PaperTitle mb={4} mt="xl">
+      <PaperTitle mb={5} mt="xl">
         Code review
       </PaperTitle>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xs">

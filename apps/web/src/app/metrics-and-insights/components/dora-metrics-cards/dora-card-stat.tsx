@@ -32,7 +32,7 @@ export const DoraCardStat = ({
       </Text>
 
       <Stack gap="xs">
-        <Group gap={4} align="center">
+        <Group gap={5} align="center">
           <Text
             c={change >= 0 ? "teal" : "red"}
             fz="sm"

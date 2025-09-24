@@ -146,7 +146,7 @@ export const FilterDate = ({
               )
             }
           >
-            <Group gap={4}>
+            <Group gap={5}>
               <strong>{label}</strong> {getTimeLabel()}
             </Group>
           </Button>
@@ -155,7 +155,7 @@ export const FilterDate = ({
         <Popover.Dropdown bg="var(--mantine-color-body)" p={0}>
           <Grid gutter={0}>
             <Grid.Col span="auto">
-              <Stack gap={4} p="xs">
+              <Stack gap={5} p="xs">
                 {dateShorcuts.map((shortcut) => (
                   <NavLink
                     className={classNames.dateShortcut}

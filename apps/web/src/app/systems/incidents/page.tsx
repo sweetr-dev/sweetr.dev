@@ -11,131 +11,90 @@ import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
 import { parseNullableISO } from "../../../providers/date.provider";
 import { useFilterSearchParameters } from "../../../providers/filter.provider";
-import { useListGroupedByYearMonth } from "../../../providers/pagination.provider";
+import {
+  useListGroupedByYearMonth,
+  useInfiniteLoading,
+} from "../../../providers/pagination.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import {
+  useApplicationAsyncOptions,
+  useEnvironmentAsyncOptions,
+} from "../../../providers/async-options.provider";
+import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { CardIncident } from "./components/card-incident";
+import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 
 export const IncidentsPage = () => {
+  const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
   const filters = useForm<{
-    deployedAtFrom: string | null;
-    deployedAtTo: string | null;
+    detectedAtFrom: string | null;
+    detectedAtTo: string | null;
+    applicationIds: string[];
+    environmentIds: string[];
   }>({
     initialValues: {
-      deployedAtFrom: searchParams.get("deployedAtFrom"),
-      deployedAtTo: searchParams.get("deployedAtTo"),
+      detectedAtFrom: searchParams.get("detectedAtFrom"),
+      detectedAtTo: searchParams.get("detectedAtTo"),
+      applicationIds: searchParams.getAll("application"),
+      environmentIds: searchParams.getAll("environment"),
     },
   });
 
-  const incidents = [
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isFetchedAfterMount,
+  } = useIncidentsInfiniteQuery(
     {
-      id: "1",
-      causeDeployment: {
-        application: {
-          name: "www.sweetr.dev",
+      input: {
+        detectedAt: {
+          from: filters.values.detectedAtFrom,
+          to: filters.values.detectedAtTo,
         },
-        version: "1.0.0",
+        applicationIds: filters.values.applicationIds,
+        environmentIds: filters.values.environmentIds,
       },
-      detectedAt: "2025-09-12 12:35:13",
-      resolvedAt: "2025-09-13 11:38:53",
-      fixDeployment: {
-        application: {
-          name: "www.currents.dev",
-        },
-        version: "1.0.0",
-      },
-      leader: {
-        name: "John Doe",
-        avatar: "https://github.com/john-doe.png",
-      },
-      team: {
-        name: "Growth",
-        icon: "🚀",
-      },
+      workspaceId: workspace?.id,
     },
     {
-      id: "2",
-      causeDeployment: {
-        application: {
-          name: "www.sweetr.dev",
-        },
-        version: "1.0.0",
-      },
-      detectedAt: "2025-08-15 12:35:13",
-      resolvedAt: "2025-08-17 11:38:53",
-      fixDeployment: {
-        application: {
-          name: "www.sweetr.dev",
-        },
-        version: "1.0.0",
-      },
-      leader: {
-        name: "John Doe",
-        avatar: "https://github.com/john-doe.png",
-      },
-      team: {
-        name: "Growth",
-        icon: "🚀",
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => {
+        const lastIncident = lastPage.workspace.incidents.at(-1);
+
+        return lastIncident?.id || undefined;
       },
     },
-    {
-      id: "3",
-      causeDeployment: {
-        application: {
-          name: "api",
-        },
-        version: "1.0.0",
-      },
-      detectedAt: "2025-09-04 15:35:13",
-      resolvedAt: "2025-09-04 19:38:53",
-      fixDeployment: {
-        application: {
-          name: "api",
-        },
-        version: "1.0.0",
-      },
-      leader: {
-        name: "John Doe",
-        avatar: "https://github.com/john-doe2.png",
-      },
-      team: {
-        name: "Core",
-        icon: "⚡",
-      },
+  );
+
+  const { ref } = useInfiniteLoading({
+    onIntersect: () => {
+      if (isFetching || isFetchingNextPage) return;
+
+      fetchNextPage();
     },
-    {
-      id: "4",
-      causeDeployment: {
-        application: {
-          name: "www.sweetr.dev",
-        },
-        version: "1.0.0",
-      },
-      detectedAt: "2025-07-03 18:35:13",
-      resolvedAt: "2025-07-03 19:01:53",
-      fixDeployment: {
-        application: {
-          name: "www.currents.dev",
-        },
-        version: "1.0.0",
-      },
-      leader: {
-        name: "John Doe",
-        avatar: "https://github.com/john-doe.png",
-      },
-      team: {
-        name: "Growth",
-        icon: "🚀",
-      },
-    },
-  ];
+  });
+
+  const incidents = data?.pages
+    .flatMap((page) => page.workspace.incidents)
+    .filter((incident): incident is Incident => !!incident);
 
   const { isFirstOfYearMonth } = useListGroupedByYearMonth(
     incidents,
-    (deployment) => deployment.detectedAt,
+    (incident) => incident.detectedAt,
   );
 
-  const isLoading = false;
-  const isEmpty = false;
+  const isLoading =
+    (isFetching && !incidents) ||
+    (isFetchedAfterMount &&
+      isFetching &&
+      (incidents?.length === 0 || !incidents));
+  const isEmpty = !!(incidents && incidents.length === 0 && !isLoading);
+  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   return (
     <PageContainer>
@@ -143,33 +102,46 @@ export const IncidentsPage = () => {
 
       <Group gap={5}>
         <FilterDate
-          label="Deployed"
+          label="Detected"
           icon={IconCalendarFilled}
           onChange={(dates) => {
-            const deployedAtFrom = dates[0]?.toISOString() || null;
-            const deployedAtTo = dates[1]?.toISOString() || null;
+            const detectedAtFrom = dates[0]?.toISOString() || null;
+            const detectedAtTo = dates[1]?.toISOString() || null;
 
-            filters.setFieldValue("deployedAtFrom", deployedAtFrom);
-            filters.setFieldValue("deployedAtTo", deployedAtTo);
-            searchParams.set("deployedAtFrom", deployedAtFrom);
-            searchParams.set("deployedAtTo", deployedAtTo);
+            filters.setFieldValue("detectedAtFrom", detectedAtFrom);
+            filters.setFieldValue("detectedAtTo", detectedAtTo);
+            searchParams.set("detectedAtFrom", detectedAtFrom);
+            searchParams.set("detectedAtTo", detectedAtTo);
           }}
           value={[
-            parseNullableISO(filters.values.deployedAtFrom) || null,
-            parseNullableISO(filters.values.deployedAtTo) || null,
+            parseNullableISO(filters.values.detectedAtFrom) || null,
+            parseNullableISO(filters.values.detectedAtTo) || null,
           ]}
+          clearable
         />
         <FilterMultiSelect
           label="Application"
           icon={IconBox}
-          items={["production", "staging"]}
-          value={[]}
+          asyncController={useApplicationAsyncOptions}
+          withSearch
+          value={filters.values.applicationIds}
+          onChange={(value) => {
+            filters.setFieldValue("applicationIds", value);
+            searchParams.set("application", value);
+          }}
+          capitalize={false}
         />
         <FilterMultiSelect
           label="Environment"
           icon={IconServer}
-          items={["production", "staging"]}
-          value={[]}
+          asyncController={useEnvironmentAsyncOptions}
+          withSearch
+          value={filters.values.environmentIds}
+          capitalize={false}
+          onChange={(value) => {
+            filters.setFieldValue("environmentIds", value);
+            searchParams.set("environment", value);
+          }}
         />
       </Group>
 
@@ -192,9 +164,14 @@ export const IncidentsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No incidents found."
-              isFiltering={searchParams.hasAny}
+              isFiltering={isFiltering}
               onResetFilter={() => {
-                filters.reset();
+                filters.setValues({
+                  detectedAtFrom: null,
+                  detectedAtTo: null,
+                  applicationIds: [],
+                  environmentIds: [],
+                });
                 searchParams.reset();
               }}
             />
@@ -205,22 +182,21 @@ export const IncidentsPage = () => {
             <Box
               display="grid"
               style={{
-                gridTemplateColumns: "auto auto auto auto auto",
                 justifyContent: "space-between",
                 gap: "var(--stack-gap, var(--mantine-spacing-md))",
               }}
             >
               {incidents?.map((incident) => {
-                const deployedAt = parseISO(incident.detectedAt);
+                const detectedAt = parseISO(incident.detectedAt);
 
                 return (
                   <Fragment key={incident.id}>
-                    {isFirstOfYearMonth(deployedAt, incident.id) && (
+                    {isFirstOfYearMonth(detectedAt, incident.id) && (
                       <Divider
-                        label={format(deployedAt, "MMMM yyyy")}
+                        label={format(detectedAt, "MMMM yyyy")}
                         labelPosition="left"
                         style={{
-                          gridColumn: "span 5",
+                          gridColumn: "span 4",
                         }}
                       />
                     )}
@@ -229,6 +205,7 @@ export const IncidentsPage = () => {
                 );
               })}
             </Box>
+            {hasNextPage && <LoaderInfiniteScroll ref={ref} />}
           </Stack>
         }
       />

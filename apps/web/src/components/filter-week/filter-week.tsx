@@ -125,7 +125,7 @@ export const FilterWeek = ({
                 )
               }
             >
-              <Group gap={4}>
+              <Group gap={5}>
                 <strong>{label}</strong> {getTimeLabel()}
               </Group>
             </Button>

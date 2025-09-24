@@ -374,7 +374,7 @@ export type Incident = {
   /** The time the incident was resolved */
   resolvedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The team responsible for handling the incident */
-  team: Team;
+  team?: Maybe<Team>;
 };
 
 export type IncidentsQueryInput = {
@@ -1521,7 +1521,7 @@ export type IncidentResolvers<ContextType = GraphQLContext, ParentType extends R
   leader?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
   postmortemUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   resolvedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

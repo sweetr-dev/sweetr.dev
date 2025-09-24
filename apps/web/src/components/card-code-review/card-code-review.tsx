@@ -101,7 +101,7 @@ export const CardCodeReview = ({
             style={{ flexGrow: 1 }}
             justify={isSmallScreen ? "center" : "flex-end"}
           >
-            <Group gap={4} miw={40} justify="flex-start" wrap="nowrap">
+            <Group gap={5} miw={40} justify="flex-start" wrap="nowrap">
               <IconMessage stroke={1.5} size={20} />
               <Text size="sm" fw={500}>
                 {prComments}

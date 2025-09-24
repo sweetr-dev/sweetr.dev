@@ -3,7 +3,7 @@ export default /* GraphQL */ `
     id: SweetID!
 
     "The team responsible for handling the incident"
-    team: Team!
+    team: Team
 
     "The incident leader"
     leader: Person

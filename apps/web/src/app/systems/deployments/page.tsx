@@ -117,6 +117,7 @@ export const DeploymentsPage = () => {
             parseNullableISO(filters.values.deployedAtFrom) || null,
             parseNullableISO(filters.values.deployedAtTo) || null,
           ]}
+          clearable
         />
         <FilterMultiSelect
           label="Application"
@@ -182,7 +183,6 @@ export const DeploymentsPage = () => {
             <Box
               display="grid"
               style={{
-                gridTemplateColumns: "auto auto auto auto auto",
                 justifyContent: "space-between",
                 gap: "var(--stack-gap, var(--mantine-spacing-md))",
               }}

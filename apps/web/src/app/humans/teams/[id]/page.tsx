@@ -85,7 +85,7 @@ export const TeamPage = () => {
             gap="xs"
             pl="lg"
             mb="xs"
-            py={4}
+            py={5}
             className={classes.header}
             style={{
               ["--startColor"]: team.startColor,

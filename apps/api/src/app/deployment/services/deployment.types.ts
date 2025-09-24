@@ -10,3 +10,8 @@ export interface PaginateDeploymentsArgs {
   deployedAt?: DateTimeRange;
   limit?: number;
 }
+
+export interface FindDeploymentByIdArgs {
+  workspaceId: number;
+  deploymentId: number;
+}

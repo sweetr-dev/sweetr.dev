@@ -1,6 +1,9 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
-import { PaginateDeploymentsArgs } from "./deployment.types";
+import {
+  FindDeploymentByIdArgs,
+  PaginateDeploymentsArgs,
+} from "./deployment.types";
 
 export const paginateDeployments = async (
   workspaceId: number,
@@ -43,4 +46,15 @@ export const paginateDeployments = async (
   }
 
   return getPrisma(workspaceId).deployment.findMany(query);
+};
+
+export const findDeploymentById = async ({
+  workspaceId,
+  deploymentId,
+}: FindDeploymentByIdArgs) => {
+  return getPrisma(workspaceId).deployment.findUnique({
+    where: {
+      id: deploymentId,
+    },
+  });
 };

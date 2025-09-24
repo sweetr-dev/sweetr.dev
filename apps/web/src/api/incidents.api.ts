@@ -7,6 +7,10 @@ import {
 import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import { Optional } from "utility-types";
+import {
+  IncidentsQuery,
+  IncidentsQueryVariables,
+} from "@sweetr/graphql-types/frontend/graphql";
 
 export const useIncidentsInfiniteQuery = (
   args: IncidentsQueryVariables,
@@ -50,6 +54,22 @@ export const useIncidentsInfiniteQuery = (
                 resolvedAt
                 postmortemUrl
                 archivedAt
+                causeDeployment {
+                  id
+                  version
+                  application {
+                    id
+                    name
+                  }
+                }
+                fixDeployment {
+                  id
+                  version
+                  application {
+                    id
+                    name
+                  }
+                }
               }
             }
           }
