@@ -2,7 +2,6 @@ import { Timeline, Text, ThemeIcon } from "@mantine/core";
 import {
   IconEyeCode,
   IconGitMerge,
-  IconGitPullRequest,
   IconGitPullRequestDraft,
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
@@ -13,6 +12,7 @@ import {
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useBadges } from "./use-badges";
+import { IconPullRequest } from "../../providers/icon.provider";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -103,7 +103,7 @@ export const TimelinePullRequest = ({
         bullet={
           <ThemeIcon variant="filled" color="dark.7">
             {!isDraft && (
-              <IconGitPullRequest size={20} stroke={1.5} color={getColor(1)} />
+              <IconPullRequest size={20} stroke={1.5} color={getColor(1)} />
             )}
             {isDraft && (
               <IconGitPullRequestDraft

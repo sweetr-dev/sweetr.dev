@@ -3,7 +3,6 @@ import {
   IconActivity,
   IconBell,
   IconChartArcs,
-  IconGitPullRequest,
   IconMessage,
   IconProgress,
   IconTarget,
@@ -12,6 +11,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../../components/subnav";
+import { IconPullRequest } from "../../../../../../providers/icon.provider";
 
 interface SubnavTeamProps {
   team: Pick<Team, "id" | "name" | "icon">;
@@ -60,7 +60,7 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
         active={pathname.startsWith(getLink("pull-requests"))}
         component={Link}
         label="Pull Requests"
-        leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
+        leftSection={<IconPullRequest stroke={1.5} size={18} />}
       />
       <NavLink
         to={getLink("health-and-performance")}

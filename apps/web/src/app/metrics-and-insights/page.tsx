@@ -4,12 +4,10 @@ import { Tabs, Paper, Box, Group, Divider } from "@mantine/core";
 import {
   IconBox,
   IconCalendarFilled,
-  IconCircles,
   IconClock,
   IconFireExtinguisher,
   IconFlame,
   IconRefresh,
-  IconRocket,
   IconServer,
 } from "@tabler/icons-react";
 import { DoraMetricsCards } from "./components/dora-metrics-cards/dora-metrics-cards";
@@ -22,6 +20,7 @@ import { parseNullableISO } from "../../providers/date.provider";
 import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../providers/filter.provider";
 import { FilterSelect } from "../../components/filter-select";
+import { IconDeployment, IconTeam } from "../../providers/icon.provider";
 
 const mockDoraData = {
   frequency: {
@@ -111,7 +110,7 @@ export const MetricsAndInsightsPage = () => {
         <Group gap={5}>
           <FilterMultiSelect
             label="Team"
-            icon={IconCircles}
+            icon={IconTeam}
             items={["production", "staging"]}
             value={[]}
           />
@@ -142,7 +141,7 @@ export const MetricsAndInsightsPage = () => {
           <Tabs.List>
             <Tabs.Tab
               value="frequency"
-              leftSection={<IconRocket size={24} stroke={1.5} />}
+              leftSection={<IconDeployment size={24} stroke={1.5} />}
             >
               Frequency
             </Tabs.Tab>

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { IconBrandGithub } from "@tabler/icons-react";
 import { InputSelectAsync } from "../input-select-async";
 import { InputSelectAsyncProps } from "../input-select-async/input-select-async";
 import { useRepositoryAsyncOptions } from "../../providers/async-options.provider";
+import { IconRepository } from "../../providers/icon.provider";
 
 type InputSelectRepositoryProps = InputSelectAsyncProps;
 
@@ -24,7 +24,7 @@ export const InputSelectRepository = (
       <InputSelectAsync
         memoizedItems={options || []}
         onDebouncedSearch={setSearch}
-        leftSection={<IconBrandGithub size={16} stroke={1.5} />}
+        leftSection={<IconRepository size={16} stroke={1.5} />}
         {...props}
       />
     </>

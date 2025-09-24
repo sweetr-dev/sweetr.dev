@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { IconCircles } from "@tabler/icons-react";
 import { InputSelectAsync } from "../input-select-async";
 import { InputSelectAsyncProps } from "../input-select-async/input-select-async";
 import { useTeamAsyncOptions } from "../../providers/async-options.provider";
+import { IconTeam } from "../../providers/icon.provider";
 
 type InputSelectTeamProps = InputSelectAsyncProps;
 
@@ -21,7 +21,7 @@ export const InputSelectTeam = (
       <InputSelectAsync
         memoizedItems={options || []}
         onDebouncedSearch={setSearch}
-        leftSection={<IconCircles size={16} stroke={1.5} />}
+        leftSection={<IconTeam size={16} stroke={1.5} />}
         renderLabel={(item) => `${item.icon} ${item.label}`}
         {...props}
       />

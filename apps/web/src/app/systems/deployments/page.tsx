@@ -137,6 +137,7 @@ export const DeploymentsPage = () => {
           asyncController={useEnvironmentAsyncOptions}
           withSearch
           value={filters.values.environmentIds}
+          capitalize={false}
           onChange={(value) => {
             filters.setFieldValue("environmentIds", value);
             searchParams.set("environment", value);
@@ -185,7 +186,6 @@ export const DeploymentsPage = () => {
                 justifyContent: "space-between",
                 gap: "var(--stack-gap, var(--mantine-spacing-md))",
               }}
-              mt="md"
             >
               {deployments?.map((deployment) => {
                 const deployedAt = parseISO(deployment.deployedAt);
@@ -197,7 +197,7 @@ export const DeploymentsPage = () => {
                         label={format(deployedAt, "MMMM yyyy")}
                         labelPosition="left"
                         style={{
-                          gridColumn: "span 5",
+                          gridColumn: "span 6",
                         }}
                       />
                     )}

@@ -3,7 +3,7 @@ import { FC } from "react";
 
 interface AvatarUserProps extends AvatarProps {
   name: string;
-  withTooltip?: boolean;
+  tooltip?: boolean | string;
 }
 
 const getInitials = (fullName: string) => {
@@ -21,7 +21,7 @@ const getInitials = (fullName: string) => {
 export const AvatarUser: FC<AvatarUserProps> = ({
   src,
   name,
-  withTooltip,
+  tooltip,
   ...props
 }) => {
   const avatar = (
@@ -30,12 +30,12 @@ export const AvatarUser: FC<AvatarUserProps> = ({
     </Avatar>
   );
 
-  if (!withTooltip) {
+  if (!tooltip) {
     return avatar;
   }
 
   return (
-    <Tooltip label={name} withArrow position="top">
+    <Tooltip label={tooltip || name} withArrow position="top">
       {avatar}
     </Tooltip>
   );

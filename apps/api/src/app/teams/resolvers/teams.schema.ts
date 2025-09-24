@@ -76,10 +76,6 @@ export default /* GraphQL */ `
     teammates: [TeamMember!]!
   }
 
-  extend type Application {
-    team: Team
-  }
-
   type Mutation {
     upsertTeam(input: UpsertTeamInput!): Team!
     archiveTeam(input: ArchiveTeamInput!): Team!

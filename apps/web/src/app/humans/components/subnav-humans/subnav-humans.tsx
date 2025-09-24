@@ -1,11 +1,8 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
-import {
-  IconCircles,
-  IconHeartHandshake,
-  IconUsers,
-} from "@tabler/icons-react";
+import { IconHeartHandshake, IconUsers } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { Subnav } from "../../../../components/subnav";
+import { IconTeam } from "../../../../providers/icon.provider";
 
 export const SubnavHumans = () => {
   const { pathname } = useLocation();
@@ -21,7 +18,7 @@ export const SubnavHumans = () => {
         active={pathname === "/humans/teams"}
         component={Link}
         label="Teams"
-        leftSection={<IconCircles stroke={1.5} size={18} />}
+        leftSection={<IconTeam stroke={1.5} size={18} />}
       />
       <NavLink
         to="/humans/people"

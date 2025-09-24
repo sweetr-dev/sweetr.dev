@@ -22,7 +22,7 @@ export const TeamMembers: FC<TeamMembersProps> = ({ members, ...props }) => {
           key={member.handle}
           name={member.name}
           src={member.avatar}
-          withTooltip
+          tooltip
         />
       ))}
 

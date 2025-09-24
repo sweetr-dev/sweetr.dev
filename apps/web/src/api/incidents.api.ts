@@ -6,26 +6,22 @@ import {
 } from "@tanstack/react-query";
 import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
-import {
-  DeploymentsQuery,
-  DeploymentsQueryVariables,
-} from "@sweetr/graphql-types/frontend/graphql";
 import { Optional } from "utility-types";
 
-export const useDeploymentsInfiniteQuery = (
-  args: DeploymentsQueryVariables,
+export const useIncidentsInfiniteQuery = (
+  args: IncidentsQueryVariables,
   options: Optional<
     UseInfiniteQueryOptions<
-      DeploymentsQuery,
+      IncidentsQuery,
       DefaultError,
-      InfiniteData<DeploymentsQuery>
+      InfiniteData<IncidentsQuery>
     >,
     "queryKey"
   >,
 ) =>
   useInfiniteQuery({
     queryKey: [
-      "deployments",
+      "incidents",
       args.workspaceId,
       args.input.cursor,
       ...Object.values(args.input),
@@ -33,29 +29,26 @@ export const useDeploymentsInfiniteQuery = (
     queryFn: ({ pageParam }) =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
-          query Deployments(
+          query Incidents(
             $workspaceId: SweetID!
-            $input: DeploymentsQueryInput!
+            $input: IncidentsQueryInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              deployments(input: $input) {
+              incidents(input: $input) {
                 id
-                application {
+                team {
                   id
                   name
+                  icon
                 }
-                environment {
-                  name
-                  isProduction
-                }
-                author {
+                leader {
                   id
                   name
                   avatar
                 }
-                version
-                description
-                deployedAt
+                detectedAt
+                resolvedAt
+                postmortemUrl
                 archivedAt
               }
             }

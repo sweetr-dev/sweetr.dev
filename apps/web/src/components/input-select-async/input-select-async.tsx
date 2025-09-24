@@ -168,7 +168,7 @@ export const InputSelectAsync = ({
           {options.length >= DEFAULT_MAX_OPTIONS && (
             <Combobox.Footer>
               <Text fz="xs" c="dimmed">
-                Showing limited results. Search to see more.
+                Showing limited results. Search to find more.
               </Text>
             </Combobox.Footer>
           )}

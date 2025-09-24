@@ -1,5 +1,5 @@
 import { Box, Button, Group, Skeleton, Stack } from "@mantine/core";
-import { IconBox, IconCircles } from "@tabler/icons-react";
+import { IconBox } from "@tabler/icons-react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
 import { LoadableContent } from "../../../components/loadable-content";
@@ -18,6 +18,8 @@ import { useContextualActions } from "../../../providers/contextual-actions.prov
 import { useHotkeys } from "@mantine/hooks";
 import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
 import { useTeamAsyncOptions } from "../../../providers/async-options.provider";
+import { IconTeam } from "../../../providers/icon.provider";
+import { InputSearch } from "../../../components/input-search";
 
 export const ApplicationsPage = () => {
   const { workspace } = useWorkspace();
@@ -103,15 +105,18 @@ export const ApplicationsPage = () => {
       <Breadcrumbs items={[{ label: "Applications" }]} />
 
       <HeaderActions>
-        <Link to={`/systems/applications/new/?${searchParams.toString()}`}>
-          <Button variant="light">New</Button>
-        </Link>
+        <Group>
+          <InputSearch />
+          <Link to={`/systems/applications/new/?${searchParams.toString()}`}>
+            <Button variant="light">New</Button>
+          </Link>
+        </Group>
       </HeaderActions>
 
       <Group gap={5}>
         <FilterMultiSelect
           label="Owner"
-          icon={IconCircles}
+          icon={IconTeam}
           asyncController={useTeamAsyncOptions}
           withSearch
           value={filters.values.teamIds}

@@ -1,12 +1,9 @@
 import { Divider, Title, NavLink, Group } from "@mantine/core";
-import {
-  IconEyeCode,
-  IconGitPullRequest,
-  IconNotes,
-} from "@tabler/icons-react";
+import { IconEyeCode, IconNotes } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { Person } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../components/subnav";
+import { IconPullRequest } from "../../../../../providers/icon.provider";
 
 interface SubnavPersonProps {
   person: Pick<Person, "id" | "name" | "handle">;
@@ -40,7 +37,7 @@ export const SubnavPerson = ({ person }: SubnavPersonProps) => {
         active={pathname.startsWith(getLink("pull-requests"))}
         component={Link}
         label="Pull Requests"
-        leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
+        leftSection={<IconPullRequest stroke={1.5} size={18} />}
       />
       <NavLink
         to={getLink("code-reviews")}

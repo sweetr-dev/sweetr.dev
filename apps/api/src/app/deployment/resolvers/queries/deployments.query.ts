@@ -16,6 +16,10 @@ export const deploymentsQuery = createFieldResolver("Workspace", {
     await protectWithPaywall(workspace.id);
 
     const deployments = await paginateDeployments(workspace.id, {
+      deployedAt: {
+        from: input.deployedAt?.from || undefined,
+        to: input.deployedAt?.to || undefined,
+      },
       applicationIds: input.applicationIds || undefined,
       environmentIds: input.environmentIds || undefined,
       cursor: input.cursor || undefined,

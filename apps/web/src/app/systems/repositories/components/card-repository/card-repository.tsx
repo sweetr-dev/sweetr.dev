@@ -1,7 +1,8 @@
 import { Group, Paper } from "@mantine/core";
-import { IconBrandGithub, IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink } from "@tabler/icons-react";
 import type { FC, ReactNode } from "react";
 import classes from "./card-repository.module.css";
+import { IconRepository } from "../../../../../providers/icon.provider";
 
 interface CardRepository {
   name: string | ReactNode;
@@ -19,7 +20,7 @@ export const CardRepository: FC<CardRepository> = ({ name, onClick }) => {
     >
       <Group justify="space-between" align="center">
         <Group>
-          <IconBrandGithub size={20} stroke={1.5} />
+          <IconRepository size={20} stroke={1.5} />
           {name}
         </Group>
         <IconExternalLink stroke={1.5} size={16} />

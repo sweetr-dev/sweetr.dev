@@ -80,8 +80,8 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
         <AvatarUser
           name={incident.leader.name}
           src={incident.leader.avatar}
-          size={24}
-          withTooltip
+          size="sm"
+          tooltip
         />
 
         <Tooltip label={formatMsDuration(durationInMs)} withArrow>

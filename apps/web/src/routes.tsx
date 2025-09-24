@@ -62,6 +62,7 @@ import { ApplicationsPage } from "./app/systems/applications/page";
 import { IncidentsPage } from "./app/systems/incidents/page";
 import { ApplicationsCreatePage } from "./app/systems/applications/upsert/create/page";
 import { ApplicationsUpdatePage } from "./app/systems/applications/upsert/update/page";
+import { EnvironmentsPage } from "./app/systems/environments/page";
 
 export const router = createBrowserRouter([
   {
@@ -163,6 +164,10 @@ export const router = createBrowserRouter([
               {
                 path: "/systems/incidents",
                 element: <IncidentsPage />,
+              },
+              {
+                path: "/systems/environments",
+                element: <EnvironmentsPage />,
               },
             ],
           },

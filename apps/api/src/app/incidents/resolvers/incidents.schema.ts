@@ -28,9 +28,6 @@ export default /* GraphQL */ `
   }
 
   input IncidentsQueryInput {
-    "The pagination cursor"
-    cursor: SweetID
-
     "The time range the incident was detected in"
     detectedAt: DateTimeRange
 
@@ -39,6 +36,12 @@ export default /* GraphQL */ `
 
     "The environments to filter by"
     environmentIds: [SweetID!]!
+
+    "The pagination cursor"
+    cursor: SweetID
+
+    "The pagination limit"
+    limit: Int
   }
 
   extend type Workspace {

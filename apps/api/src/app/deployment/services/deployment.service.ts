@@ -18,6 +18,16 @@ export const paginateDeployments = async (
     },
   };
 
+  if (args.deployedAt?.from || args.deployedAt?.to) {
+    query.where = {
+      ...query.where,
+      deployedAt: {
+        gte: args.deployedAt.from,
+        lte: args.deployedAt.to,
+      },
+    };
+  }
+
   if (args.applicationIds?.length) {
     query.where = {
       ...query.where,

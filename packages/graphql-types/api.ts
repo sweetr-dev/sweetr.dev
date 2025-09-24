@@ -77,6 +77,7 @@ export type Application = {
   name: Scalars['String']['output'];
   /** The repository that the application is in */
   repository: Repository;
+  /** The team who owns the application */
   team?: Maybe<Team>;
 };
 
@@ -385,6 +386,8 @@ export type IncidentsQueryInput = {
   detectedAt?: InputMaybe<DateTimeRange>;
   /** The environments to filter by */
   environmentIds: Array<Scalars['SweetID']['input']>;
+  /** The pagination limit */
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type InstallIntegrationInput = {

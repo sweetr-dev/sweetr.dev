@@ -3,7 +3,7 @@ import { UseFormReturnType } from "@mantine/form";
 import { ApplicationForm } from "../../../types";
 import { InputSelectRepository } from "../../../../../../components/input-select-repository";
 import { InputSelectTeam } from "../../../../../../components/input-select-team";
-import { IconCircles, IconFolder } from "@tabler/icons-react";
+import { IconFolder } from "@tabler/icons-react";
 import { InputDeploymentTrigger } from "./input-deployment-trigger";
 
 export interface FormUpsertApplicationProps {
@@ -39,7 +39,6 @@ export const FormUpsertApplication = ({ form }: FormUpsertApplicationProps) => {
           label="Team"
           placeholder="The team who owns this app"
           {...form.getInputProps("teamId")}
-          leftSection={<IconCircles size={16} stroke={1.5} />}
           clearable
         />
       </Stack>

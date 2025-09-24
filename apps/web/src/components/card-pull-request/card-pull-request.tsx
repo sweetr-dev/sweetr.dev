@@ -119,7 +119,7 @@ export const CardPullRequest = ({
                     name={pullRequest.author.name}
                     src={pullRequest.author.avatar}
                     size={40}
-                    withTooltip
+                    tooltip
                   />
                 )}
 

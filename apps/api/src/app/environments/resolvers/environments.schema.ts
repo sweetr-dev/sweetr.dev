@@ -26,10 +26,6 @@ export default /* GraphQL */ `
     cursor: SweetID
   }
 
-  extend type Deployment {
-    environment: Environment!
-  }
-
   extend type Workspace {
     environments(input: EnvironmentsQueryInput!): [Environment!]!
   }

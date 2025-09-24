@@ -27,6 +27,9 @@ export default /* GraphQL */ `
     "The repository that the application is in"
     repository: Repository!
 
+    "The team who owns the application"
+    team: Team
+
     "The deployment settings for the application"
     deploymentSettings: DeploymentSettings!
 
@@ -80,10 +83,6 @@ export default /* GraphQL */ `
 
     "The deployment settings for the application"
     deploymentSettings: DeploymentSettingsInput!
-  }
-
-  extend type Deployment {
-    application: Application!
   }
 
   extend type Workspace {

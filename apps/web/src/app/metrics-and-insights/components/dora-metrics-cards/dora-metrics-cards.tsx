@@ -3,9 +3,9 @@ import {
   IconClock,
   IconFireExtinguisher,
   IconFlame,
-  IconRocket,
 } from "@tabler/icons-react";
 import { DoraCardStat } from "./dora-card-stat";
+import { IconDeployment } from "../../../../providers/icon.provider";
 
 interface DoraMetricsCardsProps extends GridProps {
   data: {
@@ -37,7 +37,7 @@ export const DoraMetricsCards = ({ data, ...props }: DoraMetricsCardsProps) => {
           name="Frequency"
           amount={data.frequency.current}
           change={data.frequency.change}
-          icon={IconRocket}
+          icon={IconDeployment}
         />
       </Grid.Col>
       <Grid.Col span={3}>

@@ -139,7 +139,7 @@ export const IncidentsPage = () => {
 
   return (
     <PageContainer>
-      <Breadcrumbs items={[{ label: "Deployments" }]} />
+      <Breadcrumbs items={[{ label: "Incidents" }]} />
 
       <Group gap={5}>
         <FilterDate
@@ -201,34 +201,35 @@ export const IncidentsPage = () => {
           </Box>
         }
         content={
-          <Box
-            display="grid"
-            style={{
-              gridTemplateColumns: "auto auto auto auto auto",
-              justifyContent: "space-between",
-              gap: "var(--stack-gap, var(--mantine-spacing-md))",
-            }}
-            mt="md"
-          >
-            {incidents?.map((incident) => {
-              const deployedAt = parseISO(incident.detectedAt);
+          <Stack>
+            <Box
+              display="grid"
+              style={{
+                gridTemplateColumns: "auto auto auto auto auto",
+                justifyContent: "space-between",
+                gap: "var(--stack-gap, var(--mantine-spacing-md))",
+              }}
+            >
+              {incidents?.map((incident) => {
+                const deployedAt = parseISO(incident.detectedAt);
 
-              return (
-                <Fragment key={incident.id}>
-                  {isFirstOfYearMonth(deployedAt, incident.id) && (
-                    <Divider
-                      label={format(deployedAt, "MMMM yyyy")}
-                      labelPosition="left"
-                      style={{
-                        gridColumn: "span 5",
-                      }}
-                    />
-                  )}
-                  <CardIncident incident={incident} />
-                </Fragment>
-              );
-            })}
-          </Box>
+                return (
+                  <Fragment key={incident.id}>
+                    {isFirstOfYearMonth(deployedAt, incident.id) && (
+                      <Divider
+                        label={format(deployedAt, "MMMM yyyy")}
+                        labelPosition="left"
+                        style={{
+                          gridColumn: "span 5",
+                        }}
+                      />
+                    )}
+                    <CardIncident incident={incident} />
+                  </Fragment>
+                );
+              })}
+            </Box>
+          </Stack>
         }
       />
     </PageContainer>
