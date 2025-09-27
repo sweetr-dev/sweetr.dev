@@ -1,13 +1,14 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
 import {
-  FindDeploymentByIdArgs,
-  PaginateDeploymentsArgs,
+  FindDeploymentByIdInput,
+  FindLastProductionDeploymentByApplicationIdInput,
+  PaginateDeploymentsInput,
 } from "./deployment.types";
 
 export const paginateDeployments = async (
   workspaceId: number,
-  args: PaginateDeploymentsArgs
+  args: PaginateDeploymentsInput
 ) => {
   const query: Prisma.DeploymentFindManyArgs = {
     take: take(args.limit),
@@ -54,10 +55,26 @@ export const paginateDeployments = async (
 export const findDeploymentById = async ({
   workspaceId,
   deploymentId,
-}: FindDeploymentByIdArgs) => {
+}: FindDeploymentByIdInput) => {
   return getPrisma(workspaceId).deployment.findUnique({
     where: {
       id: deploymentId,
+    },
+  });
+};
+
+export const findLastProductionDeploymentByApplicationId = async ({
+  workspaceId,
+  applicationId,
+}: FindLastProductionDeploymentByApplicationIdInput) => {
+  return getPrisma(workspaceId).deployment.findFirst({
+    where: {
+      applicationId,
+      archivedAt: null,
+      environment: { isProduction: true, archivedAt: null },
+    },
+    orderBy: {
+      deployedAt: "desc",
     },
   });
 };

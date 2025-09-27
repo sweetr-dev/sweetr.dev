@@ -119,6 +119,15 @@ export const useApplicationsInfiniteQuery = (
                   startColor
                   endColor
                 }
+                repository {
+                  id
+                  fullName
+                }
+                lastProductionDeployment {
+                  id
+                  version
+                  deployedAt
+                }
               }
             }
           }
@@ -143,12 +152,6 @@ export const useUpsertApplicationMutation = (
           mutation UpsertApplication($input: UpsertApplicationInput!) {
             upsertApplication(input: $input) {
               id
-              name
-              description
-              team {
-                id
-                name
-              }
             }
           }
         `),

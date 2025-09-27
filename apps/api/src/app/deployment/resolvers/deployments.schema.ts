@@ -41,6 +41,11 @@ export default /* GraphQL */ `
     environmentIds: [SweetID!]!
   }
 
+  extend type Application {
+    "The last deployment of the application"
+    lastProductionDeployment: Deployment
+  }
+
   extend type Workspace {
     deployments(input: DeploymentsQueryInput!): [Deployment!]!
   }

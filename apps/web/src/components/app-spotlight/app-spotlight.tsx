@@ -130,7 +130,7 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           description: application.description,
           leftSection: <IconApplication size={18} stroke={1.5} />,
           onClick: () => {
-            navigate(`/systems/applications/${application.id}`);
+            navigate(`/systems/applications/edit/${application.id}`);
           },
         })) || [],
     },

@@ -10,6 +10,15 @@
   }
 }
 
+.link {
+  color: var(--mantine-color-green-4);
+  display: inline;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .subgrid {
   display: grid;
   grid-template-columns: subgrid;

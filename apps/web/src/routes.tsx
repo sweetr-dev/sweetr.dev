@@ -152,7 +152,7 @@ export const router = createBrowserRouter([
                     element: <ApplicationsCreatePage />,
                   },
                   {
-                    path: "/systems/applications/:applicationId",
+                    path: "/systems/applications/edit/:applicationId",
                     element: <ApplicationsUpdatePage />,
                   },
                 ],

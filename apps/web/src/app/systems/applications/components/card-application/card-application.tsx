@@ -14,14 +14,10 @@ import { formatLocaleDate } from "../../../../../providers/date.provider";
 import { Link } from "react-router-dom";
 import { Application } from "@sweetr/graphql-types/frontend/graphql";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
+import { getGithubCommitOrTagUrl } from "../../../../../providers/github.provider";
 
 interface CardApplicationProps {
-  application: Application & {
-    lastDeployment?: {
-      version: string;
-      deployedAt: string;
-    };
-  };
+  application: Application;
 }
 
 export const CardApplication = ({ application }: CardApplicationProps) => {
@@ -36,7 +32,7 @@ export const CardApplication = ({ application }: CardApplicationProps) => {
   return (
     <Anchor
       component={Link}
-      to={`/systems/applications/${application.id}/?${searchParams.toString()}`}
+      to={`/systems/applications/edit/${application.id}/?${searchParams.toString()}`}
       underline="never"
       c="dark.0"
       className="subgrid"
@@ -73,31 +69,45 @@ export const CardApplication = ({ application }: CardApplicationProps) => {
           </Badge>
         )}
 
-        <Tooltip label="Production" withArrow>
-          <Group gap={5}>
-            <IconServer stroke={1.5} size={20} />
-            {!application.lastDeployment && <Text>No deployments</Text>}
-            {application.lastDeployment && (
-              <Text>
-                Running{" "}
-                <Anchor>
-                  {formatVersion(application.lastDeployment.version)}
-                </Anchor>{" "}
-                since{" "}
-                {formatLocaleDate(
-                  parseISO(application.lastDeployment.deployedAt),
-                  {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  },
-                )}
-              </Text>
-            )}
-          </Group>
-        </Tooltip>
+        <Group gap={5}>
+          <IconServer stroke={1.5} size={20} />
+          {!application.lastProductionDeployment && <Text>No deployments</Text>}
+          {application.lastProductionDeployment && (
+            <Tooltip
+              withArrow
+              label={`In production since ${formatLocaleDate(
+                parseISO(application.lastProductionDeployment.deployedAt),
+                {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                },
+              )}`}
+            >
+              <Box>
+                <Text display="inline">Running </Text>
+                <Box
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(
+                      getGithubCommitOrTagUrl(
+                        application.repository.fullName,
+                        application.lastProductionDeployment!.version,
+                      ),
+                      "_blank",
+                    );
+                  }}
+                  className="link"
+                >
+                  {formatVersion(application.lastProductionDeployment.version)}
+                </Box>
+              </Box>
+            </Tooltip>
+          )}
+        </Group>
       </Paper>
     </Anchor>
   );

@@ -73,6 +73,8 @@ export type Application = {
   description?: Maybe<Scalars['String']['output']>;
   /** The id of the application */
   id: Scalars['SweetID']['output'];
+  /** The last deployment of the application */
+  lastProductionDeployment?: Maybe<Deployment>;
   /** The name of the application */
   name: Scalars['String']['output'];
   /** The repository that the application is in */
@@ -1399,6 +1401,7 @@ export type ApplicationResolvers<ContextType = GraphQLContext, ParentType extend
   deploymentSettings?: Resolver<ResolversTypes['DeploymentSettings'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  lastProductionDeployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   repository?: Resolver<ResolversTypes['Repository'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
