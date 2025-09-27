@@ -15,6 +15,9 @@ export const paginateDeployments = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
+      environment: {
+        archivedAt: null,
+      },
     },
     orderBy: {
       createdAt: "desc",

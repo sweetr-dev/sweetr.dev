@@ -94,6 +94,11 @@ export type ApplicationsQueryInput = {
   teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
 };
 
+export type ArchiveEnvironmentInput = {
+  environmentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type ArchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -343,6 +348,8 @@ export type EnvironmentsQueryInput = {
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The ids to filter by */
   ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** Whether to include archived environments */
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name. */
@@ -427,6 +434,7 @@ export type LoginWithGithubResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  archiveEnvironment: Environment;
   archiveTeam: Team;
   installIntegration?: Maybe<Scalars['Void']['output']>;
   loginToStripe?: Maybe<Scalars['String']['output']>;
@@ -434,6 +442,7 @@ export type Mutation = {
   regenerateApiKey: Scalars['String']['output'];
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
+  unarchiveEnvironment: Environment;
   unarchiveTeam: Team;
   updateAlert: Alert;
   updateAutomation: Automation;
@@ -441,6 +450,11 @@ export type Mutation = {
   updateWorkspaceSettings: Workspace;
   upsertApplication: Application;
   upsertTeam: Team;
+};
+
+
+export type MutationArchiveEnvironmentArgs = {
+  input: ArchiveEnvironmentInput;
 };
 
 
@@ -476,6 +490,11 @@ export type MutationRemoveIntegrationArgs = {
 
 export type MutationSendTestMessageArgs = {
   input: SendTestMessageInput;
+};
+
+
+export type MutationUnarchiveEnvironmentArgs = {
+  input: UnarchiveEnvironmentInput;
 };
 
 
@@ -841,6 +860,11 @@ export type Trial = {
   endAt: Scalars['DateTime']['output'];
 };
 
+export type UnarchiveEnvironmentInput = {
+  environmentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UnarchiveTeamInput = {
   teamId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
@@ -1130,6 +1154,7 @@ export type ResolversTypes = {
   ApiKey: ResolverTypeWrapper<DeepPartial<ApiKey>>;
   Application: ResolverTypeWrapper<DeepPartial<Application>>;
   ApplicationsQueryInput: ResolverTypeWrapper<DeepPartial<ApplicationsQueryInput>>;
+  ArchiveEnvironmentInput: ResolverTypeWrapper<DeepPartial<ArchiveEnvironmentInput>>;
   ArchiveTeamInput: ResolverTypeWrapper<DeepPartial<ArchiveTeamInput>>;
   AuthProvider: ResolverTypeWrapper<DeepPartial<AuthProvider>>;
   AuthProviderInput: ResolverTypeWrapper<DeepPartial<AuthProviderInput>>;
@@ -1215,6 +1240,7 @@ export type ResolversTypes = {
   TimeZone: ResolverTypeWrapper<DeepPartial<Scalars['TimeZone']['output']>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
   Trial: ResolverTypeWrapper<DeepPartial<Trial>>;
+  UnarchiveEnvironmentInput: ResolverTypeWrapper<DeepPartial<UnarchiveEnvironmentInput>>;
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
   UpdateAlertInput: ResolverTypeWrapper<DeepPartial<UpdateAlertInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
@@ -1241,6 +1267,7 @@ export type ResolversParentTypes = {
   ApiKey: DeepPartial<ApiKey>;
   Application: DeepPartial<Application>;
   ApplicationsQueryInput: DeepPartial<ApplicationsQueryInput>;
+  ArchiveEnvironmentInput: DeepPartial<ArchiveEnvironmentInput>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
   AuthProviderInput: DeepPartial<AuthProviderInput>;
   AuthProviderResponse: DeepPartial<AuthProviderResponse>;
@@ -1313,6 +1340,7 @@ export type ResolversParentTypes = {
   TimeZone: DeepPartial<Scalars['TimeZone']['output']>;
   Token: DeepPartial<Token>;
   Trial: DeepPartial<Trial>;
+  UnarchiveEnvironmentInput: DeepPartial<UnarchiveEnvironmentInput>;
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
   UpdateAlertInput: DeepPartial<UpdateAlertInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
@@ -1545,6 +1573,7 @@ export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, Paren
 };
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  archiveEnvironment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType, RequireFields<MutationArchiveEnvironmentArgs, 'input'>>;
   archiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationArchiveTeamArgs, 'input'>>;
   installIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
@@ -1552,6 +1581,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   regenerateApiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRegenerateApiKeyArgs, 'input'>>;
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
+  unarchiveEnvironment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType, RequireFields<MutationUnarchiveEnvironmentArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAlert?: Resolver<ResolversTypes['Alert'], ParentType, ContextType, RequireFields<MutationUpdateAlertArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;

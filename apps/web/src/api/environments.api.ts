@@ -4,17 +4,24 @@ import {
   Optional,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
+  useMutation,
+  UseMutationOptions,
   useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import {
+  ArchiveEnvironmentMutation,
   EnvironmentOptionsQuery,
   EnvironmentOptionsQueryVariables,
   EnvironmentsQuery,
   EnvironmentsQueryVariables,
+  MutationArchiveEnvironmentArgs,
+  MutationUnarchiveEnvironmentArgs,
+  UnarchiveEnvironmentMutation,
 } from "@sweetr/graphql-types/frontend/graphql";
+import { queryClient } from "./clients/query-client";
 
 export const useEnvironmentOptionsQuery = (
   args: EnvironmentOptionsQueryVariables,
@@ -68,11 +75,70 @@ export const useEnvironmentsInfiniteQuery = (
                 id
                 name
                 isProduction
+                archivedAt
               }
             }
           }
         `),
         { ...args, input: { ...args.input, cursor: pageParam as string } },
       ),
+    ...options,
+  });
+
+export const useArchiveEnvironment = (
+  options?: UseMutationOptions<
+    ArchiveEnvironmentMutation,
+    unknown,
+    MutationArchiveEnvironmentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation ArchiveEnvironment($input: ArchiveEnvironmentInput!) {
+            archiveEnvironment(input: $input) {
+              id
+              name
+              isProduction
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["environments"] });
+    },
+    ...options,
+  });
+
+export const useUnarchiveEnvironment = (
+  options?: UseMutationOptions<
+    UnarchiveEnvironmentMutation,
+    unknown,
+    MutationUnarchiveEnvironmentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation UnarchiveEnvironment($input: UnarchiveEnvironmentInput!) {
+            unarchiveEnvironment(input: $input) {
+              id
+              name
+              isProduction
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["environments"] });
+    },
     ...options,
   });

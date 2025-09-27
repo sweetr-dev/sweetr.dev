@@ -12,6 +12,12 @@ export const paginateIncidents = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
+      causeDeployment: {
+        archivedAt: null,
+        environment: {
+          archivedAt: null,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

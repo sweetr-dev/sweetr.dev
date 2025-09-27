@@ -1,7 +1,9 @@
 import { Environment, Prisma } from "@prisma/client";
 import {
+  ArchiveEnvironmentInput,
   FindEnvironmentByIdInput,
   PaginateEnvironmentsArgs,
+  UnarchiveEnvironmentInput,
 } from "./environment.types";
 import { getPrisma, take } from "../../../prisma";
 
@@ -27,7 +29,7 @@ export const paginateEnvironments = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
-      archivedAt: null,
+      archivedAt: args.includeArchived ? undefined : null,
     },
     orderBy: {
       id: "asc",
@@ -52,4 +54,24 @@ export const paginateEnvironments = async (
   }
 
   return getPrisma(workspaceId).environment.findMany(query);
+};
+
+export const archiveEnvironment = async ({
+  workspaceId,
+  environmentId,
+}: ArchiveEnvironmentInput) => {
+  return getPrisma(workspaceId).environment.update({
+    where: { id: environmentId },
+    data: { archivedAt: new Date() },
+  });
+};
+
+export const unarchiveEnvironment = async ({
+  workspaceId,
+  environmentId,
+}: UnarchiveEnvironmentInput) => {
+  return getPrisma(workspaceId).environment.update({
+    where: { id: environmentId },
+    data: { archivedAt: null },
+  });
 };

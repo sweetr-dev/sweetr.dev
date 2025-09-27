@@ -42,7 +42,7 @@ export const DrawerUpsertTeam: FC<DrawerUpsertTeamProps> = ({
   });
   const { mutate, isPending } = useUpsertTeamMutation({
     onSuccess: (team) => {
-      const message = isEditing ? "Team updated" : "New team created";
+      const message = isEditing ? "Team updated." : "New team created.";
       showSuccessNotification({ message });
 
       onClose();

@@ -26,7 +26,7 @@ export const EnvironmentsPage = () => {
     isFetchedAfterMount,
   } = useEnvironmentsInfiniteQuery(
     {
-      input: {},
+      input: { includeArchived: true },
       workspaceId: workspace?.id,
     },
     {
