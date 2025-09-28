@@ -1,6 +1,6 @@
 import { AutomationType, Installation } from "@prisma/client";
 import { logger } from "../../../../lib/logger";
-import { isActiveCustomer } from "../../../workspace-authorization.service";
+import { isActiveCustomer } from "../../../authorization.service";
 import { findAutomationByType } from "../../services/automation.service";
 import { PullRequest } from "@octokit/webhooks-types";
 import { getInstallationOctoKit } from "../../../../lib/octokit";

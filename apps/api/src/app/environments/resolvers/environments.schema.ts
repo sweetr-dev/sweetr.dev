@@ -39,7 +39,7 @@ export default /* GraphQL */ `
     workspaceId: SweetID!
   }
 
-  extend type Mutation {
+  type Mutation {
     archiveEnvironment(input: ArchiveEnvironmentInput!): Environment!
     unarchiveEnvironment(input: UnarchiveEnvironmentInput!): Environment!
   }

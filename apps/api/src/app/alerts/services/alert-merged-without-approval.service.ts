@@ -1,5 +1,5 @@
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
-import { isActiveCustomer } from "../../workspace-authorization.service";
+import { isActiveCustomer } from "../../authorization.service";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import { getPrisma } from "../../../prisma";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";

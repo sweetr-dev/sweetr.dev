@@ -82,7 +82,7 @@ export const DrawerUpsertTeam: FC<DrawerUpsertTeamProps> = ({
         position="right"
         opened={isOpen}
         onClose={onClose || (() => {})}
-        size="lg"
+        size="xl"
         title={title}
         actions={
           <Button type="submit" disabled={!isFormValid} loading={isPending}>

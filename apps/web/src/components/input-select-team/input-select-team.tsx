@@ -21,7 +21,7 @@ export const InputSelectTeam = (
       <InputSelectAsync
         memoizedItems={options || []}
         onDebouncedSearch={setSearch}
-        leftSection={<IconTeam size={16} stroke={1.5} />}
+        leftSection={props.value ? null : <IconTeam size={16} stroke={1.5} />}
         renderLabel={(item) => `${item.icon} ${item.label}`}
         {...props}
       />

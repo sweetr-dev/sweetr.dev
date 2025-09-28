@@ -9,7 +9,7 @@ import {
   Loader,
   ScrollArea,
 } from "@mantine/core";
-import { useSearchPeopleQuery } from "../../../../../api/people.api";
+import { usePeopleOptionsQuery } from "../../../../../api/people.api";
 import { useDebouncedValue } from "@mantine/hooks";
 import { PersonData } from "./types";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
@@ -48,7 +48,7 @@ export const InputSelectPerson = ({
     if (person) onSubmit(person);
   };
 
-  const { data, isLoading, refetch } = useSearchPeopleQuery({
+  const { data, isLoading, refetch } = usePeopleOptionsQuery({
     workspaceId: workspace.id,
     input: { query: debouncedSearch },
   });

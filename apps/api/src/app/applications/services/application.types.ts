@@ -16,7 +16,7 @@ export interface PaginateApplicationsArgs {
 export enum DeploymentSettingsTrigger {
   WEBHOOK = "WEBHOOK",
   MERGE = "MERGE",
-  GIT_DEPLOYMENTS = "GIT_DEPLOYMENTS",
+  GIT_DEPLOYMENT = "GIT_DEPLOYMENT",
 }
 
 export interface DeploymentSettings extends JsonObject {

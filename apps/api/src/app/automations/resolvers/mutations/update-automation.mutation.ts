@@ -1,7 +1,7 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
-import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
+import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { upsertAutomationSettings } from "../../services/automation.service";
 import { transformAutomation } from "../transformers/automation.transformer";
 
@@ -9,7 +9,7 @@ export const updateAutomationMutation = createMutationResolver({
   updateAutomation: async (_, { input }, context) => {
     logger.info("mutation.updateAutomation", { input });
 
-    await authorizeWorkspaceOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

@@ -11,7 +11,7 @@ import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.e
 import { LoadableContent } from "../../../../../components/loadable-content";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 
-export const ApplicationsUpdatePage = () => {
+export const ApplicationsEditPage = () => {
   const searchParams = useFilterSearchParameters();
 
   const drawerProps = useDrawerPage({
@@ -56,10 +56,7 @@ export const ApplicationsUpdatePage = () => {
   return (
     <>
       <DrawerScrollable
-        position="right"
-        opened={drawerProps.opened}
-        onClose={drawerProps.onClose || (() => {})}
-        size="lg"
+        {...drawerProps}
         title="Edit application"
         actions={
           <Button type="submit" disabled={!isFormValid} loading={isPending}>

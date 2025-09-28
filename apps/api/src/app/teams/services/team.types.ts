@@ -31,12 +31,7 @@ export interface FindTeamsByWorkspaceInput {
   limit?: number;
 }
 
-export interface AuthorizeTeamInput {
-  teamId: number;
-  gitProfileId: number;
-}
-
-export interface AuthorizeTeamMembersInput {
+export interface CountTeamMembersInput {
   workspaceId: number;
   members: {
     personId: number;

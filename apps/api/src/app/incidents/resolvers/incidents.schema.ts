@@ -44,7 +44,41 @@ export default /* GraphQL */ `
     limit: Int
   }
 
+  input UpsertIncidentInput {
+    "The workspace id"
+    workspaceId: SweetID!
+
+    "The incident id, specify when updating an existing incident."
+    incidentId: SweetID
+
+    "The team responsible for handling the incident"
+    teamId: SweetID
+
+    "The incident leader"
+    leaderId: SweetID
+
+    "The time the incident was detected"
+    detectedAt: DateTime!
+
+    "The time the incident was resolved"
+    resolvedAt: DateTime
+
+    "The deployment that caused the incident"
+    causeDeploymentId: SweetID!
+
+    "The deployment that fixed the incident"
+    fixDeploymentId: SweetID
+
+    "The url to the postmortem"
+    postmortemUrl: String
+  }
+
+  type Mutation {
+    upsertIncident(input: UpsertIncidentInput!): Incident!
+  }
+
   extend type Workspace {
+    incident(incidentId: SweetID!): Incident
     incidents(input: IncidentsQueryInput!): [Incident!]!
   }
 `;

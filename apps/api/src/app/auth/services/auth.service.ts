@@ -21,7 +21,7 @@ import { UnknownException } from "../../errors/exceptions/unknown.exception";
 import {
   getTemporaryNonce,
   preventCSRFAttack,
-} from "../../workspace-authorization.service";
+} from "../../authorization.service";
 
 export const loginWithGithub = async (
   code: string,

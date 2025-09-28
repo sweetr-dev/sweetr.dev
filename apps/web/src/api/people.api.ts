@@ -48,7 +48,7 @@ export const usePeopleInfiniteQuery = (
     ...options,
   });
 
-export const useSearchPeopleQuery = (
+export const usePeopleOptionsQuery = (
   args: PeopleQueryVariables,
   options?: Partial<UseQueryOptions<PeopleQuery>>,
 ) =>

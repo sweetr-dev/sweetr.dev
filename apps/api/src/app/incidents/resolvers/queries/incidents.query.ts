@@ -2,7 +2,10 @@ import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
-import { paginateIncidents } from "../../services/incident.service";
+import {
+  findIncidentById,
+  paginateIncidents,
+} from "../../services/incident.service";
 import { transformIncident } from "../transformers/incident.transformer";
 
 export const incidentsQuery = createFieldResolver("Workspace", {
@@ -27,5 +30,21 @@ export const incidentsQuery = createFieldResolver("Workspace", {
     });
 
     return incidents.map(transformIncident);
+  },
+  incident: async (workspace, { incidentId }) => {
+    logger.info("query.workspace.incident", { workspace, incidentId });
+
+    if (!workspace.id || !incidentId) {
+      throw new ResourceNotFoundException("Workspace not found");
+    }
+
+    const incident = await findIncidentById({
+      workspaceId: workspace.id,
+      incidentId,
+    });
+
+    if (!incident) return null;
+
+    return transformIncident(incident);
   },
 });

@@ -61,8 +61,10 @@ import { DeploymentsPage } from "./app/systems/deployments/page";
 import { ApplicationsPage } from "./app/systems/applications/page";
 import { IncidentsPage } from "./app/systems/incidents/page";
 import { ApplicationsCreatePage } from "./app/systems/applications/upsert/create/page";
-import { ApplicationsUpdatePage } from "./app/systems/applications/upsert/update/page";
+import { ApplicationsEditPage } from "./app/systems/applications/upsert/edit/page";
 import { EnvironmentsPage } from "./app/systems/environments/page";
+import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
+import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
 
 export const router = createBrowserRouter([
   {
@@ -153,7 +155,7 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: "/systems/applications/edit/:applicationId",
-                    element: <ApplicationsUpdatePage />,
+                    element: <ApplicationsEditPage />,
                   },
                 ],
               },
@@ -164,6 +166,16 @@ export const router = createBrowserRouter([
               {
                 path: "/systems/incidents",
                 element: <IncidentsPage />,
+                children: [
+                  {
+                    path: "/systems/incidents/new",
+                    element: <IncidentsCreatePage />,
+                  },
+                  {
+                    path: "/systems/incidents/edit/:incidentId",
+                    element: <IncidentsEditPage />,
+                  },
+                ],
               },
               {
                 path: "/systems/environments",

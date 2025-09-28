@@ -4,6 +4,31 @@ import {
   FindRepositoriesByWorkspaceArgs,
   FindRepositoryByIdArgs,
 } from "./repository.types";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+
+export const findRepositoryById = async ({
+  workspaceId,
+  repositoryId,
+}: FindRepositoryByIdArgs): Promise<Repository | null> => {
+  return getPrisma(workspaceId).repository.findUnique({
+    where: {
+      id: repositoryId,
+    },
+  });
+};
+
+export const findRepositoryByIdOrThrow = async ({
+  workspaceId,
+  repositoryId,
+}: FindRepositoryByIdArgs) => {
+  const repository = await findRepositoryById({ workspaceId, repositoryId });
+
+  if (!repository) {
+    throw new ResourceNotFoundException("Repository not found");
+  }
+
+  return repository;
+};
 
 export const findRepositoriesByWorkspace = async ({
   workspaceId,
@@ -37,17 +62,6 @@ export const findRepositoriesByWorkspace = async ({
   }
 
   return getPrisma(workspaceId).repository.findMany(query);
-};
-
-export const findRepositoryById = async ({
-  workspaceId,
-  repositoryId,
-}: FindRepositoryByIdArgs): Promise<Repository | null> => {
-  return getPrisma(workspaceId).repository.findUnique({
-    where: {
-      id: repositoryId,
-    },
-  });
 };
 
 export const isRepositorySyncable = async (repository: Repository) => {

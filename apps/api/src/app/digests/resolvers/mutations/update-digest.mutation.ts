@@ -2,7 +2,7 @@ import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
-import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
+import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { upsertDigest } from "../../services/digest.service";
 import { z } from "zod";
 import { transformDigest } from "../transformers/digest.transformer";
@@ -18,7 +18,7 @@ export const updateDigestMutation = createMutationResolver({
       input
     );
 
-    await authorizeWorkspaceOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

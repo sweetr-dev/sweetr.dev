@@ -1,4 +1,4 @@
-import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core";
+import { Box, Button, Divider, Group, Skeleton, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconBox, IconCalendarFilled, IconServer } from "@tabler/icons-react";
 import { format, parseISO } from "date-fns";
@@ -24,6 +24,10 @@ import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
 import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { CardIncident } from "./components/card-incident";
 import { Incident } from "@sweetr/graphql-types/frontend/graphql";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useHotkeys } from "@mantine/hooks";
+import { useContextualActions } from "../../../providers/contextual-actions.provider";
+import { HeaderActions } from "../../../components/header-actions";
 
 export const IncidentsPage = () => {
   const { workspace } = useWorkspace();
@@ -41,6 +45,30 @@ export const IncidentsPage = () => {
       environmentIds: searchParams.getAll("environment"),
     },
   });
+  const navigate = useNavigate();
+
+  useHotkeys([
+    [
+      "n",
+      () => {
+        navigate(`/systems/incidents/new/?${searchParams.toString()}`);
+      },
+    ],
+  ]);
+
+  useContextualActions(
+    {
+      newIncident: {
+        label: "New incident",
+        description: "Create a new incident",
+        icon: IconBox,
+        onClick: () => {
+          navigate(`/systems/incidents/new/?${searchParams.toString()}`);
+        },
+      },
+    },
+    [searchParams.toString()],
+  );
 
   const {
     data,
@@ -99,6 +127,14 @@ export const IncidentsPage = () => {
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Incidents" }]} />
+
+      <HeaderActions>
+        <Group>
+          <Link to={`/systems/incidents/new/?${searchParams.toString()}`}>
+            <Button variant="light">New</Button>
+          </Link>
+        </Group>
+      </HeaderActions>
 
       <Group gap={5}>
         <FilterDate
@@ -209,6 +245,8 @@ export const IncidentsPage = () => {
           </Stack>
         }
       />
+
+      <Outlet />
     </PageContainer>
   );
 };

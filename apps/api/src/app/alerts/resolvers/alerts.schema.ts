@@ -19,7 +19,7 @@ export default /* GraphQL */ `
     alert(input: AlertQueryInput!): Alert
   }
 
-  extend type Mutation {
+  type Mutation {
     updateAlert(input: UpdateAlertInput!): Alert!
   }
 

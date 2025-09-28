@@ -26,6 +26,7 @@ type Item = {
 export interface InputSelectAsyncProps extends InputBaseProps {
   value?: string;
   onChange: (value: string) => void;
+  onOptionSelected?: (item: Item) => void;
   memoizedItems: Item[];
   onDebouncedSearch: (query: string) => void;
   renderLabel?: (item: Item) => string | ReactNode;
@@ -35,11 +36,12 @@ export interface InputSelectAsyncProps extends InputBaseProps {
 
 export const InputSelectAsync = ({
   value = "",
-  onChange,
   memoizedItems = [],
+  clearable = false,
+  onChange,
   onDebouncedSearch,
   renderLabel,
-  clearable = false,
+  onOptionSelected,
   ...props
 }: InputSelectAsyncProps) => {
   const { workspace } = useWorkspace();
@@ -102,6 +104,7 @@ export const InputSelectAsync = ({
         store={combobox}
         onOptionSubmit={(val) => {
           onChange?.(val);
+          onOptionSelected?.(selectedOption);
           combobox.closeDropdown();
           combobox.updateSelectedOptionIndex("active");
         }}
@@ -132,10 +135,14 @@ export const InputSelectAsync = ({
           >
             {selectedOption ? (
               <>
-                {selectedOption?.icon} {selectedOption?.label}
+                {renderLabel
+                  ? renderLabel(selectedOption)
+                  : selectedOption?.label}
               </>
             ) : (
-              <Input.Placeholder>{props.placeholder}</Input.Placeholder>
+              <Input.Placeholder>
+                {props.placeholder || "Select an option"}
+              </Input.Placeholder>
             )}
           </InputBase>
         </Combobox.Target>

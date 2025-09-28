@@ -15,18 +15,13 @@ import { formatLocaleDate } from "../../../../../providers/date.provider";
 import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconPullRequest } from "../../../../../providers/icon.provider";
 import { AvatarUser } from "../../../../../components/avatar-user";
+import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";
 
 interface CardDeploymentProps {
   deployment: Deployment;
 }
 
 export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
-  const formatVersion = (version: string) => {
-    if (version.includes(".") || version.startsWith("v")) return version;
-
-    return version.substring(0, 7);
-  };
-
   return (
     <Anchor
       href={`/systems/deployments/${deployment.id}`}
@@ -62,7 +57,7 @@ export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
             {deployment.application.name}
           </Code>
         </Box>
-        <Text lineClamp={1}>{formatVersion(deployment.version)}</Text>
+        <Text lineClamp={1}>{formatDeploymentVersion(deployment.version)}</Text>
         <Group gap={5}>
           <IconPullRequest stroke={1.5} size={20} />
           <Text>5</Text>

@@ -297,15 +297,19 @@ export enum DeploymentSettingsTrigger {
 
 export type DeploymentsQueryInput = {
   /** The applications to filter by */
-  applicationIds: Array<Scalars['SweetID']['input']>;
+  applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the deployment went live */
   deployedAt?: InputMaybe<DateTimeRange>;
   /** The environments to filter by */
-  environmentIds: Array<Scalars['SweetID']['input']>;
+  environmentIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The ids to filter by */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
+  /** The query to search by. Looks up by version and description. */
+  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Digest = {
@@ -451,6 +455,7 @@ export type Mutation = {
   updateDigest: Digest;
   updateWorkspaceSettings: Workspace;
   upsertApplication: Application;
+  upsertIncident: Incident;
   upsertTeam: Team;
 };
 
@@ -530,6 +535,11 @@ export type MutationUpsertApplicationArgs = {
 };
 
 
+export type MutationUpsertIncidentArgs = {
+  input: UpsertIncidentInput;
+};
+
+
 export type MutationUpsertTeamArgs = {
   input: UpsertTeamInput;
 };
@@ -557,6 +567,8 @@ export type NumericSeriesChartData = {
 export type PeopleQueryInput = {
   /** The pagination cursor. */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The ids to filter by. */
+  ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name, email and git handle. */
@@ -923,6 +935,27 @@ export type UpsertApplicationInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
 
+export type UpsertIncidentInput = {
+  /** The deployment that caused the incident */
+  causeDeploymentId: Scalars['SweetID']['input'];
+  /** The time the incident was detected */
+  detectedAt: Scalars['DateTime']['input'];
+  /** The deployment that fixed the incident */
+  fixDeploymentId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The incident id, specify when updating an existing incident. */
+  incidentId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The incident leader */
+  leaderId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The url to the postmortem */
+  postmortemUrl?: InputMaybe<Scalars['String']['input']>;
+  /** The time the incident was resolved */
+  resolvedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The team responsible for handling the incident */
+  teamId?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The workspace id */
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UpsertTeamInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   endColor: Scalars['String']['input'];
@@ -956,6 +989,7 @@ export type Workspace = {
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
+  incident?: Maybe<Incident>;
   incidents: Array<Incident>;
   /** A number between 0 and 100 representing the progress of the initial data synchronization with the git provider */
   initialSyncProgress: Scalars['Int']['output'];
@@ -1001,6 +1035,11 @@ export type WorkspaceDeploymentsArgs = {
 
 export type WorkspaceEnvironmentsArgs = {
   input: EnvironmentsQueryInput;
+};
+
+
+export type WorkspaceIncidentArgs = {
+  incidentId: Scalars['SweetID']['input'];
 };
 
 
@@ -1249,6 +1288,7 @@ export type ResolversTypes = {
   UpdateDigestInput: ResolverTypeWrapper<DeepPartial<UpdateDigestInput>>;
   UpdateWorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<UpdateWorkspaceSettingsInput>>;
   UpsertApplicationInput: ResolverTypeWrapper<DeepPartial<UpsertApplicationInput>>;
+  UpsertIncidentInput: ResolverTypeWrapper<DeepPartial<UpsertIncidentInput>>;
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
@@ -1349,6 +1389,7 @@ export type ResolversParentTypes = {
   UpdateDigestInput: DeepPartial<UpdateDigestInput>;
   UpdateWorkspaceSettingsInput: DeepPartial<UpdateWorkspaceSettingsInput>;
   UpsertApplicationInput: DeepPartial<UpsertApplicationInput>;
+  UpsertIncidentInput: DeepPartial<UpsertIncidentInput>;
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
@@ -1591,6 +1632,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateDigest?: Resolver<ResolversTypes['Digest'], ParentType, ContextType, RequireFields<MutationUpdateDigestArgs, 'input'>>;
   updateWorkspaceSettings?: Resolver<ResolversTypes['Workspace'], ParentType, ContextType, RequireFields<MutationUpdateWorkspaceSettingsArgs, 'input'>>;
   upsertApplication?: Resolver<ResolversTypes['Application'], ParentType, ContextType, RequireFields<MutationUpsertApplicationArgs, 'input'>>;
+  upsertIncident?: Resolver<ResolversTypes['Incident'], ParentType, ContextType, RequireFields<MutationUpsertIncidentArgs, 'input'>>;
   upsertTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUpsertTeamArgs, 'input'>>;
 };
 
@@ -1780,6 +1822,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  incident?: Resolver<Maybe<ResolversTypes['Incident']>, ParentType, ContextType, RequireFields<WorkspaceIncidentArgs, 'incidentId'>>;
   incidents?: Resolver<Array<ResolversTypes['Incident']>, ParentType, ContextType, RequireFields<WorkspaceIncidentsArgs, 'input'>>;
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;

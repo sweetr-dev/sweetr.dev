@@ -5,6 +5,31 @@ import {
   FindLastProductionDeploymentByApplicationIdInput,
   PaginateDeploymentsInput,
 } from "./deployment.types";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+
+export const findDeploymentById = async ({
+  workspaceId,
+  deploymentId,
+}: FindDeploymentByIdInput) => {
+  return getPrisma(workspaceId).deployment.findUnique({
+    where: {
+      id: deploymentId,
+    },
+  });
+};
+
+export const findDeploymentByIdOrThrow = async ({
+  workspaceId,
+  deploymentId,
+}: FindDeploymentByIdInput) => {
+  const deployment = await findDeploymentById({ workspaceId, deploymentId });
+
+  if (!deployment) {
+    throw new ResourceNotFoundException("Deployment not found");
+  }
+
+  return deployment;
+};
 
 export const paginateDeployments = async (
   workspaceId: number,
@@ -24,6 +49,23 @@ export const paginateDeployments = async (
       createdAt: "desc",
     },
   };
+
+  if (args.deploymentIds?.length) {
+    query.where = {
+      ...query.where,
+      id: { in: args.deploymentIds },
+    };
+  }
+
+  if (args.query) {
+    query.where = {
+      ...query.where,
+      OR: [
+        { version: { contains: args.query, mode: "insensitive" } },
+        { description: { contains: args.query, mode: "insensitive" } },
+      ],
+    };
+  }
 
   if (args.deployedAt?.from || args.deployedAt?.to) {
     query.where = {
@@ -50,17 +92,6 @@ export const paginateDeployments = async (
   }
 
   return getPrisma(workspaceId).deployment.findMany(query);
-};
-
-export const findDeploymentById = async ({
-  workspaceId,
-  deploymentId,
-}: FindDeploymentByIdInput) => {
-  return getPrisma(workspaceId).deployment.findUnique({
-    where: {
-      id: deploymentId,
-    },
-  });
 };
 
 export const findLastProductionDeploymentByApplicationId = async ({

@@ -9,7 +9,7 @@ import { getStripeClient } from "../../../lib/stripe";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { isAppSelfHosted } from "../../../lib/self-host";
 import { SubscriptionRequiredException } from "../../errors/exceptions/subscription-required.exception";
-import { isActiveCustomer } from "../../workspace-authorization.service";
+import { isActiveCustomer } from "../../authorization.service";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findUnique({

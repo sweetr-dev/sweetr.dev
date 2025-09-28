@@ -17,6 +17,7 @@ export const peopleQuery = createFieldResolver("Workspace", {
     }
 
     const gitProfiles = await paginateGitProfiles(workspace.id, {
+      gitProfileIds: input?.ids || undefined,
       cursor: input?.cursor || undefined,
       query: input?.query || undefined,
       limit: input?.limit || undefined,

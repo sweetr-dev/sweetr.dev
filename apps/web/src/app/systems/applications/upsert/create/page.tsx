@@ -19,10 +19,7 @@ export const ApplicationsCreatePage = () => {
   return (
     <>
       <DrawerScrollable
-        position="right"
-        opened={drawerProps.opened}
-        onClose={drawerProps.onClose || (() => {})}
-        size="lg"
+        {...drawerProps}
         title="Create application"
         actions={
           <Button type="submit" disabled={!isFormValid} loading={isPending}>

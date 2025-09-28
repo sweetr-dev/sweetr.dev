@@ -1,10 +1,25 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
-import { PaginateIncidentsArgs } from "./incident.types";
+import {
+  FindIncidentByIdInput,
+  PaginateIncidentsInput,
+  UpsertIncidentInput,
+} from "./incident.types";
+import { getIncidentValidationSchema } from "./incident.validation";
+import { validateInputOrThrow } from "../../validator.service";
+
+export const findIncidentById = async ({
+  workspaceId,
+  incidentId,
+}: FindIncidentByIdInput) => {
+  return getPrisma(workspaceId).incident.findUnique({
+    where: { id: incidentId },
+  });
+};
 
 export const paginateIncidents = async (
   workspaceId: number,
-  args: PaginateIncidentsArgs
+  args: PaginateIncidentsInput
 ) => {
   const query: Prisma.IncidentFindManyArgs = {
     take: take(args.limit),
@@ -46,4 +61,27 @@ export const paginateIncidents = async (
   }
 
   return getPrisma(workspaceId).incident.findMany(query);
+};
+
+export const upsertIncident = async (input: UpsertIncidentInput) => {
+  const workspaceId = input.workspaceId;
+
+  const { incidentId, ...data } = await validateInputOrThrow(
+    getIncidentValidationSchema(workspaceId),
+    input
+  );
+
+  return getPrisma(workspaceId).incident.upsert({
+    where: {
+      id: incidentId || 0,
+    },
+    create: {
+      ...data,
+      workspaceId,
+    },
+    update: {
+      ...data,
+      workspaceId,
+    },
+  });
 };

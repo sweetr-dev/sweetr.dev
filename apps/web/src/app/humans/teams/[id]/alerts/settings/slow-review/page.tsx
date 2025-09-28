@@ -74,7 +74,6 @@ export const SlowReviewAlertPage = () => {
     <DrawerScrollable
       {...drawerProps}
       title={alert.title}
-      size="lg"
       actions={
         <Button
           type="submit"

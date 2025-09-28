@@ -25,6 +25,12 @@ export default /* GraphQL */ `
   }
 
   input DeploymentsQueryInput {
+    "The ids to filter by"
+    ids: [SweetID!]
+
+    "The query to search by. Looks up by version and description."
+    query: String
+
     "The pagination cursor"
     cursor: SweetID
 
@@ -35,10 +41,10 @@ export default /* GraphQL */ `
     deployedAt: DateTimeRange
 
     "The applications to filter by"
-    applicationIds: [SweetID!]!
+    applicationIds: [SweetID!]
 
     "The environments to filter by"
-    environmentIds: [SweetID!]!
+    environmentIds: [SweetID!]
   }
 
   extend type Application {

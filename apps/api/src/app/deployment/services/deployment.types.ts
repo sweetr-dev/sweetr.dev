@@ -4,6 +4,8 @@ interface DateTimeRange {
 }
 
 export interface PaginateDeploymentsInput {
+  deploymentIds?: number[];
+  query?: string;
   cursor?: number;
   environmentIds?: number[];
   applicationIds?: number[];

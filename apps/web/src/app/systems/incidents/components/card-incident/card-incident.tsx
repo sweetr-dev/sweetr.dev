@@ -12,6 +12,7 @@ import {
 } from "../../../../../providers/date.provider";
 import { differenceInMilliseconds, parseISO } from "date-fns";
 import { Incident } from "@sweetr/graphql-types/frontend/graphql";
+import { Link } from "react-router-dom";
 
 export const CardIncident = ({ incident }: { incident: Incident }) => {
   const durationInMs = incident.resolvedAt
@@ -23,10 +24,10 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
 
   return (
     <Anchor
-      href={`/systems/incidents/1`}
+      component={Link}
+      to={`/systems/incidents/edit/${incident.id}`}
       underline="never"
       c="dark.0"
-      target="_blank"
       className="subgrid"
       data-columns="4"
     >
@@ -69,7 +70,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
             name={incident.leader.name}
             src={incident.leader.avatar || undefined}
             size="sm"
-            tooltip
+            tooltip={`Response led by ${incident.leader.name}`}
           />
         )}
 

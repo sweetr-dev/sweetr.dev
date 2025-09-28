@@ -1,6 +1,6 @@
 import { getPrisma, jsonObject } from "../../../../prisma";
 import { config } from "../../../../config";
-import { getTemporaryNonce } from "../../../workspace-authorization.service";
+import { getTemporaryNonce } from "../../../authorization.service";
 import { IntegrationException } from "../../../errors/exceptions/integration.exception";
 import { OauthV2AccessResponse } from "@slack/web-api";
 import { omit } from "radash";

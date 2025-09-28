@@ -3,7 +3,7 @@ import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
-import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
+import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { sendTestMessage } from "../../slack/services/slack-integration.service";
 
 export const sendTestMessageMutation = createMutationResolver({
@@ -18,7 +18,7 @@ export const sendTestMessageMutation = createMutationResolver({
       input
     );
 
-    await authorizeWorkspaceOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

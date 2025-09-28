@@ -7,6 +7,9 @@ import {
 } from "./application.types";
 import { Application, Prisma } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
+import { getApplicationValidationSchema } from "./application.validation";
+import { validateInputOrThrow } from "../../validator.service";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const findApplicationById = async ({
   applicationId,
@@ -18,6 +21,19 @@ export const findApplicationById = async ({
       workspaceId,
     },
   });
+};
+
+export const findApplicationByIdOrThrow = async ({
+  workspaceId,
+  applicationId,
+}: FindApplicationByIdInput) => {
+  const application = await findApplicationById({ workspaceId, applicationId });
+
+  if (!application) {
+    throw new ResourceNotFoundException("Application not found");
+  }
+
+  return application;
 };
 
 export const paginateApplications = async (
@@ -64,7 +80,13 @@ export const paginateApplications = async (
 };
 
 export const upsertApplication = async (input: UpsertApplicationInput) => {
-  const { workspaceId, deploymentSettings, applicationId, ...data } = input;
+  const workspaceId = input.workspaceId;
+
+  const { applicationId, deploymentSettings, ...data } =
+    await validateInputOrThrow(
+      getApplicationValidationSchema(workspaceId),
+      input
+    );
 
   const application = await getPrisma(workspaceId).application.findUnique({
     where: {

@@ -3,9 +3,9 @@ import { logger } from "../../../../lib/logger";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
-  authorizeWorkspaceOrThrow,
+  authorizeWorkspaceMemberOrThrow,
   preventCSRFAttack,
-} from "../../../workspace-authorization.service";
+} from "../../../authorization.service";
 import { findWorkspaceById } from "../../../workspaces/services/workspace.service";
 import { installIntegration } from "../../services/integrations.service";
 
@@ -15,7 +15,7 @@ export const installIntegrationMutation = createMutationResolver({
 
     await preventCSRFAttack(input.state);
 
-    authorizeWorkspaceOrThrow({
+    authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken?.gitProfileId,
     });

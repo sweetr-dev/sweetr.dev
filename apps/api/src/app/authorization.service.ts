@@ -10,27 +10,6 @@ import {
 import { AuthorizationException } from "./errors/exceptions/authorization.exception";
 import { BusinessRuleException } from "./errors/exceptions/business-rule.exception";
 
-export const authorizeWorkspaceOrThrow = async ({
-  workspaceId,
-  gitProfileId,
-}: {
-  workspaceId: number;
-  gitProfileId: number;
-}) => {
-  const membership = await getPrisma(workspaceId).workspaceMembership.findFirst(
-    {
-      where: {
-        workspaceId,
-        gitProfileId: gitProfileId,
-      },
-    }
-  );
-
-  if (!membership) {
-    throw new AuthorizationException();
-  }
-};
-
 export const isActiveCustomer = (
   workspace: Workspace & { subscription?: Subscription | null }
 ) => {
@@ -69,4 +48,49 @@ export const getTemporaryNonce = () => {
   redisConnection.setex(`oauth:state:${nonce}`, 60 * 5, nonce);
 
   return nonce;
+};
+
+export const authorizeWorkspaceMemberOrThrow = async ({
+  workspaceId,
+  gitProfileId,
+}: {
+  workspaceId: number;
+  gitProfileId: number;
+}) => {
+  const membership = await getPrisma(workspaceId).workspaceMembership.findFirst(
+    {
+      where: {
+        workspaceId,
+        gitProfileId: gitProfileId,
+      },
+    }
+  );
+
+  if (!membership) {
+    throw new AuthorizationException();
+  }
+};
+
+export const authorizeTeamMembersOrThrow = async ({
+  workspaceId,
+  members,
+}: {
+  workspaceId: number;
+  members: {
+    personId: number;
+  }[];
+}) => {
+  // Make sure all members belong to the workspace
+  const peopleCount = await getPrisma(workspaceId).workspaceMembership.count({
+    where: {
+      workspaceId: workspaceId,
+      gitProfileId: { in: members.map((member) => member.personId) },
+    },
+  });
+
+  if (peopleCount !== members.length) {
+    throw new AuthorizationException(
+      "Some members do not belong to this workspace."
+    );
+  }
 };
