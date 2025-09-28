@@ -19,7 +19,6 @@ export interface PaginateIncidentsInput {
 export interface UpsertIncidentInput {
   workspaceId: number;
   incidentId?: number;
-  applicationId: number;
   detectedAt: Date;
   resolvedAt?: Date | null;
   causeDeploymentId: number;
