@@ -6,20 +6,21 @@ import { IconDeployment } from "../../providers/icon.provider";
 
 type InputSelectDeploymentProps = InputSelectAsyncProps & {
   applicationIds?: string[];
+  deployedAt?: { from: string; to: string };
 };
 
-export const InputSelectDeployment = (
-  props: Omit<
-    InputSelectDeploymentProps,
-    "memoizedItems" | "onDebouncedSearch"
-  >,
-) => {
+export const InputSelectDeployment = ({
+  applicationIds,
+  deployedAt,
+  ...props
+}: Omit<InputSelectDeploymentProps, "memoizedItems" | "onDebouncedSearch">) => {
   const [search, setSearch] = useState("");
 
   const { options } = useDeploymentAsyncOptions({
     query: search,
     ids: props.value ? [props.value] : undefined,
-    applicationIds: props.applicationIds,
+    applicationIds: applicationIds,
+    deployedAt: deployedAt,
   });
 
   return (

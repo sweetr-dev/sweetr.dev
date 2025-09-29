@@ -30,7 +30,7 @@ export const IncidentsEditPage = () => {
 
   const incident = data?.workspace.incident;
 
-  const { form, isPending, isFormValid, handleSave } = useUpsertIncident({
+  const { form, isPending, handleSave } = useUpsertIncident({
     incidentId,
     onClose: drawerProps.onClose,
   });
@@ -39,6 +39,7 @@ export const IncidentsEditPage = () => {
     if (!isFetched || !incident) return;
 
     const values = {
+      applicationId: incident.causeDeployment.application.id,
       teamId: incident.team?.id,
       leaderId: incident.leader?.id,
       detectedAt: incident.detectedAt,
@@ -58,7 +59,7 @@ export const IncidentsEditPage = () => {
         {...drawerProps}
         title="Edit incident"
         actions={
-          <Button type="submit" disabled={!isFormValid} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Update incident
           </Button>
         }
@@ -71,12 +72,7 @@ export const IncidentsEditPage = () => {
               <Skeleton w="100%" h={300} />
             </Box>
           }
-          content={
-            <FormUpsertIncident
-              form={form}
-              applicationId={incident?.causeDeployment.application.id}
-            />
-          }
+          content={<FormUpsertIncident form={form} />}
         />
       </DrawerScrollable>
     </>

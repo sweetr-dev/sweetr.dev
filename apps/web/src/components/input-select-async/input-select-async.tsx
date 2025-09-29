@@ -104,7 +104,7 @@ export const InputSelectAsync = ({
         store={combobox}
         onOptionSubmit={(val) => {
           onChange?.(val);
-          onOptionSelected?.(selectedOption);
+          onOptionSelected?.(seenOptions[val]);
           combobox.closeDropdown();
           combobox.updateSelectedOptionIndex("active");
         }}

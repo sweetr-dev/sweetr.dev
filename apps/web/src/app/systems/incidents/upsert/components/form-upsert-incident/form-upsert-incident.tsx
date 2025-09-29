@@ -7,38 +7,56 @@ import { InputSelectApplication } from "../../../../../../components/input-selec
 import { InputSelectPerson } from "../../../../../../components/input-select-person/input-select-person";
 import { InputSelectTeam } from "../../../../../../components/input-select-team";
 import { InputSelectDeployment } from "../../../../../../components/input-select-deployment/input-select-deployment";
+import { addSeconds, parseISO } from "date-fns";
 import { useState } from "react";
 
 export interface FormUpsertIncidentProps {
   form: UseFormReturnType<IncidentForm>;
-  applicationId?: string;
 }
 
-export const FormUpsertIncident = ({
-  form,
-  applicationId: initialApplicationId,
-}: FormUpsertIncidentProps) => {
-  const [applicationId, setApplicationId] = useState(initialApplicationId);
+export const FormUpsertIncident = ({ form }: FormUpsertIncidentProps) => {
+  const [causeDeploymentDate, setCauseDeploymentDate] = useState<
+    string | undefined
+  >();
 
   return (
     <>
       <Stack p="md">
-        <Title order={5}>Details</Title>
+        <Title order={5}>Detection</Title>
 
         <InputSelectApplication
           withAsterisk
           label="Application"
-          value={applicationId}
-          onChange={setApplicationId}
+          value={form.values.applicationId}
+          onChange={(value) => {
+            form.setFieldValue("applicationId", value);
+            form.setFieldValue("causeDeploymentId", "");
+            form.setFieldValue("fixDeploymentId", "");
+          }}
+          onOptionSelected={(item) => {
+            if ("teamId" in item && typeof item.teamId === "string") {
+              form.setFieldValue("teamId", item.teamId);
+            }
+          }}
         />
 
-        {applicationId && (
+        {form.values.applicationId && (
           <>
-            <Group>
+            <Group align="flex-start">
               <InputSelectDeployment
                 label="Caused by deployment"
-                applicationIds={[applicationId]}
+                applicationIds={[form.values.applicationId]}
                 {...form.getInputProps("causeDeploymentId")}
+                onOptionSelected={(item) => {
+                  if (
+                    "deployedAt" in item &&
+                    typeof item.deployedAt === "string"
+                  ) {
+                    form.setFieldValue("detectedAt", item.deployedAt);
+                    setCauseDeploymentDate(item.deployedAt);
+                    form.setFieldValue("fixDeploymentId", "");
+                  }
+                }}
                 withAsterisk
                 flex="1"
               />
@@ -48,6 +66,7 @@ export const FormUpsertIncident = ({
                 placeholder="When was the incident first detected?"
                 withAsterisk
                 maxDate={new Date()}
+                minDate={causeDeploymentDate}
                 leftSection={<IconCalendar size={16} stroke={1.5} />}
                 {...form.getInputProps("detectedAt")}
                 flex="1"
@@ -57,14 +76,14 @@ export const FormUpsertIncident = ({
         )}
       </Stack>
 
-      {applicationId && (
+      {form.values.applicationId && (
         <>
           <Divider my="sm" />
 
           <Stack p="md">
             <Title order={5}>Response</Title>
 
-            <Group w="100%">
+            <Group w="100%" align="flex-start">
               <InputSelectTeam
                 label="Team"
                 {...form.getInputProps("teamId")}
@@ -80,11 +99,30 @@ export const FormUpsertIncident = ({
               />
             </Group>
 
-            <Group>
+            <Group align="flex-start">
               <InputSelectDeployment
                 label="Resolved by deployment"
-                applicationIds={[applicationId]}
+                applicationIds={[form.values.applicationId]}
+                deployedAt={
+                  form.values.detectedAt
+                    ? {
+                        from: addSeconds(
+                          parseISO(form.values.detectedAt),
+                          1,
+                        ).toISOString(),
+                        to: new Date().toISOString(),
+                      }
+                    : undefined
+                }
                 {...form.getInputProps("fixDeploymentId")}
+                onOptionSelected={(item) => {
+                  if (
+                    "deployedAt" in item &&
+                    typeof item.deployedAt === "string"
+                  ) {
+                    form.setFieldValue("resolvedAt", item.deployedAt);
+                  }
+                }}
                 clearable
                 flex="1"
               />

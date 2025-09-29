@@ -6,8 +6,8 @@ import {
 import { Person, TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 
 export const TeamForm = z.object({
-  teamId: z.string().min(1).optional(),
-  workspaceId: z.string().min(1),
+  teamId: z.string().nonempty("Field is empty").optional(),
+  workspaceId: z.string().nonempty("Field is empty"),
   name: stringCantBeEmpty,
   description: z.string(),
   startColor: mustBeHexadecimal,

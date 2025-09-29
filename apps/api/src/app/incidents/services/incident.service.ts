@@ -35,7 +35,7 @@ export const paginateIncidents = async (
       },
     },
     orderBy: {
-      createdAt: "desc",
+      detectedAt: "desc",
     },
   };
 

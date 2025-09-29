@@ -12,7 +12,7 @@ export const IncidentsCreatePage = () => {
     closeUrl: `/systems/incidents/?${searchParams.toString()}`,
   });
 
-  const { form, isPending, isFormValid, handleSave } = useUpsertIncident({
+  const { form, isPending, handleSave } = useUpsertIncident({
     onClose: drawerProps.onClose,
   });
 
@@ -22,7 +22,7 @@ export const IncidentsCreatePage = () => {
         {...drawerProps}
         title="Create incident"
         actions={
-          <Button type="submit" disabled={!isFormValid} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Create new incident
           </Button>
         }

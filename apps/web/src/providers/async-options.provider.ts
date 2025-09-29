@@ -197,6 +197,7 @@ export const useApplicationAsyncOptions: UseAsyncFilterHook = ({
     return options.map((option) => ({
       label: option.name,
       value: option.id,
+      teamId: option.team?.id,
     }));
   }, [data?.workspace.applications, selectedData?.workspace.applications]);
 
@@ -337,10 +338,12 @@ export const useDeploymentAsyncOptions = ({
   query,
   ids,
   applicationIds,
+  deployedAt,
 }: {
   query?: string;
   ids?: string[];
   applicationIds?: string[];
+  deployedAt?: { from: string; to: string };
 }) => {
   const { workspace } = useWorkspace();
   const [hasPrefetchedOptions, markPrefetchDone] = useRunOnce();
@@ -350,6 +353,7 @@ export const useDeploymentAsyncOptions = ({
       query,
       limit: DEFAULT_MAX_OPTIONS,
       applicationIds,
+      deployedAt,
     },
     workspaceId: workspace.id,
   });
@@ -401,6 +405,7 @@ export const useDeploymentAsyncOptions = ({
         },
       )}`,
       value: option.id,
+      deployedAt: option.deployedAt,
     }));
   }, [data?.workspace.deployments, selectedData?.workspace.deployments]);
 

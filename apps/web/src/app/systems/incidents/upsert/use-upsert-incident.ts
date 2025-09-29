@@ -1,5 +1,5 @@
 import { useForm, zodResolver } from "@mantine/form";
-import { FormEventHandler, useMemo } from "react";
+import { FormEventHandler } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   showSuccessNotification,
@@ -28,6 +28,7 @@ export const useUpsertIncident = ({
     initialValues: {
       incidentId,
       workspaceId: workspace.id,
+      applicationId: "",
       teamId: "",
       leaderId: "",
       detectedAt: "",
@@ -54,16 +55,17 @@ export const useUpsertIncident = ({
     },
   });
 
-  const isFormValid = useMemo(() => form.isValid(), [form]);
-
   const handleSave: FormEventHandler = async (event) => {
     event.preventDefault();
 
     if (form.validate().hasErrors) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { applicationId, ...values } = form.values;
+
     await mutate({
       input: {
-        ...form.values,
+        ...values,
         teamId: form.values.teamId || null,
         leaderId: form.values.leaderId || null,
         detectedAt: new UTCDate(form.values.detectedAt).toISOString(),
@@ -79,7 +81,6 @@ export const useUpsertIncident = ({
   return {
     form,
     isPending,
-    isFormValid,
     handleSave,
   };
 };

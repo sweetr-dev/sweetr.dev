@@ -16,6 +16,7 @@ import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconPullRequest } from "../../../../../providers/icon.provider";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";
+import { Link } from "react-router-dom";
 
 interface CardDeploymentProps {
   deployment: Deployment;
@@ -24,10 +25,10 @@ interface CardDeploymentProps {
 export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
   return (
     <Anchor
-      href={`/systems/deployments/${deployment.id}`}
+      component={Link}
+      to={`/systems/deployments/${deployment.id}`}
       underline="never"
       c="dark.0"
-      target="_blank"
       className="subgrid"
       data-columns="6"
     >

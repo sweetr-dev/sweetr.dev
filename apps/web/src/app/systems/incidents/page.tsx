@@ -232,7 +232,7 @@ export const IncidentsPage = () => {
                         label={format(detectedAt, "MMMM yyyy")}
                         labelPosition="left"
                         style={{
-                          gridColumn: "span 4",
+                          gridColumn: "span 5",
                         }}
                       />
                     )}

@@ -78,6 +78,11 @@ export const useApplicationOptionsQuery = (
                 id
                 name
                 description
+                team {
+                  id
+                  name
+                  icon
+                }
               }
             }
           }

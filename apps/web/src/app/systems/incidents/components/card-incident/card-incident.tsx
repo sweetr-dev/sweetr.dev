@@ -1,8 +1,18 @@
-import { Anchor, Box, Code, Group, Paper, Text, Tooltip } from "@mantine/core";
+import {
+  Anchor,
+  Avatar,
+  Box,
+  Code,
+  Group,
+  Paper,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import {
   IconCalendarFilled,
   IconFireExtinguisher,
   IconFlame,
+  IconQuestionMark,
 } from "@tabler/icons-react";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import {
@@ -29,7 +39,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
       underline="never"
       c="dark.0"
       className="subgrid"
-      data-columns="4"
+      data-columns="5"
     >
       <Paper
         p="md"
@@ -37,7 +47,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
         radius="md"
         withBorder
         className={`grow-on-hover subgrid`}
-        data-columns="4"
+        data-columns="5"
       >
         <Group gap={5}>
           <IconCalendarFilled stroke={1.5} size={20} />
@@ -65,14 +75,24 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
           )}
           {!incident.team && <Text>Unassigned</Text>}
         </Text>
-        {incident.leader && (
-          <AvatarUser
-            name={incident.leader.name}
-            src={incident.leader.avatar || undefined}
-            size="sm"
-            tooltip={`Response led by ${incident.leader.name}`}
-          />
-        )}
+
+        <Box>
+          {incident.leader && (
+            <AvatarUser
+              name={incident.leader.name}
+              src={incident.leader.avatar || undefined}
+              size="sm"
+              tooltip={`Response led by ${incident.leader.name}`}
+            />
+          )}
+          {!incident.leader && (
+            <Tooltip label="Unassigned">
+              <Avatar size="sm">
+                <IconQuestionMark stroke={1.5} size={16} />
+              </Avatar>
+            </Tooltip>
+          )}
+        </Box>
 
         <Box ta="right">
           {incident.resolvedAt ? (

@@ -1,22 +1,25 @@
+import { UTCDate } from "@date-fns/utc";
 import { z } from "zod";
 
 export const IncidentForm = z
   .object({
-    incidentId: z.string().min(1).optional().nullable(),
-    workspaceId: z.string().min(1),
+    incidentId: z.string().nonempty("Field is empty").optional().nullable(),
+    applicationId: z.string().nonempty("Field is empty"),
+    workspaceId: z.string().nonempty("Field is empty"),
     teamId: z.string().optional(),
     leaderId: z.string().optional(),
-    detectedAt: z.string().min(1),
+    detectedAt: z.string().nonempty("Field is empty"),
     resolvedAt: z.string().optional().nullable(),
-    causeDeploymentId: z.string().min(1),
+    causeDeploymentId: z.string().nonempty("Field is empty"),
     fixDeploymentId: z.string().optional().nullable(),
     postmortemUrl: z.string().url().optional().or(z.literal("")),
   })
   .refine(
     (data) => {
       if (data.resolvedAt && data.detectedAt) {
-        return data.resolvedAt >= data.detectedAt;
+        return new UTCDate(data.resolvedAt) >= new UTCDate(data.detectedAt);
       }
+
       return true;
     },
     {
