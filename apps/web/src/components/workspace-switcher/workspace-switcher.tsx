@@ -10,6 +10,7 @@ import { WorkspaceData, useAppStore } from "../../providers/app.provider";
 import { AccountSwitcherItem } from "./workspace-switcher-item";
 import { showInfoNotification } from "../../providers/notification.provider";
 import { cleanNotifications } from "@mantine/notifications";
+import { useNavigate } from "react-router-dom";
 
 interface WorkspaceSwitcherProps extends ComboboxProps {
   workspaces: WorkspaceData[];
@@ -21,6 +22,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
 }) => {
   const combobox = useCombobox();
   const { workspace: activeWorkspace, setWorkspace } = useAppStore();
+  const navigate = useNavigate();
 
   if (!activeWorkspace && workspaces.length) {
     setWorkspace(workspaces[0]);
@@ -47,6 +49,8 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         showInfoNotification({
           title: "Switched workspace",
         });
+
+        navigate("/");
       }}
       {...props}
     >

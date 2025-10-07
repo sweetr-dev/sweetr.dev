@@ -3,7 +3,10 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { transformDeployment } from "../transformers/deployment.transformer";
-import { paginateDeployments } from "../../services/deployment.service";
+import {
+  findDeploymentById,
+  paginateDeployments,
+} from "../../services/deployment.service";
 
 export const deploymentsQuery = createFieldResolver("Workspace", {
   deployments: async (workspace, { input }) => {
@@ -29,5 +32,21 @@ export const deploymentsQuery = createFieldResolver("Workspace", {
     });
 
     return deployments.map(transformDeployment);
+  },
+  deployment: async (workspace, { deploymentId }) => {
+    logger.info("query.workspace.application", { workspace, deploymentId });
+
+    if (!workspace.id || !deploymentId) {
+      throw new ResourceNotFoundException("Workspace not found");
+    }
+
+    const deployment = await findDeploymentById({
+      workspaceId: workspace.id,
+      deploymentId,
+    });
+
+    if (!deployment) return null;
+
+    return transformDeployment(deployment);
   },
 });

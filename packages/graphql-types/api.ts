@@ -269,6 +269,10 @@ export type Deployment = {
   /** The environment that the deployment was deployed to */
   environment: Environment;
   id: Scalars['SweetID']['output'];
+  /** The amount of pull requests that were deployed */
+  pullRequestCount: Scalars['Int']['output'];
+  /** The pull requests that were deployed */
+  pullRequests: Array<PullRequest>;
   /** The version of the deployment */
   version: Scalars['String']['output'];
 };
@@ -983,6 +987,7 @@ export type Workspace = {
   avatar?: Maybe<Scalars['String']['output']>;
   billing?: Maybe<Billing>;
   charts?: Maybe<Charts>;
+  deployment?: Maybe<Deployment>;
   deployments: Array<Deployment>;
   environments: Array<Environment>;
   /** The git provider URL to uninstall the sweetr app */
@@ -1025,6 +1030,11 @@ export type WorkspaceAutomationArgs = {
 
 export type WorkspaceChartsArgs = {
   input: ChartInput;
+};
+
+
+export type WorkspaceDeploymentArgs = {
+  deploymentId: Scalars['SweetID']['input'];
 };
 
 
@@ -1543,6 +1553,8 @@ export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  pullRequestCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pullRequests?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1817,6 +1829,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
   charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
+  deployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentArgs, 'deploymentId'>>;
   deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
   environments?: Resolver<Array<ResolversTypes['Environment']>, ParentType, ContextType, RequireFields<WorkspaceEnvironmentsArgs, 'input'>>;
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

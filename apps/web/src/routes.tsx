@@ -65,6 +65,7 @@ import { ApplicationsEditPage } from "./app/systems/applications/upsert/edit/pag
 import { EnvironmentsPage } from "./app/systems/environments/page";
 import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
 import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
+import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
 
 export const router = createBrowserRouter([
   {
@@ -162,6 +163,12 @@ export const router = createBrowserRouter([
               {
                 path: "/systems/deployments",
                 element: <DeploymentsPage />,
+                children: [
+                  {
+                    path: "/systems/deployments/view/:deploymentId",
+                    element: <DeploymentsViewPage />,
+                  },
+                ],
               },
               {
                 path: "/systems/incidents",

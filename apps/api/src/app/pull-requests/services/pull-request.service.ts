@@ -6,7 +6,11 @@ import {
   PullRequestState,
 } from "@prisma/client";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
-import { PaginatePullRequestsArgs } from "./pull-request.types";
+import {
+  CountPullRequestsByDeploymentIdInput,
+  FindPullRequestsByDeploymentIdInput,
+  PaginatePullRequestsArgs,
+} from "./pull-request.types";
 import {
   isPullRequestApproved,
   isPullRequestPendingChangesRequested,
@@ -197,4 +201,30 @@ export const groupPullRequestByState = <
     pendingMerge,
     changesRequested,
   };
+};
+
+export const findPullRequestsByDeploymentId = async ({
+  workspaceId,
+  deploymentId,
+}: FindPullRequestsByDeploymentIdInput) => {
+  return getPrisma(workspaceId).pullRequest.findMany({
+    where: {
+      deployedPullRequests: {
+        some: { deploymentId },
+      },
+    },
+    take: take(100),
+    orderBy: {
+      mergedAt: "desc",
+    },
+  });
+};
+
+export const countPullRequestsByDeploymentId = async ({
+  workspaceId,
+  deploymentId,
+}: CountPullRequestsByDeploymentIdInput) => {
+  return getPrisma(workspaceId).deployedPullRequest.count({
+    where: { deploymentId },
+  });
 };

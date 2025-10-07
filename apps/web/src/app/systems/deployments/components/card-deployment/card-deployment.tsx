@@ -17,16 +17,18 @@ import { IconPullRequest } from "../../../../../providers/icon.provider";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";
 import { Link } from "react-router-dom";
+import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 
 interface CardDeploymentProps {
   deployment: Deployment;
 }
 
 export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
+  const searchParams = useFilterSearchParameters();
   return (
     <Anchor
       component={Link}
-      to={`/systems/deployments/${deployment.id}`}
+      to={`/systems/deployments/view/${deployment.id}?${searchParams.toString()}`}
       underline="never"
       c="dark.0"
       className="subgrid"
@@ -61,7 +63,7 @@ export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
         <Text lineClamp={1}>{formatDeploymentVersion(deployment.version)}</Text>
         <Group gap={5}>
           <IconPullRequest stroke={1.5} size={20} />
-          <Text>5</Text>
+          <Text>{deployment.pullRequestCount}</Text>
         </Group>
 
         <Box>

@@ -132,4 +132,12 @@ export default /* GraphQL */ `
   extend type CodeReview {
     pullRequest: PullRequest!
   }
+
+  extend type Deployment {
+    "The amount of pull requests that were deployed"
+    pullRequestCount: Int!
+
+    "The pull requests that were deployed"
+    pullRequests: [PullRequest!]!
+  }
 `;

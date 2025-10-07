@@ -34,8 +34,10 @@ export const AvatarUser: FC<AvatarUserProps> = ({
     return avatar;
   }
 
+  const tooltipLabel = typeof tooltip === "string" ? tooltip : name;
+
   return (
-    <Tooltip label={tooltip || name} withArrow position="top">
+    <Tooltip label={tooltipLabel} withArrow position="top">
       {avatar}
     </Tooltip>
   );

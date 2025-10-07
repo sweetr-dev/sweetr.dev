@@ -21,3 +21,13 @@ export interface PullRequestFile {
   additions: number;
   deletions: number;
 }
+
+export interface FindPullRequestsByDeploymentIdInput {
+  workspaceId: number;
+  deploymentId: number;
+}
+
+export interface CountPullRequestsByDeploymentIdInput {
+  workspaceId: number;
+  deploymentId: number;
+}

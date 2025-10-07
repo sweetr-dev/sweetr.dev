@@ -7,6 +7,7 @@ import {
   Tooltip,
   Anchor,
   HoverCard,
+  PaperProps,
 } from "@mantine/core";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
 import { IconPullRequestState } from "../icon-pull-request-state";
@@ -22,7 +23,7 @@ import { TimelinePullRequest } from "./timeline-pull-request";
 import { useScreenSize } from "../../providers/screen.provider";
 import { AvatarUser } from "../avatar-user";
 
-interface CardPullRequestProps {
+interface CardPullRequestProps extends Omit<PaperProps, "className"> {
   pullRequest: Omit<PullRequest, "author"> & {
     author: Pick<Person, "name" | "avatar">;
   };
@@ -32,6 +33,7 @@ interface CardPullRequestProps {
 export const CardPullRequest = ({
   pullRequest,
   timeFormat = "relative",
+  ...props
 }: CardPullRequestProps) => {
   const { isSmallScreen } = useScreenSize();
   const { getCommentFlameProps, getTimeLabel } = usePrCard(pullRequest);
@@ -62,6 +64,7 @@ export const CardPullRequest = ({
               ["--startColor"]: cardColor?.start,
               ["--endColor"]: cardColor?.end,
             }}
+            {...props}
           >
             <Group
               justify="space-between"

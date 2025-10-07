@@ -24,6 +24,7 @@ import {
 import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
 import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
+import { Outlet } from "react-router-dom";
 
 export const DeploymentsPage = () => {
   const { workspace } = useWorkspace();
@@ -210,6 +211,7 @@ export const DeploymentsPage = () => {
           </Stack>
         }
       />
+      <Outlet />
     </PageContainer>
   );
 };

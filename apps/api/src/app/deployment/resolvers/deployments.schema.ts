@@ -53,6 +53,7 @@ export default /* GraphQL */ `
   }
 
   extend type Workspace {
+    deployment(deploymentId: SweetID!): Deployment
     deployments(input: DeploymentsQueryInput!): [Deployment!]!
   }
 `;
