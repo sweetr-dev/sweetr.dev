@@ -1,4 +1,4 @@
-export interface FindEnvironmentByIdInput {
+export interface FindEnvironmentByIdArgs {
   workspaceId: number;
   environmentId: number;
 }
@@ -11,12 +11,12 @@ export interface PaginateEnvironmentsArgs {
   includeArchived?: boolean;
 }
 
-export interface ArchiveEnvironmentInput {
+export interface ArchiveEnvironmentArgs {
   workspaceId: number;
   environmentId: number;
 }
 
-export interface UnarchiveEnvironmentInput {
+export interface UnarchiveEnvironmentArgs {
   workspaceId: number;
   environmentId: number;
 }

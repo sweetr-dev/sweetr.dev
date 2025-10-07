@@ -22,12 +22,12 @@ export interface PullRequestFile {
   deletions: number;
 }
 
-export interface FindPullRequestsByDeploymentIdInput {
+export interface FindPullRequestsByDeploymentIdArgs {
   workspaceId: number;
   deploymentId: number;
 }
 
-export interface CountPullRequestsByDeploymentIdInput {
+export interface CountPullRequestsByDeploymentIdArgs {
   workspaceId: number;
   deploymentId: number;
 }

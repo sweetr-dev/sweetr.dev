@@ -1,16 +1,16 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
 import {
-  FindDeploymentByIdInput,
-  FindLastProductionDeploymentByApplicationIdInput,
-  PaginateDeploymentsInput,
+  FindDeploymentByIdArgs,
+  FindLastProductionDeploymentByApplicationIdArgs,
+  PaginateDeploymentsArgs,
 } from "./deployment.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const findDeploymentById = async ({
   workspaceId,
   deploymentId,
-}: FindDeploymentByIdInput) => {
+}: FindDeploymentByIdArgs) => {
   return getPrisma(workspaceId).deployment.findUnique({
     where: {
       id: deploymentId,
@@ -21,7 +21,7 @@ export const findDeploymentById = async ({
 export const findDeploymentByIdOrThrow = async ({
   workspaceId,
   deploymentId,
-}: FindDeploymentByIdInput) => {
+}: FindDeploymentByIdArgs) => {
   const deployment = await findDeploymentById({ workspaceId, deploymentId });
 
   if (!deployment) {
@@ -33,7 +33,7 @@ export const findDeploymentByIdOrThrow = async ({
 
 export const paginateDeployments = async (
   workspaceId: number,
-  args: PaginateDeploymentsInput
+  args: PaginateDeploymentsArgs
 ) => {
   const query: Prisma.DeploymentFindManyArgs = {
     take: take(args.limit),
@@ -97,7 +97,7 @@ export const paginateDeployments = async (
 export const findLastProductionDeploymentByApplicationId = async ({
   workspaceId,
   applicationId,
-}: FindLastProductionDeploymentByApplicationIdInput) => {
+}: FindLastProductionDeploymentByApplicationIdArgs) => {
   return getPrisma(workspaceId).deployment.findFirst({
     where: {
       applicationId,

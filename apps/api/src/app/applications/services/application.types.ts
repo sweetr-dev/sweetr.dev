@@ -1,6 +1,6 @@
 import { JsonObject } from "@prisma/client/runtime/library";
 
-export interface FindApplicationByIdInput {
+export interface FindApplicationByIdArgs {
   workspaceId: number;
   applicationId: number;
 }

@@ -3,7 +3,7 @@ interface DateTimeRange {
   to?: string;
 }
 
-export interface PaginateDeploymentsInput {
+export interface PaginateDeploymentsArgs {
   deploymentIds?: number[];
   query?: string;
   cursor?: number;
@@ -13,12 +13,12 @@ export interface PaginateDeploymentsInput {
   limit?: number;
 }
 
-export interface FindDeploymentByIdInput {
+export interface FindDeploymentByIdArgs {
   workspaceId: number;
   deploymentId: number;
 }
 
-export interface FindLastProductionDeploymentByApplicationIdInput {
+export interface FindLastProductionDeploymentByApplicationIdArgs {
   workspaceId: number;
   applicationId: number;
 }

@@ -1,8 +1,8 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
 import {
-  FindIncidentByIdInput,
-  PaginateIncidentsInput,
+  FindIncidentByIdArgs,
+  PaginateIncidentsArgs,
   UpsertIncidentInput,
 } from "./incident.types";
 import { getIncidentValidationSchema } from "./incident.validation";
@@ -11,7 +11,7 @@ import { validateInputOrThrow } from "../../validator.service";
 export const findIncidentById = async ({
   workspaceId,
   incidentId,
-}: FindIncidentByIdInput) => {
+}: FindIncidentByIdArgs) => {
   return getPrisma(workspaceId).incident.findUnique({
     where: { id: incidentId },
   });
@@ -19,7 +19,7 @@ export const findIncidentById = async ({
 
 export const paginateIncidents = async (
   workspaceId: number,
-  args: PaginateIncidentsInput
+  args: PaginateIncidentsArgs
 ) => {
   const query: Prisma.IncidentFindManyArgs = {
     take: take(args.limit),

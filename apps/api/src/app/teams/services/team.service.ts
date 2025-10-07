@@ -1,9 +1,9 @@
 import { Prisma, Team } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import {
-  FindTeamMembersInput,
-  FindTeamsByWorkspaceInput,
-  FindTeamByIdInput,
+  FindTeamMembersArgs,
+  FindTeamsByWorkspaceArgs,
+  FindTeamByIdArgs,
   UpsertTeamInput,
 } from "./team.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
@@ -13,7 +13,7 @@ import { getTeamValidationSchema } from "./team.validation";
 export const findTeamById = async ({
   teamId,
   workspaceId,
-}: FindTeamByIdInput): Promise<Team | null> => {
+}: FindTeamByIdArgs): Promise<Team | null> => {
   return getPrisma(workspaceId).team.findUnique({
     where: {
       id: teamId,
@@ -25,7 +25,7 @@ export const findTeamById = async ({
 export const findTeamByIdOrThrow = async ({
   teamId,
   workspaceId,
-}: FindTeamByIdInput) => {
+}: FindTeamByIdArgs) => {
   const team = await findTeamById({ teamId, workspaceId });
 
   if (!team) {
@@ -38,7 +38,7 @@ export const findTeamByIdOrThrow = async ({
 export const findTeamsByWorkspace = async ({
   workspaceId,
   ...args
-}: FindTeamsByWorkspaceInput): Promise<Team[]> => {
+}: FindTeamsByWorkspaceArgs): Promise<Team[]> => {
   const query: Prisma.TeamFindManyArgs = {
     where: {
       workspaceId,
@@ -143,7 +143,7 @@ export const findTeamMemberById = async (
 export const findTeamMembers = async ({
   workspaceId,
   teamId,
-}: FindTeamMembersInput) => {
+}: FindTeamMembersArgs) => {
   return getPrisma(workspaceId).teamMember.findMany({
     where: {
       teamId,

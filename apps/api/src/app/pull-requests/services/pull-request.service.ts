@@ -7,8 +7,8 @@ import {
 } from "@prisma/client";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import {
-  CountPullRequestsByDeploymentIdInput,
-  FindPullRequestsByDeploymentIdInput,
+  CountPullRequestsByDeploymentIdArgs,
+  FindPullRequestsByDeploymentIdArgs,
   PaginatePullRequestsArgs,
 } from "./pull-request.types";
 import {
@@ -206,7 +206,7 @@ export const groupPullRequestByState = <
 export const findPullRequestsByDeploymentId = async ({
   workspaceId,
   deploymentId,
-}: FindPullRequestsByDeploymentIdInput) => {
+}: FindPullRequestsByDeploymentIdArgs) => {
   return getPrisma(workspaceId).pullRequest.findMany({
     where: {
       deployedPullRequests: {
@@ -223,7 +223,7 @@ export const findPullRequestsByDeploymentId = async ({
 export const countPullRequestsByDeploymentId = async ({
   workspaceId,
   deploymentId,
-}: CountPullRequestsByDeploymentIdInput) => {
+}: CountPullRequestsByDeploymentIdArgs) => {
   return getPrisma(workspaceId).deployedPullRequest.count({
     where: { deploymentId },
   });

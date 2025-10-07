@@ -3,12 +3,12 @@ interface DateTimeRange {
   to?: string;
 }
 
-export interface FindIncidentByIdInput {
+export interface FindIncidentByIdArgs {
   workspaceId: number;
   incidentId: number;
 }
 
-export interface PaginateIncidentsInput {
+export interface PaginateIncidentsArgs {
   cursor?: number;
   environmentIds?: number[];
   applicationIds?: number[];

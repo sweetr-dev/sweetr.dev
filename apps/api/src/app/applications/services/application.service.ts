@@ -1,7 +1,7 @@
 import { assign } from "radash";
 import { getPrisma, take } from "../../../prisma";
 import {
-  FindApplicationByIdInput,
+  FindApplicationByIdArgs,
   PaginateApplicationsArgs,
   UpsertApplicationInput,
 } from "./application.types";
@@ -14,7 +14,7 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 export const findApplicationById = async ({
   applicationId,
   workspaceId,
-}: FindApplicationByIdInput): Promise<Application | null> => {
+}: FindApplicationByIdArgs): Promise<Application | null> => {
   return getPrisma(workspaceId).application.findUnique({
     where: {
       id: applicationId,
@@ -26,7 +26,7 @@ export const findApplicationById = async ({
 export const findApplicationByIdOrThrow = async ({
   workspaceId,
   applicationId,
-}: FindApplicationByIdInput) => {
+}: FindApplicationByIdArgs) => {
   const application = await findApplicationById({ workspaceId, applicationId });
 
   if (!application) {
