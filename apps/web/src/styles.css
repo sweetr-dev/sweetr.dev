@@ -13,6 +13,7 @@
 .link {
   color: var(--mantine-color-green-4);
   display: inline;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;

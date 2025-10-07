@@ -30,7 +30,7 @@ export const ApplicationsEditPage = () => {
 
   const application = data?.workspace.application;
 
-  const { form, isPending, isFormValid, handleSave } = useUpsertApplication({
+  const { form, isPending, handleSave } = useUpsertApplication({
     applicationId,
     onClose: drawerProps.onClose,
   });
@@ -59,7 +59,7 @@ export const ApplicationsEditPage = () => {
         {...drawerProps}
         title="Edit application"
         actions={
-          <Button type="submit" disabled={!isFormValid} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Update application
           </Button>
         }

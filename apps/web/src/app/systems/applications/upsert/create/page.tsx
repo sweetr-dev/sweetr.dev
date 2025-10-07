@@ -12,7 +12,7 @@ export const ApplicationsCreatePage = () => {
     closeUrl: `/systems/applications/?${searchParams.toString()}`,
   });
 
-  const { form, isPending, isFormValid, handleSave } = useUpsertApplication({
+  const { form, isPending, handleSave } = useUpsertApplication({
     onClose: drawerProps.onClose,
   });
 
@@ -22,7 +22,7 @@ export const ApplicationsCreatePage = () => {
         {...drawerProps}
         title="Create application"
         actions={
-          <Button type="submit" disabled={!isFormValid} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Create new application
           </Button>
         }

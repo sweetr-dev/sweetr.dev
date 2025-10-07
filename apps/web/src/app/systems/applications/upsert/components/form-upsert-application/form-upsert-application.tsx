@@ -37,7 +37,7 @@ export const FormUpsertApplication = ({ form }: FormUpsertApplicationProps) => {
 
         <InputSelectTeam
           label="Team"
-          placeholder="The team who owns this app"
+          placeholder="Select an option"
           {...form.getInputProps("teamId")}
           clearable
         />
@@ -48,6 +48,7 @@ export const FormUpsertApplication = ({ form }: FormUpsertApplicationProps) => {
         <Title order={5}>Deployment</Title>
         <InputSelectRepository
           label="Repository"
+          required
           {...form.getInputProps("repositoryId")}
         />
         <TextInput

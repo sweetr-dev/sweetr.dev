@@ -27,7 +27,7 @@ export const FormUpsertIncident = ({ form }: FormUpsertIncidentProps) => {
         <InputSelectApplication
           withAsterisk
           label="Application"
-          value={form.values.applicationId}
+          {...form.getInputProps("applicationId")}
           onChange={(value) => {
             form.setFieldValue("applicationId", value);
             form.setFieldValue("causeDeploymentId", "");

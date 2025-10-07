@@ -1,5 +1,5 @@
 import { useForm, zodResolver } from "@mantine/form";
-import { FormEventHandler, useMemo } from "react";
+import { FormEventHandler } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   showSuccessNotification,
@@ -57,8 +57,6 @@ export const useUpsertApplication = ({
     },
   });
 
-  const isFormValid = useMemo(() => form.isValid(), [form]);
-
   const handleSave: FormEventHandler = async (event) => {
     event.preventDefault();
 
@@ -75,7 +73,6 @@ export const useUpsertApplication = ({
   return {
     form,
     isPending,
-    isFormValid,
     handleSave,
   };
 };
