@@ -3,7 +3,10 @@ import { Deployment as ApiDeployment } from "../../../../graphql-types";
 
 export const transformDeployment = (
   application: DatabaseDeployment
-): Omit<ApiDeployment, "application" | "environment"> => {
+): Omit<
+  ApiDeployment,
+  "application" | "environment" | "pullRequests" | "pullRequestCount"
+> => {
   return {
     ...application,
     deployedAt: application.deployedAt?.toISOString(),
