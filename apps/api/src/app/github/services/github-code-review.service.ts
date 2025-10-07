@@ -126,7 +126,7 @@ const fetchPullRequestReviews = async (
   const isFirstRequest = cursor === null;
   let firstReviewerRequestedAt = null;
   let reviewRequests: ReviewRequestData[] = [];
-  let reviewEvents: ReviewDataWithId[] = [];
+  const reviewEvents: ReviewDataWithId[] = [];
   const gitProfiles = new Map<string, GitProfile>();
 
   const getGitProfileId = async (author: Author) => {

@@ -1,4 +1,4 @@
-import { CodeReview as DatabaseCodeReview, GitProfile } from "@prisma/client";
+import { CodeReview as DatabaseCodeReview } from "@prisma/client";
 import {
   CodeReview as ApiCodeReview,
   CodeReviewState,

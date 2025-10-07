@@ -1,4 +1,4 @@
-import { PullRequest as DatabasePullRequest, GitProfile } from "@prisma/client";
+import { PullRequest as DatabasePullRequest } from "@prisma/client";
 import {
   PullRequest as ApiPullRequest,
   PullRequestState,
