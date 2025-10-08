@@ -393,13 +393,13 @@ export type Incident = {
 
 export type IncidentsQueryInput = {
   /** The applications to filter by */
-  applicationIds: Array<Scalars['SweetID']['input']>;
+  applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the incident was detected in */
   detectedAt?: InputMaybe<DateTimeRange>;
   /** The environments to filter by */
-  environmentIds: Array<Scalars['SweetID']['input']>;
+  environmentIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The pagination limit */
   limit?: InputMaybe<Scalars['Int']['input']>;
 };

@@ -9,7 +9,7 @@ export const upsertIncidentMutation = createMutationResolver({
   upsertIncident: async (_, { input }, context) => {
     logger.info("mutation.upsertIncident", { input });
 
-    authorizeWorkspaceMemberOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

@@ -26,7 +26,7 @@ export const validateInputOrThrow = async <T extends z.ZodType<any, any, any>>(
 
 export const workspaceMemberValidator = (workspaceId: number) =>
   z.number().transform(async (gitProfileId) => {
-    if (gitProfileId) {
+    if (gitProfileId !== undefined && gitProfileId !== null) {
       await authorizeWorkspaceMemberOrThrow({
         gitProfileId: gitProfileId,
         workspaceId,
@@ -38,7 +38,7 @@ export const workspaceMemberValidator = (workspaceId: number) =>
 
 export const deploymentValidator = (workspaceId: number) =>
   z.number().transform(async (deploymentId) => {
-    if (deploymentId) {
+    if (deploymentId !== undefined && deploymentId !== null) {
       await findDeploymentByIdOrThrow({ deploymentId, workspaceId });
     }
 
@@ -47,7 +47,7 @@ export const deploymentValidator = (workspaceId: number) =>
 
 export const applicationValidator = (workspaceId: number) =>
   z.number().transform(async (applicationId) => {
-    if (applicationId) {
+    if (applicationId !== undefined && applicationId !== null) {
       await findApplicationByIdOrThrow({ applicationId, workspaceId });
     }
 
@@ -56,7 +56,7 @@ export const applicationValidator = (workspaceId: number) =>
 
 export const teamValidator = (workspaceId: number) =>
   z.number().transform(async (teamId) => {
-    if (teamId) {
+    if (teamId !== undefined && teamId !== null) {
       await findTeamByIdOrThrow({ teamId, workspaceId });
     }
 
@@ -65,7 +65,7 @@ export const teamValidator = (workspaceId: number) =>
 
 export const repositoryValidator = (workspaceId: number) =>
   z.number().transform(async (repositoryId) => {
-    if (repositoryId) {
+    if (repositoryId !== undefined && repositoryId !== null) {
       await findRepositoryByIdOrThrow({ repositoryId, workspaceId });
     }
 

@@ -57,14 +57,16 @@ export const authorizeWorkspaceMemberOrThrow = async ({
   workspaceId: number;
   gitProfileId: number;
 }) => {
-  const membership = await getPrisma(workspaceId).workspaceMembership.findFirst(
-    {
-      where: {
+  const membership = await getPrisma(
+    workspaceId
+  ).workspaceMembership.findUnique({
+    where: {
+      gitProfileId_workspaceId: {
+        gitProfileId,
         workspaceId,
-        gitProfileId: gitProfileId,
       },
-    }
-  );
+    },
+  });
 
   if (!membership) {
     throw new AuthorizationException();

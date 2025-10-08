@@ -660,14 +660,14 @@ model Environment {
 
   archivedAt DateTime?
 
-  @@unique([name, workspaceId])
+  @@unique([workspaceId, name])
   @@index([workspaceId])
 }
 
 model Application {
   id Int @id @default(autoincrement())
 
-  name        String  @unique
+  name        String
   description String?
 
   repositoryId Int
@@ -688,6 +688,7 @@ model Application {
 
   archivedAt DateTime?
 
+  @@unique([name, workspaceId])
   @@index([workspaceId])
   @@index([repositoryId])
   @@index([teamId])

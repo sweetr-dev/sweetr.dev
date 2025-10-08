@@ -10,7 +10,9 @@ export const deploymentApplicationQuery = createFieldResolver("Deployment", {
     logger.info("query.deployment.application", { deployment });
 
     if (!deployment["applicationId"]) {
-      throw new ResourceNotFoundException("Deployment application not found");
+      throw new ResourceNotFoundException("Deployment application not found", {
+        severity: "error",
+      });
     }
 
     if (!deployment.id) {

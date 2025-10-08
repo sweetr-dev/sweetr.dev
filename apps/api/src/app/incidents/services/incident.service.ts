@@ -42,7 +42,10 @@ export const paginateIncidents = async (
   if (args.applicationIds?.length) {
     query.where = {
       ...query.where,
-      causeDeployment: { applicationId: { in: args.applicationIds } },
+      causeDeployment: {
+        ...query.where?.causeDeployment,
+        applicationId: { in: args.applicationIds },
+      } as Prisma.DeploymentWhereInput,
     };
   }
 
@@ -56,7 +59,10 @@ export const paginateIncidents = async (
   if (args.environmentIds?.length) {
     query.where = {
       ...query.where,
-      causeDeployment: { environmentId: { in: args.environmentIds } },
+      causeDeployment: {
+        ...query.where?.causeDeployment,
+        environmentId: { in: args.environmentIds },
+      } as Prisma.DeploymentWhereInput,
     };
   }
 
@@ -75,13 +81,7 @@ export const upsertIncident = async (input: UpsertIncidentInput) => {
     where: {
       id: incidentId || 0,
     },
-    create: {
-      ...data,
-      workspaceId,
-    },
-    update: {
-      ...data,
-      workspaceId,
-    },
+    create: data,
+    update: data,
   });
 };

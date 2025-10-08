@@ -19,8 +19,8 @@ export const incidentsQuery = createFieldResolver("Workspace", {
     await protectWithPaywall(workspace.id);
 
     const incidents = await paginateIncidents(workspace.id, {
-      applicationIds: input.applicationIds,
-      environmentIds: input.environmentIds,
+      applicationIds: input.applicationIds || undefined,
+      environmentIds: input.environmentIds || undefined,
       detectedAt: {
         from: input.detectedAt?.from || undefined,
         to: input.detectedAt?.to || undefined,

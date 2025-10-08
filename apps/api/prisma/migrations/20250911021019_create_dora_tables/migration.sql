@@ -81,7 +81,7 @@ CREATE INDEX "Environment_workspaceId_idx" ON "Environment"("workspaceId");
 CREATE UNIQUE INDEX "Environment_name_workspaceId_key" ON "Environment"("name", "workspaceId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Application_name_key" ON "Application"("name");
+CREATE UNIQUE INDEX "Application_name_workspaceId_key" ON "Application"("name", "workspaceId");
 
 -- CreateIndex
 CREATE INDEX "Application_workspaceId_idx" ON "Application"("workspaceId");

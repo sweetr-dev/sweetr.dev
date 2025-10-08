@@ -10,7 +10,7 @@ export const removeIntegrationMutation = createMutationResolver({
   removeIntegration: async (_, { input }, context) => {
     logger.info("mutation.removeIntegration", { input });
 
-    authorizeWorkspaceMemberOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken?.gitProfileId,
     });

@@ -1,5 +1,6 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
+import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import {
   archiveEnvironment,
@@ -8,8 +9,13 @@ import {
 import { transformEnvironment } from "../transformers/environment.transformer";
 
 export const archiveEnvironmentMutation = createMutationResolver({
-  archiveEnvironment: async (_, { input }) => {
+  archiveEnvironment: async (_, { input }, context) => {
     logger.info("mutation.archiveEnvironment", { input });
+
+    await authorizeWorkspaceMemberOrThrow({
+      workspaceId: input.workspaceId,
+      gitProfileId: context.currentToken.gitProfileId,
+    });
 
     await protectWithPaywall(input.workspaceId);
 
@@ -20,8 +26,13 @@ export const archiveEnvironmentMutation = createMutationResolver({
 
     return transformEnvironment(environment);
   },
-  unarchiveEnvironment: async (_, { input }) => {
+  unarchiveEnvironment: async (_, { input }, context) => {
     logger.info("mutation.unarchiveEnvironment", { input });
+
+    await authorizeWorkspaceMemberOrThrow({
+      workspaceId: input.workspaceId,
+      gitProfileId: context.currentToken.gitProfileId,
+    });
 
     await protectWithPaywall(input.workspaceId);
 

@@ -9,7 +9,7 @@ export const updateWorkspaceSettingsMutation = createMutationResolver({
   updateWorkspaceSettings: async (_, { input }, context) => {
     logger.info("mutation.updateWorkspaceSettings", { input });
 
-    authorizeWorkspaceMemberOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

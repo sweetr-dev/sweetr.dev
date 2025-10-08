@@ -15,7 +15,7 @@ export const installIntegrationMutation = createMutationResolver({
 
     await preventCSRFAttack(input.state);
 
-    authorizeWorkspaceMemberOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken?.gitProfileId,
     });

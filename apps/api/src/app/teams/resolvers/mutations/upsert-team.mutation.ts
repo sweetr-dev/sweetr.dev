@@ -9,7 +9,7 @@ export const upsertTeamMutation = createMutationResolver({
   upsertTeam: async (_, { input }, context) => {
     logger.info("mutation.upsertTeam", { input });
 
-    authorizeWorkspaceMemberOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

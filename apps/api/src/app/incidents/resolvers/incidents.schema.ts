@@ -32,10 +32,10 @@ export default /* GraphQL */ `
     detectedAt: DateTimeRange
 
     "The applications to filter by"
-    applicationIds: [SweetID!]!
+    applicationIds: [SweetID!]
 
     "The environments to filter by"
-    environmentIds: [SweetID!]!
+    environmentIds: [SweetID!]
 
     "The pagination cursor"
     cursor: SweetID

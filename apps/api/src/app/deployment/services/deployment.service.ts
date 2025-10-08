@@ -47,7 +47,7 @@ export const paginateDeployments = async (
       },
     },
     orderBy: {
-      createdAt: "desc",
+      id: "desc",
     },
   };
 
