@@ -4,12 +4,14 @@ import {
   NotificationData,
   useNotifications as useMantineNotifications,
 } from "@mantine/notifications";
+import { NotificationPosition } from "@mantine/notifications/lib/notifications.store";
 
 type Args = Omit<NotificationData, "message"> & {
   message?: string | React.ReactNode;
 };
 
 export const errorNotificationProps = {
+  position: "bottom-center" as NotificationPosition,
   title: "Error",
   color: "red",
   withBorder: true,
@@ -24,6 +26,7 @@ export const showErrorNotification = (args: Args) =>
   });
 
 export const successNotificationProps = {
+  position: "bottom-center" as NotificationPosition,
   title: "Success",
   color: "green",
   withBorder: true,
@@ -39,6 +42,7 @@ export const showSuccessNotification = (args: Args) =>
 
 export const showWarningNotification = (args: Args) =>
   showNotification({
+    position: "bottom-center",
     title: "Warning",
     color: "yellow",
     withBorder: true,
@@ -48,6 +52,7 @@ export const showWarningNotification = (args: Args) =>
 
 export const showInfoNotification = (args: Args) =>
   showNotification({
+    position: "bottom-center",
     title: "Info",
     color: "gray",
     withBorder: true,

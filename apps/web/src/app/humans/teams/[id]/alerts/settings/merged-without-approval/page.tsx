@@ -10,7 +10,7 @@ import { AlertBaseFields } from "../../components/alert-base-fields";
 import { useAlert } from "../use-alert";
 import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormMergedWithoutReviewAlert } from "../types";
-import { useFormAsyncData } from "../../../../../../../providers/form.provider.ts";
+import { useFormAsyncData } from "../../../../../../../providers/form.provider";
 import { TriggerDescription } from "../components/trigger-description";
 
 export const MergedWithoutApprovalAlertPage = () => {

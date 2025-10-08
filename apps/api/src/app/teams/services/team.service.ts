@@ -1,19 +1,20 @@
 import { Prisma, Team } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import {
-  FindTeamMembersInput,
-  FindTeamsByWorkspaceInput,
-  FindTeamByIdInput,
+  FindTeamMembersArgs,
+  FindTeamsByWorkspaceArgs,
+  FindTeamByIdArgs,
   UpsertTeamInput,
-  AuthorizeTeamMembersInput,
 } from "./team.types";
-import { AuthorizationException } from "../../errors/exceptions/authorization.exception";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { validateInputOrThrow } from "../../validator.service";
+import { getTeamValidationSchema } from "./team.validation";
 
 export const findTeamById = async ({
   teamId,
   workspaceId,
-}: FindTeamByIdInput): Promise<Team | null> => {
-  return getPrisma(workspaceId).team.findFirst({
+}: FindTeamByIdArgs): Promise<Team | null> => {
+  return getPrisma(workspaceId).team.findUnique({
     where: {
       id: teamId,
       workspaceId,
@@ -21,10 +22,23 @@ export const findTeamById = async ({
   });
 };
 
+export const findTeamByIdOrThrow = async ({
+  teamId,
+  workspaceId,
+}: FindTeamByIdArgs) => {
+  const team = await findTeamById({ teamId, workspaceId });
+
+  if (!team) {
+    throw new ResourceNotFoundException("Team not found");
+  }
+
+  return team;
+};
+
 export const findTeamsByWorkspace = async ({
   workspaceId,
   ...args
-}: FindTeamsByWorkspaceInput): Promise<Team[]> => {
+}: FindTeamsByWorkspaceArgs): Promise<Team[]> => {
   const query: Prisma.TeamFindManyArgs = {
     where: {
       workspaceId,
@@ -43,6 +57,13 @@ export const findTeamsByWorkspace = async ({
         contains: args.query,
         mode: "insensitive",
       },
+    };
+  }
+
+  if (args.teamIds && args.teamIds.length) {
+    query.where = {
+      ...query.where,
+      id: { in: args.teamIds },
     };
   }
 
@@ -111,6 +132,7 @@ export const findTeamMemberById = async (
   return getPrisma(workspaceId).teamMember.findFirst({
     where: {
       id: teamMemberId,
+      workspaceId,
     },
     include: {
       team: true,
@@ -122,7 +144,7 @@ export const findTeamMemberById = async (
 export const findTeamMembers = async ({
   workspaceId,
   teamId,
-}: FindTeamMembersInput) => {
+}: FindTeamMembersArgs) => {
   return getPrisma(workspaceId).teamMember.findMany({
     where: {
       teamId,
@@ -138,7 +160,10 @@ export const findTeamMembers = async ({
 };
 
 export const upsertTeam = async (input: UpsertTeamInput) => {
-  const { teamId, members, ...teamData } = input;
+  const { teamId, members, ...teamData } = await validateInputOrThrow(
+    getTeamValidationSchema(input.workspaceId),
+    input
+  );
 
   if (teamId) {
     // Remove all existing members to recreate it below
@@ -176,33 +201,14 @@ export const upsertTeam = async (input: UpsertTeamInput) => {
 
 export const archiveTeam = async (workspaceId: number, teamId: number) => {
   return getPrisma(workspaceId).team.update({
-    where: { id: teamId },
+    where: { id: teamId, workspaceId },
     data: { archivedAt: new Date() },
   });
 };
 
 export const unarchiveTeam = async (workspaceId: number, teamId: number) => {
   return getPrisma(workspaceId).team.update({
-    where: { id: teamId },
+    where: { id: teamId, workspaceId },
     data: { archivedAt: null },
   });
-};
-
-export const authorizeTeamMembersOrThrow = async ({
-  workspaceId,
-  members,
-}: AuthorizeTeamMembersInput) => {
-  // Make sure all members belong to the workspace
-  const peopleCount = await getPrisma(workspaceId).workspaceMembership.count({
-    where: {
-      workspaceId: workspaceId,
-      gitProfileId: { in: members.map((member) => member.personId) },
-    },
-  });
-
-  if (peopleCount !== members.length) {
-    throw new AuthorizationException(
-      "Some members do not belong to this workspace."
-    );
-  }
 };

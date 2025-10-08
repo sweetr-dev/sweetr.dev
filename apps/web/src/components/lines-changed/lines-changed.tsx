@@ -14,7 +14,7 @@ export const LinesChanged = ({
 }: LinesChangedProps) => {
   return (
     <Stack gap={0} align="center" miw={120} {...props}>
-      <Group gap={4} wrap="nowrap">
+      <Group gap={5} wrap="nowrap">
         <Text c="green.5" fw={500} size="sm">
           +{additions}
         </Text>

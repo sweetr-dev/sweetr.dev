@@ -21,7 +21,7 @@ export const MenuTeams = ({ teams }: MenuTeamsProps) => {
         {teams.map((team) => (
           <NavLink
             key={team.teamName}
-            to={`/teams/${team.teamId}`}
+            to={`/humans/teams/${team.teamId}`}
             component={Link}
             label={
               <Text fz="lg" lineClamp={1}>

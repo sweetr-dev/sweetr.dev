@@ -35,7 +35,7 @@ export default /* GraphQL */ `
     digest(input: DigestQueryInput!): Digest
   }
 
-  extend type Mutation {
+  type Mutation {
     updateDigest(input: UpdateDigestInput!): Digest!
   }
 

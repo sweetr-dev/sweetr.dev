@@ -9,9 +9,7 @@ import {
 } from "@sweetr/graphql-types/frontend/graphql";
 import {
   IconCheck,
-  IconHexagonFilled,
   IconMessageExclamation,
-  IconMessageFilled,
   IconPencil,
 } from "@tabler/icons-react";
 import { group } from "radash";

@@ -118,8 +118,10 @@ model GitProfile {
   activityEvents     ActivityEvent[]
   apiKeys            ApiKey[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now()) @updatedAt
+  Deployment Deployment[]
+  Incident   Incident[]
 
   @@unique([gitProvider, gitUserId])
   @@unique([gitProvider, userId])
@@ -192,6 +194,11 @@ model Workspace {
   activityEvents       ActivityEvent[]
   apiKeys              ApiKey[]
   syncTasks            SyncBatch[]
+  applications         Application[]
+  deployments          Deployment[]
+  deployedPullRequests DeployedPullRequest[]
+  Environment          Environment[]
+  Incident             Incident[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -206,12 +213,11 @@ model Workspace {
 model Subscription {
   id Int @id @default(autoincrement())
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  workspaceId Int       @unique
-
+  workspace          Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId        Int       @unique
   // Stripe data
   customerId         String
-  subscriptionId     String   @unique
+  subscriptionId     String    @unique
   priceId            String
   status             String
   interval           String
@@ -307,6 +313,7 @@ model Repository {
 
   pullRequests   PullRequest[]
   activityEvents ActivityEvent[]
+  Application    Application[]
 
   @@unique([gitProvider, gitRepositoryId])
   @@index([workspaceId])
@@ -376,10 +383,11 @@ model PullRequest {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  codeReviews        CodeReview[]
-  codeReviewRequests CodeReviewRequest[]
-  alertEvents        AlertEvent[]
-  activityEvents     ActivityEvent[]
+  codeReviews          CodeReview[]
+  codeReviewRequests   CodeReviewRequest[]
+  alertEvents          AlertEvent[]
+  activityEvents       ActivityEvent[]
+  deployedPullRequests DeployedPullRequest[]
 
   @@unique([gitProvider, gitPullRequestId])
   @@index([workspaceId])
@@ -482,10 +490,12 @@ model Team {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  Digest    Digest[]
-  Alert     Alert[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  Digest      Digest[]
+  Alert       Alert[]
+  Incident    Incident[]
+  Application Application[]
 
   @@index([workspaceId])
 }
@@ -632,4 +642,147 @@ model ApiKey {
   @@index([workspaceId])
   @@index([key])
   @@index([creatorId])
+}
+
+model Environment {
+  id Int @id @default(autoincrement())
+
+  name        String
+  deployments Deployment[]
+
+  isProduction Boolean
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  archivedAt DateTime?
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model Application {
+  id Int @id @default(autoincrement())
+
+  name        String
+  description String?
+
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  teamId Int?
+  team   Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  deploymentSettings Json
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deployments Deployment[]
+
+  archivedAt DateTime?
+
+  @@unique([name, workspaceId])
+  @@index([workspaceId])
+  @@index([repositoryId])
+  @@index([teamId])
+}
+
+model Deployment {
+  id Int @id @default(autoincrement())
+
+  applicationId Int
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  version     String
+  description String?
+
+  environmentId Int
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  author   GitProfile? @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int?
+
+  deployedAt DateTime
+
+  pullRequests DeployedPullRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  workspaceId     Int
+  workspace       Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  causedIncidents Incident[] @relation(name: "CauseDeployment")
+  fixedIncidents  Incident[] @relation(name: "FixDeployment")
+
+  archivedAt DateTime?
+
+  @@index([workspaceId])
+  @@index([applicationId])
+  @@index([environmentId])
+  @@index([authorId])
+  @@index([workspaceId, deployedAt])
+}
+
+model Incident {
+  id Int @id @default(autoincrement())
+
+  teamId Int?
+  team   Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  leaderId Int?
+  leader   GitProfile? @relation(fields: [leaderId], references: [id], onDelete: SetNull)
+
+  detectedAt DateTime
+  resolvedAt DateTime?
+
+  causeDeploymentId Int
+  causeDeployment   Deployment @relation("CauseDeployment", fields: [causeDeploymentId], references: [id], onDelete: Cascade)
+
+  fixDeploymentId Int?
+  fixDeployment   Deployment? @relation("FixDeployment", fields: [fixDeploymentId], references: [id], onDelete: SetNull)
+
+  postmortemUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  archivedAt DateTime?
+
+  @@index([workspaceId])
+  @@index([causeDeploymentId])
+  @@index([fixDeploymentId])
+  @@index([teamId])
+  @@index([leaderId])
+  @@index([workspaceId, detectedAt])
+}
+
+model DeployedPullRequest {
+  id Int @id @default(autoincrement())
+
+  deploymentId Int
+  deployment   Deployment @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+
+  pullRequestId Int
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([deploymentId, pullRequestId])
+  @@index([deploymentId])
+  @@index([pullRequestId])
+  @@index([workspaceId])
 }

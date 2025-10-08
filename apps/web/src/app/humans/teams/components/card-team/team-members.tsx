@@ -1,6 +1,6 @@
 import { Avatar, AvatarGroupProps, Tooltip } from "@mantine/core";
 import type { FC } from "react";
-import { TeamMemberAvatar } from "./team-member-avatar";
+import { AvatarUser } from "../../../../../components/avatar-user";
 
 type TeamMembersProps = Omit<AvatarGroupProps, "children"> & {
   members: {
@@ -18,10 +18,11 @@ export const TeamMembers: FC<TeamMembersProps> = ({ members, ...props }) => {
   return (
     <Avatar.Group {...props}>
       {visibleMembers.map((member) => (
-        <TeamMemberAvatar
+        <AvatarUser
           key={member.handle}
           name={member.name}
           src={member.avatar}
+          tooltip
         />
       ))}
 
@@ -36,9 +37,7 @@ export const TeamMembers: FC<TeamMembersProps> = ({ members, ...props }) => {
           }
           withArrow
         >
-          <Avatar size={32} radius="xl">
-            +{hiddenMembers.length}
-          </Avatar>
+          <Avatar radius="xl">+{hiddenMembers.length}</Avatar>
         </Tooltip>
       )}
     </Avatar.Group>

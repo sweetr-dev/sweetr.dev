@@ -26,7 +26,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     description:
       "Alert when an open Pull Request has been waiting for review for too long.",
     icon: IconEyeCode,
-    getRoute: (teamId) => `/teams/${teamId}/alerts/slow-review`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/alerts/slow-review`,
   },
   [AlertType.SLOW_MERGE]: {
     available: true,
@@ -35,7 +35,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     description:
       "Alert when an approved Pull Request has been waiting for merge for too long.",
     icon: IconGitMerge,
-    getRoute: (teamId) => `/teams/${teamId}/alerts/slow-merge`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/alerts/slow-merge`,
   },
   [AlertType.MERGED_WITHOUT_APPROVAL]: {
     available: true,
@@ -44,7 +44,8 @@ const alertCards: Record<AlertType, AlertCardData> = {
     title: "Merged without approval",
     description: "Alert when a Pull Request is merged without approvals.",
     icon: IconEyeOff,
-    getRoute: (teamId) => `/teams/${teamId}/alerts/merged-without-approval`,
+    getRoute: (teamId) =>
+      `/humans/teams/${teamId}/alerts/merged-without-approval`,
   },
   [AlertType.HOT_PR]: {
     available: false,
@@ -54,7 +55,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     description:
       "Alert when a Pull Request has lot of comments or back-and-forth.",
     icon: IconMessage2Exclamation,
-    getRoute: (teamId) => `/teams/${teamId}/alerts/hot-pr`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/alerts/hot-pr`,
   },
   [AlertType.UNRELEASED_CHANGES]: {
     available: false,
@@ -63,7 +64,7 @@ const alertCards: Record<AlertType, AlertCardData> = {
     title: "Too many unreleased changes",
     description: "Alert when many merged Pull Requests are pending release.",
     icon: IconRocketOff,
-    getRoute: (teamId) => `/teams/${teamId}/alerts/unreleased-changes`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/alerts/unreleased-changes`,
   },
 };
 

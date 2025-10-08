@@ -5,16 +5,15 @@ import {
   ComboboxProps,
   Button,
   Group,
-  Avatar,
   Text,
   Loader,
   ScrollArea,
 } from "@mantine/core";
-import { useSearchPeopleQuery } from "../../../../../api/people.api";
+import { usePeopleOptionsQuery } from "../../../../../api/people.api";
 import { useDebouncedValue } from "@mantine/hooks";
-import { IconUserQuestion } from "@tabler/icons-react";
 import { PersonData } from "./types";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { AvatarUser } from "../../../../../components/avatar-user";
 
 interface InputSelectPersonProps extends ComboboxProps {
   onSubmit: (person: PersonData) => void;
@@ -49,7 +48,7 @@ export const InputSelectPerson = ({
     if (person) onSubmit(person);
   };
 
-  const { data, isLoading, refetch } = useSearchPeopleQuery({
+  const { data, isLoading, refetch } = usePeopleOptionsQuery({
     workspaceId: workspace.id,
     input: { query: debouncedSearch },
   });
@@ -66,7 +65,7 @@ export const InputSelectPerson = ({
     <Combobox.Option value={person.id} key={person.id}>
       <Group justify="space-between">
         <Group>
-          <Avatar src={person.avatar} />
+          <AvatarUser src={person.avatar} name={person.name} />
           <Text>{person.name}</Text>
         </Group>
         <Text size="xs">@{person.handle}</Text>
@@ -115,18 +114,13 @@ export const InputSelectPerson = ({
             {isLoading && (
               <Combobox.Empty>
                 <Group justify="center" align="center" gap="xs">
-                  <Loader size="sm" type="dots" />
+                  <Loader size="sm" type="dots" color="green.4" />
                   Loading
                 </Group>
               </Combobox.Empty>
             )}
             {!isLoading && options.length === 0 && (
-              <Combobox.Empty>
-                <Group justify="center" align="center" gap={4}>
-                  <IconUserQuestion stroke={1.5} size={20} />
-                  Nothing found
-                </Group>
-              </Combobox.Empty>
+              <Combobox.Empty>Nothing found</Combobox.Empty>
             )}
             {options?.length > 0 && options}
           </ScrollArea.Autosize>

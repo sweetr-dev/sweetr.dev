@@ -59,7 +59,7 @@ export const useSyncProgressNotification = () => {
         <Anchor
           fz="sm"
           onClick={() => {
-            navigate("/teams");
+            navigate("/humans/teams");
           }}
         >
           create a team

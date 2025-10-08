@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PullRequestSizeSettings = z.object({
-  workspaceId: z.string().min(1),
+  workspaceId: z.string().nonempty("Field is empty"),
   settings: z.object({
     pullRequest: z.object({
       size: z

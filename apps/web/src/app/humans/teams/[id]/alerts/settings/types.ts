@@ -4,7 +4,7 @@ export const BaseFormAlert = z.object({
   enabled: z.boolean().default(false),
   channel: z
     .string()
-    .min(1, "Field is required")
+    .nonempty("Field is empty")
     .refine((val) => !val.startsWith("#"), {
       message: "Channel should not start with #",
     })

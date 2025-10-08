@@ -6,6 +6,9 @@ export default /* GraphQL */ `
   }
 
   input RepositoriesQueryInput {
+    "The ids to filter by."
+    ids: [SweetID!]
+
     "The query to search by. Looks up by name."
     query: String
 

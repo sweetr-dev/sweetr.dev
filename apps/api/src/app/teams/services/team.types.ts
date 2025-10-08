@@ -1,11 +1,11 @@
 import { TeamMemberRole } from "../../../graphql-types";
 
-export interface FindTeamByIdInput {
+export interface FindTeamByIdArgs {
   workspaceId: number;
   teamId: number;
 }
 
-export interface FindTeamMembersInput {
+export interface FindTeamMembersArgs {
   workspaceId: number;
   teamId: number;
 }
@@ -24,18 +24,14 @@ export interface UpsertTeamInput {
   }[];
 }
 
-export interface FindTeamsByWorkspaceInput {
+export interface FindTeamsByWorkspaceArgs {
   workspaceId: number;
+  teamIds?: number[];
   query?: string;
   limit?: number;
 }
 
-export interface AuthorizeTeamInput {
-  teamId: number;
-  gitProfileId: number;
-}
-
-export interface AuthorizeTeamMembersInput {
+export interface CountTeamMembersArgs {
   workspaceId: number;
   members: {
     personId: number;

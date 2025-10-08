@@ -1,9 +1,5 @@
 import { PullRequestSize, PullRequestState } from "@prisma/client";
-
-interface DateTimeRange {
-  from?: string;
-  to?: string;
-}
+import { DateTimeRange } from "../../types";
 
 export interface PaginatePullRequestsArgs {
   cursor?: number;
@@ -20,4 +16,14 @@ export interface PullRequestFile {
   path: string;
   additions: number;
   deletions: number;
+}
+
+export interface FindPullRequestsByDeploymentIdArgs {
+  workspaceId: number;
+  deploymentId: number;
+}
+
+export interface CountPullRequestsByDeploymentIdArgs {
+  workspaceId: number;
+  deploymentId: number;
 }

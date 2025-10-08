@@ -63,3 +63,16 @@ export const installGitAppIfNoWorkspaces = (): Response | null => {
 
   return null;
 };
+
+export const getGithubCommitOrTagUrl = (
+  repositoryFullName: string,
+  hashOrVersion: string,
+) => {
+  const isHash = hashOrVersion.length === 40;
+
+  if (isHash) {
+    return `https://github.com/${repositoryFullName}/commit/${hashOrVersion}`;
+  }
+
+  return `https://github.com/${repositoryFullName}/releases/tag/${hashOrVersion}`;
+};

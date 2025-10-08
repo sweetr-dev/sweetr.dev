@@ -6,7 +6,11 @@ import {
   PullRequestState,
 } from "@prisma/client";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
-import { PaginatePullRequestsArgs } from "./pull-request.types";
+import {
+  CountPullRequestsByDeploymentIdArgs,
+  FindPullRequestsByDeploymentIdArgs,
+  PaginatePullRequestsArgs,
+} from "./pull-request.types";
 import {
   isPullRequestApproved,
   isPullRequestPendingChangesRequested,
@@ -122,6 +126,7 @@ export const findPullRequestById = async (
   return getPrisma(workspaceId).pullRequest.findUnique({
     where: {
       id: pullRequestId,
+      workspaceId,
     },
   });
 };
@@ -197,4 +202,31 @@ export const groupPullRequestByState = <
     pendingMerge,
     changesRequested,
   };
+};
+
+export const findPullRequestsByDeploymentId = async ({
+  workspaceId,
+  deploymentId,
+}: FindPullRequestsByDeploymentIdArgs) => {
+  return getPrisma(workspaceId).pullRequest.findMany({
+    where: {
+      deployedPullRequests: {
+        some: { deploymentId },
+      },
+      workspaceId,
+    },
+    take: take(100),
+    orderBy: {
+      mergedAt: "desc",
+    },
+  });
+};
+
+export const countPullRequestsByDeploymentId = async ({
+  workspaceId,
+  deploymentId,
+}: CountPullRequestsByDeploymentIdArgs) => {
+  return getPrisma(workspaceId).deployedPullRequest.count({
+    where: { deploymentId, workspaceId },
+  });
 };

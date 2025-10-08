@@ -41,7 +41,7 @@ export const useAlert = <T extends BaseFormAlert>({
         message: `Alert updated.`,
       });
 
-      navigate(`/teams/${teamId}/alerts`);
+      navigate(`/humans/teams/${teamId}/alerts`);
     },
     onError: (error) => {
       showErrorNotification({
@@ -81,7 +81,7 @@ export const useAlert = <T extends BaseFormAlert>({
   const isFormValid = useMemo(() => !form.validate().hasErrors, [form.values]);
 
   const drawerProps = useDrawerPage({
-    closeUrl: `/teams/${teamId}/alerts`,
+    closeUrl: `/humans/teams/${teamId}/alerts`,
   });
 
   return {

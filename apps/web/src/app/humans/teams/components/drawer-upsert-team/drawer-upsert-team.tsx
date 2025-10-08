@@ -42,11 +42,11 @@ export const DrawerUpsertTeam: FC<DrawerUpsertTeamProps> = ({
   });
   const { mutate, isPending } = useUpsertTeamMutation({
     onSuccess: (team) => {
-      const message = isEditing ? "Team updated" : "New team created";
+      const message = isEditing ? "Team updated." : "New team created.";
       showSuccessNotification({ message });
 
       onClose();
-      navigate(`/teams/${team.upsertTeam.id}`);
+      navigate(`/humans/teams/${team.upsertTeam.id}`);
     },
     onError: () => {
       showErrorNotification({
@@ -82,7 +82,7 @@ export const DrawerUpsertTeam: FC<DrawerUpsertTeamProps> = ({
         position="right"
         opened={isOpen}
         onClose={onClose || (() => {})}
-        size="lg"
+        size="xl"
         title={title}
         actions={
           <Button type="submit" disabled={!isFormValid} loading={isPending}>

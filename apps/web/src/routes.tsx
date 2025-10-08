@@ -8,21 +8,12 @@ import { AutomationPrTitleCheckPage } from "./app/automations/settings/pr-title-
 import { GithubInstallPage } from "./app/github/install/page";
 import { OAuthGithubPage } from "./app/github/oauth/page";
 import { HomePage } from "./app/home/page";
-import { AppPage } from "./app/page";
+import { HumansPage } from "./app/humans/page";
 import { PersonCodeReviewsPage } from "./app/humans/people/[handle]/code-reviews/page";
 import { PersonOverviewPage } from "./app/humans/people/[handle]/overview/page";
 import { PersonPage } from "./app/humans/people/[handle]/page";
 import { PersonPullRequestsPage } from "./app/humans/people/[handle]/pull-requests/page";
 import { PeoplePage } from "./app/humans/people/page";
-import { RepositoriesPage } from "./app/repositories/page";
-import { BillingPage } from "./app/settings/billing/page";
-import { IntegrationsPage } from "./app/settings/integrations/page";
-import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
-import { MyAccountPage } from "./app/settings/my-account/page";
-import { SettingsPage } from "./app/settings/page";
-import { PullRequestSettingsPage } from "./app/settings/pull-request-settings/page";
-import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
-import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
 import { TeamAlertsPage } from "./app/humans/teams/[id]/alerts/page";
 import { MergedWithoutApprovalAlertPage } from "./app/humans/teams/[id]/alerts/settings/merged-without-approval/page";
 import { SlowMergeAlertPage } from "./app/humans/teams/[id]/alerts/settings/slow-merge/page";
@@ -43,6 +34,18 @@ import { TeamPullRequestsPage } from "./app/humans/teams/[id]/pull-requests/page
 import { TeamWorkInProgressPage } from "./app/humans/teams/[id]/work-in-progress/page";
 import { TeamWorkLogPage } from "./app/humans/teams/[id]/work-log/page";
 import { TeamsPage } from "./app/humans/teams/page";
+import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
+import { AppPage } from "./app/page";
+import { BillingPage } from "./app/settings/billing/page";
+import { IntegrationsPage } from "./app/settings/integrations/page";
+import { IntegrationSlackPage } from "./app/settings/integrations/slack/page";
+import { MyAccountPage } from "./app/settings/my-account/page";
+import { SettingsPage } from "./app/settings/page";
+import { PullRequestSettingsPage } from "./app/settings/pull-request-settings/page";
+import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
+import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
+import { SystemsPage } from "./app/systems/page";
+import { RepositoriesPage } from "./app/systems/repositories/page";
 import {
   isAuthError,
   redirectIfCredentials,
@@ -54,6 +57,15 @@ import {
 } from "./providers/github.provider";
 import { showInfoNotification } from "./providers/notification.provider";
 import { loadUserWithWorkspaces } from "./providers/workspace.provider";
+import { DeploymentsPage } from "./app/systems/deployments/page";
+import { ApplicationsPage } from "./app/systems/applications/page";
+import { IncidentsPage } from "./app/systems/incidents/page";
+import { ApplicationsCreatePage } from "./app/systems/applications/upsert/create/page";
+import { ApplicationsEditPage } from "./app/systems/applications/upsert/edit/page";
+import { EnvironmentsPage } from "./app/systems/environments/page";
+import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
+import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
+import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
 
 export const router = createBrowserRouter([
   {
@@ -127,8 +139,56 @@ export const router = createBrowserRouter([
             element: <HomePage />,
           },
           {
-            path: "/repositories",
-            element: <RepositoriesPage />,
+            path: "/systems/",
+            element: <SystemsPage />,
+            children: [
+              {
+                path: "/systems/repositories",
+                element: <RepositoriesPage />,
+              },
+              {
+                path: "/systems/applications",
+                element: <ApplicationsPage />,
+                children: [
+                  {
+                    path: "/systems/applications/new",
+                    element: <ApplicationsCreatePage />,
+                  },
+                  {
+                    path: "/systems/applications/edit/:applicationId",
+                    element: <ApplicationsEditPage />,
+                  },
+                ],
+              },
+              {
+                path: "/systems/deployments",
+                element: <DeploymentsPage />,
+                children: [
+                  {
+                    path: "/systems/deployments/view/:deploymentId",
+                    element: <DeploymentsViewPage />,
+                  },
+                ],
+              },
+              {
+                path: "/systems/incidents",
+                element: <IncidentsPage />,
+                children: [
+                  {
+                    path: "/systems/incidents/new",
+                    element: <IncidentsCreatePage />,
+                  },
+                  {
+                    path: "/systems/incidents/edit/:incidentId",
+                    element: <IncidentsEditPage />,
+                  },
+                ],
+              },
+              {
+                path: "/systems/environments",
+                element: <EnvironmentsPage />,
+              },
+            ],
           },
           {
             path: "/settings",
@@ -169,115 +229,122 @@ export const router = createBrowserRouter([
             ],
           },
           {
-            path: "/teams",
-            element: <TeamsPage />,
+            path: "metrics-and-insights",
+            element: <MetricsAndInsightsPage />,
           },
           {
-            path: "/teams/:teamId",
-            element: <TeamPage />,
+            path: "/humans",
+            element: <HumansPage />,
             children: [
               {
-                path: "/teams/:teamId",
-                element: <TeamWorkInProgressPage />,
+                path: "/humans/teams",
+                element: <TeamsPage />,
               },
               {
-                path: "/teams/:teamId/work-log",
-                element: <TeamWorkLogPage />,
-                meta: {
-                  fluid: true,
-                },
-              },
-              {
-                path: "/teams/:teamId/members",
-                element: <TeamMembersPage />,
-              },
-              {
-                path: "/teams/:teamId/pull-requests",
-                element: <TeamPullRequestsPage />,
-              },
-              {
-                path: "/teams/:teamId/alerts",
-                element: <TeamAlertsPage />,
+                path: "/humans/teams/:teamId",
+                element: <TeamPage />,
                 children: [
                   {
-                    path: "/teams/:teamId/alerts/slow-merge",
-                    element: <SlowMergeAlertPage />,
+                    path: "/humans/teams/:teamId",
+                    element: <TeamWorkInProgressPage />,
                   },
                   {
-                    path: "/teams/:teamId/alerts/slow-review",
-                    element: <SlowReviewAlertPage />,
+                    path: "/humans/teams/:teamId/work-log",
+                    element: <TeamWorkLogPage />,
                   },
                   {
-                    path: "/teams/:teamId/alerts/merged-without-approval",
-                    element: <MergedWithoutApprovalAlertPage />,
+                    path: "/humans/teams/:teamId/members",
+                    element: <TeamMembersPage />,
+                  },
+                  {
+                    path: "/humans/teams/:teamId/pull-requests",
+                    element: <TeamPullRequestsPage />,
+                  },
+                  {
+                    path: "/humans/teams/:teamId/alerts",
+                    element: <TeamAlertsPage />,
+                    children: [
+                      {
+                        path: "/humans/teams/:teamId/alerts/slow-merge",
+                        element: <SlowMergeAlertPage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/alerts/slow-review",
+                        element: <SlowReviewAlertPage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/alerts/merged-without-approval",
+                        element: <MergedWithoutApprovalAlertPage />,
+                      },
+                    ],
+                  },
+                  {
+                    path: "/humans/teams/:teamId/digests",
+                    element: <TeamDigestsPage />,
+                    children: [
+                      {
+                        path: "/humans/teams/:teamId/digests/metrics",
+                        element: <TeamMetricsDigestPage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/digests/wip",
+                        element: <TeamWipDigestPage />,
+                      },
+                    ],
+                  },
+                  {
+                    path: "/humans/teams/:teamId/health-and-performance",
+                    element: <TeamHealthAndPerformancePage />,
+                    children: [
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/activity/code-review-distribution",
+                        element: <TeamCodeReviewDistributionPage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/cycle-time",
+                        element: <TeamPullRequestsCycleTimePage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/size-distribution",
+                        element: <TeamPullRequestsSizeDistribution />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/time-to-merge",
+                        element: <TeamPullRequestsTimeToMergePage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-approve",
+                        element: <TeamCodeReviewsTimeToApprovePage />,
+                      },
+                      {
+                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-first-review",
+                        element: <TeamCodeReviewsTimeToFirstReviewPage />,
+                      },
+                    ],
                   },
                 ],
               },
               {
-                path: "/teams/:teamId/digests",
-                element: <TeamDigestsPage />,
+                path: "/humans/people",
+                element: <PeoplePage />,
+              },
+              {
+                path: "/humans/people/:handle",
+                element: <PersonPage />,
                 children: [
                   {
-                    path: "/teams/:teamId/digests/metrics",
-                    element: <TeamMetricsDigestPage />,
+                    path: "/humans/people/:handle",
+                    element: <PersonOverviewPage />,
                   },
                   {
-                    path: "/teams/:teamId/digests/wip",
-                    element: <TeamWipDigestPage />,
+                    path: "/humans/people/:handle/pull-requests",
+                    element: <PersonPullRequestsPage />,
+                  },
+                  {
+                    path: "/humans/people/:handle/code-reviews",
+                    element: <PersonCodeReviewsPage />,
                   },
                 ],
-              },
-              {
-                path: "/teams/:teamId/health-and-performance",
-                element: <TeamHealthAndPerformancePage />,
-                children: [
-                  {
-                    path: "/teams/:teamId/health-and-performance/activity/code-review-distribution",
-                    element: <TeamCodeReviewDistributionPage />,
-                  },
-                  {
-                    path: "/teams/:teamId/health-and-performance/pull-requests/cycle-time",
-                    element: <TeamPullRequestsCycleTimePage />,
-                  },
-                  {
-                    path: "/teams/:teamId/health-and-performance/pull-requests/size-distribution",
-                    element: <TeamPullRequestsSizeDistribution />,
-                  },
-                  {
-                    path: "/teams/:teamId/health-and-performance/pull-requests/time-to-merge",
-                    element: <TeamPullRequestsTimeToMergePage />,
-                  },
-                  {
-                    path: "/teams/:teamId/health-and-performance/code-reviews/time-to-approve",
-                    element: <TeamCodeReviewsTimeToApprovePage />,
-                  },
-                  {
-                    path: "/teams/:teamId/health-and-performance/code-reviews/time-to-first-review",
-                    element: <TeamCodeReviewsTimeToFirstReviewPage />,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            path: "/people",
-            element: <PeoplePage />,
-          },
-          {
-            path: "/people/:handle",
-            element: <PersonPage />,
-            children: [
-              {
-                path: "/people/:handle",
-                element: <PersonOverviewPage />,
-              },
-              {
-                path: "/people/:handle/pull-requests",
-                element: <PersonPullRequestsPage />,
-              },
-              {
-                path: "/people/:handle/code-reviews",
-                element: <PersonCodeReviewsPage />,
               },
             ],
           },

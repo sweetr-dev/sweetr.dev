@@ -27,6 +27,7 @@ export const useContextualActions = (
   actions: Record<string, Action>,
   dependencies: unknown[] = [],
   isRootPage = true, // Pass false if calling from a child component of a page
+  // TO-DO: instead of isRootPage we should have a dictionary using the page path as the key
 ) => {
   const { mergeActions, clearActions } = useContextualActionsStore();
 

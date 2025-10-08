@@ -1,4 +1,5 @@
 export interface PaginateGitProfilesArgs {
+  gitProfileIds?: number[];
   cursor?: number;
   query?: string;
   limit?: number;

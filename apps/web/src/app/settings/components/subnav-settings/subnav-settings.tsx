@@ -3,14 +3,13 @@ import {
   IconApps,
   IconBuildingCommunity,
   IconCash,
-  IconGitPullRequest,
-  IconServerBolt,
   IconUser,
   IconUsers,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { Subnav } from "../../../../components/subnav";
+import { IconPullRequest } from "../../../../providers/icon.provider";
 
 export const SubnavSettings = () => {
   const { pathname } = useLocation();
@@ -69,19 +68,7 @@ export const SubnavSettings = () => {
         active={pathname === "/settings/pull-request"}
         component={Link}
         label="Pull Request"
-        leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
-      />
-      <NavLink
-        to="#"
-        component={Link}
-        label="Deployments"
-        leftSection={<IconServerBolt stroke={1.5} size={18} />}
-        disabled
-        rightSection={
-          <Badge size="xs" variant="default">
-            Soon
-          </Badge>
-        }
+        leftSection={<IconPullRequest stroke={1.5} size={18} />}
       />
       <Divider label="You" labelPosition="left" mt="md" />
       <NavLink

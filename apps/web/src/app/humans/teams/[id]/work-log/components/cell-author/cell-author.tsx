@@ -1,10 +1,11 @@
-import { Avatar, Badge, Group, Stack, Text } from "@mantine/core";
+import { Badge, Group, Stack, Text } from "@mantine/core";
 import { teamRoleColorMap } from "../../../../../../../providers/team-role.provider";
 import { ActivityEvent } from "@sweetr/graphql-types/frontend/graphql";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCodeReview } from "../icon-code-review";
 import { IconMergedPR } from "../icon-merged-pr";
 import { IconOpenedPR } from "../icon-opened-pr";
+import { AvatarUser } from "../../../../../../../components/avatar-user";
 
 interface CellAuthorProps {
   author: {
@@ -21,7 +22,7 @@ export const CellAuthor = ({ author }: CellAuthorProps) => {
   return (
     <>
       <Stack gap={5} align="center" justify="center" style={{ flexGrow: 1 }}>
-        <Avatar src={author.avatar} size={48} />
+        <AvatarUser name={author.name} src={author.avatar} size={48} />
 
         <Text lineClamp={1} title={author.name}>
           {author.name}

@@ -17,6 +17,7 @@ export const repositoriesQuery = createFieldResolver("Workspace", {
 
     const repositories = await findRepositoriesByWorkspace({
       workspaceId: workspace.id,
+      repositoriesIds: input?.ids || undefined,
       limit: input?.limit || undefined,
       query: input?.query || undefined,
     });

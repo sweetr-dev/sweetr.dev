@@ -6,9 +6,6 @@ import {
   Workspace,
 } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
-import { redisConnection } from "../../../bull-mq/redis-connection";
-import { UnknownException } from "../../errors/exceptions/unknown.exception";
-import { captureException } from "../../../lib/sentry";
 
 type WorkspaceWithUserOrOrganization = Workspace & {
   gitProfile: GitProfile | null;

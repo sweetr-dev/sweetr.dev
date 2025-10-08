@@ -18,7 +18,7 @@ import { AlertBaseFields } from "../../components/alert-base-fields";
 import { useAlert } from "../use-alert";
 import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowReviewAlert } from "../types";
-import { useFormAsyncData } from "../../../../../../../providers/form.provider.ts";
+import { useFormAsyncData } from "../../../../../../../providers/form.provider";
 import { TriggerDescription } from "../components/trigger-description";
 
 export const SlowReviewAlertPage = () => {
@@ -74,7 +74,6 @@ export const SlowReviewAlertPage = () => {
     <DrawerScrollable
       {...drawerProps}
       title={alert.title}
-      size="lg"
       actions={
         <Button
           type="submit"

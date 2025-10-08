@@ -1,6 +1,6 @@
 import { AlertType } from "@prisma/client";
 import { getBypassRlsPrisma } from "../../../prisma";
-import { isActiveCustomer } from "../../workspace-authorization.service";
+import { isActiveCustomer } from "../../authorization.service";
 import { AlertWithRelations } from "./alert.types";
 
 export const findScheduledAlerts = async (types: AlertType[]) => {

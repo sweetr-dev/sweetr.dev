@@ -1,6 +1,6 @@
 import { DayOfTheWeek, Frequency } from "@prisma/client";
 import { getBypassRlsPrisma } from "../../../prisma";
-import { isActiveCustomer } from "../../workspace-authorization.service";
+import { isActiveCustomer } from "../../authorization.service";
 import { Digest, DigestWithRelations } from "./digest.types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { captureException } from "../../../lib/sentry";

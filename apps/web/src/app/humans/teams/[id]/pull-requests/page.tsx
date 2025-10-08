@@ -20,7 +20,7 @@ import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../../providers/date.provider";
 import {
   IconAspectRatio,
-  IconCalendar,
+  IconCalendarFilled,
   IconStatusChange,
 } from "@tabler/icons-react";
 import { FilterMultiSelect } from "../../../../../components/filter-multi-select";
@@ -41,8 +41,8 @@ export const TeamPullRequestsPage = () => {
     createdAtTo: string | null;
   }>({
     initialValues: {
-      states: searchParams.getAll<PullRequestState[]>("states") || [],
-      sizes: searchParams.getAll<PullRequestSize[]>("sizes") || [],
+      states: searchParams.getAll<PullRequestState[]>("state") || [],
+      sizes: searchParams.getAll<PullRequestSize[]>("size") || [],
       createdAtFrom: searchParams.get("createdAtFrom"),
       createdAtTo: searchParams.get("createdAtTo"),
     },
@@ -106,7 +106,7 @@ export const TeamPullRequestsPage = () => {
       <Group gap={5}>
         <FilterDate
           label="Created"
-          icon={IconCalendar}
+          icon={IconCalendarFilled}
           onChange={(dates) => {
             const createdAtFrom = dates[0]?.toISOString() || null;
             const createdAtTo = dates[1]?.toISOString() || null;
@@ -122,22 +122,30 @@ export const TeamPullRequestsPage = () => {
           ]}
         />
         <FilterMultiSelect
+          width="target"
           label="State"
           icon={IconStatusChange}
-          items={Object.values(PullRequestState)}
+          items={Object.values(PullRequestState).map((state) => ({
+            label: state,
+            value: state,
+          }))}
           onChange={(states) => {
             filters.setFieldValue("states", states as PullRequestState[]);
-            searchParams.set("states", states);
+            searchParams.set("state", states);
           }}
           value={filters.values.states}
         />
         <FilterMultiSelect
+          width="target"
           label="Size"
           icon={IconAspectRatio}
-          items={Object.values(PullRequestSize)}
+          items={Object.values(PullRequestSize).map((size) => ({
+            label: size,
+            value: size,
+          }))}
           onChange={(sizes) => {
             filters.setFieldValue("sizes", sizes as PullRequestSize[]);
-            searchParams.set("sizes", sizes);
+            searchParams.set("size", sizes);
           }}
           value={filters.values.sizes}
         />
@@ -164,7 +172,12 @@ export const TeamPullRequestsPage = () => {
               message="This team has no pull requests."
               isFiltering={isFiltering}
               onResetFilter={() => {
-                filters.reset();
+                filters.setValues({
+                  states: [],
+                  sizes: [],
+                  createdAtFrom: null,
+                  createdAtTo: null,
+                });
                 searchParams.reset();
               }}
             />

@@ -32,7 +32,7 @@ export const useDigest = ({ teamId, type }: UseDigestsProps) => {
         message: `Digest updated.`,
       });
 
-      navigate(`/teams/${teamId}/digests`);
+      navigate(`/humans/teams/${teamId}/digests`);
     },
     onError: (error) => {
       showErrorNotification({

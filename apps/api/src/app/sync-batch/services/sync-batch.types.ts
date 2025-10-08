@@ -1,4 +1,4 @@
-import { Prisma, SyncBatch as DbSyncBatch, GitProvider } from "@prisma/client";
+import { Prisma, GitProvider } from "@prisma/client";
 
 export type SyncBatchMetadata = {
   repositories: string[];

@@ -56,6 +56,9 @@ export default /* GraphQL */ `
   }
 
   input TeamsQueryInput {
+    "The ids to filter by."
+    ids: [SweetID!]
+
     "The query to search by. Looks up by name."
     query: String
 

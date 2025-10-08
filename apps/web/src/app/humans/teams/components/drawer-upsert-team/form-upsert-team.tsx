@@ -8,9 +8,9 @@ import {
   ActionIcon,
   ColorInput,
   Text,
-  Avatar,
   Paper,
   Button,
+  FocusTrap,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useEffect } from "react";
@@ -22,6 +22,7 @@ import { IconTrash } from "@tabler/icons-react";
 import { InputSelectPerson } from "./input-select-person";
 import { InputSelectRole } from "./input-select-role";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
+import { AvatarUser } from "../../../../../components/avatar-user";
 
 export interface FormUpsertTeamProps {
   form: UseFormReturnType<TeamForm>;
@@ -51,16 +52,18 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
     <>
       <Stack p="md">
         <Title order={5}>Details</Title>
-        <TextInput
-          placeholder="Super squad"
-          label="Team name"
-          withAsterisk
-          data-autofocus
-          {...form.getInputProps("name")}
-        />
+        <FocusTrap>
+          <TextInput
+            placeholder="Super squad"
+            label="Team name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+        </FocusTrap>
         <TextInput
           placeholder="We use our super powers to create awesome products"
           label="Description"
+          maxLength={150}
           {...form.getInputProps("description")}
         />
       </Stack>
@@ -130,7 +133,11 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
               <Paper withBorder p="sm" key={member.id} radius="sm">
                 <Group justify="space-between">
                   <Group style={{ flexGrow: 1 }}>
-                    <Avatar size="md" src={member.person.avatar} />
+                    <AvatarUser
+                      name={member.person.name || ""}
+                      size="md"
+                      src={member.person.avatar}
+                    />
                     {member.person.name || member.person.handle}
                   </Group>
                   <InputSelectRole {...roleInputProps} />

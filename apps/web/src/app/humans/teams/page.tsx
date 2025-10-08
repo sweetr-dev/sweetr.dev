@@ -9,7 +9,7 @@ import { PageEmptyState } from "../../../components/page-empty-state";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { PageContainer } from "../../../components/page-container";
 import { useContextualActions } from "../../../providers/contextual-actions.provider";
-import { IconCircles } from "@tabler/icons-react";
+import { IconTeam } from "../../../providers/icon.provider";
 
 export const TeamsPage = () => {
   const [isDrawerOpen, drawerControl] = useDisclosure(false);
@@ -21,7 +21,7 @@ export const TeamsPage = () => {
     newTeam: {
       label: "New team",
       description: "Create a new team",
-      icon: IconCircles,
+      icon: IconTeam,
       onClick: () => {
         drawerControl.open();
       },

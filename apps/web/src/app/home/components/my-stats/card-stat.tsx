@@ -38,7 +38,7 @@ export const CardStat = ({
         </Text>
       </Group>
 
-      <Group gap={4} align="center" mt="xs" h={21}>
+      <Group gap={5} align="center" mt="xs" h={21}>
         {!!previous && (
           <Text
             c={change >= 0 ? "teal" : "red"}

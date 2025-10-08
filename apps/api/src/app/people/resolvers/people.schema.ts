@@ -8,6 +8,9 @@ export default /* GraphQL */ `
   }
 
   input PeopleQueryInput {
+    "The ids to filter by."
+    ids: [SweetID!]
+
     "The query to search by. Looks up by name, email and git handle."
     query: String
 

@@ -18,7 +18,7 @@ export default /* GraphQL */ `
     compliance: String
   }
 
-  extend type Mutation {
+  type Mutation {
     updateAutomation(input: UpdateAutomationInput!): Automation!
   }
 

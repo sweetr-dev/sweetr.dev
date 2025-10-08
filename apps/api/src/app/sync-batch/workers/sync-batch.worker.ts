@@ -5,7 +5,7 @@ import { startSyncBatch } from "../services/sync-batch.service";
 
 export const syncBatchWorker = createWorker(
   SweetQueue.SYNC_BATCH,
-  async (job: Job<{ syncBatchId: number }>, token?: string) => {
+  async (job: Job<{ syncBatchId: number }>) => {
     await startSyncBatch(job.data.syncBatchId);
   }
 );

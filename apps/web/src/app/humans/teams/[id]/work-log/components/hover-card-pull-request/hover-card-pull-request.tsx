@@ -11,8 +11,9 @@ import { IconPullRequestState } from "../../../../../../../components/icon-pull-
 import { BadgePullRequestSize } from "../../../../../../../components/badge-pull-request-size";
 import { LinesChanged } from "../../../../../../../components/lines-changed/lines-changed";
 import { getPullRequestChanges } from "../../../../../../../providers/pull-request.provider";
-import { IconBrandGithub, IconClock } from "@tabler/icons-react";
+import { IconClock } from "@tabler/icons-react";
 import { format } from "date-fns";
+import { IconRepository } from "../../../../../../../providers/icon.provider";
 
 interface HoverCardPullRequestProps extends HoverCardProps {
   target: React.ReactNode;
@@ -47,7 +48,7 @@ export const HoverCardPullRequest = ({
           </Group>
           <Group justify="space-between">
             <Group gap={5}>
-              <IconBrandGithub stroke={1.5} size={20} />
+              <IconRepository stroke={1.5} size={20} />
               <Anchor
                 href={`https://github.com/${pullRequest.repository.fullName}`}
                 target="_blank"

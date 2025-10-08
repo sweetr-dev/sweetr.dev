@@ -11,6 +11,13 @@ type ConfirmationModalArgs =
     })
   | undefined;
 
+type InfoModalArgs =
+  | (OpenConfirmModal & {
+      label?: string | ReactNode;
+      title?: string;
+    })
+  | undefined;
+
 export const useConfirmationModal = () => {
   const theme = useMantineTheme();
 
@@ -41,6 +48,25 @@ export const useConfirmationModal = () => {
         },
         confirmProps: { color: "red" },
         ...payload,
+      }),
+  };
+};
+
+export const useInfoModal = () => {
+  return {
+    openInfoModal: (payload: InfoModalArgs) =>
+      modals.open({
+        title: (
+          <Text fw={500} mr="xs">
+            {payload?.title || <>Please confirm your action</>}
+          </Text>
+        ),
+        children: (
+          <Text size="sm">
+            {payload?.label || <>Are you sure you want to proceed?</>}
+          </Text>
+        ),
+        size: "sm",
       }),
   };
 };

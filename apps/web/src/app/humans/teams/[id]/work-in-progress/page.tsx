@@ -58,13 +58,12 @@ export const TeamWorkInProgressPage = () => {
           <Stack gap="lg">
             <Anchor
               component={Link}
-              to={`/teams/${teamId}/digests/wip`}
+              to={`/humans/teams/${teamId}/digests/wip`}
               c="dimmed"
               underline="hover"
             >
               <Tip justify="end">
-                Schedule WIP Digest to send this report to your team&apos;s
-                Slack channel.
+                Send this report to your team&apos;s Slack channel.
               </Tip>
             </Anchor>
             {groupedPullRequests &&

@@ -26,6 +26,13 @@ export const paginateGitProfiles = async (
     },
   };
 
+  if (args.gitProfileIds?.length) {
+    query.where = {
+      ...query.where,
+      id: { in: args.gitProfileIds },
+    };
+  }
+
   if (args.query) {
     query.where = {
       ...query.where,

@@ -20,7 +20,7 @@ const digestCards: Record<DigestType, DigestCardData> = {
       "Sends a digest of key metrics and how they have changed since last period.",
     shortDescription: "Summary of key metrics changes in the last period",
     imageUrl: "/images/digests/metrics.webp",
-    getRoute: (teamId) => `/teams/${teamId}/digests/metrics`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/digests/metrics`,
   },
   [DigestType.TEAM_WIP]: {
     available: true,
@@ -30,7 +30,7 @@ const digestCards: Record<DigestType, DigestCardData> = {
       "Sends a digest of Pull Requests that are in draft or pending review or merge.",
     shortDescription: "Summary of Pull Requests open or pending review.",
     imageUrl: "/images/digests/wip.webp",
-    getRoute: (teamId) => `/teams/${teamId}/digests/wip`,
+    getRoute: (teamId) => `/humans/teams/${teamId}/digests/wip`,
   },
 };
 

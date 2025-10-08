@@ -2,7 +2,6 @@ import { Timeline, Text, ThemeIcon } from "@mantine/core";
 import {
   IconEyeCode,
   IconGitMerge,
-  IconGitPullRequest,
   IconGitPullRequestDraft,
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
@@ -13,6 +12,7 @@ import {
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useBadges } from "./use-badges";
+import { IconPullRequest } from "../../providers/icon.provider";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -103,7 +103,7 @@ export const TimelinePullRequest = ({
         bullet={
           <ThemeIcon variant="filled" color="dark.7">
             {!isDraft && (
-              <IconGitPullRequest size={20} stroke={1.5} color={getColor(1)} />
+              <IconPullRequest size={20} stroke={1.5} color={getColor(1)} />
             )}
             {isDraft && (
               <IconGitPullRequestDraft
@@ -117,7 +117,7 @@ export const TimelinePullRequest = ({
         title={isDraft ? "Drafted" : "Created"}
         c={getColor(1)}
       >
-        <Text size="xs" mt={4}>
+        <Text size="xs" mt={5}>
           {openedAgo}
         </Text>
       </Timeline.Item>
@@ -132,7 +132,7 @@ export const TimelinePullRequest = ({
         title={hasReviews ? "First reviewed" : "First review"}
         c={getColor(2)}
       >
-        <Text size="xs" mt={4}>
+        <Text size="xs" mt={5}>
           {hasReviews && timeToFirstReview && (
             <>in {humanizeDuration(timeToFirstReview)}</>
           )}
@@ -157,7 +157,7 @@ export const TimelinePullRequest = ({
         }
         c={getColor(3)}
       >
-        <Text size="xs" mt={4}>
+        <Text size="xs" mt={5}>
           {isApproved && timeToFirstApproval && (
             <>in {humanizeDuration(timeToFirstApproval)}</>
           )}
@@ -177,7 +177,7 @@ export const TimelinePullRequest = ({
         }
         c={getColor(4)}
       >
-        <Text size="xs" mt={4}>
+        <Text size="xs" mt={5}>
           {isMerged && timeToMerge && <>in {humanizeDuration(timeToMerge)}</>}
 
           {!isMerged && timeToMerge && (

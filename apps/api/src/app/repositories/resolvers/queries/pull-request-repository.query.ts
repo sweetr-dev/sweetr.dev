@@ -16,10 +16,10 @@ export const pullRequestRepositoryQuery = createFieldResolver("PullRequest", {
       throw new ResourceNotFoundException("Pull Request not found");
     }
 
-    const repository = await findRepositoryById(
-      pullRequest["workspaceId"] as number,
-      pullRequest["repositoryId"] as number
-    );
+    const repository = await findRepositoryById({
+      workspaceId: pullRequest["workspaceId"] as number,
+      repositoryId: pullRequest["repositoryId"] as number,
+    });
 
     if (!repository) {
       throw new ResourceNotFoundException("Repository not found");

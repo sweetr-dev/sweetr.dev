@@ -30,7 +30,7 @@ export const CardTeam: FC<CardTeamProps> = ({
   return (
     <Anchor
       component={Link}
-      to={`/teams/${id}`}
+      to={`/humans/teams/${id}`}
       underline="never"
       c="var(--mantine-color-text)"
     >

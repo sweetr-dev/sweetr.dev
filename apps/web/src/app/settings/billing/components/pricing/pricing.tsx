@@ -91,7 +91,7 @@ export const Pricing = ({ plan, currentUsage }: PricingProps) => {
             )}
           </Group>
           <Slider
-            mt={4}
+            mt={5}
             label={null}
             defaultValue={Math.max(10, currentUsage)}
             max={max}

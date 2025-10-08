@@ -1,13 +1,13 @@
 import { logger } from "../../../../lib/logger";
 import { createMutationResolver } from "../../../../lib/graphql";
 import { regenerateApiKey } from "../../services/api-keys.service";
-import { authorizeWorkspaceOrThrow } from "../../../workspace-authorization.service";
+import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 
 export const regenerateApiKeyMutation = createMutationResolver({
   regenerateApiKey: async (_, { input }, context) => {
     logger.info("mutation.regenerateApiKey", { input });
 
-    await authorizeWorkspaceOrThrow({
+    await authorizeWorkspaceMemberOrThrow({
       workspaceId: input.workspaceId,
       gitProfileId: context.currentToken.gitProfileId,
     });

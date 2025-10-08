@@ -61,7 +61,10 @@ export const TeamPage = () => {
   return (
     <PageContainer>
       <Breadcrumbs
-        items={[{ label: "Teams", href: "/teams" }, { label: team.name }]}
+        items={[
+          { label: "Teams", href: "/humans/teams" },
+          { label: team.name },
+        ]}
       />
 
       <HeaderActions>
@@ -82,7 +85,7 @@ export const TeamPage = () => {
             gap="xs"
             pl="lg"
             mb="xs"
-            py={4}
+            py={5}
             className={classes.header}
             style={{
               ["--startColor"]: team.startColor,

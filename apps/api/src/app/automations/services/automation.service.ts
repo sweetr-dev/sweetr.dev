@@ -9,7 +9,7 @@ import {
 } from "./automation.types";
 import { assign, isObject } from "radash";
 import { AutomationType } from "@prisma/client";
-import { isActiveCustomer } from "../../workspace-authorization.service";
+import { isActiveCustomer } from "../../authorization.service";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 export const findAutomationByType = async <T extends AutomationType>({

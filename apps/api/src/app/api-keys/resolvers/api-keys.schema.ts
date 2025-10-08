@@ -11,7 +11,7 @@ export default /* GraphQL */ `
     workspaceId: SweetID!
   }
 
-  extend type Mutation {
+  type Mutation {
     regenerateApiKey(input: RegenerateApiKeyInput!): String!
   }
 

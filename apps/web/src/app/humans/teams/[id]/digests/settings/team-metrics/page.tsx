@@ -35,7 +35,7 @@ export const TeamMetricsDigestPage = () => {
   });
 
   const drawerProps = useDrawerPage({
-    closeUrl: `/teams/${teamId}/digests`,
+    closeUrl: `/humans/teams/${teamId}/digests`,
   });
 
   const form = useForm<FormMetricsDigest>({
