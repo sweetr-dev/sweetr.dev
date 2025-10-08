@@ -38,7 +38,7 @@
     "@prisma/client": "^5.5.2",
     "@sentry/node": "^9.3.0",
     "@sentry/profiling-node": "^9.3.0",
-    "@slack/web-api": "^7.9.3",
+    "@slack/web-api": "^7.11.0",
     "@sweetr/email-templates": "*",
     "@sweetr/graphql-types": "*",
     "basic-auth": "^2.0.1",
