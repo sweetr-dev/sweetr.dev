@@ -1,9 +1,8 @@
-import { Avatar, AvatarProps, Tooltip } from "@mantine/core";
+import { Avatar, AvatarProps } from "@mantine/core";
 import { FC } from "react";
 
 interface AvatarUserProps extends AvatarProps {
   name: string;
-  tooltip?: boolean | string;
 }
 
 const getInitials = (fullName: string) => {
@@ -18,27 +17,10 @@ const getInitials = (fullName: string) => {
   return initials;
 };
 
-export const AvatarUser: FC<AvatarUserProps> = ({
-  src,
-  name,
-  tooltip,
-  ...props
-}) => {
-  const avatar = (
+export const AvatarUser: FC<AvatarUserProps> = ({ src, name, ...props }) => {
+  return (
     <Avatar src={src} alt={name} radius="xl" {...props}>
       {getInitials(name)}
     </Avatar>
-  );
-
-  if (!tooltip) {
-    return avatar;
-  }
-
-  const tooltipLabel = typeof tooltip === "string" ? tooltip : name;
-
-  return (
-    <Tooltip label={tooltipLabel} withArrow position="top">
-      {avatar}
-    </Tooltip>
   );
 };

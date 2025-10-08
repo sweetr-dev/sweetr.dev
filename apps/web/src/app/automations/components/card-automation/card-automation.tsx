@@ -46,7 +46,7 @@ export const CardAutomation = ({
         style={{ borderBottom: "1px solid #303030", flexGrow: 1 }}
       >
         <Stack gap="md" h="100%">
-          <Group gap={5}>
+          <Group gap={4}>
             {benefits &&
               Object.entries(benefits).map(
                 ([key, value]) =>

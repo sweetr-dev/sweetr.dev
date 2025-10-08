@@ -5,9 +5,9 @@ import {
   Title,
   Text,
   Tooltip,
+  Avatar,
   Anchor,
   HoverCard,
-  PaperProps,
 } from "@mantine/core";
 import { IconFlame, IconMessage } from "@tabler/icons-react";
 import { IconPullRequestState } from "../icon-pull-request-state";
@@ -21,9 +21,8 @@ import { BadgeStatus } from "./badge-status";
 import { BadgeData, useBadges } from "./use-badges";
 import { TimelinePullRequest } from "./timeline-pull-request";
 import { useScreenSize } from "../../providers/screen.provider";
-import { AvatarUser } from "../avatar-user";
 
-interface CardPullRequestProps extends Omit<PaperProps, "className"> {
+interface CardPullRequestProps {
   pullRequest: Omit<PullRequest, "author"> & {
     author: Pick<Person, "name" | "avatar">;
   };
@@ -33,7 +32,6 @@ interface CardPullRequestProps extends Omit<PaperProps, "className"> {
 export const CardPullRequest = ({
   pullRequest,
   timeFormat = "relative",
-  ...props
 }: CardPullRequestProps) => {
   const { isSmallScreen } = useScreenSize();
   const { getCommentFlameProps, getTimeLabel } = usePrCard(pullRequest);
@@ -64,7 +62,6 @@ export const CardPullRequest = ({
               ["--startColor"]: cardColor?.start,
               ["--endColor"]: cardColor?.end,
             }}
-            {...props}
           >
             <Group
               justify="space-between"
@@ -118,12 +115,13 @@ export const CardPullRequest = ({
                 justify={isSmallScreen ? "center" : "flex-end"}
               >
                 {pullRequest.author && (
-                  <AvatarUser
-                    name={pullRequest.author.name}
-                    src={pullRequest.author.avatar}
-                    size={40}
-                    tooltip
-                  />
+                  <Tooltip
+                    label={pullRequest.author.name}
+                    withArrow
+                    position="top"
+                  >
+                    <Avatar src={pullRequest.author.avatar} size={40} />
+                  </Tooltip>
                 )}
 
                 <Group gap={5} miw={40} justify="flex-start" align="center">

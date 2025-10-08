@@ -40,13 +40,7 @@ export const Breadcrumbs: FC<BreadcrumbsProps> = ({ items, children }) => {
                   onClick={() => item.href && navigate(item.href)}
                   key={index}
                 >
-                  <Badge
-                    color="dark.6"
-                    variant="filled"
-                    c="green.4"
-                    maw={300}
-                    style={{ cursor: "pointer" }}
-                  >
+                  <Badge color="dark.6" variant="filled" c="green.4" maw={300}>
                     {item.label}
                   </Badge>
                 </Anchor>

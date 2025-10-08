@@ -21,8 +21,6 @@ import {
   TeammatesQueryVariables,
   TeamPullRequestsInProgressQueryVariables,
   TeamPullRequestsInProgressQuery,
-  TeamOptionsQueryVariables,
-  TeamOptionsQuery,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { queryClient } from "./clients/query-client";
 
@@ -35,9 +33,9 @@ export const useTeamsQuery = (
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
-          query Teams($workspaceId: SweetID!, $input: TeamsQueryInput) {
+          query Teams($workspaceId: SweetID!) {
             workspace(workspaceId: $workspaceId) {
-              teams(input: $input) {
+              teams {
                 id
                 name
                 description
@@ -92,36 +90,6 @@ export const useTeamQuery = (
                     name
                   }
                 }
-              }
-            }
-          }
-        `),
-        args,
-      ),
-    ...options,
-  });
-
-export const useTeamOptionsQuery = (
-  args: TeamOptionsQueryVariables,
-  options?: Partial<UseQueryOptions<TeamOptionsQuery>>,
-) =>
-  useQuery({
-    queryKey: [
-      "teams",
-      "options",
-      args.workspaceId,
-      args.input.query,
-      args.input.ids,
-    ],
-    queryFn: () =>
-      graphQLClient.request(
-        graphql(/* GraphQL */ `
-          query TeamOptions($workspaceId: SweetID!, $input: TeamsQueryInput!) {
-            workspace(workspaceId: $workspaceId) {
-              teams(input: $input) {
-                id
-                name
-                icon
               }
             }
           }

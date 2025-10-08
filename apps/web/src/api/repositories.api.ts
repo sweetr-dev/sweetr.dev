@@ -11,21 +11,13 @@ export const useRepositoriesQuery = (
   options?: Partial<UseQueryOptions<RepositoriesQuery>>,
 ) =>
   useQuery({
-    queryKey: [
-      "repositories",
-      args.workspaceId,
-      args.input?.query,
-      args.input?.cursor,
-    ],
+    queryKey: ["repositories", args.workspaceId],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
-          query Repositories(
-            $workspaceId: SweetID!
-            $input: RepositoriesQueryInput
-          ) {
+          query Repositories($workspaceId: SweetID!) {
             workspace(workspaceId: $workspaceId) {
-              repositories(input: $input) {
+              repositories {
                 id
                 name
                 fullName

@@ -4,6 +4,7 @@ import {
   Stack,
   Title,
   Text,
+  Avatar,
   Tooltip,
   Anchor,
 } from "@mantine/core";
@@ -19,7 +20,6 @@ import { BadgePullRequestSize } from "../badge-pull-request-size";
 import { formatRelative } from "date-fns";
 import { BadgeStatus } from "./badge-status";
 import { useScreenSize } from "../../providers/screen.provider";
-import { AvatarUser } from "../avatar-user";
 
 interface CardCodeReviewProps {
   title: string;
@@ -101,7 +101,7 @@ export const CardCodeReview = ({
             style={{ flexGrow: 1 }}
             justify={isSmallScreen ? "center" : "flex-end"}
           >
-            <Group gap={5} miw={40} justify="flex-start" wrap="nowrap">
+            <Group gap={4} miw={40} justify="flex-start" wrap="nowrap">
               <IconMessage stroke={1.5} size={20} />
               <Text size="sm" fw={500}>
                 {prComments}
@@ -109,11 +109,7 @@ export const CardCodeReview = ({
             </Group>
 
             <Tooltip label={prAuthor.name} withArrow position="top">
-              <AvatarUser
-                name={prAuthor.name}
-                src={prAuthor.avatar}
-                size={40}
-              />
+              <Avatar src={prAuthor.avatar} size={40} />
             </Tooltip>
 
             <BadgePullRequestSize

@@ -8,7 +8,9 @@ import {
   formatRelative,
   intervalToDuration,
   isPast,
+  parse,
   parseISO,
+  startOfDay,
 } from "date-fns";
 
 export const msToHour = 1000 * 60 * 60;
@@ -51,28 +53,6 @@ export const formatDate = (
   date: string | null | undefined,
   token: string,
 ): string => (date ? format(parseISO(date), token) : "");
-
-const formatterCache = new Map<string, Intl.DateTimeFormat>();
-
-export const formatLocaleDate = (
-  date: Date,
-  options: Intl.DateTimeFormatOptions,
-) => {
-  const key = navigator.language + JSON.stringify(options);
-  let formatter = formatterCache.get(key);
-
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat(navigator.language, options);
-    formatterCache.set(key, formatter);
-  }
-
-  const parts = formatter.formatToParts(date);
-
-  return parts
-    .map((p) => (p.type === "literal" && p.value === ", " ? " " : p.value))
-    .join("")
-    .trim();
-};
 
 export const getBrowserTimezone = () => {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;

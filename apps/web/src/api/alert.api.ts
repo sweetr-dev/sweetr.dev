@@ -93,9 +93,9 @@ export const useUpdateAlertMutation = (
         `),
         args,
       ),
-    onSettled: (_data, __error, args) => {
+    onSettled: (_data, __error, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["alerts", args.input.teamId],
+        queryKey: ["alerts", variables.input.teamId],
       });
     },
     ...options,

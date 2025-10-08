@@ -9,7 +9,7 @@ export const Subnav = ({ children, ...props }: StackProps) => {
       h="100%"
       pt={10}
       style={{ flexGrow: 1, flexWrap: "nowrap" }}
-      gap={5}
+      gap={4}
       p="md"
       {...props}
       className={classes.subnav}

@@ -3,7 +3,12 @@ import {
   PullRequest,
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { parseISO, format } from "date-fns";
+import {
+  parseISO,
+  formatRelative,
+  formatDistanceToNow,
+  format,
+} from "date-fns";
 import {
   formatDateAgo,
   getTimezoneGmtLabel,

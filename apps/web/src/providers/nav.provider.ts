@@ -1,9 +1,9 @@
 import {
   IconHome2,
+  IconCircles,
+  IconUsers,
+  IconBrandGithub,
   IconBolt,
-  IconStack3,
-  IconChartPie,
-  IconUser,
 } from "@tabler/icons-react";
 import { NavbarItemProps } from "../components/navbar/navbar-item";
 import { useEffect } from "react";
@@ -15,19 +15,19 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
 })[] = [
   { icon: IconHome2, label: "Home", href: "/" },
   {
-    icon: IconChartPie,
-    label: "Metrics & Insights",
-    href: "/metrics-and-insights",
+    icon: IconCircles,
+    label: "Teams",
+    href: "/teams",
   },
   {
-    icon: IconUser,
-    label: "Humans",
-    href: "/humans",
+    icon: IconUsers,
+    label: "People",
+    href: "/people",
   },
   {
-    icon: IconStack3,
-    label: "Systems",
-    href: "/systems",
+    icon: IconBrandGithub,
+    label: "Repositories",
+    href: "/repositories",
   },
   {
     icon: IconBolt,

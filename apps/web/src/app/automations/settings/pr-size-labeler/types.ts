@@ -6,23 +6,23 @@ export const FormPrSizeLabeler = z.object({
   settings: z.object({
     labels: z.object({
       tiny: z.object({
-        label: z.string().nonempty("Field is empty"),
+        label: z.string().min(1),
         color: mustBeHexadecimal,
       }),
       small: z.object({
-        label: z.string().nonempty("Field is empty"),
+        label: z.string().min(1),
         color: mustBeHexadecimal,
       }),
       medium: z.object({
-        label: z.string().nonempty("Field is empty"),
+        label: z.string().min(1),
         color: mustBeHexadecimal,
       }),
       large: z.object({
-        label: z.string().nonempty("Field is empty"),
+        label: z.string().min(1),
         color: mustBeHexadecimal,
       }),
       huge: z.object({
-        label: z.string().nonempty("Field is empty"),
+        label: z.string().min(1),
         color: mustBeHexadecimal,
       }),
     }),

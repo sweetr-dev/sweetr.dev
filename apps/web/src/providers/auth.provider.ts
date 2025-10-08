@@ -25,7 +25,7 @@ export const getAuthorizationHeader = (): string | undefined =>
 export const setAuth = (accessToken: string): void => {
   Cookies.set("Authorization", accessToken, {
     domain: import.meta.env.VITE_AUTH_COOKIE_DOMAIN,
-    secure: true,
+    secure: false,
   });
 
   setAuthorizationHeader(accessToken);
@@ -34,7 +34,7 @@ export const setAuth = (accessToken: string): void => {
 export const logout = (): void => {
   Cookies.remove("Authorization", {
     domain: import.meta.env.VITE_AUTH_COOKIE_DOMAIN,
-    secure: true,
+    secure: false,
   });
 };
 

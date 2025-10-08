@@ -1,11 +1,11 @@
 import { ThemeIcon } from "@mantine/core";
 import {
+  IconGitPullRequest,
   IconGitPullRequestClosed,
   IconGitMerge,
   IconGitPullRequestDraft,
 } from "@tabler/icons-react";
 import { PullRequestState } from "@sweetr/graphql-types/frontend/graphql";
-import { IconPullRequest } from "../../providers/icon.provider";
 
 interface IconPullRequestStateProps {
   state: PullRequestState;
@@ -23,7 +23,7 @@ export const IconPullRequestState = ({ state }: IconPullRequestStateProps) => {
   if (state === PullRequestState.OPEN) {
     return (
       <ThemeIcon variant="transparent" color="#3fb950" size={20}>
-        <IconPullRequest stroke={1.5} />
+        <IconGitPullRequest stroke={1.5} />
       </ThemeIcon>
     );
   }

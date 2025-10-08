@@ -22,17 +22,13 @@ export const useInfiniteLoading = ({
 };
 
 export const useListGroupedByYearMonth = <
-  T extends {
-    id: string;
-    [key: string]: string | unknown;
-  },
+  T extends { id: string; createdAt: string },
 >(
   list: T[] = [],
-  getter: (item: T) => string = (item) => item.createdAt as string,
 ) => {
   const firstItemOfYearMonth = list?.reduce(
     (result: Record<string, string>, item) => {
-      const date = new Date(getter(item));
+      const date = new Date(item.createdAt);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
 
       if (!result[key]) {

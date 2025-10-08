@@ -22,7 +22,6 @@ export const useSpotlightQuery = (
             $peopleInput: PeopleQueryInput!
             $teamsInput: TeamsQueryInput!
             $repositoriesInput: RepositoriesQueryInput!
-            $applicationsInput: ApplicationsQueryInput!
           ) {
             workspace(workspaceId: $workspaceId) {
               people(input: $peopleInput) {
@@ -44,11 +43,6 @@ export const useSpotlightQuery = (
                 name
                 fullName
               }
-              applications(input: $applicationsInput) {
-                id
-                name
-                description
-              }
             }
           }
         `),
@@ -57,7 +51,6 @@ export const useSpotlightQuery = (
           peopleInput: { query: args.query, limit: 5 },
           teamsInput: { query: args.query, limit: 5 },
           repositoriesInput: { query: args.query, limit: 5 },
-          applicationsInput: { query: args.query, limit: 5 },
         },
       ),
     ...options,

@@ -4,19 +4,19 @@ import {
   SpotlightActionData,
   SpotlightActionGroupData,
 } from "@mantine/spotlight";
-import { IconSearch, IconSettings } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconCircles,
+  IconSearch,
+  IconSettings,
+  IconUsers,
+} from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useSpotlightQuery } from "../../api/spotlight.api";
 import { Loader } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useContextualActionsStore } from "../../providers/contextual-actions.provider";
 import { navItems } from "../../providers/nav.provider";
-import {
-  IconApplication,
-  IconPeople,
-  IconRepository,
-  IconTeam,
-} from "../../providers/icon.provider";
 
 interface AppSpotlightProps {
   workspaceId: string;
@@ -115,25 +115,13 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           id: `person-${person.id}`,
           label: person.name || person.handle,
           description: person.name ? person.handle : undefined,
-          leftSection: <IconPeople size={18} stroke={1.5} />,
+          leftSection: <IconUsers size={18} stroke={1.5} />,
           onClick: () => {
-            navigate(`/humans/people/${person.handle}`);
+            navigate(`/people/${person.handle}`);
           },
         })) || [],
     },
-    {
-      group: "Applications",
-      actions:
-        data?.workspace.applications.map((application) => ({
-          id: `application-${application.id}`,
-          label: application.name,
-          description: application.description,
-          leftSection: <IconApplication size={18} stroke={1.5} />,
-          onClick: () => {
-            navigate(`/systems/applications/edit/${application.id}`);
-          },
-        })) || [],
-    },
+
     {
       group: "Teams",
       actions:
@@ -141,9 +129,9 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
           id: `team-${team.id}`,
           label: team.name,
           description: team.description,
-          leftSection: <IconTeam size={18} stroke={1.5} />,
+          leftSection: <IconCircles size={18} stroke={1.5} />,
           onClick: () => {
-            navigate(`/humans/teams/${team.id}`);
+            navigate(`/teams/${team.id}`);
           },
         })) || [],
     },
@@ -154,7 +142,7 @@ export const AppSpotlight = ({ workspaceId }: AppSpotlightProps) => {
         data?.workspace.repositories.map((repository) => ({
           id: `repository-${repository.id}`,
           label: repository.name,
-          leftSection: <IconRepository size={18} stroke={1.5} />,
+          leftSection: <IconBrandGithub size={18} stroke={1.5} />,
           onClick: () => {
             if (window) {
               window

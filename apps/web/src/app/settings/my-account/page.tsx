@@ -62,7 +62,7 @@ export const MyAccountPage = () => {
         <Paper mt="xs" p="md" withBorder>
           <Group justify="space-between" wrap="nowrap">
             <Box flex="1 1">
-              <Group gap={5}>
+              <Group gap={4}>
                 <Title order={5}>Delete my personal account</Title>
                 <IconInfo
                   position="top"

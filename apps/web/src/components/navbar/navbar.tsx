@@ -28,7 +28,7 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
             gap={0}
           >
             <Stack
-              gap={5}
+              gap={4}
               p="md"
               maw={80}
               style={{ flexGrow: 1 }}
