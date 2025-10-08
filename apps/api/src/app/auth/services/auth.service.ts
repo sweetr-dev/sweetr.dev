@@ -219,15 +219,12 @@ const connectGitProfileToWorkspaces = async (
   for (const installation of dbInstallations) {
     const workspaceId = installation.workspaceId;
 
-    logger.info(
-      {
-        gitProfileId,
-        workspaceId,
-        installationId: installation.id,
-        gitInstallationId: installation.gitInstallationId,
-      },
-      "connectUserToInstallations: Adding missing memberships"
-    );
+    logger.info("connectUserToInstallations: Adding missing memberships", {
+      gitProfileId,
+      workspaceId,
+      installationId: installation.id,
+      gitInstallationId: installation.gitInstallationId,
+    });
 
     await getPrisma(workspaceId).workspaceMembership.upsert({
       where: {
@@ -248,13 +245,13 @@ const connectGitProfileToWorkspaces = async (
       !installation.workspace.gitProfileId
     ) {
       logger.info(
+        "connectUserToInstallations: reconnect orphan personal workspace",
         {
           gitProfileId,
           workspaceId,
           installationId: installation.id,
           gitInstallationId: installation.gitInstallationId,
-        },
-        "connectUserToInstallations: reconnect orphan personal workspace"
+        }
       );
 
       await getPrisma(workspaceId).workspace.update({

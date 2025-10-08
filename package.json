@@ -22,10 +22,10 @@
     "ngrok": "dotenv -e ./apps/api/.env -- npm run _ngrok"
   },
   "dependencies": {
-    "devcert": "^1.2.2",
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
+    "devcert": "^1.2.2",
     "dotenv-cli": "^7.4.2",
     "prettier": "latest",
     "turbo": "latest",

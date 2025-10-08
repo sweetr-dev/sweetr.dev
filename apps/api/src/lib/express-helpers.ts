@@ -26,7 +26,7 @@ export function errorHandler(
   res: express.Response,
   _next: express.NextFunction
 ) {
-  logger.error(error);
+  logger.error("Express error handler", error);
   Error.captureStackTrace(error);
   captureException(error);
 

@@ -10,28 +10,67 @@ const consoleStream = pino.destination();
 
 const stream = env.LOG_DRAIN === "logtail" ? logTailStream : consoleStream;
 
-export const logger = pino(
+const pinoLogger = pino(
   {
     nestedKey: "payload",
     level: env.LOG_LEVEL,
-    hooks: {
-      logMethod(args, method) {
-        // Accept message as first argument, payload as second
-        if (args.length === 2) {
-          method.apply(this, [args[1], args[0]]);
-        } else {
-          method.apply(this, args);
-        }
-
-        // Adds log to Sentry
-        addBreadcrumb({
-          message: args[0],
-          category: "log",
-          level: "info",
-          data: args[1],
-        });
-      },
-    },
   },
   stream
 );
+
+export const logger = {
+  info: (msg: string, obj?: object) => {
+    pinoLogger.info(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "info",
+      data: obj,
+    });
+  },
+  warn: (msg: string, obj?: object) => {
+    pinoLogger.warn(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "warning",
+      data: obj,
+    });
+  },
+  error: (msg: string, obj?: object) => {
+    pinoLogger.error(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "error",
+      data: obj,
+    });
+  },
+  debug: (msg: string, obj?: object) => {
+    pinoLogger.debug(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "debug",
+      data: obj,
+    });
+  },
+  trace: (msg: string, obj?: object) => {
+    pinoLogger.trace(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "debug",
+      data: obj,
+    });
+  },
+  fatal: (msg: string, obj?: object) => {
+    pinoLogger.fatal(obj || {}, msg);
+    addBreadcrumb({
+      message: msg,
+      category: "log",
+      level: "fatal",
+      data: obj,
+    });
+  },
+};

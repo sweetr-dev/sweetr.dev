@@ -42,7 +42,7 @@ export const peopleQuery = createFieldResolver("Workspace", {
     return transformPerson(gitProfile);
   },
   me: async (workspace, _, context) => {
-    logger.info("query.me", { workspace }, context);
+    logger.info("query.me", { workspace });
 
     if (!workspace.id) {
       throw new ResourceNotFoundException("Workspace not found");
