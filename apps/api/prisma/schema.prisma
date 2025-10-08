@@ -688,7 +688,7 @@ model Application {
 
   archivedAt DateTime?
 
-  @@unique([name, workspaceId])
+  @@unique([workspaceId, name])
   @@index([workspaceId])
   @@index([repositoryId])
   @@index([teamId])

@@ -78,10 +78,10 @@ CREATE TABLE "DeployedPullRequest" (
 CREATE INDEX "Environment_workspaceId_idx" ON "Environment"("workspaceId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Environment_name_workspaceId_key" ON "Environment"("name", "workspaceId");
+CREATE UNIQUE INDEX "Environment_workspaceId_name_key" ON "Environment"("workspaceId", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Application_name_workspaceId_key" ON "Application"("name", "workspaceId");
+CREATE UNIQUE INDEX "Application_workspaceId_name_key" ON "Application"("workspaceId", "name");
 
 -- CreateIndex
 CREATE INDEX "Application_workspaceId_idx" ON "Application"("workspaceId");
