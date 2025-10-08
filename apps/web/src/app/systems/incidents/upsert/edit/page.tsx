@@ -4,12 +4,12 @@ import { FormUpsertIncident } from "../components/form-upsert-incident/form-upse
 import { Box, Button, Skeleton } from "@mantine/core";
 import { useUpsertIncident } from "../use-upsert-incident";
 import { useIncidentQuery } from "../../../../../api/incidents.api";
-import { useEffect } from "react";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { useParams } from "react-router-dom";
 import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.exception";
 import { LoadableContent } from "../../../../../components/loadable-content";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
+import { useFormAsyncData } from "../../../../../providers/form.provider";
 
 export const IncidentsEditPage = () => {
   const searchParams = useFilterSearchParameters();
@@ -35,23 +35,21 @@ export const IncidentsEditPage = () => {
     onClose: drawerProps.onClose,
   });
 
-  useEffect(() => {
-    if (!isFetched || !incident) return;
-
-    const values = {
-      applicationId: incident.causeDeployment.application.id,
-      teamId: incident.team?.id,
-      leaderId: incident.leader?.id,
-      detectedAt: incident.detectedAt,
-      resolvedAt: incident.resolvedAt ? incident.resolvedAt : null,
-      causeDeploymentId: incident.causeDeployment.id,
-      fixDeploymentId: incident.fixDeployment?.id || null,
-      postmortemUrl: incident.postmortemUrl || "",
-    };
-    form.setValues(values);
-    form.resetDirty();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetched]);
+  useFormAsyncData({
+    isFetched,
+    form,
+    values: {
+      workspaceId: workspace.id,
+      applicationId: incident?.causeDeployment.application.id || "",
+      teamId: incident?.team?.id,
+      leaderId: incident?.leader?.id,
+      detectedAt: incident?.detectedAt || "",
+      resolvedAt: incident?.resolvedAt ? incident?.resolvedAt : null,
+      causeDeploymentId: incident?.causeDeployment.id || "",
+      fixDeploymentId: incident?.fixDeployment?.id || null,
+      postmortemUrl: incident?.postmortemUrl || "",
+    },
+  });
 
   return (
     <>
