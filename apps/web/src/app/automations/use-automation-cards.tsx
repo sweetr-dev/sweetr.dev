@@ -36,55 +36,56 @@ const automationCards = {
       failureRate: "Mitigate reviewer fatigue with smaller PRs.",
     },
   },
-  PULL_REQUEST_ALERTS: {
-    type: "PULL_REQUEST_ALERTS",
-    enabled: false,
-    available: false,
-    title: "Pull Request Alerts",
-    shortDescription:
-      "Send an alert on Slack when a Pull Request is stuck or at risk.",
-    description:
-      "Send an alert on Slack when a Pull Request is stuck or at risk.",
-    demoUrl: "/images/automations/pr-title-check-demo.webp",
-    docsUrl: "https://docs.sweetr.dev/",
-    color: "yellow.1",
-    icon: "🔔",
-    benefits: {
-      cycleTime: "Unblock Pull Requests faster.",
-    },
-  },
-  WIP_DIGEST: {
-    type: "WIP_DIGEST",
-    enabled: false,
-    available: false,
-    title: "Pull Request Digest",
-    shortDescription: "Send a digest to Slack of Pull Requests in progress.",
-    description: "Send a digest to Slack of Pull Requests in progress.",
-    demoUrl: "/images/automations/pr-title-check-demo.webp",
-    docsUrl: "https://docs.sweetr.dev/",
-    color: "blue.1",
-    icon: "🔨",
-    benefits: {
-      cycleTime: "Unblock Pull Requests faster.",
-    },
-  },
-  METRICS_DIGEST: {
-    type: "METRICS_DIGEST",
-    enabled: false,
-    available: false,
-    title: "Metrics Digest",
-    shortDescription:
-      "Send a digest of key metrics and how they have changed since last period.",
-    description:
-      "Send a digest of key metrics and how they have changed since last period.",
-    demoUrl: "/images/automations/pr-title-check-demo.webp",
-    docsUrl: "https://docs.sweetr.dev/",
-    color: "red.1",
-    icon: "📊",
-    benefits: {
-      cycleTime: "Keep the team on top of key metrics.",
-    },
-  },
+  // TO-DO: Build UI to control these automations (they are team settings today)
+  // PULL_REQUEST_ALERTS: {
+  //   type: "PULL_REQUEST_ALERTS",
+  //   enabled: false,
+  //   available: false,
+  //   title: "Pull Request Alerts",
+  //   shortDescription:
+  //     "Send an alert on Slack when a Pull Request is stuck or at risk.",
+  //   description:
+  //     "Send an alert on Slack when a Pull Request is stuck or at risk.",
+  //   demoUrl: "/images/automations/pr-title-check-demo.webp",
+  //   docsUrl: "https://docs.sweetr.dev/",
+  //   color: "yellow.1",
+  //   icon: "🔔",
+  //   benefits: {
+  //     cycleTime: "Unblock Pull Requests faster.",
+  //   },
+  // },
+  // WIP_DIGEST: {
+  //   type: "WIP_DIGEST",
+  //   enabled: false,
+  //   available: false,
+  //   title: "Work In Progress Digest",
+  //   shortDescription: "Send a digest to Slack of Pull Requests in progress.",
+  //   description: "Send a digest to Slack of Pull Requests in progress.",
+  //   demoUrl: "/images/automations/pr-title-check-demo.webp",
+  //   docsUrl: "https://docs.sweetr.dev/",
+  //   color: "blue.1",
+  //   icon: "🔨",
+  //   benefits: {
+  //     cycleTime: "Unblock Pull Requests faster.",
+  //   },
+  // },
+  // METRICS_DIGEST: {
+  //   type: "METRICS_DIGEST",
+  //   enabled: false,
+  //   available: false,
+  //   title: "Metrics Digest",
+  //   shortDescription:
+  //     "Send a digest of key metrics and how they have changed since last period.",
+  //   description:
+  //     "Send a digest of key metrics and how they have changed since last period.",
+  //   demoUrl: "/images/automations/pr-title-check-demo.webp",
+  //   docsUrl: "https://docs.sweetr.dev/",
+  //   color: "red.1",
+  //   icon: "📊",
+  //   benefits: {
+  //     cycleTime: "Keep the team on top of key metrics.",
+  //   },
+  // },
   RELEASE_NOTES: {
     type: "RELEASE_NOTES",
     enabled: false,
