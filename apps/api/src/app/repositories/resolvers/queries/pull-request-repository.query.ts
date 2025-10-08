@@ -5,19 +5,19 @@ import { findRepositoryById } from "../../services/repository.service";
 import { transformRepository } from "../transformers/repository.transformer";
 
 export const pullRequestRepositoryQuery = createFieldResolver("PullRequest", {
-  repository: async (pullRequest, _, context) => {
+  repository: async (pullRequest) => {
     logger.info("query.pullRequest.repository", { pullRequest });
 
     if (
       !pullRequest.id ||
-      !context.workspaceId ||
+      !pullRequest["workspaceId"] ||
       !pullRequest["repositoryId"]
     ) {
       throw new ResourceNotFoundException("Pull Request not found");
     }
 
     const repository = await findRepositoryById({
-      workspaceId: context.workspaceId,
+      workspaceId: pullRequest["workspaceId"] as number,
       repositoryId: pullRequest["repositoryId"] as number,
     });
 

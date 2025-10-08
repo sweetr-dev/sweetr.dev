@@ -1,9 +1,5 @@
 import { PullRequestSize, PullRequestState } from "@prisma/client";
-
-interface DateTimeRange {
-  from?: string;
-  to?: string;
-}
+import { DateTimeRange } from "../../types";
 
 export interface PaginatePullRequestsArgs {
   cursor?: number;

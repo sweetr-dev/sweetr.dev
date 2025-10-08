@@ -34,11 +34,13 @@ export const deploymentsQuery = createFieldResolver("Workspace", {
     return deployments.map(transformDeployment);
   },
   deployment: async (workspace, { deploymentId }) => {
-    logger.info("query.workspace.application", { workspace, deploymentId });
+    logger.info("query.workspace.deployment", { workspace, deploymentId });
 
     if (!workspace.id || !deploymentId) {
       throw new ResourceNotFoundException("Workspace not found");
     }
+
+    await protectWithPaywall(workspace.id);
 
     const deployment = await findDeploymentById({
       workspaceId: workspace.id,

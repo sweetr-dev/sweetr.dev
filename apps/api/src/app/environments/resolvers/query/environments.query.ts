@@ -7,7 +7,7 @@ import { transformEnvironment } from "../transformers/environment.transformer";
 
 export const environmentsQuery = createFieldResolver("Workspace", {
   environments: async (workspace, { input }) => {
-    logger.info("query.deployments", { workspace, input });
+    logger.info("query.environments", { workspace, input });
 
     if (!workspace.id || !input) {
       throw new ResourceNotFoundException("Workspace not found");

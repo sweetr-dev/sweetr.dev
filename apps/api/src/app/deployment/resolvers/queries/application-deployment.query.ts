@@ -7,7 +7,7 @@ import { transformDeployment } from "../transformers/deployment.transformer";
 
 export const applicationDeploymentQuery = createFieldResolver("Application", {
   lastProductionDeployment: async (application: Application) => {
-    logger.info("query.application.lastDeployment", { application });
+    logger.info("query.application.lastProductionDeployment", { application });
 
     if (!application.id) {
       throw new ResourceNotFoundException("Application not found");

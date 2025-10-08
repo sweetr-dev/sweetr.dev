@@ -10,7 +10,7 @@ import { transformIncident } from "../transformers/incident.transformer";
 
 export const incidentsQuery = createFieldResolver("Workspace", {
   incidents: async (workspace, { input }) => {
-    logger.info("query.incidents", { workspace, input });
+    logger.info("query.workspace.incidents", { workspace, input });
 
     if (!workspace.id || !input) {
       throw new ResourceNotFoundException("Workspace not found");

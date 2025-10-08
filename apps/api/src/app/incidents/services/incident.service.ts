@@ -13,7 +13,7 @@ export const findIncidentById = async ({
   incidentId,
 }: FindIncidentByIdArgs) => {
   return getPrisma(workspaceId).incident.findUnique({
-    where: { id: incidentId },
+    where: { id: incidentId, workspaceId },
   });
 };
 

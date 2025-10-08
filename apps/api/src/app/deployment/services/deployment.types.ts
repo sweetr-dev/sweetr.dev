@@ -1,7 +1,4 @@
-interface DateTimeRange {
-  from?: string;
-  to?: string;
-}
+import { DateTimeRange } from "../../types";
 
 export interface PaginateDeploymentsArgs {
   deploymentIds?: number[];

@@ -12,6 +12,7 @@ export const findRepositoryById = async ({
 }: FindRepositoryByIdArgs): Promise<Repository | null> => {
   return getPrisma(workspaceId).repository.findUnique({
     where: {
+      workspaceId,
       id: repositoryId,
     },
   });

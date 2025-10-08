@@ -23,6 +23,8 @@ export const deploymentPullRequestsQuery = createFieldResolver("Deployment", {
     return pullRequests.map(transformPullRequest);
   },
   pullRequestCount: async (deployment) => {
+    logger.info("query.deployment.pullRequestCount", { deployment });
+
     if (!deployment["workspaceId"]) {
       throw new ResourceNotFoundException("Workspace not found");
     }

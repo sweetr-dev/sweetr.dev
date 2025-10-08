@@ -132,6 +132,7 @@ export const findTeamMemberById = async (
   return getPrisma(workspaceId).teamMember.findFirst({
     where: {
       id: teamMemberId,
+      workspaceId,
     },
     include: {
       team: true,

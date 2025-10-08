@@ -14,6 +14,7 @@ export const findDeploymentById = async ({
   return getPrisma(workspaceId).deployment.findUnique({
     where: {
       id: deploymentId,
+      workspaceId,
     },
   });
 };
@@ -100,6 +101,7 @@ export const findLastProductionDeploymentByApplicationId = async ({
 }: FindLastProductionDeploymentByApplicationIdArgs) => {
   return getPrisma(workspaceId).deployment.findFirst({
     where: {
+      workspaceId,
       applicationId,
       archivedAt: null,
       environment: { isProduction: true, archivedAt: null },

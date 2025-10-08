@@ -126,6 +126,7 @@ export const findPullRequestById = async (
   return getPrisma(workspaceId).pullRequest.findUnique({
     where: {
       id: pullRequestId,
+      workspaceId,
     },
   });
 };
@@ -212,6 +213,7 @@ export const findPullRequestsByDeploymentId = async ({
       deployedPullRequests: {
         some: { deploymentId },
       },
+      workspaceId,
     },
     take: take(100),
     orderBy: {
@@ -225,6 +227,6 @@ export const countPullRequestsByDeploymentId = async ({
   deploymentId,
 }: CountPullRequestsByDeploymentIdArgs) => {
   return getPrisma(workspaceId).deployedPullRequest.count({
-    where: { deploymentId },
+    where: { deploymentId, workspaceId },
   });
 };

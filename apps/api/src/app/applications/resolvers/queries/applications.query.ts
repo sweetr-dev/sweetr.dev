@@ -35,6 +35,8 @@ export const applicationsQuery = createFieldResolver("Workspace", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
+    await protectWithPaywall(workspace.id);
+
     const application = await findApplicationById({
       workspaceId: workspace.id,
       applicationId,
