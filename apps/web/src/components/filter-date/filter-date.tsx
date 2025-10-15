@@ -60,12 +60,14 @@ export const FilterDate = ({
   value: selectedDate,
   clearable,
 }: FilterDateProps) => {
-  const [displayedDate, setDisplayedDate] = useState(new Date());
+  const [displayedDate, setDisplayedDate] = useState<string>(
+    new Date().toDateString(),
+  );
   const [displayedLevel, setDisplayedLevel] = useState<CalendarLevel>("year");
 
   const handleDateSelected = (
     value: [string | null, string | null],
-    changeDisplayeDate?: boolean,
+    changeDisplayedDate?: boolean,
   ) => {
     const startDate = value[0]
       ? parse(value[0], "yyyy-MM-dd", startOfDay(new Date()))
@@ -74,7 +76,8 @@ export const FilterDate = ({
 
     setDisplayedLevel("month");
 
-    if (startDate && changeDisplayeDate) setDisplayedDate(startDate);
+    if (startDate && changeDisplayedDate)
+      setDisplayedDate(startDate.toDateString());
 
     onChange?.([startDate, endDate]);
   };
@@ -178,7 +181,7 @@ export const FilterDate = ({
                   level={displayedLevel}
                   maxDate={new Date()}
                   value={selectedDate}
-                  onDateChange={(date) => setDisplayedDate(new Date(date))}
+                  onDateChange={setDisplayedDate}
                   onLevelChange={setDisplayedLevel}
                   date={displayedDate}
                   onChange={handleDateSelected}
