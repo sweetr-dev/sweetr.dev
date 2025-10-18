@@ -1,11 +1,11 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { upsertDigest } from "../../services/digest.service";
 import { z } from "zod";
 import { transformDigest } from "../transformers/digest.transformer";
+import { validateInputOrThrow } from "../../../validator.service";
 
 export const updateDigestMutation = createMutationResolver({
   updateDigest: async (_, { input }, context) => {

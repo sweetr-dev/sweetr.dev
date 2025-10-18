@@ -1,11 +1,11 @@
 import { createMutationResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { validateInputOrThrow } from "../../../../lib/validate-input";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
 import { authorizeWorkspaceMemberOrThrow } from "../../../authorization.service";
 import { upsertAlert } from "../../services/alert.service";
 import { z } from "zod";
 import { transformAlert } from "../transformers/alert.transformer";
+import { validateInputOrThrow } from "../../../validator.service";
 
 export const updateAlertMutation = createMutationResolver({
   updateAlert: async (_, { input }, context) => {
