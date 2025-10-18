@@ -2,9 +2,9 @@ import { z } from "zod";
 import {
   deploymentValidator,
   teamValidator,
+  URL_INPUT_MAX_LENGTH,
   workspaceMemberValidator,
 } from "../../validator.service";
-import { URL_INPUT_MAX_LENGTH } from "../../../lib/validate-input";
 
 export const getIncidentValidationSchema = (workspaceId: number) =>
   z.object({

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { TeamMemberRole } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { AuthorizationException } from "../../errors/exceptions/authorization.exception";
-import { STRING_INPUT_MAX_LENGTH } from "../../../lib/validate-input";
+import { STRING_INPUT_MAX_LENGTH } from "../../validator.service";
 
 export const getTeamValidationSchema = (workspaceId: number) =>
   z.object({

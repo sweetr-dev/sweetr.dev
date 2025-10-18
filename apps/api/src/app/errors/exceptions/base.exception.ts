@@ -4,6 +4,7 @@ import { ExceptionSeverity } from "../../../lib/sentry";
 export { ErrorCode } from "@sweetr/graphql-types/dist/shared";
 
 export interface BaseExceptionOptions {
+  statusCode?: number;
   code: ErrorCode;
   userFacingMessage: string;
   originalError?: GraphQLErrorOptions["originalError"];

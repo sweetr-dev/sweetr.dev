@@ -1,7 +1,10 @@
 import { z } from "zod";
-import { repositoryValidator, teamValidator } from "../../validator.service";
+import {
+  repositoryValidator,
+  STRING_INPUT_MAX_LENGTH,
+  teamValidator,
+} from "../../validator.service";
 import { DeploymentSettingsTrigger } from "./application.types";
-import { STRING_INPUT_MAX_LENGTH } from "../../../lib/validate-input";
 
 export const getApplicationValidationSchema = (workspaceId: number) =>
   z.object({
