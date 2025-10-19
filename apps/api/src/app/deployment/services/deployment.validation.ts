@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { STRING_INPUT_MAX_LENGTH } from "../../validator.service";
 
-export const createDeploymentValidationSchema = z.object({
+export const postDeploymentValidationSchema = z.object({
   repositoryFullName: z.string().max(STRING_INPUT_MAX_LENGTH),
   environment: z.string().max(STRING_INPUT_MAX_LENGTH),
   app: z.string().max(STRING_INPUT_MAX_LENGTH),
@@ -13,6 +13,6 @@ export const createDeploymentValidationSchema = z.object({
   monorepoPath: z.string().max(STRING_INPUT_MAX_LENGTH).optional(),
 });
 
-export type CreateDeploymentInput = z.infer<
-  typeof createDeploymentValidationSchema
+export type PostDeploymentInput = z.infer<
+  typeof postDeploymentValidationSchema
 >;

@@ -1,7 +1,7 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
 import {
-  CreateDeploymentInput,
+  UpsertDeploymentInput,
   FindDeploymentByIdArgs,
   FindLastProductionDeploymentByApplicationIdArgs,
   PaginateDeploymentsArgs,
@@ -113,7 +113,7 @@ export const findLastProductionDeploymentByApplicationId = async ({
   });
 };
 
-export const upsertDeployment = async (input: CreateDeploymentInput) => {
+export const upsertDeployment = async (input: UpsertDeploymentInput) => {
   return getPrisma(input.workspaceId).deployment.upsert({
     where: {
       workspaceId_environmentId_applicationId_version_deployedAt: {

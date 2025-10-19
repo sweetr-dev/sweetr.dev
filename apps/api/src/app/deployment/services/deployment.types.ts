@@ -20,7 +20,7 @@ export interface FindLastProductionDeploymentByApplicationIdArgs {
   applicationId: number;
 }
 
-export interface CreateDeploymentInput {
+export interface UpsertDeploymentInput {
   workspaceId: number;
   version: string;
   commitHash: string;

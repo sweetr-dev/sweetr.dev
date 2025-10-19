@@ -1,7 +1,7 @@
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { CreateDeploymentInput } from "../services/deployment.validation";
+import { PostDeploymentInput } from "../services/deployment.validation";
 import { findOrCreateEnvironment } from "../../environments/services/environment.service";
 import { findGitProfileByHandle } from "../../people/services/people.service";
 import { upsertApplication } from "../../applications/services/application.service";
@@ -11,9 +11,11 @@ import { DeploymentSettingsTrigger } from "../../applications/services/applicati
 import { upsertDeployment } from "../services/deployment.service";
 import { logger } from "../../../lib/logger";
 
+type DeploymentCreateJobData = PostDeploymentInput & { workspaceId: number };
+
 export const deploymentCreateWorker = createWorker(
   SweetQueue.DEPLOYMENT_CREATE,
-  async (job: Job<CreateDeploymentInput & { workspaceId: number }>) => {
+  async (job: Job<DeploymentCreateJobData>) => {
     logger.info("deploymentCreateWorker", { data: job.data });
 
     const environment = await findOrCreateEnvironment({
@@ -59,6 +61,7 @@ export const deploymentCreateWorker = createWorker(
       applicationId: application.id,
       authorId: author?.id,
       deployedAt,
+      commitHash: job.data.commitHash,
       version: job.data.version,
       description: job.data.description,
     });

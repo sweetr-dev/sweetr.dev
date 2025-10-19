@@ -2,7 +2,7 @@ import { Router } from "express";
 import { catchErrors } from "../../lib/express-helpers";
 import { addJob, SweetQueue } from "../../bull-mq/queues";
 import { validateInputOrThrow } from "../validator.service";
-import { createDeploymentValidationSchema } from "./services/deployment.validation";
+import { postDeploymentValidationSchema } from "./services/deployment.validation";
 import { logger } from "../../lib/logger";
 import { findApiKeyOrThrow } from "../api-keys/services/api-keys.service";
 
@@ -16,7 +16,7 @@ deploymentsRouter.post(
     const apiKey = await findApiKeyOrThrow(req.headers.authorization as string);
 
     const payload = await validateInputOrThrow(
-      createDeploymentValidationSchema,
+      postDeploymentValidationSchema,
       req.body
     );
 
