@@ -113,24 +113,18 @@ export const findLastProductionDeploymentByApplicationId = async ({
   });
 };
 
-export const createDeployment = async ({
-  workspaceId,
-  environmentId,
-  applicationId,
-  authorId,
-  deployedAt,
-  description,
-  version,
-}: CreateDeploymentInput) => {
-  return getPrisma(workspaceId).deployment.create({
-    data: {
-      workspaceId,
-      environmentId,
-      applicationId,
-      authorId,
-      deployedAt,
-      description,
-      version,
+export const upsertDeployment = async (input: CreateDeploymentInput) => {
+  return getPrisma(input.workspaceId).deployment.upsert({
+    where: {
+      workspaceId_environmentId_applicationId_version_deployedAt: {
+        workspaceId: input.workspaceId,
+        environmentId: input.environmentId,
+        applicationId: input.applicationId,
+        version: input.version,
+        deployedAt: input.deployedAt,
+      },
     },
+    create: input,
+    update: input,
   });
 };

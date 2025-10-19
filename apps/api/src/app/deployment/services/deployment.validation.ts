@@ -6,6 +6,7 @@ export const createDeploymentValidationSchema = z.object({
   environment: z.string().max(STRING_INPUT_MAX_LENGTH),
   app: z.string().max(STRING_INPUT_MAX_LENGTH),
   version: z.string().max(70),
+  commitHash: z.string().max(70),
   description: z.string().max(STRING_INPUT_MAX_LENGTH).optional(),
   author: z.string().max(STRING_INPUT_MAX_LENGTH).optional(),
   deployedAt: z.string().datetime().pipe(z.coerce.date()).optional(),

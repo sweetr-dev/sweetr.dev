@@ -701,6 +701,7 @@ model Deployment {
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   version     String
+  commitHash  String
   description String?
 
   environmentId Int
@@ -723,6 +724,7 @@ model Deployment {
 
   archivedAt DateTime?
 
+  @@unique([workspaceId, environmentId, applicationId, version, deployedAt])
   @@index([workspaceId])
   @@index([applicationId])
   @@index([environmentId])

@@ -32,6 +32,7 @@ CREATE TABLE "Deployment" (
     "id" SERIAL NOT NULL,
     "applicationId" INTEGER NOT NULL,
     "version" TEXT NOT NULL,
+    "commitHash" TEXT NOT NULL,
     "description" TEXT,
     "environmentId" INTEGER NOT NULL,
     "authorId" INTEGER,
@@ -106,6 +107,9 @@ CREATE INDEX "Deployment_authorId_idx" ON "Deployment"("authorId");
 
 -- CreateIndex
 CREATE INDEX "Deployment_workspaceId_deployedAt_idx" ON "Deployment"("workspaceId", "deployedAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Deployment_workspaceId_environmentId_applicationId_version__key" ON "Deployment"("workspaceId", "environmentId", "applicationId", "version", "deployedAt");
 
 -- CreateIndex
 CREATE INDEX "Incident_workspaceId_idx" ON "Incident"("workspaceId");

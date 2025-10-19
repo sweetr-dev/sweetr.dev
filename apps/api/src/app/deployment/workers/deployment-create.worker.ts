@@ -8,7 +8,7 @@ import { upsertApplication } from "../../applications/services/application.servi
 import { findRepositoryByFullName } from "../../repositories/services/repository.service";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { DeploymentSettingsTrigger } from "../../applications/services/application.types";
-import { createDeployment } from "../services/deployment.service";
+import { upsertDeployment } from "../services/deployment.service";
 import { logger } from "../../../lib/logger";
 
 export const deploymentCreateWorker = createWorker(
@@ -53,7 +53,7 @@ export const deploymentCreateWorker = createWorker(
       },
     });
 
-    const deployment = await createDeployment({
+    const deployment = await upsertDeployment({
       workspaceId: job.data.workspaceId,
       environmentId: environment.id,
       applicationId: application.id,

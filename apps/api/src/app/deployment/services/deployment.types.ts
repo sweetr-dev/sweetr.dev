@@ -23,6 +23,7 @@ export interface FindLastProductionDeploymentByApplicationIdArgs {
 export interface CreateDeploymentInput {
   workspaceId: number;
   version: string;
+  commitHash: string;
   environmentId: number;
   applicationId: number;
   deployedAt: Date;
