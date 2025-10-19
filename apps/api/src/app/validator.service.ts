@@ -18,10 +18,13 @@ export const validateInputOrThrow = async <T extends z.ZodType<any, any, any>>(
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new InputValidationException(`Invalid input`, {
-        validationErrors: error.errors.reduce((acc, error) => {
-          acc[error.path.join(".")] = error.message;
-          return acc;
-        }, {}),
+        validationErrors: error.errors.reduce(
+          (acc: Record<string, string>, error) => {
+            acc[error.path.join(".")] = error.message;
+            return acc;
+          },
+          {}
+        ),
         severity: "debug",
       });
     }

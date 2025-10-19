@@ -13,8 +13,8 @@ export const regenerateApiKey = async (
   workspaceId: number,
   creatorId: number
 ) => {
-  const key = randomUUID().toString();
-  const hashedKey = await hashWithSha256(key);
+  const key = randomUUID();
+  const hashedKey = hashWithSha256(key);
 
   const apiKey = await getPrisma(workspaceId).apiKey.findFirst({
     where: { workspaceId },
@@ -46,7 +46,7 @@ export const findApiKeyOrThrow = async (key: string) => {
     throw new AuthorizationException("Invalid API key");
   }
 
-  const hashedKey = await hashWithSha256(key);
+  const hashedKey = hashWithSha256(key);
 
   const apiKey = await getBypassRlsPrisma().apiKey.findUnique({
     where: { key: hashedKey },

@@ -7,7 +7,7 @@ export const createDeploymentValidationSchema = z.object({
   app: z.string().max(STRING_INPUT_MAX_LENGTH),
   sha: z.string().max(70),
   author: z.string().max(STRING_INPUT_MAX_LENGTH),
-  deployedAt: z.string().optional(),
+  deployedAt: z.string().datetime().pipe(z.coerce.date()).optional(),
   monorepoPath: z.string().max(STRING_INPUT_MAX_LENGTH).optional(),
 });
 
