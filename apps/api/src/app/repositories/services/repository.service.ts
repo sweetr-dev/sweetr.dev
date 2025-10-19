@@ -2,6 +2,7 @@ import { Prisma, Repository } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
 import {
   FindRepositoriesByWorkspaceArgs,
+  FindRepositoryByFullNameArgs,
   FindRepositoryByIdArgs,
 } from "./repository.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
@@ -14,6 +15,18 @@ export const findRepositoryById = async ({
     where: {
       workspaceId,
       id: repositoryId,
+    },
+  });
+};
+
+export const findRepositoryByFullName = async ({
+  workspaceId,
+  fullName,
+}: FindRepositoryByFullNameArgs): Promise<Repository | null> => {
+  return getPrisma(workspaceId).repository.findFirst({
+    where: {
+      workspaceId,
+      fullName,
     },
   });
 };

@@ -2,10 +2,68 @@ import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { CreateDeploymentInput } from "../services/deployment.validation";
+import { findOrCreateEnvironment } from "../../environments/services/environment.service";
+import { findGitProfileByHandle } from "../../people/services/people.service";
+import { upsertApplication } from "../../applications/services/application.service";
+import { findRepositoryByFullName } from "../../repositories/services/repository.service";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { DeploymentSettingsTrigger } from "../../applications/services/application.types";
+import { createDeployment } from "../services/deployment.service";
+import { logger } from "../../../lib/logger";
 
 export const deploymentCreateWorker = createWorker(
   SweetQueue.DEPLOYMENT_CREATE,
-  async (job: Job<CreateDeploymentInput>) => {
-    console.log("deploymentCreateWorker", job.data);
+  async (job: Job<CreateDeploymentInput & { workspaceId: number }>) => {
+    logger.info("deploymentCreateWorker", { data: job.data });
+
+    const environment = await findOrCreateEnvironment({
+      workspaceId: job.data.workspaceId,
+      name: job.data.environment,
+    });
+
+    const repository = await findRepositoryByFullName({
+      workspaceId: job.data.workspaceId,
+      fullName: job.data.repositoryFullName,
+    });
+
+    if (!repository) {
+      throw new ResourceNotFoundException("Repository not found");
+    }
+
+    const author = job.data.author
+      ? await findGitProfileByHandle({
+          workspaceId: job.data.workspaceId,
+          handle: job.data.author,
+        })
+      : null;
+
+    const deployedAt = job.data.deployedAt
+      ? new Date(job.data.deployedAt)
+      : new Date();
+
+    const application = await upsertApplication({
+      workspaceId: job.data.workspaceId,
+      name: job.data.app,
+      repositoryId: repository.id,
+      deploymentSettings: {
+        trigger: DeploymentSettingsTrigger.WEBHOOK,
+        ...(job.data.monorepoPath
+          ? { subdirectory: job.data.monorepoPath }
+          : undefined),
+      },
+    });
+
+    const deployment = await createDeployment({
+      workspaceId: job.data.workspaceId,
+      environmentId: environment.id,
+      applicationId: application.id,
+      authorId: author?.id,
+      deployedAt,
+      version: job.data.version,
+      description: job.data.description,
+    });
+
+    logger.info("deploymentCreateWorker: Deployment created", { deployment });
+    // TO-DO: Link pull requests to this deployment
   }
 );

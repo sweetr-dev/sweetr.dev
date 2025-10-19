@@ -1,6 +1,7 @@
 import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
 import {
+  CreateDeploymentInput,
   FindDeploymentByIdArgs,
   FindLastProductionDeploymentByApplicationIdArgs,
   PaginateDeploymentsArgs,
@@ -108,6 +109,28 @@ export const findLastProductionDeploymentByApplicationId = async ({
     },
     orderBy: {
       deployedAt: "desc",
+    },
+  });
+};
+
+export const createDeployment = async ({
+  workspaceId,
+  environmentId,
+  applicationId,
+  authorId,
+  deployedAt,
+  description,
+  version,
+}: CreateDeploymentInput) => {
+  return getPrisma(workspaceId).deployment.create({
+    data: {
+      workspaceId,
+      environmentId,
+      applicationId,
+      authorId,
+      deployedAt,
+      description,
+      version,
     },
   });
 };

@@ -2,6 +2,7 @@ import { assign } from "radash";
 import { getPrisma, take } from "../../../prisma";
 import {
   FindApplicationByIdArgs,
+  FindApplicationByNameArgs,
   PaginateApplicationsArgs,
   UpsertApplicationInput,
 } from "./application.types";
@@ -34,6 +35,17 @@ export const findApplicationByIdOrThrow = async ({
   }
 
   return application;
+};
+
+export const findApplicationByName = async ({
+  workspaceId,
+  name,
+}: FindApplicationByNameArgs) => {
+  return await getPrisma(workspaceId).application.findUnique({
+    where: {
+      workspaceId_name: { workspaceId, name },
+    },
+  });
 };
 
 export const paginateApplications = async (
@@ -88,11 +100,9 @@ export const upsertApplication = async (input: UpsertApplicationInput) => {
       input
     );
 
-  const application = await getPrisma(workspaceId).application.findUnique({
-    where: {
-      id: applicationId || 0,
-    },
-  });
+  const application = applicationId
+    ? await findApplicationById({ workspaceId, applicationId })
+    : await findApplicationByName({ workspaceId, name: data.name });
 
   if (!application) {
     const newApplication = await getPrisma(workspaceId).application.create({
