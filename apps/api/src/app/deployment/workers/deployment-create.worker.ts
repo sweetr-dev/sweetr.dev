@@ -1,7 +1,7 @@
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { PostDeploymentInput } from "../services/deployment.validation";
+import type { PostDeploymentInput } from "../services/deployment.validation";
 import { findOrCreateEnvironment } from "../../environments/services/environment.service";
 import { findGitProfileByHandle } from "../../people/services/people.service";
 import { upsertApplication } from "../../applications/services/application.service";
@@ -11,7 +11,10 @@ import { DeploymentSettingsTrigger } from "../../applications/services/applicati
 import { upsertDeployment } from "../services/deployment.service";
 import { logger } from "../../../lib/logger";
 
-type DeploymentCreateJobData = PostDeploymentInput & { workspaceId: number };
+type DeploymentCreateJobData = Omit<PostDeploymentInput, "deployedAt"> & {
+  workspaceId: number;
+  deployedAt: Date;
+};
 
 export const deploymentCreateWorker = createWorker(
   SweetQueue.DEPLOYMENT_CREATE,
@@ -39,10 +42,6 @@ export const deploymentCreateWorker = createWorker(
         })
       : null;
 
-    const deployedAt = job.data.deployedAt
-      ? new Date(job.data.deployedAt)
-      : new Date();
-
     const application = await upsertApplication({
       workspaceId: job.data.workspaceId,
       name: job.data.app,
@@ -60,7 +59,7 @@ export const deploymentCreateWorker = createWorker(
       environmentId: environment.id,
       applicationId: application.id,
       authorId: author?.id,
-      deployedAt,
+      deployedAt: job.data.deployedAt,
       commitHash: job.data.commitHash,
       version: job.data.version,
       description: job.data.description,

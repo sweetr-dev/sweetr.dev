@@ -13,6 +13,7 @@ deploymentsRouter.post(
   catchErrors(async (req, res) => {
     logger.debug("http.deployments.create", { body: req.body });
 
+    console.log(req.headers.authorization);
     const apiKey = await findApiKeyOrThrow(req.headers.authorization as string);
 
     const payload = await validateInputOrThrow(
@@ -22,6 +23,9 @@ deploymentsRouter.post(
 
     await addJob(SweetQueue.DEPLOYMENT_CREATE, {
       workspaceId: apiKey.workspaceId,
+      deployedAt: payload.deployedAt
+        ? new Date(payload.deployedAt)
+        : new Date(),
       ...payload,
     });
 
