@@ -58,6 +58,7 @@ describe("groupSerialReviews", () => {
     type,
     eventAt,
     pullRequest: {
+      mergeCommitSha: null,
       gitProvider: "GITHUB",
       gitPullRequestId: "1",
       gitUrl: "https://github.com/test/test/pull/1",

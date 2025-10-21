@@ -367,10 +367,11 @@ model PullRequest {
 
   state PullRequestState
 
-  mergedAt  DateTime?
-  closedAt  DateTime?
-  createdAt DateTime
-  updatedAt DateTime
+  mergeCommitSha String?
+  mergedAt       DateTime?
+  closedAt       DateTime?
+  createdAt      DateTime
+  updatedAt      DateTime
 
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   repositoryId Int
@@ -410,11 +411,13 @@ model PullRequestTracking {
   firstReviewerRequestedAt DateTime?
   firstReviewAt            DateTime?
   firstApprovalAt          DateTime?
+  firstDeployedAt          DateTime?
 
   timeToCode          BigInt?
   timeToFirstReview   BigInt?
   timeToFirstApproval BigInt?
   timeToMerge         BigInt?
+  timeToDeploy        BigInt?
   cycleTime           BigInt?
 
   pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
