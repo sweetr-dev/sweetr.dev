@@ -94,6 +94,14 @@ enum ActivityEventType {
   PULL_REQUEST_CREATED
 }
 
+enum DeploymentChangeType {
+  FORWARD
+  ROLLBACK
+  BASELINE
+  DIVERGED
+  NO_CHANGE
+}
+
 // User git profiles. Public data. May not have an associated user. 
 model GitProfile {
   id Int @id @default(autoincrement())
@@ -178,27 +186,27 @@ model Workspace {
   gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
 
-  memberships          WorkspaceMembership[]
-  repositories         Repository[]
-  teams                Team[]
-  automations          Automation[]
-  codeReviews          CodeReview[]
-  codeReviewRequests   CodeReviewRequest[]
-  pullRequestTrackings PullRequestTracking[]
-  pullRequests         PullRequest[]
-  teamMembers          TeamMember[]
-  integrations         Integration[]
-  digests              Digest[]
-  alerts               Alert[]
-  alertEvents          AlertEvent[]
-  activityEvents       ActivityEvent[]
-  apiKeys              ApiKey[]
-  syncTasks            SyncBatch[]
-  applications         Application[]
-  deployments          Deployment[]
-  deployedPullRequests DeployedPullRequest[]
-  Environment          Environment[]
-  Incident             Incident[]
+  memberships            WorkspaceMembership[]
+  repositories           Repository[]
+  teams                  Team[]
+  automations            Automation[]
+  codeReviews            CodeReview[]
+  codeReviewRequests     CodeReviewRequest[]
+  pullRequestTrackings   PullRequestTracking[]
+  pullRequests           PullRequest[]
+  teamMembers            TeamMember[]
+  integrations           Integration[]
+  digests                Digest[]
+  alerts                 Alert[]
+  alertEvents            AlertEvent[]
+  activityEvents         ActivityEvent[]
+  apiKeys                ApiKey[]
+  syncTasks              SyncBatch[]
+  applications           Application[]
+  deployments            Deployment[]
+  deploymentPullRequests DeploymentPullRequest[]
+  Environment            Environment[]
+  Incident               Incident[]
 
   @@unique([gitProfileId])
   @@unique([organizationId])
@@ -384,11 +392,11 @@ model PullRequest {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
 
-  codeReviews          CodeReview[]
-  codeReviewRequests   CodeReviewRequest[]
-  alertEvents          AlertEvent[]
-  activityEvents       ActivityEvent[]
-  deployedPullRequests DeployedPullRequest[]
+  codeReviews        CodeReview[]
+  codeReviewRequests CodeReviewRequest[]
+  alertEvents        AlertEvent[]
+  activityEvents     ActivityEvent[]
+  deploymentEvents   DeploymentPullRequest[]
 
   @@unique([gitProvider, gitPullRequestId])
   @@index([workspaceId])
@@ -707,6 +715,8 @@ model Deployment {
   commitHash  String
   description String?
 
+  changeType DeploymentChangeType?
+
   environmentId Int
   environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
 
@@ -715,7 +725,7 @@ model Deployment {
 
   deployedAt DateTime
 
-  pullRequests DeployedPullRequest[]
+  pullRequests DeploymentPullRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -771,7 +781,7 @@ model Incident {
   @@index([workspaceId, detectedAt])
 }
 
-model DeployedPullRequest {
+model DeploymentPullRequest {
   id Int @id @default(autoincrement())
 
   deploymentId Int

@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { addJob, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import type { PostDeploymentInput } from "../services/deployment.validation";
 import { findOrCreateEnvironment } from "../../environments/services/environment.service";
@@ -66,6 +66,10 @@ export const deploymentCreateWorker = createWorker(
     });
 
     logger.info("deploymentCreateWorker: Deployment created", { deployment });
-    // TO-DO: Link pull requests to this deployment
+
+    await addJob(SweetQueue.DEPLOYMENT_AUTO_LINK_PULL_REQUESTS, {
+      deploymentId: deployment.id,
+      workspaceId: job.data.workspaceId,
+    });
   }
 );

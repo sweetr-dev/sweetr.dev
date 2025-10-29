@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { DateTimeRange } from "../../types";
 
 export interface PaginateDeploymentsArgs {
@@ -10,9 +11,12 @@ export interface PaginateDeploymentsArgs {
   limit?: number;
 }
 
-export interface FindDeploymentByIdArgs {
+export interface FindDeploymentByIdArgs<
+  TInclude extends Prisma.DeploymentInclude | undefined = undefined,
+> {
   workspaceId: number;
   deploymentId: number;
+  include?: TInclude;
 }
 
 export interface FindLastProductionDeploymentByApplicationIdArgs {
@@ -29,4 +33,9 @@ export interface UpsertDeploymentInput {
   deployedAt: Date;
   authorId?: number | null;
   description?: string | null;
+}
+
+export interface AutoLinkPullRequestsToDeploymentArgs {
+  deploymentId: number;
+  workspaceId: number;
 }

@@ -210,7 +210,7 @@ export const findPullRequestsByDeploymentId = async ({
 }: FindPullRequestsByDeploymentIdArgs) => {
   return getPrisma(workspaceId).pullRequest.findMany({
     where: {
-      deployedPullRequests: {
+      deploymentEvents: {
         some: { deploymentId },
       },
       workspaceId,
@@ -226,7 +226,7 @@ export const countPullRequestsByDeploymentId = async ({
   workspaceId,
   deploymentId,
 }: CountPullRequestsByDeploymentIdArgs) => {
-  return getPrisma(workspaceId).deployedPullRequest.count({
+  return getPrisma(workspaceId).deploymentPullRequest.count({
     where: { deploymentId, workspaceId },
   });
 };
