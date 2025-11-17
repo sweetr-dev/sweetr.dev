@@ -13,7 +13,6 @@ deploymentsRouter.post(
   catchErrors(async (req, res) => {
     logger.debug("http.deployments.create", { body: req.body });
 
-    console.log(req.headers.authorization);
     const apiKey = await findApiKeyOrThrow(req.headers.authorization as string);
 
     const payload = await validateInputOrThrow(
