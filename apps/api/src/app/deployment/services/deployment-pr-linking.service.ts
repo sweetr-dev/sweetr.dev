@@ -47,12 +47,14 @@ const getChangeTypeFromGitHubComparisonStatus = (
 
 export const findPullRequestsByCommitHashes = async ({
   workspaceId,
+  repositoryId,
   commitHashes,
 }: FindPullRequestsByCommitHashesArgs) => {
   return getPrisma(workspaceId).pullRequest.findMany({
     where: {
       mergeCommitSha: { in: commitHashes },
       workspaceId,
+      repositoryId,
     },
     include: {
       deploymentEvents: true,
@@ -66,6 +68,13 @@ export const linkPullRequestsToDeployment = async ({
   deploymentId,
   pullRequestIds,
 }: LinkPullRequestsToDeploymentArgs) => {
+  await getPrisma(workspaceId).deploymentPullRequest.deleteMany({
+    where: {
+      deploymentId,
+      workspaceId,
+    },
+  });
+
   return getPrisma(workspaceId).deploymentPullRequest.createMany({
     data: pullRequestIds.map((pullRequestId) => ({
       deploymentId,

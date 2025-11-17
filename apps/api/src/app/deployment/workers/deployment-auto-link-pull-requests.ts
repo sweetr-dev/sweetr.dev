@@ -53,15 +53,6 @@ export const deploymentAutoLinkPullRequestsWorker = createWorker(
       }
     );
 
-    if (!deployment) {
-      throw new ResourceNotFoundException(
-        "[DEPLOYMENT_AUTO_LINK_PULL_REQUESTS] Deployment not found",
-        {
-          extra: { deploymentId: job.data.deploymentId },
-        }
-      );
-    }
-
     const previousDeployment = await findPreviousDeployment(
       deployment as Deployment
     );
@@ -99,7 +90,7 @@ export const deploymentAutoLinkPullRequestsWorker = createWorker(
     const { changeType, commits } = await getDeploymentCommitComparison({
       installationId: workspace.installation.id,
       owner,
-      repositoryFullName: deployment?.application.repository.fullName,
+      repositoryFullName: deployment.application.repository.fullName,
       base: previousDeployment.commitHash,
       head: deployment.commitHash,
     });
@@ -120,6 +111,7 @@ export const deploymentAutoLinkPullRequestsWorker = createWorker(
 
     const pullRequests = await findPullRequestsByCommitHashes({
       workspaceId: job.data.workspaceId,
+      repositoryId: deployment.application.repositoryId,
       commitHashes: commits,
     });
 
@@ -136,6 +128,20 @@ export const deploymentAutoLinkPullRequestsWorker = createWorker(
           );
         })
       : pullRequests;
+
+    if (filteredPullRequests.length === 0) {
+      logger.info(
+        "[DEPLOYMENT_AUTO_LINK_PULL_REQUESTS] Found no PRs that belong to the application's monorepository subdirectory",
+        {
+          deploymentId: job.data.deploymentId,
+          workspaceId: job.data.workspaceId,
+          pullRequests,
+          subdirectory: deploymentSettings?.subdirectory,
+        }
+      );
+
+      return;
+    }
 
     await linkPullRequestsToDeployment({
       workspaceId: job.data.workspaceId,

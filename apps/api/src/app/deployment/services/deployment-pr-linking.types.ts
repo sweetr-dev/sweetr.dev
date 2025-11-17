@@ -16,6 +16,7 @@ export interface UpdateDeploymentChangeTypeInput {
 
 export interface FindPullRequestsByCommitHashesArgs {
   workspaceId: number;
+  repositoryId: number;
   commitHashes: string[];
 }
 
