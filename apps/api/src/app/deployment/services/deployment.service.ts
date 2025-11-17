@@ -1,35 +1,79 @@
 import { getPrisma, take } from "../../../prisma";
-import { Prisma } from "@prisma/client";
+import { Deployment, Prisma } from "@prisma/client";
 import {
+  UpsertDeploymentInput,
   FindDeploymentByIdArgs,
   FindLastProductionDeploymentByApplicationIdArgs,
   PaginateDeploymentsArgs,
 } from "./deployment.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
-export const findDeploymentById = async ({
-  workspaceId,
-  deploymentId,
-}: FindDeploymentByIdArgs) => {
+export async function findDeploymentById<
+  TInclude extends Prisma.DeploymentInclude | undefined = undefined,
+>(
+  { workspaceId, deploymentId }: FindDeploymentByIdArgs,
+  { include }: { include?: TInclude } = {}
+) {
   return getPrisma(workspaceId).deployment.findUnique({
-    where: {
-      id: deploymentId,
-      workspaceId,
-    },
-  });
-};
+    where: { id: deploymentId, workspaceId },
+    include,
+  }) as Prisma.Prisma__DeploymentClient<
+    Prisma.DeploymentGetPayload<{ include: TInclude }>
+  >;
+}
 
-export const findDeploymentByIdOrThrow = async ({
-  workspaceId,
-  deploymentId,
-}: FindDeploymentByIdArgs) => {
-  const deployment = await findDeploymentById({ workspaceId, deploymentId });
+export async function findDeploymentByIdOrThrow<
+  TInclude extends Prisma.DeploymentInclude | undefined = undefined,
+>(
+  { workspaceId, deploymentId }: FindDeploymentByIdArgs,
+  { include }: { include?: TInclude } = {}
+) {
+  const deployment = await findDeploymentById(
+    {
+      workspaceId,
+      deploymentId,
+    },
+    { include }
+  );
 
   if (!deployment) {
     throw new ResourceNotFoundException("Deployment not found");
   }
 
   return deployment;
+}
+
+export const findDeploymentWithRelations = async ({
+  workspaceId,
+  deploymentId,
+}: FindDeploymentByIdArgs) => {
+  return getPrisma(workspaceId).deployment.findUnique({
+    where: { id: deploymentId, workspaceId },
+    include: {
+      application: {
+        include: {
+          repository: true,
+        },
+      },
+    },
+  });
+};
+
+export const findPreviousDeployment = async (deployment: Deployment) => {
+  return getPrisma(deployment.workspaceId).deployment.findFirst({
+    where: {
+      workspaceId: deployment.workspaceId,
+      applicationId: deployment.applicationId,
+      environmentId: deployment.environmentId,
+      archivedAt: null,
+      id: {
+        lt: deployment.id,
+      },
+    },
+    orderBy: {
+      deployedAt: "desc",
+    },
+  });
 };
 
 export const paginateDeployments = async (
@@ -109,5 +153,21 @@ export const findLastProductionDeploymentByApplicationId = async ({
     orderBy: {
       deployedAt: "desc",
     },
+  });
+};
+
+export const upsertDeployment = async (input: UpsertDeploymentInput) => {
+  return getPrisma(input.workspaceId).deployment.upsert({
+    where: {
+      workspaceId_environmentId_applicationId_version_deployedAt: {
+        workspaceId: input.workspaceId,
+        environmentId: input.environmentId,
+        applicationId: input.applicationId,
+        version: input.version,
+        deployedAt: input.deployedAt,
+      },
+    },
+    create: input,
+    update: input,
   });
 };

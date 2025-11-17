@@ -2,6 +2,7 @@ import { Environment, Prisma } from "@prisma/client";
 import {
   ArchiveEnvironmentArgs,
   FindEnvironmentByIdArgs,
+  FindOrCreateEnvironmentArgs,
   PaginateEnvironmentsArgs,
   UnarchiveEnvironmentArgs,
 } from "./environment.types";
@@ -73,5 +74,31 @@ export const unarchiveEnvironment = async ({
   return getPrisma(workspaceId).environment.update({
     where: { id: environmentId },
     data: { archivedAt: null },
+  });
+};
+
+export const findOrCreateEnvironment = async ({
+  workspaceId,
+  name,
+}: FindOrCreateEnvironmentArgs) => {
+  const environment = await getPrisma(workspaceId).environment.findUnique({
+    where: {
+      workspaceId_name: {
+        workspaceId,
+        name,
+      },
+    },
+  });
+
+  if (environment) {
+    return environment;
+  }
+
+  return getPrisma(workspaceId).environment.create({
+    data: {
+      workspaceId,
+      name,
+      isProduction: ["production", "prod"].includes(name.toLowerCase()),
+    },
   });
 };

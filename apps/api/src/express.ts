@@ -8,6 +8,7 @@ import { stripeRouter } from "./app/billing/stripe.router";
 import { slackRouter } from "./app/integrations/slack/slack.router";
 import cors from "cors";
 import { env } from "./env";
+import { deploymentsRouter } from "./app/deployment/deployments.router";
 
 export const expressApp = express();
 
@@ -29,6 +30,8 @@ expressApp.use(stripeRouter);
 expressApp.use(slackRouter);
 expressApp.use(bullBoardRouter);
 
+// Customer-facing API
+expressApp.use(deploymentsRouter);
 expressApp.use(yoga); // Leave Yoga last
 
 // Error handler.

@@ -121,6 +121,11 @@ const fetchPullRequest = async (
 
             createdAt
             updatedAt
+
+            headRefOid
+            mergeCommit {
+              oid
+            }
             
             author {
               ... on User {
@@ -257,6 +262,9 @@ const upsertPullRequest = async (
     changedFilesCount: gitPrData.changedFiles,
     linesAddedCount: gitPrData.additions,
     linesDeletedCount: gitPrData.deletions,
+    mergeCommitSha: gitPrData.mergedAt
+      ? (gitPrData.mergeCommit?.oid ?? gitPrData.headRefOid)
+      : null,
     state: getPullRequestState(gitPrData.state, gitPrData.isDraft),
     mergedAt: gitPrData.mergedAt,
     closedAt: gitPrData.closedAt,

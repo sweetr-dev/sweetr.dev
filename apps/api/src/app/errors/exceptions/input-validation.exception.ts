@@ -5,7 +5,7 @@ import {
 } from "./base.exception";
 
 interface InputValidationOptions extends BaseExceptionOptions {
-  validationErrors?: string[];
+  validationErrors?: string[] | Record<string, string>;
 }
 
 export class InputValidationException extends BaseException {
@@ -19,6 +19,7 @@ export class InputValidationException extends BaseException {
       code: ErrorCode.INPUT_VALIDATION_FAILED,
       userFacingMessage: "Validation error, please fix the input.",
       severity: "log",
+      statusCode: 422,
       ...options,
     });
   }

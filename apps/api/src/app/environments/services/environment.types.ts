@@ -20,3 +20,8 @@ export interface UnarchiveEnvironmentArgs {
   workspaceId: number;
   environmentId: number;
 }
+
+export interface FindOrCreateEnvironmentArgs {
+  workspaceId: number;
+  name: string;
+}

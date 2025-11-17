@@ -9,3 +9,8 @@ export interface FindRepositoriesByWorkspaceArgs {
   limit?: number;
   repositoriesIds?: number[];
 }
+
+export interface FindRepositoryByFullNameArgs {
+  workspaceId: number;
+  fullName: string;
+}

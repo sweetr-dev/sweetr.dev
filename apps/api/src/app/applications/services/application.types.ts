@@ -33,3 +33,8 @@ export interface UpsertApplicationInput extends JsonObject {
   teamId?: number | null;
   description?: string | null;
 }
+
+export interface FindApplicationByNameArgs {
+  workspaceId: number;
+  name: string;
+}

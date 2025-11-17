@@ -45,6 +45,10 @@ export enum SweetQueue {
   // Digests
   DIGEST_SEND = "{digest.send}",
 
+  // Deployments
+  DEPLOYMENT_CREATE = "{deployment.create}",
+  DEPLOYMENT_AUTO_LINK_PULL_REQUESTS = "{deployment.auto_link_pull_requests}",
+
   // SaaS - Internal to Sweetr team
   SAAS_NOTIFY_NEW_INSTALLATION = "{saas.notify_new_installation}",
 }
