@@ -4,27 +4,45 @@ import {
   IconArrowUpRight,
   IconProps,
 } from "@tabler/icons-react";
+import { Link, useLocation } from "react-router-dom";
 
-interface DoraCardStatProps {
+interface CardDoraMetricProps {
   name: string;
   amount: string;
   change: number;
   icon: React.ComponentType<IconProps>;
+  href: string;
 }
 
-export const DoraCardStat = ({
+export const CardDoraMetric = ({
   name,
   amount,
   change,
   icon: Icon,
-}: DoraCardStatProps) => {
+  href,
+}: CardDoraMetricProps) => {
+  const { pathname } = useLocation();
+  const isActive = pathname === href;
+
   return (
-    <Paper withBorder p="md" radius="md" h="100%">
+    <Paper
+      withBorder
+      p="md"
+      radius="md"
+      h="100%"
+      ta="left"
+      style={{
+        borderColor: isActive ? "var(--mantine-color-dark-2)" : undefined,
+      }}
+      className="grow-on-hover"
+      component={Link}
+      to={href}
+    >
       <Group justify="space-between" mb="md">
         <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
           {name}
         </Text>
-        <Icon size={24} stroke={1.5} />
+        <Icon size={24} stroke={1.5} color="var(--mantine-color-text)" />
       </Group>
 
       <Text fz="lg" c="white" fw={500} mb="md">
