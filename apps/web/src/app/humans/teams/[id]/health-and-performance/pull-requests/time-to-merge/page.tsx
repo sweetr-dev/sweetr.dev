@@ -9,7 +9,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToMergeQuery } from "../../../../../../../api/chart.api";
+import { useChartTimeToMergeQuery } from "../../../../../../../api/metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
@@ -44,7 +44,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
 
   const { data, isLoading } = useChartTimeToMergeQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -55,7 +55,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.timeToMerge?.data.length && !isLoading;
+    !data?.workspace.metrics?.timeToMerge?.data.length && !isLoading;
 
   return (
     <>
@@ -119,7 +119,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.timeToMerge}
+                  chartData={data?.workspace.metrics?.timeToMerge}
                   period={filters.values.period}
                 />
               }

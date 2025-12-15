@@ -158,30 +158,11 @@ export type Billing = {
   trial?: Maybe<Trial>;
 };
 
-export type ChartInput = {
-  /** The date range. */
-  dateRange: DateTimeRange;
-  /** The period to group by. */
-  period: Period;
-  /** The team id to filter by. */
-  teamId: Scalars['SweetID']['input'];
-};
-
 export type ChartNumericSeries = {
   __typename?: 'ChartNumericSeries';
   color?: Maybe<Scalars['HexColorCode']['output']>;
   data: Array<Scalars['BigInt']['output']>;
   name: Scalars['String']['output'];
-};
-
-export type Charts = {
-  __typename?: 'Charts';
-  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
-  cycleTime?: Maybe<NumericChartData>;
-  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
-  timeForApproval?: Maybe<NumericChartData>;
-  timeForFirstReview?: Maybe<NumericChartData>;
-  timeToMerge?: Maybe<NumericChartData>;
 };
 
 export type CodeReview = {
@@ -440,6 +421,46 @@ export type LoginWithGithubResponse = {
   __typename?: 'LoginWithGithubResponse';
   redirectTo?: Maybe<Scalars['String']['output']>;
   token: Token;
+};
+
+export type Metrics = {
+  __typename?: 'Metrics';
+  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
+  cycleTime?: Maybe<NumericChartData>;
+  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
+  timeForApproval?: Maybe<NumericChartData>;
+  timeForFirstReview?: Maybe<NumericChartData>;
+  timeToMerge?: Maybe<NumericChartData>;
+};
+
+
+export type MetricsCodeReviewDistributionArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsCycleTimeArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsPullRequestSizeDistributionArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeForApprovalArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeForFirstReviewArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeToMergeArgs = {
+  input: TeamMetricInput;
 };
 
 export type Mutation = {
@@ -848,6 +869,15 @@ export enum TeamMemberRole {
   QA = 'QA'
 }
 
+export type TeamMetricInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The team id to filter by. */
+  teamId: Scalars['SweetID']['input'];
+};
+
 export type TeamWorkLogInput = {
   /** The date range. */
   dateRange: DateTimeRange;
@@ -986,7 +1016,6 @@ export type Workspace = {
   automations: Array<Automation>;
   avatar?: Maybe<Scalars['String']['output']>;
   billing?: Maybe<Billing>;
-  charts?: Maybe<Charts>;
   deployment?: Maybe<Deployment>;
   deployments: Array<Deployment>;
   environments: Array<Environment>;
@@ -1002,6 +1031,7 @@ export type Workspace = {
   /** Whether the workspace should have access to the dashboard */
   isActiveCustomer: Scalars['Boolean']['output'];
   me?: Maybe<Person>;
+  metrics: Metrics;
   name: Scalars['String']['output'];
   people: Array<Person>;
   person?: Maybe<Person>;
@@ -1025,11 +1055,6 @@ export type WorkspaceApplicationsArgs = {
 
 export type WorkspaceAutomationArgs = {
   input: AutomationQueryInput;
-};
-
-
-export type WorkspaceChartsArgs = {
-  input: ChartInput;
 };
 
 
@@ -1217,9 +1242,7 @@ export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
   Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
-  ChartInput: ResolverTypeWrapper<DeepPartial<ChartInput>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
-  Charts: ResolverTypeWrapper<DeepPartial<Charts>>;
   CodeReview: ResolverTypeWrapper<DeepPartial<CodeReview>>;
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
@@ -1253,6 +1276,7 @@ export type ResolversTypes = {
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
+  Metrics: ResolverTypeWrapper<DeepPartial<Metrics>>;
   Mutation: ResolverTypeWrapper<{}>;
   NumericChartData: ResolverTypeWrapper<DeepPartial<NumericChartData>>;
   NumericPersonalMetric: ResolverTypeWrapper<DeepPartial<NumericPersonalMetric>>;
@@ -1285,6 +1309,7 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
+  TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
   TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
@@ -1329,9 +1354,7 @@ export type ResolversParentTypes = {
   BigInt: DeepPartial<Scalars['BigInt']['output']>;
   Billing: DeepPartial<Billing>;
   Boolean: DeepPartial<Scalars['Boolean']['output']>;
-  ChartInput: DeepPartial<ChartInput>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
-  Charts: DeepPartial<Charts>;
   CodeReview: DeepPartial<CodeReview>;
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
@@ -1359,6 +1382,7 @@ export type ResolversParentTypes = {
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
+  Metrics: DeepPartial<Metrics>;
   Mutation: {};
   NumericChartData: DeepPartial<NumericChartData>;
   NumericPersonalMetric: DeepPartial<NumericPersonalMetric>;
@@ -1386,6 +1410,7 @@ export type ResolversParentTypes = {
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
+  TeamMetricInput: DeepPartial<TeamMetricInput>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
@@ -1496,16 +1521,6 @@ export type ChartNumericSeriesResolvers<ContextType = GraphQLContext, ParentType
   color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ChartsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Charts'] = ResolversParentTypes['Charts']> = {
-  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType>;
-  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType>;
-  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1625,6 +1640,16 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Metrics'] = ResolversParentTypes['Metrics']> = {
+  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<MetricsCodeReviewDistributionArgs, 'input'>>;
+  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsCycleTimeArgs, 'input'>>;
+  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<MetricsPullRequestSizeDistributionArgs, 'input'>>;
+  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
+  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
+  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeToMergeArgs, 'input'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1828,7 +1853,6 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
-  charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
   deployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentArgs, 'deploymentId'>>;
   deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
   environments?: Resolver<Array<ResolversTypes['Environment']>, ParentType, ContextType, RequireFields<WorkspaceEnvironmentsArgs, 'input'>>;
@@ -1841,6 +1865,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;
   isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
+  metrics?: Resolver<ResolversTypes['Metrics'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   people?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType, Partial<WorkspacePeopleArgs>>;
   person?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType, RequireFields<WorkspacePersonArgs, 'handle'>>;
@@ -1882,7 +1907,6 @@ export type Resolvers<ContextType = GraphQLContext> = {
   BigInt?: GraphQLScalarType;
   Billing?: BillingResolvers<ContextType>;
   ChartNumericSeries?: ChartNumericSeriesResolvers<ContextType>;
-  Charts?: ChartsResolvers<ContextType>;
   CodeReview?: CodeReviewResolvers<ContextType>;
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
@@ -1898,6 +1922,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Integration?: IntegrationResolvers<ContextType>;
   JSONObject?: GraphQLScalarType;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
+  Metrics?: MetricsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NumericChartData?: NumericChartDataResolvers<ContextType>;
   NumericPersonalMetric?: NumericPersonalMetricResolvers<ContextType>;

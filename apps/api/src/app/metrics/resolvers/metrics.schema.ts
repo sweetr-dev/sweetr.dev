@@ -8,16 +8,18 @@ export default /* GraphQL */ `
   }
 
   extend type Workspace {
-    charts(input: ChartInput!): Charts
+    metrics: Metrics!
   }
 
-  type Charts {
-    pullRequestSizeDistribution: NumericSeriesChartData
-    timeToMerge: NumericChartData
-    timeForFirstReview: NumericChartData
-    timeForApproval: NumericChartData
-    cycleTime: NumericChartData
-    codeReviewDistribution: CodeReviewDistributionChartData
+  type Metrics {
+    pullRequestSizeDistribution(input: TeamMetricInput!): NumericSeriesChartData
+    timeToMerge(input: TeamMetricInput!): NumericChartData
+    timeForFirstReview(input: TeamMetricInput!): NumericChartData
+    timeForApproval(input: TeamMetricInput!): NumericChartData
+    cycleTime(input: TeamMetricInput!): NumericChartData
+    codeReviewDistribution(
+      input: TeamMetricInput!
+    ): CodeReviewDistributionChartData
   }
 
   # ----------------------------------------------------------------------------------
@@ -64,7 +66,7 @@ export default /* GraphQL */ `
     value: Int!
   }
 
-  input ChartInput {
+  input TeamMetricInput {
     "The date range."
     dateRange: DateTimeRange!
 

@@ -8,7 +8,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useCodeReviewDistributionQuery } from "../../../../../../../api/chart.api";
+import { useCodeReviewDistributionQuery } from "../../../../../../../api/metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
@@ -41,7 +41,7 @@ export const TeamCodeReviewDistributionPage = () => {
 
   const { data, isLoading } = useCodeReviewDistributionQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -52,11 +52,11 @@ export const TeamCodeReviewDistributionPage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.codeReviewDistribution?.entities.length &&
+    !data?.workspace.metrics?.codeReviewDistribution?.entities.length &&
     !isLoading;
 
   const reviewers =
-    data?.workspace.charts?.codeReviewDistribution?.entities.filter(
+    data?.workspace.metrics?.codeReviewDistribution?.entities.filter(
       (entity) => entity.reviewCount !== null,
     );
 
@@ -99,7 +99,7 @@ export const TeamCodeReviewDistributionPage = () => {
               display="flex"
               content={
                 <ChartCodeReviewDistribution
-                  chartData={data?.workspace.charts?.codeReviewDistribution}
+                  chartData={data?.workspace.metrics?.codeReviewDistribution}
                   period={filters.values.period}
                 />
               }

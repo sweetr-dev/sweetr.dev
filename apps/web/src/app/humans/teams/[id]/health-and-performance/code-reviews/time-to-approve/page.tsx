@@ -9,7 +9,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToApprovalQuery } from "../../../../../../../api/chart.api";
+import { useChartTimeToApprovalQuery } from "../../../../../../../api/metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
@@ -41,7 +41,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
 
   const { data, isLoading } = useChartTimeToApprovalQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -52,7 +52,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.timeForApproval?.data.length && !isLoading;
+    !data?.workspace.metrics?.timeForApproval?.data.length && !isLoading;
 
   return (
     <>
@@ -111,7 +111,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.timeForApproval}
+                  chartData={data?.workspace.metrics?.timeForApproval}
                   period={filters.values.period}
                 />
               }

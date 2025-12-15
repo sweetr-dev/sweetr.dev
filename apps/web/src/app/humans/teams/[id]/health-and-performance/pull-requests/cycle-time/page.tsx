@@ -9,7 +9,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartCycleTimeQuery } from "../../../../../../../api/chart.api";
+import { useChartCycleTimeQuery } from "../../../../../../../api/metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
@@ -41,7 +41,7 @@ export const TeamPullRequestsCycleTimePage = () => {
 
   const { data, isLoading } = useChartCycleTimeQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -51,7 +51,8 @@ export const TeamPullRequestsCycleTimePage = () => {
     },
   });
 
-  const isEmpty = !data?.workspace.charts?.cycleTime?.data.length && !isLoading;
+  const isEmpty =
+    !data?.workspace.metrics?.cycleTime?.data.length && !isLoading;
 
   return (
     <>
@@ -111,7 +112,7 @@ export const TeamPullRequestsCycleTimePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.cycleTime}
+                  chartData={data?.workspace.metrics?.cycleTime}
                   period={filters.values.period}
                 />
               }

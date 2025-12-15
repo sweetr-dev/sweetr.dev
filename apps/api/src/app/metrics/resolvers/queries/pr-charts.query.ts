@@ -1,6 +1,7 @@
+import { thirtyDaysAgo } from "../../../../lib/date";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { InputValidationException } from "../../../errors/exceptions/input-validation.exception";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
   getCycleTimeChartData,
   getPullRequestSizeDistributionChartData,
@@ -9,23 +10,23 @@ import {
   getTimeToMergeChartData,
 } from "../../services/chart-pull-request.service";
 
-export const chartsQuery = createFieldResolver("Charts", {
-  timeToMerge: async (_, __, context) => {
-    logger.info("query.charts.timeToMerge", {
-      chartFilter: context.chartFilter,
+export const pullRequestMetricsQuery = createFieldResolver("Metrics", {
+  timeToMerge: async (_, { input }, context) => {
+    logger.info("query.metrics.timeToMerge", {
+      input,
       workspaceId: context.workspaceId,
     });
 
-    if (!context.chartFilter || !context.workspaceId) {
-      throw new InputValidationException("Missing chart filters");
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
     }
 
     const result = await getTimeToMergeChartData({
       workspaceId: context.workspaceId,
-      startDate: context.chartFilter.dateTimeRange.from,
-      endDate: context.chartFilter.dateTimeRange.to,
-      teamId: context.chartFilter.teamId,
-      period: context.chartFilter.period,
+      startDate: input.dateRange.from || thirtyDaysAgo().toISOString(),
+      endDate: input.dateRange.to || new Date().toISOString(),
+      teamId: input.teamId,
+      period: input.period,
     });
 
     return {
@@ -33,22 +34,22 @@ export const chartsQuery = createFieldResolver("Charts", {
       data: result.map((chartData) => chartData.value),
     };
   },
-  timeForFirstReview: async (_, __, context) => {
-    logger.info("query.charts.timeForFirstReview", {
-      chartFilter: context.chartFilter,
+  timeForFirstReview: async (_, { input }, context) => {
+    logger.info("query.metrics.timeForFirstReview", {
+      input,
       workspaceId: context.workspaceId,
     });
 
-    if (!context.chartFilter || !context.workspaceId) {
-      throw new InputValidationException("Missing chart filters");
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
     }
 
     const result = await getTimeForFirstReviewChartData({
       workspaceId: context.workspaceId,
-      startDate: context.chartFilter.dateTimeRange.from,
-      endDate: context.chartFilter.dateTimeRange.to,
-      teamId: context.chartFilter.teamId,
-      period: context.chartFilter.period,
+      startDate: input.dateRange.from || thirtyDaysAgo().toISOString(),
+      endDate: input.dateRange.to || new Date().toISOString(),
+      teamId: input.teamId,
+      period: input.period,
     });
 
     return {
@@ -56,22 +57,22 @@ export const chartsQuery = createFieldResolver("Charts", {
       data: result.map((chartData) => chartData.value),
     };
   },
-  timeForApproval: async (_, __, context) => {
-    logger.info("query.charts.timeForApproval", {
-      chartFilter: context.chartFilter,
+  timeForApproval: async (_, { input }, context) => {
+    logger.info("query.metrics.timeForApproval", {
+      input,
       workspaceId: context.workspaceId,
     });
 
-    if (!context.chartFilter || !context.workspaceId) {
-      throw new InputValidationException("Missing chart filters");
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
     }
 
     const result = await getTimeForApprovalChartData({
       workspaceId: context.workspaceId,
-      startDate: context.chartFilter.dateTimeRange.from,
-      endDate: context.chartFilter.dateTimeRange.to,
-      teamId: context.chartFilter.teamId,
-      period: context.chartFilter.period,
+      startDate: input.dateRange.from || thirtyDaysAgo().toISOString(),
+      endDate: input.dateRange.to || new Date().toISOString(),
+      teamId: input.teamId,
+      period: input.period,
     });
 
     return {
@@ -79,22 +80,22 @@ export const chartsQuery = createFieldResolver("Charts", {
       data: result.map((chartData) => chartData.value),
     };
   },
-  cycleTime: async (_, __, context) => {
-    logger.info("query.charts.cycleTime", {
-      chartFilter: context.chartFilter,
+  cycleTime: async (_, { input }, context) => {
+    logger.info("query.metrics.cycleTime", {
+      input,
       workspaceId: context.workspaceId,
     });
 
-    if (!context.chartFilter || !context.workspaceId) {
-      throw new InputValidationException("Missing chart filters");
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
     }
 
     const result = await getCycleTimeChartData({
       workspaceId: context.workspaceId,
-      startDate: context.chartFilter.dateTimeRange.from,
-      endDate: context.chartFilter.dateTimeRange.to,
-      teamId: context.chartFilter.teamId,
-      period: context.chartFilter.period,
+      startDate: input.dateRange.from || thirtyDaysAgo().toISOString(),
+      endDate: input.dateRange.to || new Date().toISOString(),
+      teamId: input.teamId,
+      period: input.period,
     });
 
     return {
@@ -102,22 +103,22 @@ export const chartsQuery = createFieldResolver("Charts", {
       data: result.map((chartData) => chartData.value),
     };
   },
-  pullRequestSizeDistribution: async (_, __, context) => {
-    logger.info("query.charts.pullRequestSizeDistribution", {
-      chartFilter: context.chartFilter,
+  pullRequestSizeDistribution: async (_, { input }, context) => {
+    logger.info("query.metrics.pullRequestSizeDistribution", {
+      input,
       workspaceId: context.workspaceId,
     });
 
-    if (!context.chartFilter || !context.workspaceId) {
-      throw new InputValidationException("Missing chart filters");
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
     }
 
     return getPullRequestSizeDistributionChartData({
       workspaceId: context.workspaceId,
-      startDate: context.chartFilter.dateTimeRange.from,
-      endDate: context.chartFilter.dateTimeRange.to,
-      teamId: context.chartFilter.teamId,
-      period: context.chartFilter.period,
+      startDate: input.dateRange.from || thirtyDaysAgo().toISOString(),
+      endDate: input.dateRange.to || new Date().toISOString(),
+      teamId: input.teamId,
+      period: input.period,
     });
   },
 });

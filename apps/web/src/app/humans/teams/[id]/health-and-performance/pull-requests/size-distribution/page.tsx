@@ -9,7 +9,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { usePullRequestSizeDistributionQuery } from "../../../../../../../api/chart.api";
+import { usePullRequestSizeDistributionQuery } from "../../../../../../../api/metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
@@ -44,7 +44,7 @@ export const TeamPullRequestsSizeDistribution = () => {
 
   const { data, isLoading } = usePullRequestSizeDistributionQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -55,7 +55,7 @@ export const TeamPullRequestsSizeDistribution = () => {
   });
 
   const isEmpty =
-    data?.workspace.charts?.pullRequestSizeDistribution?.series.every(
+    data?.workspace.metrics?.pullRequestSizeDistribution?.series.every(
       (seriesData) => seriesData.data.length === 0,
     ) && !isLoading;
 
@@ -117,7 +117,7 @@ export const TeamPullRequestsSizeDistribution = () => {
               content={
                 <ChartStackedBars
                   chartData={
-                    data?.workspace.charts?.pullRequestSizeDistribution
+                    data?.workspace.metrics?.pullRequestSizeDistribution
                   }
                   period={filters.values.period}
                 />
