@@ -9,7 +9,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToApprovalQuery } from "../../../../../../../api/metrics.api";
+import { useChartTimeToApprovalQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";

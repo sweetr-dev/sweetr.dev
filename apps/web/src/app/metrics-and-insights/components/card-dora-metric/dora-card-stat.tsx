@@ -9,6 +9,7 @@ import { Link, useLocation } from "react-router-dom";
 interface CardDoraMetricProps {
   name: string;
   amount: string;
+  amountDescription?: string;
   change: number;
   icon: React.ComponentType<IconProps>;
   href: string;
@@ -18,6 +19,7 @@ export const CardDoraMetric = ({
   name,
   amount,
   change,
+  amountDescription,
   icon: Icon,
   href,
 }: CardDoraMetricProps) => {
@@ -45,9 +47,16 @@ export const CardDoraMetric = ({
         <Icon size={24} stroke={1.5} color="var(--mantine-color-text)" />
       </Group>
 
-      <Text fz="lg" c="white" fw={500} mb="md">
-        {amount}
-      </Text>
+      <Group gap="xs" mb="md" justify="space-between">
+        <Text fz="lg" c="white" fw={500}>
+          {amount}
+        </Text>
+        {amountDescription && (
+          <Text fz="sm" c="dimmed">
+            {amountDescription}
+          </Text>
+        )}
+      </Group>
 
       <Stack gap="xs">
         <Group gap={5} align="center">

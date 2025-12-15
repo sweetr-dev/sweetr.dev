@@ -1,24 +1,37 @@
-import { Paper } from "@mantine/core";
+import { Paper, Skeleton } from "@mantine/core";
 import { DoraMetricsChart } from "../components/dora-metrics-chart/dora-metrics-chart";
-import { mockChartData } from "../mockData";
-import { Period } from "@sweetr/graphql-types/frontend/graphql";
+import { useDoraMetrics } from "../useDoraMetrics";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { useOutletContext } from "react-router-dom";
+import { DoraMetricFilters } from "../types";
 
 export const DoraFailureRatePage = () => {
+  const { workspace } = useWorkspace();
+  const filters = useOutletContext<DoraMetricFilters>();
+  const { isLoading, metrics } = useDoraMetrics({
+    workspaceId: workspace.id,
+    filters,
+  });
+
+  if (isLoading || !metrics.changeFailureRate) {
+    return <Skeleton height={400} />;
+  }
+
   return (
     <>
       <Paper withBorder bg="dark.6" h={400} p="xs">
         <DoraMetricsChart
           chartData={{
-            columns: mockChartData.columns,
+            columns: metrics.changeFailureRate.columns,
             series: [
               {
-                name: mockChartData.failureRate.name,
-                data: mockChartData.failureRate.data,
-                color: mockChartData.failureRate.color,
+                name: "Failure Rate",
+                data: metrics.changeFailureRate.data,
+                color: "#8ce99a",
               },
             ],
           }}
-          period={Period.DAILY}
+          period={filters.period}
         />
       </Paper>
     </>

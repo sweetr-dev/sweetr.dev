@@ -8,7 +8,7 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useCodeReviewDistributionQuery } from "../../../../../../../api/metrics.api";
+import { useCodeReviewDistributionQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";

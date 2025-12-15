@@ -13,6 +13,6 @@ export const metricsQuery = createFieldResolver("Workspace", {
 
     await protectWithPaywall(workspace.id);
 
-    return {};
+    return { dora: {} };
   },
 });

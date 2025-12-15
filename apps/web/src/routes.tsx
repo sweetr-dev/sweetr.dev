@@ -67,7 +67,7 @@ import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page"
 import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
 import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
 import { DoraFailureRatePage } from "./app/metrics-and-insights/failure-rate/page";
-import { DoraFrequencyPage } from "./app/metrics-and-insights/frequency/page";
+import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/deployment-frequency/page";
 import { DoraLeadTimePage } from "./app/metrics-and-insights/lead-time/page";
 import { DoraMttrPage } from "./app/metrics-and-insights/mttr/page";
 
@@ -237,8 +237,8 @@ export const router = createBrowserRouter([
             element: <MetricsAndInsightsPage />,
             children: [
               {
-                path: "/metrics-and-insights/frequency",
-                element: <DoraFrequencyPage />,
+                path: "/metrics-and-insights/deployment-frequency",
+                element: <DoraDeploymentFrequencyPage />,
               },
               {
                 path: "/metrics-and-insights/lead-time",

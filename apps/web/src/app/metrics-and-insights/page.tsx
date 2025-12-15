@@ -1,12 +1,13 @@
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { PageContainer } from "../../components/page-container";
-import { Box, Group, Divider } from "@mantine/core";
+import { Box, Group, Divider, Skeleton } from "@mantine/core";
 import {
   IconBox,
   IconCalendarFilled,
   IconClock,
   IconFireExtinguisher,
   IconFlame,
+  IconRefresh,
   IconServer,
 } from "@tabler/icons-react";
 import { FilterMultiSelect } from "../../components/filter-multi-select";
@@ -18,32 +19,42 @@ import {
   useEnvironmentAsyncOptions,
   useTeamAsyncOptions,
 } from "../../providers/async-options.provider";
-import { parseNullableISO } from "../../providers/date.provider";
+import {
+  humanizeDuration,
+  parseNullableISO,
+} from "../../providers/date.provider";
 import { FilterDate } from "../../components/filter-date";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { FilterSelect } from "../../components/filter-select";
+import { Period } from "@sweetr/graphql-types/frontend/graphql";
+import { DoraMetricFilters } from "./types";
+import { useWorkspace } from "../../providers/workspace.provider";
+import { useDoraMetrics } from "./useDoraMetrics";
 
 export const MetricsAndInsightsPage = () => {
   const { pathname } = useLocation();
   const searchParams = useFilterSearchParameters();
-  const filters = useForm<{
-    from: string | null;
-    to: string | null;
-    teamIds: string[];
-    applicationIds: string[];
-    environmentIds: string[];
-  }>({
+  const { workspace } = useWorkspace();
+
+  const filters = useForm<DoraMetricFilters>({
     initialValues: {
       from: searchParams.get("from"),
       to: searchParams.get("to"),
       teamIds: searchParams.getAll<string[]>("team") || [],
       applicationIds: searchParams.getAll<string[]>("application") || [],
       environmentIds: searchParams.getAll<string[]>("environment") || [],
+      period: (searchParams.get("period") as Period) || Period.WEEKLY,
     },
   });
 
+  const { metrics, isLoading } = useDoraMetrics({
+    workspaceId: workspace.id,
+    filters: filters.values,
+  });
+
   if (pathname === "/metrics-and-insights") {
-    return <Navigate to="/metrics-and-insights/frequency" />;
+    return <Navigate to="/metrics-and-insights/deployment-frequency" />;
   }
 
   return (
@@ -106,41 +117,78 @@ export const MetricsAndInsightsPage = () => {
           />
         </Group>
 
-        <Divider my="md" label="DORA Metrics" labelPosition="left" />
+        <Divider my="md" label="DORA Overview" labelPosition="left" />
 
-        <Group>
-          <CardDoraMetric
-            name="Frequency"
-            amount="5"
-            change={10}
-            icon={IconDeployment}
-            href="/metrics-and-insights/frequency"
-          />
-          <CardDoraMetric
-            name="Lead time"
-            amount="10h 51m"
-            change={-90}
-            icon={IconClock}
-            href="/metrics-and-insights/lead-time"
-          />
-          <CardDoraMetric
-            name="Failure rate"
-            amount="9.1%"
-            change={-9}
-            icon={IconFlame}
-            href="/metrics-and-insights/failure-rate"
-          />
-          <CardDoraMetric
-            name="MTTR"
-            amount="9m"
-            change={-41}
-            icon={IconFireExtinguisher}
-            href="/metrics-and-insights/mttr"
-          />
-        </Group>
+        {!isLoading && (
+          <Group>
+            <CardDoraMetric
+              name="Deployment Frequency"
+              amount={metrics.deploymentFrequency?.amount?.toString() || "0"}
+              amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
+              change={metrics.deploymentFrequency?.change || 0}
+              icon={IconDeployment}
+              href="/metrics-and-insights/deployment-frequency"
+            />
+            <CardDoraMetric
+              name="Lead time"
+              amount={metrics.leadTime?.amount?.toString() || "0"}
+              change={metrics.leadTime?.change || 0}
+              icon={IconClock}
+              href="/metrics-and-insights/lead-time"
+            />
+            <CardDoraMetric
+              name="Failure rate"
+              amount={metrics.changeFailureRate?.amount?.toString() || "0"}
+              change={metrics.changeFailureRate?.change || 0}
+              icon={IconFlame}
+              href="/metrics-and-insights/failure-rate"
+            />
+            <CardDoraMetric
+              name="MTTR"
+              amount={
+                metrics.meanTimeToRecover?.amount
+                  ? humanizeDuration(metrics.meanTimeToRecover?.amount)
+                  : "0"
+              }
+              change={metrics.meanTimeToRecover?.change || 0}
+              icon={IconFireExtinguisher}
+              href="/metrics-and-insights/mttr"
+            />
+          </Group>
+        )}
+
+        {isLoading && (
+          <Group wrap="nowrap">
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+          </Group>
+        )}
+
+        <Divider my="md" label="Trends" labelPosition="left" />
 
         <Box mt="md">
-          <Outlet />
+          <FilterSelect
+            label="Period"
+            icon={IconRefresh}
+            items={[
+              Period.DAILY,
+              Period.WEEKLY,
+              Period.MONTHLY,
+              Period.QUARTERLY,
+              Period.YEARLY,
+            ]}
+            value={filters.values.period}
+            onChange={(value) => {
+              filters.setFieldValue("period", value as Period);
+              searchParams.set("period", value);
+            }}
+          />
+        </Box>
+
+        <Box mt="md">
+          <Outlet context={filters.values} />
         </Box>
       </Box>
     </PageContainer>
