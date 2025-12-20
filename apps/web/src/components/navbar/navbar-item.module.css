@@ -3,7 +3,6 @@
 }
 
 .button {
-  padding: 13px !important;
   border-radius: var(--mantine-radius-md);
   display: flex;
   align-items: center;
@@ -15,27 +14,22 @@
 }
 
 .label {
-  color: var(--mantine-color-dark-1);
-  padding-left: 8px;
+  color: var(--mantine-color-dark-1) !important;
 }
 
-.button:hover {
-  background-color: var(--mantine-color-gray-light-hover) !important;
+.button:not(.active):hover .label {
+  color: var(--mantine-color-green-3) !important;
 }
 
-.active {
-  background-color: var(--mantine-color-green-light-hover) !important;
+.button:not(.active):hover .icon {
+  color: var(--mantine-color-green-3) !important;
 }
 
 .active .label {
-  color: var(--mantine-color-green-2);
+  color: var(--mantine-color-green-3) !important;
 }
 
 .active svg,
 .active:hover {
-  color: var(--mantine-color-green-2);
-}
-
-.active:hover {
-  background-color: var(--mantine-color-green-light-hover) !important;
+  color: var(--mantine-color-green-3);
 }

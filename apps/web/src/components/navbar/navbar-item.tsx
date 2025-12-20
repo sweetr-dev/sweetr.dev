@@ -1,4 +1,4 @@
-import { Tooltip, UnstyledButton } from "@mantine/core";
+import { UnstyledButton, Text, Stack } from "@mantine/core";
 import type { Icon } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import classes from "./navbar-item.module.css";
@@ -19,18 +19,19 @@ export const NavbarItem = ({
   onClick,
 }: NavbarItemProps) => {
   const button = (
-    <Tooltip
-      label={label}
-      position="right"
-      transitionProps={{ duration: 0 }}
+    <UnstyledButton
+      py="xs"
+      className={`${classes.button} ${active ? classes.active : ""}`}
+      w="80px"
       onClick={onClick}
     >
-      <UnstyledButton
-        className={`${classes.button} ${active ? classes.active : ""}`}
-      >
-        <Icon stroke={1.5} />
-      </UnstyledButton>
-    </Tooltip>
+      <Stack gap={5} align="center">
+        <Icon stroke={1.5} className={classes.icon} />
+        <Text fz="sm" className={classes.label}>
+          {label}
+        </Text>
+      </Stack>
+    </UnstyledButton>
   );
 
   if (href) {

@@ -15,14 +15,14 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
 })[] = [
   { icon: IconHome2, label: "Home", href: "/" },
   {
-    icon: IconChartPie,
-    label: "Metrics & Insights",
-    href: "/metrics-and-insights",
-  },
-  {
     icon: IconUser,
     label: "Humans",
     href: "/humans",
+  },
+  {
+    icon: IconChartPie,
+    label: "Metrics",
+    href: "/metrics-and-insights",
   },
   {
     icon: IconStack3,
@@ -31,7 +31,7 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
   },
   {
     icon: IconBolt,
-    label: "Automations",
+    label: "Automate",
     href: "/automations",
   },
 ];

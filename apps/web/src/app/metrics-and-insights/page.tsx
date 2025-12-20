@@ -81,7 +81,7 @@ export const MetricsAndInsightsPage = () => {
             ]}
           />
           <FilterMultiSelect
-            label="Owner"
+            label="Team"
             icon={IconTeam}
             asyncController={useTeamAsyncOptions}
             withSearch
