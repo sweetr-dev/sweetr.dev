@@ -40,7 +40,7 @@ export default /* GraphQL */ `
     before: Int!
 
     "The change in lead time"
-    change: Int!
+    change: Float!
 
     columns: [DateTime!]!
     data: [BigInt!]!
@@ -54,7 +54,7 @@ export default /* GraphQL */ `
     before: Float!
 
     "The change in change failure rate"
-    change: Int!
+    change: Float!
 
     columns: [DateTime!]!
     data: [BigInt!]!
@@ -71,7 +71,7 @@ export default /* GraphQL */ `
     before: Int!
 
     "The change in the number of deployments"
-    change: Int!
+    change: Float!
 
     columns: [DateTime!]!
     data: [BigInt!]!
@@ -85,7 +85,7 @@ export default /* GraphQL */ `
     before: Int!
 
     "The change in mean time to recover"
-    change: Int!
+    change: Float!
 
     columns: [DateTime!]!
     data: [BigInt!]!

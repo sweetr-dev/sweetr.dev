@@ -162,7 +162,7 @@ export type ChangeFailureRateMetric = {
   /** The change failure rate before the current period */
   before: Scalars['Float']['output'];
   /** The change in change failure rate */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -276,7 +276,7 @@ export type DeploymentFrequencyMetric = {
   /** The number of deployments before the current period */
   before: Scalars['Int']['output'];
   /** The change in the number of deployments */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -466,7 +466,7 @@ export type LeadTimeMetric = {
   /** The lead time before the current period */
   before: Scalars['Int']['output'];
   /** The change in lead time */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -493,7 +493,7 @@ export type MeanTimeToRecoverMetric = {
   /** The mean time to recover in milliseconds before the current period */
   before: Scalars['Int']['output'];
   /** The change in mean time to recover */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };

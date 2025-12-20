@@ -165,7 +165,7 @@ export type ChangeFailureRateMetric = {
   /** The change failure rate before the current period */
   before: Scalars['Float']['output'];
   /** The change in change failure rate */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -279,7 +279,7 @@ export type DeploymentFrequencyMetric = {
   /** The number of deployments before the current period */
   before: Scalars['Int']['output'];
   /** The change in the number of deployments */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -469,7 +469,7 @@ export type LeadTimeMetric = {
   /** The lead time before the current period */
   before: Scalars['Int']['output'];
   /** The change in lead time */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -496,7 +496,7 @@ export type MeanTimeToRecoverMetric = {
   /** The mean time to recover in milliseconds before the current period */
   before: Scalars['Int']['output'];
   /** The change in mean time to recover */
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   columns: Array<Scalars['DateTime']['output']>;
   data: Array<Scalars['BigInt']['output']>;
 };
@@ -1626,7 +1626,7 @@ export type BillingResolvers<ContextType = GraphQLContext, ParentType extends Re
 export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChangeFailureRateMetric'] = ResolversParentTypes['ChangeFailureRateMetric']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   before?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1693,7 +1693,7 @@ export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, Par
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   avg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   before?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1773,7 +1773,7 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export type LeadTimeMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeadTimeMetric'] = ResolversParentTypes['LeadTimeMetric']> = {
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   before?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1788,7 +1788,7 @@ export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, Paren
 export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MeanTimeToRecoverMetric'] = ResolversParentTypes['MeanTimeToRecoverMetric']> = {
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   before?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

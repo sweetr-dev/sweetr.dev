@@ -14,7 +14,7 @@ import {
 export const pullRequestMetricsQuery = createFieldResolver("Metrics", {
   codeReviewDistribution: async (_, { input }, context) => {
     logger.info("query.metrics.codeReviewDistribution", {
-      chartFilter: context.chartFilter,
+      input,
       workspaceId: context.workspaceId,
     });
 
