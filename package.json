@@ -17,7 +17,9 @@
     "ssl:generate": "node ./certs/devcert.js",
     "heroku-postbuild": "turbo run build --filter api",
     "start": "cd apps/api && npm run start",
-    "test": "vitest run",
+    "test": "turbo run test:unit test:integration",
+    "test:unit": "turbo run test:unit",
+    "test:integration": "turbo run test:integration",
     "_ngrok": "ngrok http https://api.sweetr.local:8000 --domain $NGROK_DOMAIN",
     "ngrok": "dotenv -e ./apps/api/.env -- npm run _ngrok"
   },
@@ -28,8 +30,7 @@
     "devcert": "^1.2.2",
     "dotenv-cli": "^7.4.2",
     "prettier": "latest",
-    "turbo": "latest",
-    "vitest": "^3.1.4"
+    "turbo": "latest"
   },
   "engines": {
     "node": ">=20"

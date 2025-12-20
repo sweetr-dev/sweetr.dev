@@ -11,7 +11,7 @@ import {
   CodeReviewActivityEvent,
   PullRequestActivityEvent,
   isCodeReviewActivityEvent,
-} from "../services/activity-events.types";
+} from "./activity-events.types";
 
 type CreateCodeReviewEventArgs = {
   eventAt: Date;

@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Test (Unit)
 
 on:
   pull_request:
@@ -27,5 +27,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run Vitest tests
-        run: npm run test
+      - name: Run Unit Tests
+        run: npm run test:unit
