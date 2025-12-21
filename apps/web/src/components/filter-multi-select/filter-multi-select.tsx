@@ -40,7 +40,7 @@ export const FilterMultiSelect = ({
   value,
   withSearch,
   width = 300,
-  capitalize = true,
+  capitalize = false,
 }: FilterMultiSelectProps) => {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),

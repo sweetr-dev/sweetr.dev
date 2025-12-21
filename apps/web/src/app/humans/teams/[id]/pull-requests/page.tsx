@@ -134,6 +134,7 @@ export const TeamPullRequestsPage = () => {
             searchParams.set("state", states);
           }}
           value={filters.values.states}
+          capitalize
         />
         <FilterMultiSelect
           width="target"
@@ -148,6 +149,7 @@ export const TeamPullRequestsPage = () => {
             searchParams.set("size", sizes);
           }}
           value={filters.values.sizes}
+          capitalize
         />
       </Group>
 

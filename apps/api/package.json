@@ -7,7 +7,7 @@
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch --clear-screen=false src/index.ts | pino-pretty --I msg,payload",
-    "start": "node ./build/index.js",
+    "start": "node ./build/src/index.js",
     "prebuild": "npm run rimraf build && npm run prisma:generate",
     "rimraf": "rimraf",
     "lint": "eslint \"src/**/*.ts\" --fix",
@@ -18,7 +18,9 @@
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
     "prisma:migrate:new": "prisma migrate dev --create-only --name",
-    "prisma:migrate:production": "prisma migrate deploy"
+    "prisma:migrate:production": "prisma migrate deploy",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "cross-env NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5433/sweetr_test vitest run --project integration"
   },
   "prisma": {
     "seed": "tsx prisma/seed/run-seeder.ts"
@@ -76,10 +78,12 @@
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "cross-env": "^10.1.0",
     "pino-pretty": "^10.2.3",
     "prisma": "^5.5.2",
     "tsx": "^4.15.9",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^3.2.4"
   },
   "packageManager": "npm@8.5.5"
 }

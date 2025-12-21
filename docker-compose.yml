@@ -44,6 +44,20 @@ services:
       - ./apps/api/init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
     networks:
       - app_network
+  postgres-test:
+    image: postgres:16
+    container_name: sweetr-test-postgres
+    env_file:
+      - ./apps/api/.env
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sweetr_test
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "5433:5432"
   dragonfly:
     image: "docker.dragonflydb.io/dragonflydb/dragonfly"
     ulimits:
@@ -56,6 +70,7 @@ services:
       - dragonflydata:/data
     networks:
       - app_network
+
 volumes:
   docker-sweetr-db:
   dragonflydata:

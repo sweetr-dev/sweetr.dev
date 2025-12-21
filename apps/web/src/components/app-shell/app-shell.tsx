@@ -25,7 +25,7 @@ export const AppShell = ({ children }: Props) => {
       }}
       layout={isSmallScreen ? "default" : "alt"}
       navbar={{
-        width: hasSubnav ? 330 : 80,
+        width: hasSubnav ? 330 : 91,
         breakpoint: "sm",
         collapsed: { desktop: false, mobile: !isMobileNavOpen },
       }}

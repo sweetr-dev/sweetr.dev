@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "commonjs",
     "lib": ["es2017", "ES2022"],
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "build",
     "jsx": "react-jsx",
     "skipLibCheck": true,

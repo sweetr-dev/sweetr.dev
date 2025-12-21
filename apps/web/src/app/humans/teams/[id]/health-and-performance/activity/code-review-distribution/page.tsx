@@ -5,17 +5,20 @@ import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
 import { IconCalendarFilled } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
-import { parseNullableISO } from "../../../../../../../providers/date.provider";
+import {
+  parseNullableISO,
+  thirtyDaysAgo,
+} from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useCodeReviewDistributionQuery } from "../../../../../../../api/chart.api";
+import { useCodeReviewDistributionQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
 import { ChartCodeReviewDistribution } from "../../components/chart-code-review-distribution";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
 import { AvatarUser } from "../../../../../../../components/avatar-user";
 
 export const TeamCodeReviewDistributionPage = () => {
@@ -32,16 +35,14 @@ export const TeamCodeReviewDistributionPage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
 
   const { data, isLoading } = useCodeReviewDistributionQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -52,11 +53,11 @@ export const TeamCodeReviewDistributionPage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.codeReviewDistribution?.entities.length &&
+    !data?.workspace.metrics?.codeReviewDistribution?.entities.length &&
     !isLoading;
 
   const reviewers =
-    data?.workspace.charts?.codeReviewDistribution?.entities.filter(
+    data?.workspace.metrics?.codeReviewDistribution?.entities.filter(
       (entity) => entity.reviewCount !== null,
     );
 
@@ -99,7 +100,7 @@ export const TeamCodeReviewDistributionPage = () => {
               display="flex"
               content={
                 <ChartCodeReviewDistribution
-                  chartData={data?.workspace.charts?.codeReviewDistribution}
+                  chartData={data?.workspace.metrics?.codeReviewDistribution}
                   period={filters.values.period}
                 />
               }

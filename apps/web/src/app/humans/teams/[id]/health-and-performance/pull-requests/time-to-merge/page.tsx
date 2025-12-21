@@ -6,10 +6,13 @@ import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
-import { parseNullableISO } from "../../../../../../../providers/date.provider";
+import {
+  parseNullableISO,
+  thirtyDaysAgo,
+} from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToMergeQuery } from "../../../../../../../api/chart.api";
+import { useChartTimeToMergeQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
@@ -17,7 +20,7 @@ import { PageEmptyState } from "../../../../../../../components/page-empty-state
 import { ResourceNotFound } from "../../../../../../../exceptions/resource-not-found.exception";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
 
 export const TeamPullRequestsTimeToMergePage = () => {
   const teamId = useTeamId();
@@ -33,9 +36,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
@@ -44,7 +45,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
 
   const { data, isLoading } = useChartTimeToMergeQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -55,7 +56,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.timeToMerge?.data.length && !isLoading;
+    !data?.workspace.metrics?.timeToMerge?.data.length && !isLoading;
 
   return (
     <>
@@ -119,7 +120,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.timeToMerge}
+                  chartData={data?.workspace.metrics?.timeToMerge}
                   period={filters.values.period}
                 />
               }

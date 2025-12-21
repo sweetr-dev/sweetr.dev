@@ -15,6 +15,14 @@
     },
     "dev": {
       "cache": false
+    },
+    "test:unit": {
+      "env": ["NODE_ENV"],
+      "outputs": []
+    },
+    "test:integration": {
+      "cache": false,
+      "env": ["NODE_ENV", "DATABASE_URL"]
     }
   }
 }

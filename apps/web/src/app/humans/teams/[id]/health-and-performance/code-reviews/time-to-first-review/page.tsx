@@ -9,14 +9,15 @@ import { FilterDate } from "../../../../../../../components/filter-date";
 import { parseNullableISO } from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToFirstReviewQuery } from "../../../../../../../api/chart.api";
+import { useChartTimeToFirstReviewQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
+import { thirtyDaysAgo } from "../../../../../../../providers/date.provider";
 
 export const TeamCodeReviewsTimeToFirstReviewPage = () => {
   const teamId = useTeamId();
@@ -32,16 +33,14 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
 
   const { data, isLoading } = useChartTimeToFirstReviewQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -52,7 +51,7 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.timeForFirstReview?.data.length && !isLoading;
+    !data?.workspace.metrics?.timeForFirstReview?.data.length && !isLoading;
 
   return (
     <>
@@ -112,7 +111,7 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.timeForFirstReview}
+                  chartData={data?.workspace.metrics?.timeForFirstReview}
                   period={filters.values.period}
                 />
               }

@@ -6,17 +6,20 @@ import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
-import { parseNullableISO } from "../../../../../../../providers/date.provider";
+import {
+  parseNullableISO,
+  thirtyDaysAgo,
+} from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartTimeToApprovalQuery } from "../../../../../../../api/chart.api";
+import { useChartTimeToApprovalQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
 
 export const TeamCodeReviewsTimeToApprovePage = () => {
   const teamId = useTeamId();
@@ -32,16 +35,14 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
 
   const { data, isLoading } = useChartTimeToApprovalQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -52,7 +53,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
   });
 
   const isEmpty =
-    !data?.workspace.charts?.timeForApproval?.data.length && !isLoading;
+    !data?.workspace.metrics?.timeForApproval?.data.length && !isLoading;
 
   return (
     <>
@@ -111,7 +112,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.timeForApproval}
+                  chartData={data?.workspace.metrics?.timeForApproval}
                   period={filters.values.period}
                 />
               }

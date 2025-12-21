@@ -22,23 +22,23 @@ export const useChartTimeToMergeQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "time-to-merge",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query ChartTimeToMerge(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                timeToMerge {
+              metrics {
+                timeToMerge(input: $input) {
                   columns
                   data
                 }
@@ -57,23 +57,23 @@ export const useChartTimeToFirstReviewQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "time-to-first-review",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query ChartTimeToFirstReview(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                timeForFirstReview {
+              metrics {
+                timeForFirstReview(input: $input) {
                   columns
                   data
                 }
@@ -92,23 +92,23 @@ export const useChartTimeToApprovalQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "time-to-approval",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query ChartTimeToApproval(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                timeForApproval {
+              metrics {
+                timeForApproval(input: $input) {
                   columns
                   data
                 }
@@ -127,23 +127,23 @@ export const useChartCycleTimeQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "cycle-time",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query ChartCycleTime(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                cycleTime {
+              metrics {
+                cycleTime(input: $input) {
                   columns
                   data
                 }
@@ -162,23 +162,23 @@ export const usePullRequestSizeDistributionQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "pull-request-size-distribution",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query PullRequestSizeDistribution(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                pullRequestSizeDistribution {
+              metrics {
+                pullRequestSizeDistribution(input: $input) {
                   columns
                   series {
                     name
@@ -201,23 +201,23 @@ export const useCodeReviewDistributionQuery = (
 ) =>
   useQuery({
     queryKey: [
-      "charts",
+      "metrics",
       "code-review-distribution",
       args.workspaceId,
-      args.chartInput.dateRange.from,
-      args.chartInput.dateRange.to,
-      args.chartInput.period,
+      args.input.dateRange.from,
+      args.input.dateRange.to,
+      args.input.period,
     ],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
           query ChartCodeReviewDistribution(
             $workspaceId: SweetID!
-            $chartInput: ChartInput!
+            $input: TeamMetricInput!
           ) {
             workspace(workspaceId: $workspaceId) {
-              charts(input: $chartInput) {
-                codeReviewDistribution {
+              metrics {
+                codeReviewDistribution(input: $input) {
                   entities {
                     id
                     name

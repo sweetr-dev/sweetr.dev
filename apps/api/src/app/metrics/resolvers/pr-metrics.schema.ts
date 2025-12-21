@@ -1,23 +1,13 @@
 export default /* GraphQL */ `
-  enum Period {
-    DAILY
-    WEEKLY
-    MONTHLY
-    QUARTERLY
-    YEARLY
-  }
-
-  extend type Workspace {
-    charts(input: ChartInput!): Charts
-  }
-
-  type Charts {
-    pullRequestSizeDistribution: NumericSeriesChartData
-    timeToMerge: NumericChartData
-    timeForFirstReview: NumericChartData
-    timeForApproval: NumericChartData
-    cycleTime: NumericChartData
-    codeReviewDistribution: CodeReviewDistributionChartData
+  extend type Metrics {
+    pullRequestSizeDistribution(input: TeamMetricInput!): NumericSeriesChartData
+    timeToMerge(input: TeamMetricInput!): NumericChartData
+    timeForFirstReview(input: TeamMetricInput!): NumericChartData
+    timeForApproval(input: TeamMetricInput!): NumericChartData
+    cycleTime(input: TeamMetricInput!): NumericChartData
+    codeReviewDistribution(
+      input: TeamMetricInput!
+    ): CodeReviewDistributionChartData
   }
 
   # ----------------------------------------------------------------------------------
@@ -64,7 +54,7 @@ export default /* GraphQL */ `
     value: Int!
   }
 
-  input ChartInput {
+  input TeamMetricInput {
     "The date range."
     dateRange: DateTimeRange!
 

@@ -3,9 +3,9 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { getPersonalMetrics } from "../../services/personal-metrics.service";
 
-export const chartsQuery = createFieldResolver("Person", {
+export const personalMetricsQuery = createFieldResolver("Person", {
   personalMetrics: async (person, _, context) => {
-    logger.info("person.personalMetrics", {
+    logger.info("query.person.personalMetrics", {
       person,
       workspaceId: context.workspaceId,
     });

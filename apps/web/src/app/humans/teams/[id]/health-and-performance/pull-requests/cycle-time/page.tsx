@@ -6,17 +6,20 @@ import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
-import { parseNullableISO } from "../../../../../../../providers/date.provider";
+import {
+  parseNullableISO,
+  thirtyDaysAgo,
+} from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { useChartCycleTimeQuery } from "../../../../../../../api/chart.api";
+import { useChartCycleTimeQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
 
 export const TeamPullRequestsCycleTimePage = () => {
   const teamId = useTeamId();
@@ -32,16 +35,14 @@ export const TeamPullRequestsCycleTimePage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
 
   const { data, isLoading } = useChartCycleTimeQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -51,7 +52,8 @@ export const TeamPullRequestsCycleTimePage = () => {
     },
   });
 
-  const isEmpty = !data?.workspace.charts?.cycleTime?.data.length && !isLoading;
+  const isEmpty =
+    !data?.workspace.metrics?.cycleTime?.data.length && !isLoading;
 
   return (
     <>
@@ -64,8 +66,8 @@ export const TeamPullRequestsCycleTimePage = () => {
       >
         <Box p="md">
           <CardInfo>
-            Track the full cycle of a Pull Request to measure your team&apos;s
-            flow.
+            Track the average time between first commit and merge of Pull
+            Requests to measure your team&apos;s flow.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>
@@ -111,7 +113,7 @@ export const TeamPullRequestsCycleTimePage = () => {
               display="flex"
               content={
                 <ChartAverageTime
-                  chartData={data?.workspace.charts?.cycleTime}
+                  chartData={data?.workspace.metrics?.cycleTime}
                   period={filters.values.period}
                 />
               }

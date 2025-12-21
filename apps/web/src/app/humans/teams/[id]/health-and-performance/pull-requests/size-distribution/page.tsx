@@ -6,10 +6,13 @@ import { useForm } from "@mantine/form";
 import { useFilterSearchParameters } from "../../../../../../../providers/filter.provider";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
 import { FilterDate } from "../../../../../../../components/filter-date";
-import { parseNullableISO } from "../../../../../../../providers/date.provider";
+import {
+  parseNullableISO,
+  thirtyDaysAgo,
+} from "../../../../../../../providers/date.provider";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { CardInfo } from "../../../../../../../components/card-info";
-import { usePullRequestSizeDistributionQuery } from "../../../../../../../api/chart.api";
+import { usePullRequestSizeDistributionQuery } from "../../../../../../../api/pull-request-metrics.api";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
@@ -17,7 +20,7 @@ import { ResourceNotFound } from "../../../../../../../exceptions/resource-not-f
 import { ChartStackedBars } from "../../components/chart-stacked-bars";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
 
 export const TeamPullRequestsSizeDistribution = () => {
   const teamId = useTeamId();
@@ -33,9 +36,7 @@ export const TeamPullRequestsSizeDistribution = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
@@ -44,7 +45,7 @@ export const TeamPullRequestsSizeDistribution = () => {
 
   const { data, isLoading } = usePullRequestSizeDistributionQuery({
     workspaceId: workspace.id,
-    chartInput: {
+    input: {
       dateRange: {
         from: filters.values.from,
         to: filters.values.to,
@@ -55,7 +56,7 @@ export const TeamPullRequestsSizeDistribution = () => {
   });
 
   const isEmpty =
-    data?.workspace.charts?.pullRequestSizeDistribution?.series.every(
+    data?.workspace.metrics?.pullRequestSizeDistribution?.series.every(
       (seriesData) => seriesData.data.length === 0,
     ) && !isLoading;
 
@@ -70,7 +71,7 @@ export const TeamPullRequestsSizeDistribution = () => {
       >
         <Box p="md">
           <CardInfo>
-            Track the size distribution of Pull Requests across the team.
+            Track the size distribution of merged Pull Requests across the team.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>
@@ -117,7 +118,7 @@ export const TeamPullRequestsSizeDistribution = () => {
               content={
                 <ChartStackedBars
                   chartData={
-                    data?.workspace.charts?.pullRequestSizeDistribution
+                    data?.workspace.metrics?.pullRequestSizeDistribution
                   }
                   period={filters.values.period}
                 />

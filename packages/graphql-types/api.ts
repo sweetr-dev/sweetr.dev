@@ -158,13 +158,18 @@ export type Billing = {
   trial?: Maybe<Trial>;
 };
 
-export type ChartInput = {
-  /** The date range. */
-  dateRange: DateTimeRange;
-  /** The period to group by. */
-  period: Period;
-  /** The team id to filter by. */
-  teamId: Scalars['SweetID']['input'];
+export type ChangeFailureRateMetric = {
+  __typename?: 'ChangeFailureRateMetric';
+  /** The change in change failure rate */
+  change: Scalars['Float']['output'];
+  /** The columns for the chart */
+  columns: Array<Scalars['DateTime']['output']>;
+  /** The change failure rate for the current period */
+  currentAmount: Scalars['Float']['output'];
+  /** The amounts over time for the chart */
+  data: Array<Scalars['BigInt']['output']>;
+  /** The change failure rate before the current period */
+  previousAmount: Scalars['Float']['output'];
 };
 
 export type ChartNumericSeries = {
@@ -172,16 +177,6 @@ export type ChartNumericSeries = {
   color?: Maybe<Scalars['HexColorCode']['output']>;
   data: Array<Scalars['BigInt']['output']>;
   name: Scalars['String']['output'];
-};
-
-export type Charts = {
-  __typename?: 'Charts';
-  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
-  cycleTime?: Maybe<NumericChartData>;
-  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
-  timeForApproval?: Maybe<NumericChartData>;
-  timeForFirstReview?: Maybe<NumericChartData>;
-  timeToMerge?: Maybe<NumericChartData>;
 };
 
 export type CodeReview = {
@@ -277,6 +272,22 @@ export type Deployment = {
   version: Scalars['String']['output'];
 };
 
+export type DeploymentFrequencyMetric = {
+  __typename?: 'DeploymentFrequencyMetric';
+  /** The average number of deployments per day */
+  avg: Scalars['Float']['output'];
+  /** The change in the number of deployments */
+  change: Scalars['Float']['output'];
+  /** The columns for the chart */
+  columns: Array<Scalars['DateTime']['output']>;
+  /** The amount of deployments for the current period */
+  currentAmount: Scalars['Int']['output'];
+  /** The amounts over time for the chart */
+  data: Array<Scalars['BigInt']['output']>;
+  /** The number of deployments before the current period */
+  previousAmount: Scalars['Int']['output'];
+};
+
 export type DeploymentSettings = {
   __typename?: 'DeploymentSettings';
   /** The subdirectory of the application. Useful for monorepos. */
@@ -341,6 +352,34 @@ export enum DigestType {
   TEAM_METRICS = 'TEAM_METRICS',
   TEAM_WIP = 'TEAM_WIP'
 }
+
+export type DoraMetrics = {
+  __typename?: 'DoraMetrics';
+  changeFailureRate: ChangeFailureRateMetric;
+  deploymentFrequency: DeploymentFrequencyMetric;
+  leadTime: LeadTimeMetric;
+  meanTimeToRecover: MeanTimeToRecoverMetric;
+};
+
+
+export type DoraMetricsChangeFailureRateArgs = {
+  input: WorkspaceMetricInput;
+};
+
+
+export type DoraMetricsDeploymentFrequencyArgs = {
+  input: WorkspaceMetricInput;
+};
+
+
+export type DoraMetricsLeadTimeArgs = {
+  input: WorkspaceMetricInput;
+};
+
+
+export type DoraMetricsMeanTimeToRecoverArgs = {
+  input: WorkspaceMetricInput;
+};
 
 export type Environment = {
   __typename?: 'Environment';
@@ -427,6 +466,20 @@ export enum IntegrationApp {
   SLACK = 'SLACK'
 }
 
+export type LeadTimeMetric = {
+  __typename?: 'LeadTimeMetric';
+  /** The change in lead time */
+  change: Scalars['Float']['output'];
+  /** The columns for the chart */
+  columns: Array<Scalars['DateTime']['output']>;
+  /** The lead time for the current period */
+  currentAmount: Scalars['Int']['output'];
+  /** The amounts over time for the chart */
+  data: Array<Scalars['BigInt']['output']>;
+  /** The lead time before the current period */
+  previousAmount: Scalars['Int']['output'];
+};
+
 export type LoginToStripeInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
@@ -440,6 +493,61 @@ export type LoginWithGithubResponse = {
   __typename?: 'LoginWithGithubResponse';
   redirectTo?: Maybe<Scalars['String']['output']>;
   token: Token;
+};
+
+export type MeanTimeToRecoverMetric = {
+  __typename?: 'MeanTimeToRecoverMetric';
+  /** The change in mean time to recover */
+  change: Scalars['Float']['output'];
+  /** The columns for the chart */
+  columns: Array<Scalars['DateTime']['output']>;
+  /** The mean time to recover in milliseconds for the current period */
+  currentAmount: Scalars['Int']['output'];
+  /** The amounts over time for the chart */
+  data: Array<Scalars['BigInt']['output']>;
+  /** The mean time to recover in milliseconds before the current period */
+  previousAmount: Scalars['Int']['output'];
+};
+
+export type Metrics = {
+  __typename?: 'Metrics';
+  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
+  cycleTime?: Maybe<NumericChartData>;
+  dora: DoraMetrics;
+  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
+  timeForApproval?: Maybe<NumericChartData>;
+  timeForFirstReview?: Maybe<NumericChartData>;
+  timeToMerge?: Maybe<NumericChartData>;
+};
+
+
+export type MetricsCodeReviewDistributionArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsCycleTimeArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsPullRequestSizeDistributionArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeForApprovalArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeForFirstReviewArgs = {
+  input: TeamMetricInput;
+};
+
+
+export type MetricsTimeToMergeArgs = {
+  input: TeamMetricInput;
 };
 
 export type Mutation = {
@@ -848,6 +956,15 @@ export enum TeamMemberRole {
   QA = 'QA'
 }
 
+export type TeamMetricInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The team id to filter by. */
+  teamId: Scalars['SweetID']['input'];
+};
+
 export type TeamWorkLogInput = {
   /** The date range. */
   dateRange: DateTimeRange;
@@ -986,7 +1103,6 @@ export type Workspace = {
   automations: Array<Automation>;
   avatar?: Maybe<Scalars['String']['output']>;
   billing?: Maybe<Billing>;
-  charts?: Maybe<Charts>;
   deployment?: Maybe<Deployment>;
   deployments: Array<Deployment>;
   environments: Array<Environment>;
@@ -1002,6 +1118,7 @@ export type Workspace = {
   /** Whether the workspace should have access to the dashboard */
   isActiveCustomer: Scalars['Boolean']['output'];
   me?: Maybe<Person>;
+  metrics: Metrics;
   name: Scalars['String']['output'];
   people: Array<Person>;
   person?: Maybe<Person>;
@@ -1025,11 +1142,6 @@ export type WorkspaceApplicationsArgs = {
 
 export type WorkspaceAutomationArgs = {
   input: AutomationQueryInput;
-};
-
-
-export type WorkspaceChartsArgs = {
-  input: ChartInput;
 };
 
 
@@ -1085,6 +1197,21 @@ export type WorkspaceTeamArgs = {
 
 export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
+};
+
+export type WorkspaceMetricInput = {
+  /** The application ids to filter by. */
+  applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The environment ids to filter by. */
+  environmentIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The period to group by. */
+  period: Period;
+  /** The repository ids to filter by. */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The team ids to filter by. */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
 };
 
 export type WorkspaceSettings = {
@@ -1217,9 +1344,8 @@ export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
   Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
-  ChartInput: ResolverTypeWrapper<DeepPartial<ChartInput>>;
+  ChangeFailureRateMetric: ResolverTypeWrapper<DeepPartial<ChangeFailureRateMetric>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
-  Charts: ResolverTypeWrapper<DeepPartial<Charts>>;
   CodeReview: ResolverTypeWrapper<DeepPartial<CodeReview>>;
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
@@ -1230,6 +1356,7 @@ export type ResolversTypes = {
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
   Deployment: ResolverTypeWrapper<DeepPartial<Deployment>>;
+  DeploymentFrequencyMetric: ResolverTypeWrapper<DeepPartial<DeploymentFrequencyMetric>>;
   DeploymentSettings: ResolverTypeWrapper<DeepPartial<DeploymentSettings>>;
   DeploymentSettingsInput: ResolverTypeWrapper<DeepPartial<DeploymentSettingsInput>>;
   DeploymentSettingsTrigger: ResolverTypeWrapper<DeepPartial<DeploymentSettingsTrigger>>;
@@ -1238,6 +1365,7 @@ export type ResolversTypes = {
   DigestFrequency: ResolverTypeWrapper<DeepPartial<DigestFrequency>>;
   DigestQueryInput: ResolverTypeWrapper<DeepPartial<DigestQueryInput>>;
   DigestType: ResolverTypeWrapper<DeepPartial<DigestType>>;
+  DoraMetrics: ResolverTypeWrapper<DeepPartial<DoraMetrics>>;
   Environment: ResolverTypeWrapper<DeepPartial<Environment>>;
   EnvironmentsQueryInput: ResolverTypeWrapper<DeepPartial<EnvironmentsQueryInput>>;
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
@@ -1250,9 +1378,12 @@ export type ResolversTypes = {
   Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
   IntegrationApp: ResolverTypeWrapper<DeepPartial<IntegrationApp>>;
   JSONObject: ResolverTypeWrapper<DeepPartial<Scalars['JSONObject']['output']>>;
+  LeadTimeMetric: ResolverTypeWrapper<DeepPartial<LeadTimeMetric>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
+  MeanTimeToRecoverMetric: ResolverTypeWrapper<DeepPartial<MeanTimeToRecoverMetric>>;
+  Metrics: ResolverTypeWrapper<DeepPartial<Metrics>>;
   Mutation: ResolverTypeWrapper<{}>;
   NumericChartData: ResolverTypeWrapper<DeepPartial<NumericChartData>>;
   NumericPersonalMetric: ResolverTypeWrapper<DeepPartial<NumericPersonalMetric>>;
@@ -1285,6 +1416,7 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
+  TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
   TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
@@ -1303,6 +1435,7 @@ export type ResolversTypes = {
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
   Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
+  WorkspaceMetricInput: ResolverTypeWrapper<DeepPartial<WorkspaceMetricInput>>;
   WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
   WorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsInput>>;
   WorkspaceSettingsPullRequest: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequest>>;
@@ -1329,9 +1462,8 @@ export type ResolversParentTypes = {
   BigInt: DeepPartial<Scalars['BigInt']['output']>;
   Billing: DeepPartial<Billing>;
   Boolean: DeepPartial<Scalars['Boolean']['output']>;
-  ChartInput: DeepPartial<ChartInput>;
+  ChangeFailureRateMetric: DeepPartial<ChangeFailureRateMetric>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
-  Charts: DeepPartial<Charts>;
   CodeReview: DeepPartial<CodeReview>;
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
@@ -1340,11 +1472,13 @@ export type ResolversParentTypes = {
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
   Deployment: DeepPartial<Deployment>;
+  DeploymentFrequencyMetric: DeepPartial<DeploymentFrequencyMetric>;
   DeploymentSettings: DeepPartial<DeploymentSettings>;
   DeploymentSettingsInput: DeepPartial<DeploymentSettingsInput>;
   DeploymentsQueryInput: DeepPartial<DeploymentsQueryInput>;
   Digest: DeepPartial<Digest>;
   DigestQueryInput: DeepPartial<DigestQueryInput>;
+  DoraMetrics: DeepPartial<DoraMetrics>;
   Environment: DeepPartial<Environment>;
   EnvironmentsQueryInput: DeepPartial<EnvironmentsQueryInput>;
   Float: DeepPartial<Scalars['Float']['output']>;
@@ -1356,9 +1490,12 @@ export type ResolversParentTypes = {
   Int: DeepPartial<Scalars['Int']['output']>;
   Integration: DeepPartial<Integration>;
   JSONObject: DeepPartial<Scalars['JSONObject']['output']>;
+  LeadTimeMetric: DeepPartial<LeadTimeMetric>;
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
+  MeanTimeToRecoverMetric: DeepPartial<MeanTimeToRecoverMetric>;
+  Metrics: DeepPartial<Metrics>;
   Mutation: {};
   NumericChartData: DeepPartial<NumericChartData>;
   NumericPersonalMetric: DeepPartial<NumericPersonalMetric>;
@@ -1386,6 +1523,7 @@ export type ResolversParentTypes = {
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
+  TeamMetricInput: DeepPartial<TeamMetricInput>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
@@ -1404,6 +1542,7 @@ export type ResolversParentTypes = {
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
   Workspace: DeepPartial<Workspace>;
+  WorkspaceMetricInput: DeepPartial<WorkspaceMetricInput>;
   WorkspaceSettings: DeepPartial<WorkspaceSettings>;
   WorkspaceSettingsInput: DeepPartial<WorkspaceSettingsInput>;
   WorkspaceSettingsPullRequest: DeepPartial<WorkspaceSettingsPullRequest>;
@@ -1492,20 +1631,19 @@ export type BillingResolvers<ContextType = GraphQLContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChangeFailureRateMetric'] = ResolversParentTypes['ChangeFailureRateMetric']> = {
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ChartNumericSeriesResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChartNumericSeries'] = ResolversParentTypes['ChartNumericSeries']> = {
   color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ChartsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Charts'] = ResolversParentTypes['Charts']> = {
-  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType>;
-  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType>;
-  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
-  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1559,6 +1697,16 @@ export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentFrequencyMetric'] = ResolversParentTypes['DeploymentFrequencyMetric']> = {
+  avg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DeploymentSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentSettings'] = ResolversParentTypes['DeploymentSettings']> = {
   subdirectory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trigger?: Resolver<ResolversTypes['DeploymentSettingsTrigger'], ParentType, ContextType>;
@@ -1574,6 +1722,14 @@ export type DigestResolvers<ContextType = GraphQLContext, ParentType extends Res
   timeOfDay?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DigestType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DoraMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DoraMetrics'] = ResolversParentTypes['DoraMetrics']> = {
+  changeFailureRate?: Resolver<ResolversTypes['ChangeFailureRateMetric'], ParentType, ContextType, RequireFields<DoraMetricsChangeFailureRateArgs, 'input'>>;
+  deploymentFrequency?: Resolver<ResolversTypes['DeploymentFrequencyMetric'], ParentType, ContextType, RequireFields<DoraMetricsDeploymentFrequencyArgs, 'input'>>;
+  leadTime?: Resolver<ResolversTypes['LeadTimeMetric'], ParentType, ContextType, RequireFields<DoraMetricsLeadTimeArgs, 'input'>>;
+  meanTimeToRecover?: Resolver<ResolversTypes['MeanTimeToRecoverMetric'], ParentType, ContextType, RequireFields<DoraMetricsMeanTimeToRecoverArgs, 'input'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1622,9 +1778,38 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
   name: 'JSONObject';
 }
 
+export type LeadTimeMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeadTimeMetric'] = ResolversParentTypes['LeadTimeMetric']> = {
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MeanTimeToRecoverMetric'] = ResolversParentTypes['MeanTimeToRecoverMetric']> = {
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Metrics'] = ResolversParentTypes['Metrics']> = {
+  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<MetricsCodeReviewDistributionArgs, 'input'>>;
+  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsCycleTimeArgs, 'input'>>;
+  dora?: Resolver<ResolversTypes['DoraMetrics'], ParentType, ContextType>;
+  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<MetricsPullRequestSizeDistributionArgs, 'input'>>;
+  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
+  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
+  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeToMergeArgs, 'input'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1828,7 +2013,6 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billing?: Resolver<Maybe<ResolversTypes['Billing']>, ParentType, ContextType>;
-  charts?: Resolver<Maybe<ResolversTypes['Charts']>, ParentType, ContextType, RequireFields<WorkspaceChartsArgs, 'input'>>;
   deployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentArgs, 'deploymentId'>>;
   deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
   environments?: Resolver<Array<ResolversTypes['Environment']>, ParentType, ContextType, RequireFields<WorkspaceEnvironmentsArgs, 'input'>>;
@@ -1841,6 +2025,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;
   isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
+  metrics?: Resolver<ResolversTypes['Metrics'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   people?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType, Partial<WorkspacePeopleArgs>>;
   person?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType, RequireFields<WorkspacePersonArgs, 'handle'>>;
@@ -1881,23 +2066,28 @@ export type Resolvers<ContextType = GraphQLContext> = {
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Billing?: BillingResolvers<ContextType>;
+  ChangeFailureRateMetric?: ChangeFailureRateMetricResolvers<ContextType>;
   ChartNumericSeries?: ChartNumericSeriesResolvers<ContextType>;
-  Charts?: ChartsResolvers<ContextType>;
   CodeReview?: CodeReviewResolvers<ContextType>;
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Deployment?: DeploymentResolvers<ContextType>;
+  DeploymentFrequencyMetric?: DeploymentFrequencyMetricResolvers<ContextType>;
   DeploymentSettings?: DeploymentSettingsResolvers<ContextType>;
   Digest?: DigestResolvers<ContextType>;
+  DoraMetrics?: DoraMetricsResolvers<ContextType>;
   Environment?: EnvironmentResolvers<ContextType>;
   GraphChartLink?: GraphChartLinkResolvers<ContextType>;
   HexColorCode?: GraphQLScalarType;
   Incident?: IncidentResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   JSONObject?: GraphQLScalarType;
+  LeadTimeMetric?: LeadTimeMetricResolvers<ContextType>;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
+  MeanTimeToRecoverMetric?: MeanTimeToRecoverMetricResolvers<ContextType>;
+  Metrics?: MetricsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NumericChartData?: NumericChartDataResolvers<ContextType>;
   NumericPersonalMetric?: NumericPersonalMetricResolvers<ContextType>;

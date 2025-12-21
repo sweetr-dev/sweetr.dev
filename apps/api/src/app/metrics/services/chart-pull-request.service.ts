@@ -1,6 +1,6 @@
 import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
-import { periodToDateTrunc } from "./chart.service";
+import { periodToDateTrunc, periodToInterval } from "./chart.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { PullRequestChartFilters } from "./chart-pull-request.types";
 
@@ -18,19 +18,36 @@ export const getTimeToMergeChartData = async ({
   endDate,
   period,
 }: PullRequestChartFilters) => {
+  const trunc = periodToDateTrunc(period);
+  const interval = periodToInterval(period);
+
   const query = Prisma.sql`
-    SELECT 
-      DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
-      AVG(pt."timeToMerge") AS value
-    FROM "PullRequestTracking" pt
-    ${innerJoinClause}
-    WHERE p."mergedAt" >= ${new Date(startDate)} 
-      AND p."mergedAt" <= ${new Date(endDate)} 
-      AND p."mergedAt" IS NOT NULL
-      AND tm."teamId" = ${teamId}
-      AND wm."workspaceId" = ${workspaceId}
-    GROUP BY period
-    ORDER BY period ASC;
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    data AS (
+      SELECT 
+        DATE_TRUNC(${trunc}, p."mergedAt") AS period,
+        AVG(pt."timeToMerge") AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE p."mergedAt" >= ${new Date(startDate)} 
+        AND p."mergedAt" <= ${new Date(endDate)} 
+        AND p."mergedAt" IS NOT NULL
+        AND tm."teamId" = ${teamId}
+        AND wm."workspaceId" = ${workspaceId}
+      GROUP BY period
+    )
+    SELECT
+      periods.period,
+      COALESCE(data.value, 0) AS value
+    FROM periods
+    LEFT JOIN data ON periods.period = data.period
+    ORDER BY periods.period ASC;
   `;
 
   const results =
@@ -51,20 +68,36 @@ export const getTimeForFirstReviewChartData = async ({
   endDate,
   period,
 }: PullRequestChartFilters) => {
+  const trunc = periodToDateTrunc(period);
+  const interval = periodToInterval(period);
+
   const query = Prisma.sql`
-    SELECT DATE_TRUNC(${periodToDateTrunc(
-      period
-    )}, pt."firstReviewAt") AS period,
-    AVG(pt."timeToFirstReview") AS value
-    FROM "PullRequestTracking" pt
-    ${innerJoinClause}
-    WHERE pt."firstReviewAt" >= ${new Date(startDate)} 
-      AND pt."firstReviewAt" <= ${new Date(endDate)} 
-      AND pt."firstReviewAt" IS NOT NULL
-      AND tm."teamId" = ${teamId}
-      AND wm."workspaceId" = ${workspaceId}
-    GROUP BY period
-    ORDER BY period ASC;
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    data AS (
+      SELECT 
+        DATE_TRUNC(${trunc}, pt."firstReviewAt") AS period,
+        AVG(pt."timeToFirstReview") AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE pt."firstReviewAt" >= ${new Date(startDate)} 
+        AND pt."firstReviewAt" <= ${new Date(endDate)} 
+        AND pt."firstReviewAt" IS NOT NULL
+        AND tm."teamId" = ${teamId}
+        AND wm."workspaceId" = ${workspaceId}
+      GROUP BY period
+    )
+    SELECT
+      periods.period,
+      COALESCE(data.value, 0) AS value
+    FROM periods
+    LEFT JOIN data ON periods.period = data.period
+    ORDER BY periods.period ASC;
   `;
 
   const results =
@@ -85,19 +118,36 @@ export const getTimeForApprovalChartData = async ({
   endDate,
   period,
 }: PullRequestChartFilters) => {
+  const trunc = periodToDateTrunc(period);
+  const interval = periodToInterval(period);
+
   const query = Prisma.sql`
-    SELECT 
-      DATE_TRUNC(${periodToDateTrunc(period)}, pt."firstApprovalAt") AS period,
-      AVG(pt."timeToFirstApproval") AS value
-    FROM "PullRequestTracking" pt
-    ${innerJoinClause}
-    WHERE pt."firstApprovalAt" >= ${new Date(startDate)} 
-      AND pt."firstApprovalAt" <= ${new Date(endDate)} 
-      AND pt."firstApprovalAt" IS NOT NULL
-      AND tm."teamId" = ${teamId}
-      AND wm."workspaceId" = ${workspaceId}
-    GROUP BY period
-    ORDER BY period ASC;
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    data AS (
+      SELECT 
+        DATE_TRUNC(${trunc}, pt."firstApprovalAt") AS period,
+        AVG(pt."timeToFirstApproval") AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE pt."firstApprovalAt" >= ${new Date(startDate)} 
+        AND pt."firstApprovalAt" <= ${new Date(endDate)} 
+        AND pt."firstApprovalAt" IS NOT NULL
+        AND tm."teamId" = ${teamId}
+        AND wm."workspaceId" = ${workspaceId}
+      GROUP BY period
+    )
+    SELECT
+      periods.period,
+      COALESCE(data.value, 0) AS value
+    FROM periods
+    LEFT JOIN data ON periods.period = data.period
+    ORDER BY periods.period ASC;
   `;
 
   const results =
@@ -118,19 +168,36 @@ export const getCycleTimeChartData = async ({
   endDate,
   period,
 }: PullRequestChartFilters) => {
+  const trunc = periodToDateTrunc(period);
+  const interval = periodToInterval(period);
+
   const query = Prisma.sql`
-    SELECT 
-      DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
-      AVG(pt."cycleTime") AS value
-    FROM "PullRequestTracking" pt
-    ${innerJoinClause}
-    WHERE p."mergedAt" >= ${new Date(startDate)}
-      AND p."mergedAt" <= ${new Date(endDate)}
-      AND p."mergedAt" IS NOT NULL
-      AND tm."teamId" = ${teamId}
-      AND wm."workspaceId" = ${workspaceId}
-    GROUP BY period
-    ORDER BY period ASC;
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    data AS (
+      SELECT 
+        DATE_TRUNC(${trunc}, p."mergedAt") AS period,
+        AVG(pt."cycleTime") AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE p."mergedAt" >= ${new Date(startDate)}
+        AND p."mergedAt" <= ${new Date(endDate)}
+        AND p."mergedAt" IS NOT NULL
+        AND tm."teamId" = ${teamId}
+        AND wm."workspaceId" = ${workspaceId}
+      GROUP BY period
+    )
+    SELECT
+      periods.period,
+      COALESCE(data.value, 0) AS value
+    FROM periods
+    LEFT JOIN data ON periods.period = data.period
+    ORDER BY periods.period ASC;
   `;
 
   const results =
@@ -139,7 +206,7 @@ export const getCycleTimeChartData = async ({
     );
 
   return results.map((result) => ({
-    period: result.period?.toISOString(),
+    period: result.period.toISOString(),
     value: BigInt(Math.floor(result.value || 0)),
   }));
 };
@@ -151,19 +218,47 @@ export const getPullRequestSizeDistributionChartData = async ({
   endDate,
   period,
 }: PullRequestChartFilters) => {
+  const trunc = periodToDateTrunc(period);
+  const interval = periodToInterval(period);
+
   const query = Prisma.sql`
-    SELECT DATE_TRUNC(${periodToDateTrunc(period)}, p."mergedAt") AS period,
-    pt.size AS size,
-    COUNT(p."id") AS value
-    FROM "PullRequestTracking" pt
-    ${innerJoinClause}
-    WHERE p."mergedAt" >= ${new Date(startDate)} 
-      AND p."mergedAt" <= ${new Date(endDate)} 
-      AND p."mergedAt" IS NOT NULL
-      AND tm."teamId" = ${teamId}
-      AND wm."workspaceId" = ${workspaceId}
-    GROUP BY period, size
-    ORDER BY period ASC;
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    sizes AS (
+      SELECT unnest(ARRAY['TINY', 'SMALL', 'MEDIUM', 'LARGE', 'HUGE']::"PullRequestSize"[]) AS size
+    ),
+    period_size_combos AS (
+      SELECT periods.period, sizes.size
+      FROM periods
+      CROSS JOIN sizes
+    ),
+    data AS (
+      SELECT 
+        DATE_TRUNC(${trunc}, p."mergedAt") AS period,
+        pt.size AS size,
+        COUNT(p."id") AS value
+      FROM "PullRequestTracking" pt
+      ${innerJoinClause}
+      WHERE p."mergedAt" >= ${new Date(startDate)} 
+        AND p."mergedAt" <= ${new Date(endDate)} 
+        AND p."mergedAt" IS NOT NULL
+        AND tm."teamId" = ${teamId}
+        AND wm."workspaceId" = ${workspaceId}
+      GROUP BY period, size
+    )
+    SELECT
+      period_size_combos.period,
+      period_size_combos.size,
+      COALESCE(data.value, 0) AS value
+    FROM period_size_combos
+    LEFT JOIN data ON period_size_combos.period = data.period 
+      AND period_size_combos.size = data.size
+    ORDER BY period_size_combos.period ASC, period_size_combos.size ASC;
   `;
 
   const results =
@@ -173,7 +268,7 @@ export const getPullRequestSizeDistributionChartData = async ({
 
   const columns = [
     ...new Set(results.map((result) => result.period.toISOString())),
-  ];
+  ].sort();
 
   // We need to initialize 0 for every size for every column
   const seriesMap = new Map<string, Record<PullRequestSize, bigint>>(
@@ -205,7 +300,7 @@ export const getPullRequestSizeDistributionChartData = async ({
   const series = Array.from(seriesMap.values());
 
   return {
-    columns: [...new Set(results.map((result) => result.period.toISOString()))],
+    columns,
     series: [
       {
         name: "Tiny",

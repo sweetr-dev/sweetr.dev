@@ -1,3 +1,4 @@
+import { UTCDate } from "@date-fns/utc";
 import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
 import {
   differenceInDays,
@@ -9,6 +10,8 @@ import {
   intervalToDuration,
   isPast,
   parseISO,
+  startOfDay,
+  subDays,
 } from "date-fns";
 
 export const msToHour = 1000 * 60 * 60;
@@ -92,4 +95,8 @@ export const formatDateAgo = (date: Date, type: "relative" | "ago") => {
   }
 
   return formatRelative(date, new Date());
+};
+
+export const thirtyDaysAgo = () => {
+  return startOfDay(subDays(new UTCDate(), 30));
 };

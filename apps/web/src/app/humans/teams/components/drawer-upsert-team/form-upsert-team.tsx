@@ -86,7 +86,8 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
               <Popover.Dropdown p={0}>
                 <EmojiPicker
                   onChange={(icon) => {
-                    form.setValues({ icon });
+                    console.log("icon", icon);
+                    form.setFieldValue("icon", icon);
                   }}
                 />
               </Popover.Dropdown>

@@ -1,3 +1,4 @@
+import { UTCDate } from "@date-fns/utc";
 import {
   addMinutes,
   differenceInBusinessDays,
@@ -98,4 +99,8 @@ export const subBusinessHours = (date: Date, hours: number): Date => {
   }
 
   return addMinutes(currentDate, minutesDiff);
+};
+
+export const thirtyDaysAgo = () => {
+  return startOfDay(subDays(new UTCDate(), 30));
 };

@@ -29,8 +29,9 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
           >
             <Stack
               gap={5}
-              p="md"
-              maw={80}
+              py="md"
+              px={5}
+              w={90}
               style={{ flexGrow: 1 }}
               align="center"
             >
@@ -42,18 +43,20 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
                 style={{ marginBottom: 24 }}
               />
               {navItems.map((link) => (
-                <NavbarItem
-                  {...link}
-                  active={
-                    pathname === link.href ||
-                    (link.href != "/" && pathname.startsWith(link.href || ""))
-                  }
-                  key={link.label}
-                  onClick={() => closeMobileNav()}
-                />
+                <div key={link.label}>
+                  <NavbarItem
+                    {...link}
+                    active={
+                      pathname === link.href ||
+                      (link.href != "/" && pathname.startsWith(link.href || ""))
+                    }
+                    label={link.label}
+                    onClick={() => closeMobileNav()}
+                  />
+                </div>
               ))}
             </Stack>
-            <Stack justify="center" align="center" p="md" maw={80}>
+            <Stack justify="center" align="center" p="md" maw={90}>
               <NavbarItem
                 label="Settings"
                 icon={IconSettings}
