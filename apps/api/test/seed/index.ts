@@ -1,4 +1,5 @@
 import { PrismaClient, GitProvider, PullRequestState } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 /**
  * Seed helpers: low-level, single-row insert functions.
@@ -49,7 +50,7 @@ export async function seedGitProfile(
   const gitProfile = await ctx.prisma.gitProfile.create({
     data: {
       gitProvider: GitProvider.GITHUB,
-      gitUserId: `user-${Date.now()}-${Math.random()}`,
+      gitUserId: `user-${Date.now()}-${randomUUID()}`,
       handle: options.handle ?? "test-user",
       name: options.name ?? "Test User",
     },
@@ -71,7 +72,7 @@ export async function seedRepository(
   const repository = await ctx.prisma.repository.create({
     data: {
       gitProvider: GitProvider.GITHUB,
-      gitRepositoryId: `repo-${Date.now()}-${Math.random()}`,
+      gitRepositoryId: `repo-${Date.now()}-${randomUUID()}`,
       name: options.name ?? "test-repo",
       fullName: options.fullName ?? "test-org/test-repo",
       isPrivate: false,
@@ -106,7 +107,7 @@ export async function seedTeam(
     data: {
       name:
         options.name ??
-        `team-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        `team-${Date.now()}-${randomUUID().toString(36).substring(7)}`,
       description: options.description,
       icon: options.icon ?? "🚀",
       startColor: options.startColor ?? "#000000",
@@ -163,7 +164,7 @@ export async function seedEnvironment(
     data: {
       name:
         options.name ??
-        `env-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        `env-${Date.now()}-${randomUUID().toString(36).substring(7)}`,
       isProduction: options.isProduction ?? true,
       workspaceId: ctx.workspaceId,
     },
@@ -193,7 +194,7 @@ export async function seedPullRequest(
   const pr = await ctx.prisma.pullRequest.create({
     data: {
       gitProvider: GitProvider.GITHUB,
-      gitPullRequestId: `pr-${Date.now()}-${Math.random()}`,
+      gitPullRequestId: `pr-${Date.now()}-${randomUUID()}`,
       gitUrl: `https://github.com/test/repo/pull/${options.number ?? "1"}`,
       title: options.title ?? "Test PR",
       number: options.number ?? "1",

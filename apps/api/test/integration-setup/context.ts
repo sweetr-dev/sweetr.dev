@@ -1,5 +1,6 @@
 import { PrismaClient, GitProvider } from "@prisma/client";
 import { getTestPrismaClient } from "./prisma-client";
+import { randomUUID } from "crypto";
 
 /**
  * Test context: provides workspace creation and isolation.
@@ -44,7 +45,7 @@ export async function createTestContextWithGitProfile(
   const gitProfile = await prisma.gitProfile.create({
     data: {
       gitProvider: GitProvider.GITHUB,
-      gitUserId: `user-${Date.now()}-${Math.random()}`,
+      gitUserId: `user-${Date.now()}-${randomUUID()}`,
       handle,
       name: handle,
     },

@@ -8,8 +8,11 @@ on:
       - main
       - production
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  integration-test:
     runs-on: ubuntu-latest
 
     services:
