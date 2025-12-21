@@ -10,6 +10,7 @@ import {
   intervalToDuration,
   isPast,
   parseISO,
+  startOfDay,
   subDays,
 } from "date-fns";
 
@@ -97,5 +98,5 @@ export const formatDateAgo = (date: Date, type: "relative" | "ago") => {
 };
 
 export const thirtyDaysAgo = () => {
-  return subDays(new UTCDate(), 30);
+  return startOfDay(subDays(new UTCDate(), 30));
 };

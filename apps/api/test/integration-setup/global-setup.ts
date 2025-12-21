@@ -19,9 +19,7 @@ async function globalSetup() {
 
   // Validate DATABASE_URL format
   if (!databaseUrl.startsWith("postgresql://")) {
-    throw new Error(
-      `DATABASE_URL must be a PostgreSQL connection string, got: ${databaseUrl.substring(0, 50)}...`
-    );
+    throw new Error(`DATABASE_URL must be a PostgreSQL connection string`);
   }
 
   // Verify Postgres connectivity
@@ -31,8 +29,7 @@ async function globalSetup() {
     await prisma.$disconnect();
   } catch (error) {
     throw new Error(
-      `Failed to connect to Postgres at ${databaseUrl}. ` +
-        `Ensure Postgres is running and accessible. Error: ${error}`
+      `Failed to connect to Postgres. Ensure Postgres is running and accessible. Error: ${error}`
     );
   }
 
