@@ -102,5 +102,5 @@ export const subBusinessHours = (date: Date, hours: number): Date => {
 };
 
 export const thirtyDaysAgo = () => {
-  return subDays(new UTCDate(), 30);
+  return startOfDay(subDays(new UTCDate(), 30));
 };

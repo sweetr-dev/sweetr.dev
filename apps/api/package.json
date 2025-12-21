@@ -78,11 +78,12 @@
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
-    "vitest": "^3.2.4",
+    "cross-env": "^10.1.0",
     "pino-pretty": "^10.2.3",
     "prisma": "^5.5.2",
     "tsx": "^4.15.9",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^3.2.4"
   },
   "packageManager": "npm@8.5.5"
 }
