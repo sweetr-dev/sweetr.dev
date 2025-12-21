@@ -107,7 +107,7 @@ export async function seedTeam(
     data: {
       name:
         options.name ??
-        `team-${Date.now()}-${randomUUID().toString(36).substring(7)}`,
+        `team-${Date.now()}-${randomUUID().toString().substring(7)}`,
       description: options.description,
       icon: options.icon ?? "🚀",
       startColor: options.startColor ?? "#000000",
@@ -164,7 +164,7 @@ export async function seedEnvironment(
     data: {
       name:
         options.name ??
-        `env-${Date.now()}-${randomUUID().toString(36).substring(7)}`,
+        `env-${Date.now()}-${randomUUID().toString().substring(7)}`,
       isProduction: options.isProduction ?? true,
       workspaceId: ctx.workspaceId,
     },
