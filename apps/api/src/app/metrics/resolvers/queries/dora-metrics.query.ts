@@ -1,26 +1,19 @@
+import { thirtyDaysAgo } from "../../../../lib/date";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
-
-const mockData = {
-  columns: [
-    "2025-07-01T00:00:00Z",
-    "2025-07-08T00:00:00Z",
-    "2025-07-15T00:00:00Z",
-    "2025-07-22T00:00:00Z",
-    "2025-07-29T00:00:00Z",
-    "2025-08-05T00:00:00Z",
-    "2025-08-12T00:00:00Z",
-    "2025-08-19T00:00:00Z",
-    "2025-08-26T00:00:00Z",
-    "2025-09-02T00:00:00Z",
-    "2025-09-09T00:00:00Z",
-    "2025-09-16T00:00:00Z",
-    "2025-09-23T00:00:00Z",
-    "2025-09-30T00:00:00Z",
-  ],
-  data: [15, 12, 18, 1, 13, 9, 8, 11, 1, 12, 9, 1, 11, 9],
-};
+import {
+  getLeadTimeMetric,
+  getChangeFailureRateMetric,
+  getDeploymentFrequencyMetric,
+  getMeanTimeToRecoverMetric,
+} from "../../services/dora-metrics.service";
+import {
+  transformLeadTimeMetric,
+  transformChangeFailureRateMetric,
+  transformDeploymentFrequencyMetric,
+  transformMeanTimeToRecoverMetric,
+} from "../transformers/dora-metrics.transformer";
 
 export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
   leadTime: async (_, { input }, context) => {
@@ -33,13 +26,20 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return {
-      columns: mockData.columns,
-      data: mockData.data.map((value) => BigInt(value)),
-      amount: 0,
-      before: 0,
-      change: 0,
-    };
+    const result = await getLeadTimeMetric({
+      workspaceId: context.workspaceId,
+      dateRange: {
+        from: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
+        to: input.dateRange.to ?? new Date().toISOString(),
+      },
+      period: input.period,
+      teamIds: input.teamIds ?? undefined,
+      applicationIds: input.applicationIds ?? undefined,
+      environmentIds: input.environmentIds ?? undefined,
+      repositoryIds: input.repositoryIds ?? undefined,
+    });
+
+    return transformLeadTimeMetric(result);
   },
   changeFailureRate: async (_, { input }, context) => {
     logger.info("query.metrics.dora.changeFailureRate", {
@@ -51,13 +51,20 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return {
-      columns: mockData.columns,
-      data: mockData.data.map((value) => BigInt(value)),
-      amount: 0,
-      before: 0,
-      change: 0,
-    };
+    const result = await getChangeFailureRateMetric({
+      workspaceId: context.workspaceId,
+      dateRange: {
+        from: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
+        to: input.dateRange.to ?? new Date().toISOString(),
+      },
+      period: input.period,
+      teamIds: input.teamIds ?? undefined,
+      applicationIds: input.applicationIds ?? undefined,
+      environmentIds: input.environmentIds ?? undefined,
+      repositoryIds: input.repositoryIds ?? undefined,
+    });
+
+    return transformChangeFailureRateMetric(result);
   },
   deploymentFrequency: async (_, { input }, context) => {
     logger.info("query.metrics.dora.deploymentFrequency", {
@@ -69,14 +76,20 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return {
-      columns: mockData.columns,
-      data: mockData.data.map((value) => BigInt(value)),
-      amount: 0,
-      avg: 0,
-      before: 0,
-      change: 0,
-    };
+    const result = await getDeploymentFrequencyMetric({
+      workspaceId: context.workspaceId,
+      dateRange: {
+        from: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
+        to: input.dateRange.to ?? new Date().toISOString(),
+      },
+      period: input.period,
+      teamIds: input.teamIds ?? undefined,
+      applicationIds: input.applicationIds ?? undefined,
+      environmentIds: input.environmentIds ?? undefined,
+      repositoryIds: input.repositoryIds ?? undefined,
+    });
+
+    return transformDeploymentFrequencyMetric(result);
   },
   meanTimeToRecover: async (_, { input }, context) => {
     logger.info("query.metrics.dora.meanTimeToRecover", {
@@ -88,12 +101,19 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    return {
-      columns: mockData.columns,
-      data: mockData.data.map((value) => BigInt(value)),
-      amount: 0,
-      before: 0,
-      change: 0,
-    };
+    const result = await getMeanTimeToRecoverMetric({
+      workspaceId: context.workspaceId,
+      dateRange: {
+        from: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
+        to: input.dateRange.to ?? new Date().toISOString(),
+      },
+      period: input.period,
+      teamIds: input.teamIds ?? undefined,
+      applicationIds: input.applicationIds ?? undefined,
+      environmentIds: input.environmentIds ?? undefined,
+      repositoryIds: input.repositoryIds ?? undefined,
+    });
+
+    return transformMeanTimeToRecoverMetric(result);
   },
 });

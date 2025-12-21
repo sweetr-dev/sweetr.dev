@@ -122,7 +122,7 @@ export const MetricsAndInsightsPage = () => {
         {!isLoading && (
           <Group>
             <CardDoraMetric
-              name="Deployment Frequency"
+              name="Deployments"
               amount={metrics.deploymentFrequency?.amount?.toString() || "0"}
               amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
               change={metrics.deploymentFrequency?.change || 0}

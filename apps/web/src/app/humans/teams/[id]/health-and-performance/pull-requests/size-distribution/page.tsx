@@ -70,7 +70,7 @@ export const TeamPullRequestsSizeDistribution = () => {
       >
         <Box p="md">
           <CardInfo>
-            Track the size distribution of Pull Requests across the team.
+            Track the size distribution of merged Pull Requests across the team.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>

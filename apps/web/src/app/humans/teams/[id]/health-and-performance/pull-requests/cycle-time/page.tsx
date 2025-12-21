@@ -65,8 +65,8 @@ export const TeamPullRequestsCycleTimePage = () => {
       >
         <Box p="md">
           <CardInfo>
-            Track the full cycle of a Pull Request to measure your team&apos;s
-            flow.
+            Track the average time between first commit and merge of Pull
+            Requests to measure your team&apos;s flow.
           </CardInfo>
 
           <Group mt="md" wrap="nowrap" gap={5}>

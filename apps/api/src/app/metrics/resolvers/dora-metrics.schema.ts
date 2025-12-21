@@ -34,60 +34,72 @@ export default /* GraphQL */ `
 
   type LeadTimeMetric {
     "The lead time for the current period"
-    amount: Int!
+    currentAmount: Int!
 
     "The lead time before the current period"
-    before: Int!
+    previousAmount: Int!
 
     "The change in lead time"
     change: Float!
 
+    "The columns for the chart"
     columns: [DateTime!]!
+
+    "The amounts over time for the chart"
     data: [BigInt!]!
   }
 
   type ChangeFailureRateMetric {
     "The change failure rate for the current period"
-    amount: Float!
+    currentAmount: Float!
 
     "The change failure rate before the current period"
-    before: Float!
+    previousAmount: Float!
 
     "The change in change failure rate"
     change: Float!
 
+    "The columns for the chart"
     columns: [DateTime!]!
+
+    "The amounts over time for the chart"
     data: [BigInt!]!
   }
 
   type DeploymentFrequencyMetric {
     "The amount of deployments for the current period"
-    amount: Int!
+    currentAmount: Int!
 
     "The average number of deployments per day"
     avg: Float!
 
     "The number of deployments before the current period"
-    before: Int!
+    previousAmount: Int!
 
     "The change in the number of deployments"
     change: Float!
 
+    "The columns for the chart"
     columns: [DateTime!]!
+
+    "The amounts over time for the chart"
     data: [BigInt!]!
   }
 
   type MeanTimeToRecoverMetric {
     "The mean time to recover in milliseconds for the current period"
-    amount: Int!
+    currentAmount: Int!
 
     "The mean time to recover in milliseconds before the current period"
-    before: Int!
+    previousAmount: Int!
 
     "The change in mean time to recover"
     change: Float!
 
+    "The columns for the chart"
     columns: [DateTime!]!
+
+    "The amounts over time for the chart"
     data: [BigInt!]!
   }
 `;

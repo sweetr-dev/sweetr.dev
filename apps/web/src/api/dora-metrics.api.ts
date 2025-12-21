@@ -23,30 +23,30 @@ export const useDoraMetricsQuery = (
               metrics {
                 dora {
                   deploymentFrequency(input: $input) {
-                    amount
-                    avg
-                    before
+                    currentAmount
+                    previousAmount
                     change
                     columns
                     data
+                    avg
                   }
                   leadTime(input: $input) {
-                    amount
-                    before
+                    currentAmount
+                    previousAmount
                     change
                     columns
                     data
                   }
                   changeFailureRate(input: $input) {
-                    amount
-                    before
+                    currentAmount
+                    previousAmount
                     change
                     columns
                     data
                   }
                   meanTimeToRecover(input: $input) {
-                    amount
-                    before
+                    currentAmount
+                    previousAmount
                     change
                     columns
                     data
