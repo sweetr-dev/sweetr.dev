@@ -9,6 +9,7 @@ import {
   intervalToDuration,
   isPast,
   parseISO,
+  subDays,
 } from "date-fns";
 
 export const msToHour = 1000 * 60 * 60;
@@ -92,4 +93,8 @@ export const formatDateAgo = (date: Date, type: "relative" | "ago") => {
   }
 
   return formatRelative(date, new Date());
+};
+
+export const thirtyDaysAgo = () => {
+  return subDays(new Date(), 30);
 };

@@ -83,8 +83,15 @@ export const FilterDate = ({
   };
 
   const isShortcutSelected = (days: number) => {
+    const [from, to] = selectedDate;
+    const [start, end] = getShortcutValue(days);
+
+    if (!from || !to) {
+      return false;
+    }
+
     return (
-      JSON.stringify(selectedDate) === JSON.stringify(getShortcutValue(days))
+      format(from, "yyyy-MM-dd") === start && format(to, "yyyy-MM-dd") === end
     );
   };
 

@@ -4,12 +4,13 @@ import { BusinessRuleException } from "../../errors/exceptions/business-rule.exc
 import { logger } from "../../../lib/logger";
 import { findWorkspaceById } from "../../workspaces/services/workspace.service";
 import { getStripeSubscription } from "./stripe.service";
-import { isPast, startOfDay, subDays } from "date-fns";
+import { isPast } from "date-fns";
 import { getStripeClient } from "../../../lib/stripe";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { isAppSelfHosted } from "../../../lib/self-host";
 import { SubscriptionRequiredException } from "../../errors/exceptions/subscription-required.exception";
 import { isActiveCustomer } from "../../authorization.service";
+import { thirtyDaysAgo } from "../../../lib/date";
 
 export const findSubscription = (workspaceId: number) => {
   return getPrisma(workspaceId).subscription.findUnique({
@@ -61,7 +62,7 @@ export const syncSubscriptionQuantity = async (subscription: Subscription) => {
 };
 
 export const countContributors = (workspaceId: number) => {
-  const sinceDate = startOfDay(subDays(new Date(), 30));
+  const sinceDate = thirtyDaysAgo();
 
   return getPrisma(workspaceId).workspaceMembership.count({
     where: {

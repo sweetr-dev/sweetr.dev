@@ -22,6 +22,7 @@ import {
 import {
   humanizeDuration,
   parseNullableISO,
+  thirtyDaysAgo,
 } from "../../providers/date.provider";
 import { FilterDate } from "../../components/filter-date";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
@@ -31,6 +32,7 @@ import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { DoraMetricFilters } from "./types";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { useDoraMetrics } from "./useDoraMetrics";
+import { endOfToday } from "date-fns";
 
 export const MetricsAndInsightsPage = () => {
   const { pathname } = useLocation();
@@ -39,8 +41,8 @@ export const MetricsAndInsightsPage = () => {
 
   const filters = useForm<DoraMetricFilters>({
     initialValues: {
-      from: searchParams.get("from"),
-      to: searchParams.get("to"),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
+      to: searchParams.get("to") || endOfToday().toISOString(),
       teamIds: searchParams.getAll<string[]>("team") || [],
       applicationIds: searchParams.getAll<string[]>("application") || [],
       environmentIds: searchParams.getAll<string[]>("environment") || [],
@@ -123,7 +125,9 @@ export const MetricsAndInsightsPage = () => {
           <Group>
             <CardDoraMetric
               name="Deployments"
-              amount={metrics.deploymentFrequency?.amount?.toString() || "0"}
+              amount={
+                metrics.deploymentFrequency?.currentAmount?.toString() || "0"
+              }
               amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
               change={metrics.deploymentFrequency?.change || 0}
               icon={IconDeployment}
@@ -131,14 +135,16 @@ export const MetricsAndInsightsPage = () => {
             />
             <CardDoraMetric
               name="Lead time"
-              amount={metrics.leadTime?.amount?.toString() || "0"}
+              amount={metrics.leadTime?.currentAmount?.toString() || "0"}
               change={metrics.leadTime?.change || 0}
               icon={IconClock}
               href="/metrics-and-insights/lead-time"
             />
             <CardDoraMetric
               name="Failure rate"
-              amount={metrics.changeFailureRate?.amount?.toString() || "0"}
+              amount={
+                metrics.changeFailureRate?.currentAmount?.toString() || "0"
+              }
               change={metrics.changeFailureRate?.change || 0}
               icon={IconFlame}
               href="/metrics-and-insights/failure-rate"
@@ -146,8 +152,8 @@ export const MetricsAndInsightsPage = () => {
             <CardDoraMetric
               name="MTTR"
               amount={
-                metrics.meanTimeToRecover?.amount
-                  ? humanizeDuration(metrics.meanTimeToRecover?.amount)
+                metrics.meanTimeToRecover?.currentAmount
+                  ? humanizeDuration(metrics.meanTimeToRecover?.currentAmount)
                   : "0"
               }
               change={metrics.meanTimeToRecover?.change || 0}

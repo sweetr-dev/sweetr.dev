@@ -16,7 +16,8 @@ import { ChartAverageTime } from "../../components/chart-average-time";
 import { PageEmptyState } from "../../../../../../../components/page-empty-state";
 import { ButtonDocs } from "../../../../../../../components/button-docs";
 import { useTeamId } from "../../../use-team";
-import { startOfDay, subDays, endOfToday } from "date-fns";
+import { endOfToday } from "date-fns";
+import { thirtyDaysAgo } from "../../../../../../../providers/date.provider";
 
 export const TeamCodeReviewsTimeToFirstReviewPage = () => {
   const teamId = useTeamId();
@@ -32,9 +33,7 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
   }>({
     initialValues: {
       period: (searchParams.get("period") as Period) || Period.WEEKLY,
-      from:
-        searchParams.get("from") ||
-        startOfDay(subDays(new Date(), 30)).toISOString(),
+      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
     },
   });
