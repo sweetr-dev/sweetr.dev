@@ -31,6 +31,11 @@ export interface SeedGitProfile {
   gitProfileId: number;
 }
 
+export interface SeedTeam {
+  teamId: number;
+  workspaceId: number;
+}
+
 /**
  * Creates a GitProfile for a workspace.
  */
@@ -85,6 +90,38 @@ export async function seedRepository(
 }
 
 /**
+ * Creates a Team for a workspace.
+ */
+export async function seedTeam(
+  ctx: SeedWorkspace,
+  options: {
+    name?: string;
+    description?: string;
+    icon?: string;
+    startColor?: string;
+    endColor?: string;
+  } = {}
+): Promise<SeedTeam> {
+  const team = await ctx.prisma.team.create({
+    data: {
+      name:
+        options.name ??
+        `team-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      description: options.description,
+      icon: options.icon ?? "🚀",
+      startColor: options.startColor ?? "#000000",
+      endColor: options.endColor ?? "#000000",
+      workspaceId: ctx.workspaceId,
+    },
+  });
+
+  return {
+    teamId: team.id,
+    workspaceId: ctx.workspaceId,
+  };
+}
+
+/**
  * Creates an Application for a workspace.
  */
 export async function seedApplication(
@@ -92,12 +129,14 @@ export async function seedApplication(
   repositoryId: number,
   options: {
     name?: string;
+    teamId?: number;
   } = {}
 ): Promise<SeedApplication> {
   const application = await ctx.prisma.application.create({
     data: {
       name: options.name ?? "test-app",
       repositoryId,
+      teamId: options.teamId,
       deploymentSettings: {},
       workspaceId: ctx.workspaceId,
     },
@@ -122,7 +161,9 @@ export async function seedEnvironment(
 ): Promise<SeedEnvironment> {
   const environment = await ctx.prisma.environment.create({
     data: {
-      name: options.name ?? "production",
+      name:
+        options.name ??
+        `env-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       isProduction: options.isProduction ?? true,
       workspaceId: ctx.workspaceId,
     },
@@ -244,6 +285,3 @@ export async function seedIncident(
 
   return { incidentId: incident.id };
 }
-
-
-

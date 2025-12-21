@@ -14,8 +14,8 @@ initSentry();
 const server = env.USE_SELF_SIGNED_SSL
   ? createSslServer(
       {
-        key: readFileSync(resolve(__dirname, "../../../certs/tls.key")),
-        cert: readFileSync(resolve(__dirname, "../../../certs/tls.cert")),
+        key: readFileSync(resolve(__dirname, "../../../../certs/tls.key")),
+        cert: readFileSync(resolve(__dirname, "../../../../certs/tls.cert")),
       },
       expressApp
     )
