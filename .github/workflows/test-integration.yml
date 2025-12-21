@@ -45,9 +45,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Prisma Client
-        run: npm run prisma:generate
-        working-directory: apps/api
+      - name: Build
+        run: npm run build
 
       - name: Run Integration Tests
         run: npm run test:integration
