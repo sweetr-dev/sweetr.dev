@@ -50,7 +50,6 @@ export const Navbar = ({ closeMobileNav }: NavbarProps) => {
                       pathname === link.href ||
                       (link.href != "/" && pathname.startsWith(link.href || ""))
                     }
-                    key={link.label}
                     label={link.label}
                     onClick={() => closeMobileNav()}
                   />

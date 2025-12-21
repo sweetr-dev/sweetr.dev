@@ -40,8 +40,8 @@ async function globalSetup() {
   // This ensures the schema matches production exactly
   try {
     // Run from apps/api directory where prisma/ is located
-    const apiDir = join(__dirname, "..");
-    execSync("npx prisma migrate deploy", {
+    const apiDir = join(__dirname, "..", "..");
+    execSync("npm run prisma:migrate:production", {
       stdio: "inherit",
       env: {
         ...process.env,
@@ -58,4 +58,3 @@ async function globalSetup() {
 }
 
 export default globalSetup;
-

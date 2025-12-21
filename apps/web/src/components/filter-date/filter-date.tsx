@@ -96,7 +96,7 @@ export const FilterDate = ({
   };
 
   const getShortcutValue = (days: number): [string, string] => {
-    const startDate = startOfDay(subDays(new Date(), days));
+    const startDate = startOfDay(subDays(new UTCDate(), days));
     const endDate = endOfToday();
 
     return [format(startDate, "yyyy-MM-dd"), format(endDate, "yyyy-MM-dd")];
