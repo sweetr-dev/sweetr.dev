@@ -1,5 +1,10 @@
 import { DeploymentChangeType } from "@prisma/client";
 
+export interface HandleDeploymentPullRequestAutoLinkingArgs {
+  workspaceId: number;
+  deploymentId: number;
+}
+
 export interface GetDeploymentCommitComparisonArgs {
   installationId: number;
   owner: string;

@@ -1,4 +1,4 @@
-import { Radio, Group, Stack, Badge, Text, Input } from "@mantine/core";
+import { Radio, Group, Stack, Text, Input } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/api";
 import { IconWebhook, IconGitMerge } from "@tabler/icons-react";
@@ -67,10 +67,7 @@ export const InputDeploymentTrigger = ({
           <Radio.Card
             p="md"
             radius="md"
-            disabled
-            c="dimmed"
             value={DeploymentSettingsTrigger.MERGE}
-            style={{ cursor: "not-allowed" }}
             bd={
               form.values.deploymentSettings.trigger ===
               DeploymentSettingsTrigger.MERGE
@@ -103,7 +100,6 @@ export const InputDeploymentTrigger = ({
                     >
                       Merge
                     </Text>
-                    <Badge variant="default">Coming soon</Badge>
                   </Group>
                   <Text fz="sm">
                     Automatically create a deployment when a pull request is

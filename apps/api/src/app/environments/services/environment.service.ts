@@ -8,6 +8,8 @@ import {
 } from "./environment.types";
 import { getPrisma, take } from "../../../prisma";
 
+export const DEFAULT_PRODUCTION_ENVIRONMENT_NAME = "production";
+
 export const findEnvironmentById = async ({
   environmentId,
   workspaceId,
