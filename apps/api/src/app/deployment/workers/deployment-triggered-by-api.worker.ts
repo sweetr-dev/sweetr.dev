@@ -3,7 +3,7 @@ import { addJob, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import type { PostDeploymentInput } from "../services/deployment.validation";
 import { logger } from "../../../lib/logger";
-import { handleDeploymentTriggeredByApi } from "../services/deployment-create-from-api.service.ts";
+import { handleDeploymentTriggeredByApi } from "../services/deployment-create-from-api.service";
 
 type DeploymentCreateJobData = Omit<PostDeploymentInput, "deployedAt"> & {
   workspaceId: number;
