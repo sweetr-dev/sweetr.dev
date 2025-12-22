@@ -89,8 +89,13 @@ export const syncPullRequestWorker = createWorker(
 
       await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
 
-      if (pullRequest.state === PullRequestState.CLOSED) {
+      if (pullRequest.state === PullRequestState.MERGED) {
         await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
+        await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE, {
+          workspaceId: pullRequest.workspaceId,
+          pullRequest,
+          installationId,
+        });
       }
     }
   },

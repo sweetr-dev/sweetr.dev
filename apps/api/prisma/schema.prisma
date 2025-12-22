@@ -321,7 +321,7 @@ model Repository {
 
   pullRequests   PullRequest[]
   activityEvents ActivityEvent[]
-  Application    Application[]
+  applications   Application[]
 
   @@unique([gitProvider, gitRepositoryId])
   @@index([workspaceId])

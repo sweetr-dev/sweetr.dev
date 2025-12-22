@@ -1,10 +1,11 @@
 import { getPrisma, take } from "../../../prisma";
-import { Deployment, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   UpsertDeploymentInput,
   FindDeploymentByIdArgs,
   FindLastProductionDeploymentByApplicationIdArgs,
   PaginateDeploymentsArgs,
+  FindPreviousDeploymentArgs,
 } from "./deployment.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
@@ -59,16 +60,23 @@ export const findDeploymentWithRelations = async ({
   });
 };
 
-export const findPreviousDeployment = async (deployment: Deployment) => {
-  return getPrisma(deployment.workspaceId).deployment.findFirst({
+export const findLatestDeployment = async ({
+  workspaceId,
+  applicationId,
+  environmentId,
+  beforeDeploymentId,
+}: FindPreviousDeploymentArgs) => {
+  return getPrisma(workspaceId).deployment.findFirst({
     where: {
-      workspaceId: deployment.workspaceId,
-      applicationId: deployment.applicationId,
-      environmentId: deployment.environmentId,
+      workspaceId,
+      applicationId,
+      environmentId,
       archivedAt: null,
-      id: {
-        lt: deployment.id,
-      },
+      id: beforeDeploymentId
+        ? {
+            lt: beforeDeploymentId,
+          }
+        : undefined,
     },
     orderBy: {
       deployedAt: "desc",

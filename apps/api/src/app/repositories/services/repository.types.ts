@@ -1,6 +1,9 @@
+import { Prisma } from "@prisma/client";
+
 export interface FindRepositoryByIdArgs {
   workspaceId: number;
   repositoryId: number;
+  include?: Partial<Prisma.RepositoryInclude>;
 }
 
 export interface FindRepositoriesByWorkspaceArgs {

@@ -24,7 +24,7 @@ export const alertMergedWithoutApproval = async (
   );
 
   const isApproved = pullRequest.codeReviews.some(
-    (cr) => cr.state === CodeReviewState.APPROVED
+    (codeReview) => codeReview.state === CodeReviewState.APPROVED
   );
   const isMerged = pullRequest.state === PullRequestState.MERGED;
 

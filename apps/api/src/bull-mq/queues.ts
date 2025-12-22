@@ -46,7 +46,8 @@ export enum SweetQueue {
   DIGEST_SEND = "{digest.send}",
 
   // Deployments
-  DEPLOYMENT_CREATE = "{deployment.create}",
+  DEPLOYMENT_TRIGGERED_BY_API = "{deployment.triggered_by.api}",
+  DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE = "{deployment.triggered_by.pull_request_merge}",
   DEPLOYMENT_AUTO_LINK_PULL_REQUESTS = "{deployment.auto_link_pull_requests}",
 
   // SaaS - Internal to Sweetr team

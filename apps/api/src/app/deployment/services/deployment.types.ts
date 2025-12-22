@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { DeploymentChangeType, Prisma } from "@prisma/client";
 import { DateTimeRange } from "../../types";
 
 export interface PaginateDeploymentsArgs {
@@ -33,9 +33,17 @@ export interface UpsertDeploymentInput {
   deployedAt: Date;
   authorId?: number | null;
   description?: string | null;
+  changeType?: DeploymentChangeType | null;
 }
 
 export interface AutoLinkPullRequestsToDeploymentArgs {
   deploymentId: number;
   workspaceId: number;
+}
+
+export interface FindPreviousDeploymentArgs {
+  workspaceId: number;
+  applicationId: number;
+  environmentId: number;
+  beforeDeploymentId?: number;
 }

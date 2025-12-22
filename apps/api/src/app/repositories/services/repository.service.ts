@@ -10,12 +10,14 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 export const findRepositoryById = async ({
   workspaceId,
   repositoryId,
-}: FindRepositoryByIdArgs): Promise<Repository | null> => {
+  include = {},
+}: FindRepositoryByIdArgs) => {
   return getPrisma(workspaceId).repository.findUnique({
     where: {
       workspaceId,
       id: repositoryId,
     },
+    include,
   });
 };
 

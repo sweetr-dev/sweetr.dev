@@ -20,7 +20,7 @@ deploymentsRouter.post(
       req.body
     );
 
-    await addJob(SweetQueue.DEPLOYMENT_CREATE, {
+    await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_API, {
       workspaceId: apiKey.workspaceId,
       deployedAt: payload.deployedAt
         ? new Date(payload.deployedAt)
