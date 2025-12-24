@@ -559,6 +559,7 @@ export type Mutation = {
   loginWithGithub: LoginWithGithubResponse;
   regenerateApiKey: Scalars['String']['output'];
   removeIntegration?: Maybe<Scalars['Void']['output']>;
+  scheduleSyncBatch: SyncBatch;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
   unarchiveEnvironment: Environment;
   unarchiveTeam: Team;
@@ -604,6 +605,11 @@ export type MutationRegenerateApiKeyArgs = {
 
 export type MutationRemoveIntegrationArgs = {
   input: RemoveIntegrationInput;
+};
+
+
+export type MutationScheduleSyncBatchArgs = {
+  input: ScheduleSyncBatchInput;
 };
 
 
@@ -895,6 +901,13 @@ export type Repository = {
   name: Scalars['String']['output'];
 };
 
+export type ScheduleSyncBatchInput = {
+  /** How far back to resync data from */
+  sinceDaysAgo: Scalars['Int']['input'];
+  /** The workspace id */
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type SendTestMessageInput = {
   app: IntegrationApp;
   channel: Scalars['String']['input'];
@@ -904,6 +917,20 @@ export type SendTestMessageInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   isActive: Scalars['Boolean']['output'];
+};
+
+export type SyncBatch = {
+  __typename?: 'SyncBatch';
+  /** The date and time the sync batch was finished */
+  finishedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The id of the sync batch */
+  id: Scalars['SweetID']['output'];
+  /** A number between 0 and 100 representing the progress of the sync batch */
+  progress: Scalars['Int']['output'];
+  /** The date and time the sync batch was scheduled for */
+  scheduledAt: Scalars['DateTime']['output'];
+  /** How far back to resync data from */
+  sinceDaysAgo: Scalars['Int']['output'];
 };
 
 export type Team = {
@@ -1117,6 +1144,7 @@ export type Workspace = {
   integrations: Array<Integration>;
   /** Whether the workspace should have access to the dashboard */
   isActiveCustomer: Scalars['Boolean']['output'];
+  lastSyncBatch?: Maybe<SyncBatch>;
   me?: Maybe<Person>;
   metrics: Metrics;
   name: Scalars['String']['output'];
@@ -1409,10 +1437,12 @@ export type ResolversTypes = {
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
+  ScheduleSyncBatchInput: ResolverTypeWrapper<DeepPartial<ScheduleSyncBatchInput>>;
   SendTestMessageInput: ResolverTypeWrapper<DeepPartial<SendTestMessageInput>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
   Subscription: ResolverTypeWrapper<{}>;
   SweetID: ResolverTypeWrapper<DeepPartial<Scalars['SweetID']['output']>>;
+  SyncBatch: ResolverTypeWrapper<DeepPartial<SyncBatch>>;
   Team: ResolverTypeWrapper<DeepPartial<Team>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
@@ -1517,10 +1547,12 @@ export type ResolversParentTypes = {
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
+  ScheduleSyncBatchInput: DeepPartial<ScheduleSyncBatchInput>;
   SendTestMessageInput: DeepPartial<SendTestMessageInput>;
   String: DeepPartial<Scalars['String']['output']>;
   Subscription: {};
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
+  SyncBatch: DeepPartial<SyncBatch>;
   Team: DeepPartial<Team>;
   TeamMember: DeepPartial<TeamMember>;
   TeamMetricInput: DeepPartial<TeamMetricInput>;
@@ -1821,6 +1853,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   loginWithGithub?: Resolver<ResolversTypes['LoginWithGithubResponse'], ParentType, ContextType, RequireFields<MutationLoginWithGithubArgs, 'input'>>;
   regenerateApiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRegenerateApiKeyArgs, 'input'>>;
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
+  scheduleSyncBatch?: Resolver<ResolversTypes['SyncBatch'], ParentType, ContextType, RequireFields<MutationScheduleSyncBatchArgs, 'input'>>;
   sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
   unarchiveEnvironment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType, RequireFields<MutationUnarchiveEnvironmentArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
@@ -1955,6 +1988,15 @@ export interface SweetIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
   name: 'SweetID';
 }
 
+export type SyncBatchResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SyncBatch'] = ResolversParentTypes['SyncBatch']> = {
+  finishedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  progress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scheduledAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  sinceDaysAgo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TeamResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   alert?: Resolver<Maybe<ResolversTypes['Alert']>, ParentType, ContextType, RequireFields<TeamAlertArgs, 'input'>>;
   alerts?: Resolver<Array<ResolversTypes['Alert']>, ParentType, ContextType>;
@@ -2024,6 +2066,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   initialSyncProgress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   integrations?: Resolver<Array<ResolversTypes['Integration']>, ParentType, ContextType>;
   isActiveCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  lastSyncBatch?: Resolver<Maybe<ResolversTypes['SyncBatch']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType>;
   metrics?: Resolver<ResolversTypes['Metrics'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2105,6 +2148,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Repository?: RepositoryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SweetID?: GraphQLScalarType;
+  SyncBatch?: SyncBatchResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
   TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;

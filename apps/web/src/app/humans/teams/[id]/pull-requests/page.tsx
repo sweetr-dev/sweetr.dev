@@ -19,8 +19,8 @@ import { PageEmptyState } from "../../../../../components/page-empty-state";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../../providers/date.provider";
 import {
-  IconAspectRatio,
   IconCalendarFilled,
+  IconRuler,
   IconStatusChange,
 } from "@tabler/icons-react";
 import { FilterMultiSelect } from "../../../../../components/filter-multi-select";
@@ -139,7 +139,7 @@ export const TeamPullRequestsPage = () => {
         <FilterMultiSelect
           width="target"
           label="Size"
-          icon={IconAspectRatio}
+          icon={IconRuler}
           items={Object.values(PullRequestSize).map((size) => ({
             label: size,
             value: size,

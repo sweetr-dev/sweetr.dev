@@ -15,13 +15,14 @@ import { findWorkspaceUsers } from "../../workspaces/services/workspace.service"
 import { redisConnection } from "../../../bull-mq/redis-connection";
 import { UnknownException } from "../../errors/exceptions/unknown.exception";
 
+export const DEFAULT_SYNC_BATCH_SINCE_DAYS_AGO = 365; // TO-DO: Should be a workspace setting
+
 export const scheduleSyncBatch = async ({
   workspaceId,
   scheduledAt,
   metadata,
+  sinceDaysAgo,
 }: CreateSyncBatchArgs) => {
-  const sinceDaysAgo = 365; // TO-DO: Should be a workspace setting
-
   const syncBatch = await getPrisma(workspaceId).syncBatch.create({
     data: {
       workspaceId,
@@ -80,7 +81,7 @@ export const getSyncBatchProgress = async (syncBatchId: number) => {
     // Avoid division by zero
     if (waiting === 0) {
       return {
-        progress: 100,
+        progress: 0,
         done,
         waiting,
       };
@@ -247,4 +248,26 @@ export const findOnboardingSyncBatch = async (workspaceId: number) => {
   });
 
   return syncBatch;
+};
+
+export const findSyncableRepositories = async (workspaceId: number) => {
+  return getPrisma(workspaceId).repository.findMany({
+    where: {
+      workspaceId,
+      isFork: false,
+      isMirror: false,
+      archivedAt: null,
+    },
+  });
+};
+
+export const findLastSyncBatch = async (workspaceId: number) => {
+  return getPrisma(workspaceId).syncBatch.findFirst({
+    where: {
+      workspaceId,
+    },
+    orderBy: {
+      scheduledAt: "desc",
+    },
+  });
 };

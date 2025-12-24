@@ -4,7 +4,7 @@ import {
   IconBuildingCommunity,
   IconCash,
   IconUser,
-  IconUsers,
+  IconUserHexagon,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { useWorkspace } from "../../../../providers/workspace.provider";
@@ -28,7 +28,7 @@ export const SubnavSettings = () => {
       />
       <NavLink
         to="/settings/workspace"
-        active={pathname === "/settings/workspace"}
+        active={pathname.startsWith("/settings/workspace")}
         component={Link}
         label="Workspace"
         leftSection={<IconBuildingCommunity stroke={1.5} size={18} />}
@@ -36,7 +36,7 @@ export const SubnavSettings = () => {
       {workspace.billing && (
         <NavLink
           to="/settings/billing"
-          active={pathname === "/settings/billing"}
+          active={pathname.startsWith("/settings/billing")}
           component={Link}
           style={{ borderRadius: 4 }}
           label="Billing"
@@ -45,7 +45,7 @@ export const SubnavSettings = () => {
       )}
       <NavLink
         to="/settings/integrations"
-        active={pathname.includes("/settings/integrations")}
+        active={pathname.startsWith("/settings/integrations")}
         component={Link}
         label="Integrations"
         leftSection={<IconApps stroke={1.5} size={18} />}
@@ -53,19 +53,19 @@ export const SubnavSettings = () => {
       <NavLink
         to="#"
         component={Link}
-        label="Members"
+        label="Users"
         disabled
         rightSection={
           <Badge size="xs" variant="default">
             Soon
           </Badge>
         }
-        leftSection={<IconUsers stroke={1.5} size={18} />}
+        leftSection={<IconUserHexagon stroke={1.5} size={18} />}
       />
       <Divider label="Misc" labelPosition="left" mt="md" />
       <NavLink
         to="/settings/pull-request"
-        active={pathname === "/settings/pull-request"}
+        active={pathname.startsWith("/settings/pull-request")}
         component={Link}
         label="Pull Request"
         leftSection={<IconPullRequest stroke={1.5} size={18} />}
@@ -73,7 +73,7 @@ export const SubnavSettings = () => {
       <Divider label="You" labelPosition="left" mt="md" />
       <NavLink
         to="/settings/my-account"
-        active={pathname === "/settings/my-account"}
+        active={pathname.startsWith("/settings/my-account")}
         component={Link}
         label="My account"
         leftSection={<IconUser stroke={1.5} size={18} />}

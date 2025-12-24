@@ -10,4 +10,5 @@ export interface CreateSyncBatchArgs {
   workspaceId: number;
   scheduledAt: Date;
   metadata: Prisma.InputJsonValue;
+  sinceDaysAgo: number;
 }

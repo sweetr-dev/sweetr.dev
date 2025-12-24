@@ -7,7 +7,10 @@ import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { logger } from "../../../lib/logger";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
-import { scheduleSyncBatch } from "../../sync-batch/services/sync-batch.service";
+import {
+  DEFAULT_SYNC_BATCH_SINCE_DAYS_AGO,
+  scheduleSyncBatch,
+} from "../../sync-batch/services/sync-batch.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -37,6 +40,7 @@ export const syncGitHubRepositories = async (
     await scheduleSyncBatch({
       workspaceId: workspace.id,
       scheduledAt: new Date(),
+      sinceDaysAgo: DEFAULT_SYNC_BATCH_SINCE_DAYS_AGO,
       metadata: {
         isOnboarding,
         repositories:

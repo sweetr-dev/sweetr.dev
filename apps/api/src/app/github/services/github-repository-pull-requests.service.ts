@@ -13,7 +13,10 @@ import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
 import { isAfter, parseISO, startOfDay, subDays } from "date-fns";
 import { isAppSelfHosted } from "../../../lib/self-host";
-import { incrementSyncBatchProgress } from "../../sync-batch/services/sync-batch.service";
+import {
+  incrementSyncBatchProgress,
+  maybeFinishSyncBatch,
+} from "../../sync-batch/services/sync-batch.service";
 
 export const syncGitHubRepositoryPullRequests = async (
   repositoryName: string,
@@ -43,7 +46,9 @@ export const syncGitHubRepositoryPullRequests = async (
   );
 
   if (!gitHubPullRequests.length) {
-    // TO-DO: A sync batch of repositories with no PRs never calls maybeFinishSyncBatch.
+    // TO-DO: Possible problem when the first repository being synced has no PRs
+    await maybeFinishSyncBatch(syncBatchId);
+
     return;
   }
 
