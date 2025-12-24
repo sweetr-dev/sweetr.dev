@@ -1,5 +1,6 @@
 import {
   Accordion,
+  ActionIcon,
   Button,
   Group,
   List,
@@ -19,7 +20,7 @@ import {
   useScheduleSyncBatchMutation,
   useWorkspaceLastSyncBatchQuery,
 } from "../../../../api/sync-batch.api";
-import { IconInfoCircle } from "@tabler/icons-react";
+import { IconCheck, IconInfoCircle } from "@tabler/icons-react";
 import { formatLocaleDate } from "../../../../providers/date.provider";
 import { parseISO } from "date-fns";
 import {
@@ -43,6 +44,7 @@ export const WorkspaceResyncPage = () => {
 
   const { mutate: scheduleSyncBatch } = useScheduleSyncBatchMutation();
   const [sinceDaysAgo, setSinceDaysAgo] = useState<string>("365");
+  const [hasResynced, setHasResynced] = useState(false);
 
   const lastSyncBatch = lastSyncBatchData?.workspace?.lastSyncBatch;
 
@@ -52,6 +54,12 @@ export const WorkspaceResyncPage = () => {
   useEffect(() => {
     setIsOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (!lastSyncBatch?.finishedAt) {
+      setHasResynced(true);
+    }
+  }, [lastSyncBatch]);
 
   const handleResync = () => {
     scheduleSyncBatch(
@@ -64,8 +72,7 @@ export const WorkspaceResyncPage = () => {
       {
         onSuccess: () => {
           showSuccessNotification({ message: "Resync operation scheduled." });
-
-          navigate("/settings/workspace");
+          setHasResynced(true);
         },
         onError: (error) => {
           showErrorNotification({
@@ -75,6 +82,8 @@ export const WorkspaceResyncPage = () => {
       },
     );
   };
+
+  const canResync = !isInProgress && !hasResynced;
 
   return (
     <>
@@ -94,13 +103,9 @@ export const WorkspaceResyncPage = () => {
           </Modal.Header>
           {isLoading && <Skeleton height={100} />}
           {!isLoading && (
-            <Modal.Body pt={16}>
+            <Modal.Body py="lg">
               <Stack>
-                <Accordion
-                  chevronPosition="right"
-                  variant="contained"
-                  radius="md"
-                >
+                <Accordion chevronPosition="right" variant="contained">
                   <Accordion.Item value="1">
                     <Accordion.Control aria-label="How it works">
                       <Group wrap="nowrap">
@@ -108,7 +113,7 @@ export const WorkspaceResyncPage = () => {
                         <div>
                           <Text>How it works</Text>
                           <Text size="sm" c="dimmed" fw={400}>
-                            All data from GitHub will be re-synced.
+                            All data from GitHub will be resynced.
                           </Text>
                         </div>
                       </Group>
@@ -131,11 +136,11 @@ export const WorkspaceResyncPage = () => {
                   </Accordion.Item>
                 </Accordion>
 
-                {!isInProgress && (
+                {canResync && (
                   <Select
                     value={sinceDaysAgo}
                     onChange={(value) => setSinceDaysAgo(value ?? "365")}
-                    label="How far back to re-sync data from"
+                    label="How far back to resync data from"
                     data={[
                       { label: "Last 365 days", value: "365" },
                       { label: "Last 90 days", value: "90" },
@@ -145,11 +150,12 @@ export const WorkspaceResyncPage = () => {
                     ]}
                   />
                 )}
+
                 {isInProgress && lastSyncBatch && (
                   <Paper p="sm" withBorder>
                     <Stack gap={5}>
                       <Text fz="sm">
-                        A resync is already in progress since{" "}
+                        A resync is in progress since{" "}
                         {formatLocaleDate(parseISO(lastSyncBatch.scheduledAt), {
                           month: "2-digit",
                           day: "2-digit",
@@ -171,10 +177,17 @@ export const WorkspaceResyncPage = () => {
                         />
                       </Tooltip>
                     </Stack>
-                    <Text fz="sm" mt="xs">
-                      Please wait for it to finish before triggering another
-                      one.
-                    </Text>
+                  </Paper>
+                )}
+
+                {!isInProgress && hasResynced && (
+                  <Paper p="sm" withBorder>
+                    <Group>
+                      <ActionIcon size="lg" color="green" radius="xl">
+                        <IconCheck size={20} />
+                      </ActionIcon>
+                      <Text>Resync completed successfully.</Text>
+                    </Group>
                   </Paper>
                 )}
               </Stack>
@@ -192,7 +205,7 @@ export const WorkspaceResyncPage = () => {
             >
               Cancel
             </Button>
-            <Button onClick={handleResync} disabled={isInProgress}>
+            <Button onClick={handleResync} disabled={!canResync}>
               Resync
             </Button>
           </Group>

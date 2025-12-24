@@ -48,8 +48,10 @@ export const syncPullRequestWorker = createWorker(
     const installationId = job.data.installation.id;
     const syncBatchId = job.data.syncBatchId;
 
+    // We consider sync batch as done when all PRs have been attempted
     if (syncBatchId && job.attemptsMade === 0) {
       await incrementSyncBatchProgress(syncBatchId, "done", 1);
+      await maybeFinishSyncBatch(syncBatchId);
     }
 
     const pullRequest = await withDelayedRetryOnRateLimit(
@@ -60,10 +62,6 @@ export const syncPullRequestWorker = createWorker(
         installationId,
       }
     );
-
-    if (syncBatchId) {
-      await maybeFinishSyncBatch(syncBatchId);
-    }
 
     if (pullRequest) {
       if (job.data.syncReviews) {

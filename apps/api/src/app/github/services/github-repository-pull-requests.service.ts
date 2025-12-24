@@ -46,6 +46,7 @@ export const syncGitHubRepositoryPullRequests = async (
   );
 
   if (!gitHubPullRequests.length) {
+    // TO-DO: Possible problem when the first repository being synced has no PRs
     await maybeFinishSyncBatch(syncBatchId);
 
     return;

@@ -902,7 +902,7 @@ export type Repository = {
 };
 
 export type ScheduleSyncBatchInput = {
-  /** How far back to re-sync data from */
+  /** How far back to resync data from */
   sinceDaysAgo: Scalars['Int']['input'];
   /** The workspace id */
   workspaceId: Scalars['SweetID']['input'];
@@ -929,7 +929,7 @@ export type SyncBatch = {
   progress: Scalars['Int']['output'];
   /** The date and time the sync batch was scheduled for */
   scheduledAt: Scalars['DateTime']['output'];
-  /** How far back to re-sync data from */
+  /** How far back to resync data from */
   sinceDaysAgo: Scalars['Int']['output'];
 };
 

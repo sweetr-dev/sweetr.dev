@@ -81,7 +81,7 @@ export const getSyncBatchProgress = async (syncBatchId: number) => {
     // Avoid division by zero
     if (waiting === 0) {
       return {
-        progress: 100,
+        progress: 0,
         done,
         waiting,
       };

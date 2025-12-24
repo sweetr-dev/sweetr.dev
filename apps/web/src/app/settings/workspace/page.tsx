@@ -78,7 +78,7 @@ export const WorkspaceSettingsPage = () => {
           isLoading={isLoading}
           mt="xs"
           left={<IconDatabaseImport stroke={1} size={24} />}
-          title="Re-sync all historical data"
+          title="Resync all historical data"
           description={
             lastSyncBatch?.scheduledAt
               ? `Last triggered on ${formatLocaleDate(

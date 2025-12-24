@@ -13,7 +13,7 @@ export default /* GraphQL */ `
     "The date and time the sync batch was finished"
     finishedAt: DateTime
 
-    "How far back to re-sync data from"
+    "How far back to resync data from"
     sinceDaysAgo: Int!
 
     "A number between 0 and 100 representing the progress of the sync batch"
@@ -28,7 +28,7 @@ export default /* GraphQL */ `
     "The workspace id"
     workspaceId: SweetID!
 
-    "How far back to re-sync data from"
+    "How far back to resync data from"
     sinceDaysAgo: Int!
   }
 `;

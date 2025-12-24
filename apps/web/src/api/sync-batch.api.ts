@@ -19,7 +19,7 @@ export const useWorkspaceLastSyncBatchQuery = (
   options?: Partial<UseQueryOptions<WorkspaceLastSyncBatchQuery>>,
 ) =>
   useQuery({
-    queryKey: ["workspace", args.workspaceId, "sync-progress"],
+    queryKey: ["workspace", args.workspaceId, "last-sync-batch"],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
@@ -63,7 +63,7 @@ export const useScheduleSyncBatchMutation = (
       ),
     onSettled: (_, __, args) => {
       queryClient.invalidateQueries({
-        queryKey: ["workspace", args.input.workspaceId, "settings"],
+        queryKey: ["workspace", args.input.workspaceId, "last-sync-batch"],
       });
     },
     ...options,
