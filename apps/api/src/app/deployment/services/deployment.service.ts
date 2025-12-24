@@ -99,7 +99,7 @@ export const paginateDeployments = async (
       },
     },
     orderBy: {
-      id: "desc",
+      deployedAt: "desc",
     },
   };
 
