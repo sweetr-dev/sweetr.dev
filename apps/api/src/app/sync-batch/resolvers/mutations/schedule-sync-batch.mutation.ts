@@ -10,12 +10,17 @@ import {
   scheduleSyncBatch,
 } from "../../services/sync-batch.service";
 import { transformSyncBatch } from "../transformers/sync-batch.transformer";
+import { validateInputOrThrow } from "../../../validator.service";
+import { scheduleSyncBatchValidationSchema } from "../../services/sync-batch.validation";
 
 export const scheduleSyncBatchMutation = createMutationResolver({
   scheduleSyncBatch: async (_, { input }) => {
     logger.info("mutation.scheduleSyncBatch", { input });
 
-    const { workspaceId, sinceDaysAgo } = input;
+    const { workspaceId, sinceDaysAgo } = await validateInputOrThrow(
+      scheduleSyncBatchValidationSchema,
+      input
+    );
 
     await protectWithPaywall(workspaceId);
 
