@@ -56,7 +56,7 @@ export const WorkspaceResyncPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!lastSyncBatch?.finishedAt) {
+    if (lastSyncBatch && !lastSyncBatch.finishedAt) {
       setHasResynced(true);
     }
   }, [lastSyncBatch]);
