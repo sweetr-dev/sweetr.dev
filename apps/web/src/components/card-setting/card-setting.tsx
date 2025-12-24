@@ -10,7 +10,7 @@ import {
 import { IconChevronRight } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-interface CardOpenableSettingsProps extends Omit<PaperProps, "left" | "right"> {
+interface CardSettingProps extends Omit<PaperProps, "left" | "right"> {
   left: React.ReactNode;
   right?: React.ReactNode;
   title: string;
@@ -27,7 +27,7 @@ export const CardSetting = ({
   href,
   isLoading,
   ...props
-}: CardOpenableSettingsProps) => {
+}: CardSettingProps) => {
   const link = isLoading ? null : href;
   const rightSection = right || <IconChevronRight stroke={1.5} size={20} />;
 

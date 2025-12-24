@@ -37,7 +37,7 @@ export const WorkspaceResyncPage = () => {
       workspaceId: workspace.id,
     },
     {
-      refetchInterval: 1000,
+      refetchInterval: 3000,
     },
   );
 
@@ -53,8 +53,8 @@ export const WorkspaceResyncPage = () => {
     setIsOpen(true);
   }, []);
 
-  const handleResync = async () => {
-    await scheduleSyncBatch(
+  const handleResync = () => {
+    scheduleSyncBatch(
       {
         input: {
           workspaceId: workspace.id,

@@ -3,7 +3,7 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { getSyncBatchProgress } from "../../services/sync-batch.service";
 
-export const workspaceLastSyncBatchQuery = createFieldResolver("SyncBatch", {
+export const syncBatchProgressQuery = createFieldResolver("SyncBatch", {
   progress: async ({ id }) => {
     logger.info("query.workspace.lastSyncBatch.progress", { id });
 
