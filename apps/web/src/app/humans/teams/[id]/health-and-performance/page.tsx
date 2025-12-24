@@ -1,12 +1,12 @@
 import { SimpleGrid } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import {
-  IconAspectRatio,
   IconClock,
   IconEyeCheck,
   IconEyeDiscount,
   IconEyeStar,
   IconGitMerge,
+  IconRuler,
 } from "@tabler/icons-react";
 import { PaperTitle } from "../../../../../components/paper-title";
 import { CardChart } from "./components/card-chart/card-chart";
@@ -34,7 +34,7 @@ export const TeamHealthAndPerformancePage = () => {
       </PaperTitle>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xs">
         <CardChart
-          icon={IconAspectRatio}
+          icon={IconRuler}
           label="Size distribution"
           description="Is the team striving for small PRs?"
           href={`/humans/teams/${teamId}/health-and-performance/pull-requests/size-distribution`}

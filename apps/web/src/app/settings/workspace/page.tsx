@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Group,
@@ -7,15 +8,32 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconExternalLink, IconUser } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconDatabaseImport,
+  IconExternalLink,
+  IconUser,
+} from "@tabler/icons-react";
 import { AvatarUser } from "../../../components/avatar-user";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { PageContainer } from "../../../components/page-container";
 import { SettingsApiKey } from "./components/settings-api-key";
+import { CardSetting } from "../../../components/card-setting";
+import { Outlet } from "react-router-dom";
+import { useWorkspaceLastSyncBatchQuery } from "../../../api/sync-batch.api";
+import { formatLocaleDate } from "../../../providers/date.provider";
+import { parseISO } from "date-fns";
 
 export const WorkspaceSettingsPage = () => {
   const { workspace } = useWorkspace();
+  const { data: lastSyncBatchData, isLoading } = useWorkspaceLastSyncBatchQuery(
+    {
+      workspaceId: workspace.id,
+    },
+  );
+
+  const lastSyncBatch = lastSyncBatchData?.workspace?.lastSyncBatch;
 
   return (
     <PageContainer>
@@ -43,6 +61,38 @@ export const WorkspaceSettingsPage = () => {
             Your workspace data is automatically synced with GitHub.
           </Text>
         </Paper>
+
+        <Title order={3} mt={40}>
+          Data Ingestion
+        </Title>
+
+        <CardSetting
+          mt="xs"
+          left={<IconBrandGithub stroke={1} size={24} />}
+          title="GitHub"
+          description="All data is automatically ingested."
+          right={<Badge variant="outline">Operational</Badge>}
+        />
+
+        <CardSetting
+          isLoading={isLoading}
+          mt="xs"
+          left={<IconDatabaseImport stroke={1} size={24} />}
+          title="Re-sync all historical data"
+          description={
+            lastSyncBatch?.scheduledAt
+              ? `Last triggered on ${formatLocaleDate(
+                  parseISO(lastSyncBatch.scheduledAt),
+                  {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  },
+                )}.`
+              : "Last triggered on app install."
+          }
+          href="/settings/workspace/resync"
+        />
 
         <Title order={3} mt={40}>
           API
@@ -77,6 +127,7 @@ export const WorkspaceSettingsPage = () => {
           </Group>
         </Paper>
       </Box>
+      <Outlet />
     </PageContainer>
   );
 };

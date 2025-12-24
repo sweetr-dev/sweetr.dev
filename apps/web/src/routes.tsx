@@ -70,6 +70,7 @@ import { DoraFailureRatePage } from "./app/metrics-and-insights/failure-rate/pag
 import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/deployment-frequency/page";
 import { DoraLeadTimePage } from "./app/metrics-and-insights/lead-time/page";
 import { DoraMttrPage } from "./app/metrics-and-insights/mttr/page";
+import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
 
 export const router = createBrowserRouter([
   {
@@ -201,6 +202,12 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/workspace",
                 element: <WorkspaceSettingsPage />,
+                children: [
+                  {
+                    path: "/settings/workspace/resync",
+                    element: <WorkspaceResyncPage />,
+                  },
+                ],
               },
               {
                 path: "/settings/billing",

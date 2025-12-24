@@ -4,11 +4,11 @@ import {
   Tooltip,
   TooltipProps,
 } from "@mantine/core";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { IconInfoCircle } from "@tabler/icons-react";
 
 interface IconInfoProps extends Omit<ThemeIconProps, "children"> {
-  tooltip: string;
+  tooltip: string | ReactNode;
   position?: TooltipProps["position"];
 }
 

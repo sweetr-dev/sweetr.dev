@@ -2,7 +2,7 @@ import { SimpleGrid, Skeleton, Stack } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import { useTeamId } from "../use-team";
 import { LoadableContent } from "../../../../../components/loadable-content";
-import { CardOpenableSettings } from "../../../../../components/card-openable-settings";
+import { CardSetting } from "../../../../../components/card-setting";
 import { BadgeOnOff } from "../../../../../components/badge-on-off";
 import { useAlerts } from "./use-alerts";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
@@ -32,7 +32,7 @@ export const TeamAlertsPage = () => {
               {availableAlerts.map((alert) => {
                 const Icon = alert.icon;
                 return (
-                  <CardOpenableSettings
+                  <CardSetting
                     key={alert.type}
                     href={alert.getRoute(teamId)}
                     left={
@@ -60,7 +60,7 @@ export const TeamAlertsPage = () => {
               {futureAlerts.map((alert) => {
                 const Icon = alert.icon;
                 return (
-                  <CardOpenableSettings
+                  <CardSetting
                     key={alert.type}
                     left={
                       <Icon

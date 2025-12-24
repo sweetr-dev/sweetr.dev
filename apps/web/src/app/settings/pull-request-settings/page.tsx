@@ -1,9 +1,9 @@
 import { Box, Title, Stack } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
-import { IconAspectRatio } from "@tabler/icons-react";
-import { CardOpenableSettings } from "../../../components/card-openable-settings";
+import { CardSetting } from "../../../components/card-setting";
 import { Outlet } from "react-router-dom";
+import { IconRuler } from "@tabler/icons-react";
 
 export const PullRequestSettingsPage = () => {
   return (
@@ -16,9 +16,9 @@ export const PullRequestSettingsPage = () => {
         </Title>
 
         <Stack>
-          <CardOpenableSettings
+          <CardSetting
             left={
-              <IconAspectRatio
+              <IconRuler
                 stroke={1}
                 size={28}
                 color="var(--mantine-color-green-4)"
