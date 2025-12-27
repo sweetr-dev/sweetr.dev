@@ -37,7 +37,7 @@ export const CardApplication = ({ application }: CardApplicationProps) => {
       underline="never"
       c="dark.0"
       className="subgrid grow-on-hover"
-      data-columns="7"
+      data-columns="5"
     >
       <Paper
         pl="lg"
