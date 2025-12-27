@@ -47,6 +47,16 @@ export default /* GraphQL */ `
     environmentIds: [SweetID!]
   }
 
+  input ArchiveDeploymentInput {
+    deploymentId: SweetID!
+    workspaceId: SweetID!
+  }
+
+  input UnarchiveDeploymentInput {
+    deploymentId: SweetID!
+    workspaceId: SweetID!
+  }
+
   extend type Application {
     "The last deployment of the application"
     lastProductionDeployment: Deployment
@@ -55,5 +65,10 @@ export default /* GraphQL */ `
   extend type Workspace {
     deployment(deploymentId: SweetID!): Deployment
     deployments(input: DeploymentsQueryInput!): [Deployment!]!
+  }
+
+  type Mutation {
+    archiveDeployment(input: ArchiveDeploymentInput!): Deployment!
+    unarchiveDeployment(input: UnarchiveDeploymentInput!): Deployment!
   }
 `;

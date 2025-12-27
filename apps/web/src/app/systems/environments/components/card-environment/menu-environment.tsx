@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { Menu, ActionIcon } from "@mantine/core";
-import { IconDotsVertical, IconArchive } from "@tabler/icons-react";
+import { ActionIcon, Menu } from "@mantine/core";
 import { Environment } from "@sweetr/graphql-types/frontend/graphql";
+import { IconArchive, IconDotsVertical } from "@tabler/icons-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   useArchiveEnvironment,
   useUnarchiveEnvironment,
 } from "../../../../../api/environments.api";
-import { useWorkspace } from "../../../../../providers/workspace.provider";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import { IconInfo } from "../../../../../components/icon-info";
 import {
   IconDeployment,
   IconIncident,
 } from "../../../../../providers/icon.provider";
-import { Link } from "react-router-dom";
-import { IconInfo } from "../../../../../components/icon-info";
+import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
 
 interface MenuEnvironmentProps {
   environment: Environment;
@@ -52,6 +52,7 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
           size="sm"
           variant="transparent"
           color="var(--mantine-color-text)"
+          className="row-action-menu"
         >
           <IconDotsVertical size={24} stroke={1.5} />
         </ActionIcon>

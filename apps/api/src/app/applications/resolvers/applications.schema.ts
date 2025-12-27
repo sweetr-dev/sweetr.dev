@@ -85,6 +85,16 @@ export default /* GraphQL */ `
     deploymentSettings: DeploymentSettingsInput!
   }
 
+  input ArchiveApplicationInput {
+    applicationId: SweetID!
+    workspaceId: SweetID!
+  }
+
+  input UnarchiveApplicationInput {
+    applicationId: SweetID!
+    workspaceId: SweetID!
+  }
+
   extend type Workspace {
     application(applicationId: SweetID!): Application
     applications(input: ApplicationsQueryInput!): [Application!]!
@@ -92,5 +102,7 @@ export default /* GraphQL */ `
 
   type Mutation {
     upsertApplication(input: UpsertApplicationInput!): Application!
+    archiveApplication(input: ArchiveApplicationInput!): Application!
+    unarchiveApplication(input: UnarchiveApplicationInput!): Application!
   }
 `;

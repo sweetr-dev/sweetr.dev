@@ -10,6 +10,21 @@
   }
 }
 
+.row-action-menu {
+  min-width: 40px;
+  height: 60px;
+  transition:
+    transform 150ms ease,
+    box-shadow 100ms ease;
+
+  cursor: pointer;
+  &:hover {
+    color: var(--mantine-color-green-3);
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+}
+
 .link {
   color: var(--mantine-color-green-4);
   display: inline;
@@ -18,6 +33,10 @@
   &:hover {
     text-decoration: underline;
   }
+}
+
+.items-center {
+  align-items: center;
 }
 
 .subgrid {

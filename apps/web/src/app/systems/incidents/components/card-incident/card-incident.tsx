@@ -8,21 +8,23 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
+import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 import {
   IconCalendarFilled,
   IconFireExtinguisher,
   IconFlame,
   IconQuestionMark,
 } from "@tabler/icons-react";
+import { differenceInMilliseconds, parseISO } from "date-fns";
+import { Link } from "react-router-dom";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import {
   formatLocaleDate,
   formatMsDuration,
   humanizeDuration,
 } from "../../../../../providers/date.provider";
-import { differenceInMilliseconds, parseISO } from "date-fns";
-import { Incident } from "@sweetr/graphql-types/frontend/graphql";
-import { Link } from "react-router-dom";
+import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
+import { MenuIncident } from "./menu-incident";
 
 export const CardIncident = ({ incident }: { incident: Incident }) => {
   const durationInMs = incident.resolvedAt
@@ -31,23 +33,24 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
         parseISO(incident.detectedAt),
       )
     : 0;
+  const searchParams = useFilterSearchParameters();
 
   return (
     <Anchor
       component={Link}
-      to={`/systems/incidents/edit/${incident.id}`}
+      to={`/systems/incidents/edit/${incident.id}?${searchParams.toString()}`}
       underline="never"
       c="dark.0"
-      className="subgrid"
-      data-columns="5"
+      className="subgrid grow-on-hover"
+      data-columns="7"
     >
       <Paper
-        p="md"
+        px="md"
         pl="lg"
         radius="md"
         withBorder
-        className={`grow-on-hover subgrid`}
-        data-columns="5"
+        className={`subgrid items-center`}
+        data-columns="6"
       >
         <Group gap={5}>
           <IconCalendarFilled stroke={1.5} size={20} />
@@ -109,6 +112,7 @@ export const CardIncident = ({ incident }: { incident: Incident }) => {
             </Group>
           )}
         </Box>
+        <MenuIncident incident={incident} />
       </Paper>
     </Anchor>
   );

@@ -38,3 +38,13 @@ export interface FindApplicationByNameArgs {
   workspaceId: number;
   name: string;
 }
+
+export interface ArchiveApplicationArgs {
+  workspaceId: number;
+  applicationId: number;
+}
+
+export interface UnarchiveApplicationArgs {
+  workspaceId: number;
+  applicationId: number;
+}

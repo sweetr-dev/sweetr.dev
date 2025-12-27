@@ -235,7 +235,7 @@ export const IncidentsPage = () => {
                       <Divider
                         label={format(detectedAt, "MMMM yyyy")}
                         labelPosition="left"
-                        style={{ gridColumn: "span 5" }}
+                        style={{ gridColumn: "span 6" }}
                       />
                     )}
                     <CardIncident incident={incident} />

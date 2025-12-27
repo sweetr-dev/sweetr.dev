@@ -24,3 +24,13 @@ export interface UpsertIncidentInput {
   postmortemUrl?: string | null;
   leaderId?: number | null;
 }
+
+export interface ArchiveIncidentArgs {
+  workspaceId: number;
+  incidentId: number;
+}
+
+export interface UnarchiveIncidentArgs {
+  workspaceId: number;
+  incidentId: number;
+}

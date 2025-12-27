@@ -1,3 +1,18 @@
+import { graphql } from "@sweetr/graphql-types/frontend";
+import {
+  ApplicationOptionsQuery,
+  ApplicationOptionsQueryVariables,
+  ApplicationQuery,
+  ApplicationQueryVariables,
+  ApplicationsQuery,
+  ApplicationsQueryVariables,
+  ArchiveApplicationMutation,
+  MutationArchiveApplicationArgs,
+  MutationUnarchiveApplicationArgs,
+  MutationUpsertApplicationArgs,
+  UnarchiveApplicationMutation,
+  UpsertApplicationMutation,
+} from "@sweetr/graphql-types/frontend/graphql";
 import {
   DefaultError,
   InfiniteData,
@@ -8,19 +23,8 @@ import {
   useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { graphql } from "@sweetr/graphql-types/frontend";
-import { graphQLClient } from "./clients/graphql-client";
-import {
-  ApplicationOptionsQuery,
-  ApplicationOptionsQueryVariables,
-  ApplicationQuery,
-  ApplicationQueryVariables,
-  ApplicationsQuery,
-  ApplicationsQueryVariables,
-  MutationUpsertApplicationArgs,
-  UpsertApplicationMutation,
-} from "@sweetr/graphql-types/frontend/graphql";
 import { Optional } from "utility-types";
+import { graphQLClient } from "./clients/graphql-client";
 import { queryClient } from "./clients/query-client";
 
 export const useApplicationQuery = (
@@ -51,6 +55,7 @@ export const useApplicationQuery = (
                   trigger
                   subdirectory
                 }
+                archivedAt
               }
             }
           }
@@ -133,6 +138,7 @@ export const useApplicationsInfiniteQuery = (
                   version
                   deployedAt
                 }
+                archivedAt
               }
             }
           }
@@ -171,6 +177,64 @@ export const useUpsertApplicationMutation = (
           args.input.applicationId,
         ],
       });
+    },
+    ...options,
+  });
+
+export const useArchiveApplication = (
+  options?: UseMutationOptions<
+    ArchiveApplicationMutation,
+    unknown,
+    MutationArchiveApplicationArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation ArchiveApplication($input: ArchiveApplicationInput!) {
+            archiveApplication(input: $input) {
+              id
+              name
+              description
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    ...options,
+  });
+
+export const useUnarchiveApplication = (
+  options?: UseMutationOptions<
+    UnarchiveApplicationMutation,
+    unknown,
+    MutationUnarchiveApplicationArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation UnarchiveApplication($input: UnarchiveApplicationInput!) {
+            unarchiveApplication(input: $input) {
+              id
+              name
+              description
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
     },
     ...options,
   });

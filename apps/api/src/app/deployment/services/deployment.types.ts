@@ -47,3 +47,13 @@ export interface FindPreviousDeploymentArgs {
   environmentId: number;
   beforeDeploymentId?: number;
 }
+
+export interface ArchiveDeploymentArgs {
+  workspaceId: number;
+  deploymentId: number;
+}
+
+export interface UnarchiveDeploymentArgs {
+  workspaceId: number;
+  deploymentId: number;
+}

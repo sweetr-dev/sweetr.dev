@@ -1,12 +1,14 @@
-import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
+import { getPrisma, take } from "../../../prisma";
+import { validateInputOrThrow } from "../../validator.service";
 import {
+  ArchiveIncidentArgs,
   FindIncidentByIdArgs,
   PaginateIncidentsArgs,
+  UnarchiveIncidentArgs,
   UpsertIncidentInput,
 } from "./incident.types";
 import { getIncidentValidationSchema } from "./incident.validation";
-import { validateInputOrThrow } from "../../validator.service";
 
 export const findIncidentById = async ({
   workspaceId,
@@ -27,16 +29,14 @@ export const paginateIncidents = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
+      archivedAt: null,
       causeDeployment: {
         archivedAt: null,
-        environment: {
-          archivedAt: null,
-        },
+        environment: { archivedAt: null },
+        application: { archivedAt: null },
       },
     },
-    orderBy: {
-      detectedAt: "desc",
-    },
+    orderBy: { detectedAt: "desc" },
   };
 
   if (args.applicationIds?.length) {
@@ -78,10 +78,28 @@ export const upsertIncident = async (input: UpsertIncidentInput) => {
   );
 
   return getPrisma(workspaceId).incident.upsert({
-    where: {
-      id: incidentId || 0,
-    },
+    where: { id: incidentId || 0 },
     create: data,
     update: data,
+  });
+};
+
+export const archiveIncident = async ({
+  workspaceId,
+  incidentId,
+}: ArchiveIncidentArgs) => {
+  return getPrisma(workspaceId).incident.update({
+    where: { id: incidentId },
+    data: { archivedAt: new Date() },
+  });
+};
+
+export const unarchiveIncident = async ({
+  workspaceId,
+  incidentId,
+}: UnarchiveIncidentArgs) => {
+  return getPrisma(workspaceId).incident.update({
+    where: { id: incidentId },
+    data: { archivedAt: null },
   });
 };

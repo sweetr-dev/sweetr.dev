@@ -1,9 +1,11 @@
 import { assign } from "radash";
 import { getPrisma, take } from "../../../prisma";
 import {
+  ArchiveApplicationArgs,
   FindApplicationByIdArgs,
   FindApplicationByNameArgs,
   PaginateApplicationsArgs,
+  UnarchiveApplicationArgs,
   UpsertApplicationInput,
 } from "./application.types";
 import { Application, Prisma } from "@prisma/client";
@@ -58,6 +60,7 @@ export const paginateApplications = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
+      archivedAt: null,
     },
     orderBy: {
       createdAt: "desc",
@@ -129,5 +132,25 @@ export const upsertApplication = async (input: UpsertApplicationInput) => {
       workspaceId,
       deploymentSettings: updatedSettings as JsonObject,
     },
+  });
+};
+
+export const archiveApplication = async ({
+  workspaceId,
+  applicationId,
+}: ArchiveApplicationArgs) => {
+  return getPrisma(workspaceId).application.update({
+    where: { id: applicationId },
+    data: { archivedAt: new Date() },
+  });
+};
+
+export const unarchiveApplication = async ({
+  workspaceId,
+  applicationId,
+}: UnarchiveApplicationArgs) => {
+  return getPrisma(workspaceId).application.update({
+    where: { id: applicationId },
+    data: { archivedAt: null },
   });
 };

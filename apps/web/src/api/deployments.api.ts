@@ -1,22 +1,29 @@
-import {
-  DefaultError,
-  InfiniteData,
-  useInfiniteQuery,
-  UseInfiniteQueryOptions,
-  useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query";
 import { graphql } from "@sweetr/graphql-types/frontend";
-import { graphQLClient } from "./clients/graphql-client";
 import {
+  ArchiveDeploymentMutation,
   DeploymentOptionsQuery,
   DeploymentOptionsQueryVariables,
   DeploymentQuery,
   DeploymentQueryVariables,
   DeploymentsQuery,
   DeploymentsQueryVariables,
+  MutationArchiveDeploymentArgs,
+  MutationUnarchiveDeploymentArgs,
+  UnarchiveDeploymentMutation,
 } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  DefaultError,
+  InfiniteData,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { Optional } from "utility-types";
+import { graphQLClient } from "./clients/graphql-client";
+import { queryClient } from "./clients/query-client";
 
 export const useDeploymentOptionsQuery = (
   args: DeploymentOptionsQueryVariables,
@@ -179,5 +186,65 @@ export const useDeploymentQuery = (
         `),
         args,
       ),
+    ...options,
+  });
+
+export const useArchiveDeployment = (
+  options?: UseMutationOptions<
+    ArchiveDeploymentMutation,
+    unknown,
+    MutationArchiveDeploymentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation ArchiveDeployment($input: ArchiveDeploymentInput!) {
+            archiveDeployment(input: $input) {
+              id
+              version
+              description
+              deployedAt
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+    },
+    ...options,
+  });
+
+export const useUnarchiveDeployment = (
+  options?: UseMutationOptions<
+    UnarchiveDeploymentMutation,
+    unknown,
+    MutationUnarchiveDeploymentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation UnarchiveDeployment($input: UnarchiveDeploymentInput!) {
+            unarchiveDeployment(input: $input) {
+              id
+              version
+              description
+              deployedAt
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+    },
     ...options,
   });

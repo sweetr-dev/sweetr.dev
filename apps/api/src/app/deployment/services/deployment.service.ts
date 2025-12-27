@@ -1,13 +1,15 @@
-import { getPrisma, take } from "../../../prisma";
 import { Prisma } from "@prisma/client";
+import { getPrisma, take } from "../../../prisma";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
-  UpsertDeploymentInput,
+  ArchiveDeploymentArgs,
   FindDeploymentByIdArgs,
   FindLastProductionDeploymentByApplicationIdArgs,
-  PaginateDeploymentsArgs,
   FindPreviousDeploymentArgs,
+  PaginateDeploymentsArgs,
+  UnarchiveDeploymentArgs,
+  UpsertDeploymentInput,
 } from "./deployment.types";
-import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export async function findDeploymentById<
   TInclude extends Prisma.DeploymentInclude | undefined = undefined,
@@ -30,10 +32,7 @@ export async function findDeploymentByIdOrThrow<
   { include }: { include?: TInclude } = {}
 ) {
   const deployment = await findDeploymentById(
-    {
-      workspaceId,
-      deploymentId,
-    },
+    { workspaceId, deploymentId },
     { include }
   );
 
@@ -50,13 +49,7 @@ export const findDeploymentWithRelations = async ({
 }: FindDeploymentByIdArgs) => {
   return getPrisma(workspaceId).deployment.findUnique({
     where: { id: deploymentId, workspaceId },
-    include: {
-      application: {
-        include: {
-          repository: true,
-        },
-      },
-    },
+    include: { application: { include: { repository: true } } },
   });
 };
 
@@ -72,15 +65,9 @@ export const findLatestDeployment = async ({
       applicationId,
       environmentId,
       archivedAt: null,
-      id: beforeDeploymentId
-        ? {
-            lt: beforeDeploymentId,
-          }
-        : undefined,
+      id: beforeDeploymentId ? { lt: beforeDeploymentId } : undefined,
     },
-    orderBy: {
-      deployedAt: "desc",
-    },
+    orderBy: { deployedAt: "desc" },
   });
 };
 
@@ -94,20 +81,15 @@ export const paginateDeployments = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
-      environment: {
-        archivedAt: null,
-      },
+      archivedAt: null,
+      environment: { archivedAt: null },
+      application: { archivedAt: null },
     },
-    orderBy: {
-      deployedAt: "desc",
-    },
+    orderBy: { deployedAt: "desc" },
   };
 
   if (args.deploymentIds?.length) {
-    query.where = {
-      ...query.where,
-      id: { in: args.deploymentIds },
-    };
+    query.where = { ...query.where, id: { in: args.deploymentIds } };
   }
 
   if (args.query) {
@@ -123,10 +105,7 @@ export const paginateDeployments = async (
   if (args.deployedAt?.from || args.deployedAt?.to) {
     query.where = {
       ...query.where,
-      deployedAt: {
-        gte: args.deployedAt.from,
-        lte: args.deployedAt.to,
-      },
+      deployedAt: { gte: args.deployedAt.from, lte: args.deployedAt.to },
     };
   }
 
@@ -158,9 +137,7 @@ export const findLastProductionDeploymentByApplicationId = async ({
       archivedAt: null,
       environment: { isProduction: true, archivedAt: null },
     },
-    orderBy: {
-      deployedAt: "desc",
-    },
+    orderBy: { deployedAt: "desc" },
   });
 };
 
@@ -177,5 +154,25 @@ export const upsertDeployment = async (input: UpsertDeploymentInput) => {
     },
     create: input,
     update: input,
+  });
+};
+
+export const archiveDeployment = async ({
+  workspaceId,
+  deploymentId,
+}: ArchiveDeploymentArgs) => {
+  return getPrisma(workspaceId).deployment.update({
+    where: { id: deploymentId },
+    data: { archivedAt: new Date() },
+  });
+};
+
+export const unarchiveDeployment = async ({
+  workspaceId,
+  deploymentId,
+}: UnarchiveDeploymentArgs) => {
+  return getPrisma(workspaceId).deployment.update({
+    where: { id: deploymentId },
+    data: { archivedAt: null },
   });
 };
