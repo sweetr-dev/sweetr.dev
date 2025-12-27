@@ -1,27 +1,27 @@
-import { describe, it, expect } from "vitest";
 import { PullRequestState } from "@prisma/client";
-import { Period } from "../../../graphql-types";
+import { describe, expect, it } from "vitest";
 import { createTestContextWithGitProfile } from "../../../../test/integration-setup/context";
-import {
-  seedRepository,
-  seedApplication,
-  seedEnvironment,
-  seedGitProfile,
-  seedPullRequest,
-  seedDeployment,
-  seedDeploymentPullRequest,
-  seedIncident,
-  seedTeam,
-} from "../../../../test/seed";
 import {
   generateDeploymentTimeline,
   generateIncidentResolutionTimeline,
 } from "../../../../test/scenarios/timeline";
 import {
-  getLeadTimeMetric,
+  seedApplication,
+  seedDeployment,
+  seedDeploymentPullRequest,
+  seedEnvironment,
+  seedGitProfile,
+  seedIncident,
+  seedPullRequest,
+  seedRepository,
+  seedTeam,
+} from "../../../../test/seed";
+import { Period } from "../../../graphql-types";
+import {
   getChangeFailureRateMetric,
-  getMeanTimeToRecoverMetric,
   getDeploymentFrequencyMetric,
+  getLeadTimeMetric,
+  getMeanTimeToRecoverMetric,
 } from "./dora-metrics.service";
 
 /**
@@ -66,10 +66,7 @@ describe("DORA Metrics", () => {
         ctx,
         application.applicationId,
         environment.environmentId,
-        {
-          deployedAt,
-          authorId: gitProfile.gitProfileId,
-        }
+        { deployedAt, authorId: gitProfile.gitProfileId }
       );
 
       await seedDeploymentPullRequest(
@@ -81,15 +78,12 @@ describe("DORA Metrics", () => {
       // Calculate lead time using service method
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Lead time = 4 hours (10:00 to 14:00) = 4 * 60 * 60 * 1000 = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
       expect(result.columns.length).toBeGreaterThan(0);
       expect(result.data.length).toBe(result.columns.length); // Data aligns with columns
       // Chart data should include the deployment
@@ -146,10 +140,7 @@ describe("DORA Metrics", () => {
         ctx,
         application.applicationId,
         environment.environmentId,
-        {
-          deployedAt,
-          authorId: gitProfile.gitProfileId,
-        }
+        { deployedAt, authorId: gitProfile.gitProfileId }
       );
 
       await seedDeploymentPullRequest(
@@ -160,16 +151,13 @@ describe("DORA Metrics", () => {
 
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Lead time should use firstCommitAt (09:00) not createdAt (10:00)
       // 09:00 to 14:00 = 5 hours = 18,000,000 ms
-      expect(result.currentAmount).toBe(18000000);
+      expect(result.currentAmount).toBe(BigInt(18000000));
     });
 
     it("calculates lead time for batched PRs (multiple PRs per deployment)", async () => {
@@ -219,10 +207,7 @@ describe("DORA Metrics", () => {
         ctx,
         application.applicationId,
         environment.environmentId,
-        {
-          deployedAt,
-          authorId: gitProfile.gitProfileId,
-        }
+        { deployedAt, authorId: gitProfile.gitProfileId }
       );
 
       // Link all PRs to the same deployment
@@ -244,16 +229,13 @@ describe("DORA Metrics", () => {
 
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Lead time should use earliest PR creation time (08:00)
       // 08:00 to 14:00 = 6 hours = 21,600,000 ms
-      expect(result.currentAmount).toBe(21600000);
+      expect(result.currentAmount).toBe(BigInt(21600000));
     });
 
     it("calculates previous period comparison correctly", async () => {
@@ -269,9 +251,7 @@ describe("DORA Metrics", () => {
         ctx,
         repository.repositoryId,
         gitProfile.gitProfileId,
-        {
-          createdAt: new Date("2024-01-14T10:00:00Z"),
-        }
+        { createdAt: new Date("2024-01-14T10:00:00Z") }
       );
       const prevDeployment = await seedDeployment(
         ctx,
@@ -293,9 +273,7 @@ describe("DORA Metrics", () => {
         ctx,
         repository.repositoryId,
         gitProfile.gitProfileId,
-        {
-          createdAt: new Date("2024-01-15T10:00:00Z"),
-        }
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
       );
       const currDeployment = await seedDeployment(
         ctx,
@@ -314,17 +292,14 @@ describe("DORA Metrics", () => {
 
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Current: 6 hours = 21,600,000 ms
-      expect(result.currentAmount).toBe(21600000);
+      expect(result.currentAmount).toBe(BigInt(21600000));
       // Previous: 4 hours = 14,400,000 ms
-      expect(result.previousAmount).toBe(14400000);
+      expect(result.previousAmount).toBe(BigInt(14400000));
       // Change: (21,600,000 - 14,400,000) / 14,400,000 * 100 = 50%
       expect(result.change).toBeCloseTo(50, 1);
     });
@@ -383,15 +358,12 @@ describe("DORA Metrics", () => {
       // Filter by staging environment only
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         environmentIds: [stagingEnv.environmentId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by applicationIds", async () => {
@@ -452,15 +424,12 @@ describe("DORA Metrics", () => {
       // Filter by app1 only
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         applicationIds: [app1.applicationId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by teamIds", async () => {
@@ -525,15 +494,12 @@ describe("DORA Metrics", () => {
       // Filter by team1 only
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by repositoryIds", async () => {
@@ -595,15 +561,12 @@ describe("DORA Metrics", () => {
       // Filter by repo1 only
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         repositoryIds: [repo1.repositoryId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -657,17 +620,14 @@ describe("DORA Metrics", () => {
       // Filter by team1 AND staging environment
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
         environmentIds: [stagingEnv.environmentId],
       });
 
       // Should only match team1 + staging = 1 deployment, 4 hours lead time
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("excludes archived deployments from lead time", async () => {
@@ -735,7 +695,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count deployment1
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("excludes deployments without PRs from lead time calculation", async () => {
@@ -786,7 +746,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count deployment with PR: 4 hours = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("isolates data by workspace for lead time", async () => {
@@ -836,7 +796,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("handles division by zero when previousAmount is 0", async () => {
@@ -875,7 +835,7 @@ describe("DORA Metrics", () => {
       });
 
       // Previous period has no data, so previousAmount = 0
-      expect(result.previousAmount).toBe(0);
+      expect(result.previousAmount).toBe(BigInt(0));
       // Change should be 0 when previousAmount is 0
       expect(result.change).toBe(0);
     });
@@ -938,9 +898,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Previous: 6 hours = 21,600,000 ms
-      expect(result.previousAmount).toBe(21600000);
+      expect(result.previousAmount).toBe(BigInt(21600000));
       // Change: (7,200,000 - 21,600,000) / 21,600,000 * 100 = -66.67%
       expect(result.change).toBeCloseTo(-66.67, 1);
     });
@@ -971,10 +931,7 @@ describe("DORA Metrics", () => {
 
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-01T00:00:00Z",
-          to: "2024-02-01T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-01T00:00:00Z", to: "2024-02-01T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
@@ -1018,10 +975,7 @@ describe("DORA Metrics", () => {
 
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-01T00:00:00Z",
-          to: "2024-01-15T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-01T00:00:00Z", to: "2024-01-15T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
@@ -1070,10 +1024,7 @@ describe("DORA Metrics", () => {
 
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-29T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-29T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
@@ -1098,9 +1049,7 @@ describe("DORA Metrics", () => {
           ctx,
           repository.repositoryId,
           gitProfile.gitProfileId,
-          {
-            createdAt: new Date(`2024-01-15T${10 + i}:00:00Z`),
-          }
+          { createdAt: new Date(`2024-01-15T${10 + i}:00:00Z`) }
         );
         const deployment = await seedDeployment(
           ctx,
@@ -1124,10 +1073,7 @@ describe("DORA Metrics", () => {
 
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
@@ -1194,10 +1140,7 @@ describe("DORA Metrics", () => {
       // Filter by staging environment only
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         environmentIds: [stagingEnv.environmentId],
       });
@@ -1252,10 +1195,7 @@ describe("DORA Metrics", () => {
       // Filter by app1 and app2 only
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         applicationIds: [app1.applicationId, app2.applicationId],
       });
@@ -1311,10 +1251,7 @@ describe("DORA Metrics", () => {
       // Filter by team1 only
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
       });
@@ -1367,10 +1304,7 @@ describe("DORA Metrics", () => {
       // Filter by repo1 only
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         repositoryIds: [repo1.repositoryId],
       });
@@ -1434,10 +1368,7 @@ describe("DORA Metrics", () => {
       // Filter by team1 AND staging environment
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
         environmentIds: [stagingEnv.environmentId],
@@ -1586,10 +1517,7 @@ describe("DORA Metrics", () => {
 
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-01T00:00:00Z",
-          to: "2024-01-15T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-01T00:00:00Z", to: "2024-01-15T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
@@ -1610,7 +1538,7 @@ describe("DORA Metrics", () => {
       // With 5 deployments/week (roughly daily), the next deployment after an incident
       // will typically be the next day (~24 hours later), not the target 4 hours.
       // This is realistic behavior - MTTR depends on deployment frequency.
-      const mttrHours = result.currentAmount / (1000 * 60 * 60);
+      const mttrHours = result.currentAmount / BigInt(1000 * 60 * 60);
       // With daily deployments, MTTR will be approximately 24 hours
       // (incident detected ~30 min after deploy, resolved at next day's deployment)
       expect(mttrHours).toBeGreaterThan(20); // At least 20 hours (next day deployment)
@@ -1629,10 +1557,7 @@ describe("DORA Metrics", () => {
         ctx,
         application.applicationId,
         environment.environmentId,
-        {
-          deployedAt,
-          authorId: gitProfile.gitProfileId,
-        }
+        { deployedAt, authorId: gitProfile.gitProfileId }
       );
 
       // Create resolved incident (2 hours recovery time)
@@ -1649,18 +1574,15 @@ describe("DORA Metrics", () => {
 
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // MTTR should only include the resolved incident
       // 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Unresolved incident should not affect the calculation
-      expect(result.previousAmount).toBe(0);
+      expect(result.previousAmount).toBe(BigInt(0));
     });
 
     it("calculates MTTR for multiple incidents correctly", async () => {
@@ -1716,15 +1638,12 @@ describe("DORA Metrics", () => {
 
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Average MTTR = (1 + 2 + 3) / 3 = 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("calculates previous period comparison correctly", async () => {
@@ -1740,9 +1659,7 @@ describe("DORA Metrics", () => {
         ctx,
         repository.repositoryId,
         gitProfile.gitProfileId,
-        {
-          createdAt: new Date("2024-01-14T10:00:00Z"),
-        }
+        { createdAt: new Date("2024-01-14T10:00:00Z") }
       );
       const prevDeployment = await seedDeployment(
         ctx,
@@ -1768,9 +1685,7 @@ describe("DORA Metrics", () => {
         ctx,
         repository.repositoryId,
         gitProfile.gitProfileId,
-        {
-          createdAt: new Date("2024-01-15T10:00:00Z"),
-        }
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
       );
       const currDeployment = await seedDeployment(
         ctx,
@@ -1793,17 +1708,14 @@ describe("DORA Metrics", () => {
 
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Current: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Previous: 4 hours = 14,400,000 ms
-      expect(result.previousAmount).toBe(14400000);
+      expect(result.previousAmount).toBe(BigInt(14400000));
       // Change: (7,200,000 - 14,400,000) / 14,400,000 * 100 = -50% (improvement)
       expect(result.change).toBeCloseTo(-50, 1);
     });
@@ -1870,16 +1782,13 @@ describe("DORA Metrics", () => {
       // Filter by staging environment only
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         environmentIds: [stagingEnv.environmentId],
       });
 
       // Should only count staging: 4 hours = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("filters by applicationIds", async () => {
@@ -1925,16 +1834,13 @@ describe("DORA Metrics", () => {
       // Filter by app1 only
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         applicationIds: [app1.applicationId],
       });
 
       // Should only count app1: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by teamIds", async () => {
@@ -1989,16 +1895,13 @@ describe("DORA Metrics", () => {
       // Filter by team1 and team2 only
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId, team2.teamId],
       });
 
       // Average of 2 incidents, both 2 hours = 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by repositoryIds", async () => {
@@ -2045,16 +1948,13 @@ describe("DORA Metrics", () => {
       // Filter by repo1 only
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         repositoryIds: [repo1.repositoryId],
       });
 
       // Should only count repo1: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -2112,17 +2012,14 @@ describe("DORA Metrics", () => {
       // Filter by team1 AND staging environment
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
         environmentIds: [stagingEnv.environmentId],
       });
 
       // Should only match team1 + staging = 1 incident, 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("excludes archived environments from MTTR", async () => {
@@ -2174,7 +2071,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count env1: 1 incident, 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("isolates data by workspace for MTTR", async () => {
@@ -2228,7 +2125,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
   });
 
@@ -2256,15 +2153,12 @@ describe("DORA Metrics", () => {
 
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-01T00:00:00Z",
-          to: "2024-02-01T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-01T00:00:00Z", to: "2024-02-01T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
       // 4 weeks * 5 deployments/week = 20 deployments
-      expect(result.currentAmount).toBe(20);
+      expect(result.currentAmount).toBe(BigInt(20));
       expect(result.columns.length).toBeGreaterThan(0);
       expect(result.data.length).toBe(result.columns.length); // Data aligns with columns
       // Chart data should show 5 deployments per week
@@ -2293,9 +2187,7 @@ describe("DORA Metrics", () => {
           ctx,
           repository.repositoryId,
           gitProfile.gitProfileId,
-          {
-            createdAt: new Date(`2024-01-${15 + i}T10:00:00Z`),
-          }
+          { createdAt: new Date(`2024-01-${15 + i}T10:00:00Z`) }
         );
         const deployment = await seedDeployment(
           ctx,
@@ -2315,15 +2207,12 @@ describe("DORA Metrics", () => {
 
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-22T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-22T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // 7 deployments over 7 days = 1 deployment per day
-      expect(result.currentAmount).toBe(7);
+      expect(result.currentAmount).toBe(BigInt(7));
       expect(result.avg).toBeCloseTo(1, 2);
       // Verify chart data structure
       expect(result.columns.length).toBeGreaterThan(0);
@@ -2375,17 +2264,14 @@ describe("DORA Metrics", () => {
 
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-22T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-22T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
       // Current: 10 deployments
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       // Previous: 5 deployments
-      expect(result.previousAmount).toBe(5);
+      expect(result.previousAmount).toBe(BigInt(5));
       // Change: (10 - 5) / 5 * 100 = 100% increase
       expect(result.change).toBeCloseTo(100, 1);
     });
@@ -2395,15 +2281,12 @@ describe("DORA Metrics", () => {
 
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-22T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-22T00:00:00Z" },
         period: Period.WEEKLY,
       });
 
-      expect(result.currentAmount).toBe(0);
-      expect(result.previousAmount).toBe(0);
+      expect(result.currentAmount).toBe(BigInt(0));
+      expect(result.previousAmount).toBe(BigInt(0));
       expect(result.change).toBe(0);
       expect(result.avg).toBe(0);
     });
@@ -2422,9 +2305,7 @@ describe("DORA Metrics", () => {
           ctx,
           repository.repositoryId,
           gitProfile.gitProfileId,
-          {
-            createdAt: new Date("2024-01-15T10:00:00Z"),
-          }
+          { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
           ctx,
@@ -2444,15 +2325,12 @@ describe("DORA Metrics", () => {
 
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
       });
 
       // Should only count production deployment
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by environmentIds", async () => {
@@ -2509,15 +2387,12 @@ describe("DORA Metrics", () => {
       // Filter by staging environment only
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         environmentIds: [stagingEnv.environmentId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by multiple environmentIds", async () => {
@@ -2556,15 +2431,12 @@ describe("DORA Metrics", () => {
       // Filter by env1 and env2 only
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         environmentIds: [env1.environmentId, env2.environmentId],
       });
 
-      expect(result.currentAmount).toBe(2);
+      expect(result.currentAmount).toBe(BigInt(2));
     });
 
     it("filters by applicationIds", async () => {
@@ -2606,15 +2478,12 @@ describe("DORA Metrics", () => {
       // Filter by app1 only
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         applicationIds: [app1.applicationId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by teamIds", async () => {
@@ -2660,15 +2529,12 @@ describe("DORA Metrics", () => {
       // Filter by team1 only
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by repositoryIds", async () => {
@@ -2715,15 +2581,12 @@ describe("DORA Metrics", () => {
       // Filter by repo1 and repo2 only
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         repositoryIds: [repo1.repositoryId, repo2.repositoryId],
       });
 
-      expect(result.currentAmount).toBe(2);
+      expect(result.currentAmount).toBe(BigInt(2));
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -2777,17 +2640,14 @@ describe("DORA Metrics", () => {
       // Filter by team1 AND staging environment
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
-        dateRange: {
-          from: "2024-01-15T00:00:00Z",
-          to: "2024-01-16T00:00:00Z",
-        },
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
         period: Period.DAILY,
         teamIds: [team1.teamId],
         environmentIds: [stagingEnv.environmentId],
       });
 
       // Should only match team1 + staging = 1 deployment
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("excludes archived environments from deployment frequency", async () => {
@@ -2835,7 +2695,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count env1
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("calculates metrics with MONTHLY period", async () => {
@@ -2890,7 +2750,7 @@ describe("DORA Metrics", () => {
         period: Period.MONTHLY,
       });
 
-      expect(result.currentAmount).toBe(15);
+      expect(result.currentAmount).toBe(BigInt(15));
       expect(result.columns.length).toBeGreaterThanOrEqual(3);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -2946,7 +2806,7 @@ describe("DORA Metrics", () => {
         period: Period.QUARTERLY,
       });
 
-      expect(result.currentAmount).toBe(20);
+      expect(result.currentAmount).toBe(BigInt(20));
       expect(result.columns.length).toBeGreaterThanOrEqual(2);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -2991,7 +2851,7 @@ describe("DORA Metrics", () => {
         period: Period.YEARLY,
       });
 
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       expect(result.columns.length).toBeGreaterThanOrEqual(2);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -3043,7 +2903,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("handles large percentage changes", async () => {
@@ -3106,9 +2966,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 10 deployments
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       // Previous: 1 deployment
-      expect(result.previousAmount).toBe(1);
+      expect(result.previousAmount).toBe(BigInt(1));
       // Change: (10 - 1) / 1 * 100 = 900%
       expect(result.change).toBeCloseTo(900, 1);
       // Should not be NaN or Infinity

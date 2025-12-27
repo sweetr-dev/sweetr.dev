@@ -12,7 +12,7 @@ export class DataIntegrityException extends BaseException {
     options?: Partial<BaseExceptionOptions>
   ) {
     super(message, {
-      code: ErrorCode.BUSINESS_RULE,
+      code: ErrorCode.DATA_INTEGRITY,
       userFacingMessage: "Something went wrong.",
       severity: "error",
       ...options,

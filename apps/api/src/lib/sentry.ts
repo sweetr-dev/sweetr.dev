@@ -1,16 +1,16 @@
 import * as Sentry from "@sentry/node";
-import { env, isDev } from "../env";
-import { BaseException } from "../app/errors/exceptions/base.exception";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { logger } from "./logger";
 import { httpIntegration } from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import { BaseException } from "../app/errors/exceptions/base.exception";
+import { env, isDev } from "../env";
+import { logger } from "./logger";
 import { isAppSelfHosted } from "./self-host";
 
 export const initSentry = () => {
   Sentry.init({
     dsn: env.SENTRY_DSN,
     environment: env.APP_ENV,
-    enabled: !isAppSelfHosted() && !isDev,
+    enabled: !isAppSelfHosted() && !isDev && !!env.SENTRY_DSN,
     beforeBreadcrumb(breadcrumb) {
       if (breadcrumb.category === "console") {
         return null;

@@ -1,16 +1,13 @@
+import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
 import { addJob, SweetQueue } from "../../../bull-mq/queues";
-import { env } from "process";
-import { isProduction } from "../../../env";
+import { redisConnection } from "../../../bull-mq/redis-connection";
+import { env, isProduction } from "../../../env";
+import { EmailOptions, EmailPayload, getEmailClient } from "../../../lib/email";
 import { logger } from "../../../lib/logger";
 import { captureException } from "../../../lib/sentry";
-import { EmailPayload, EmailOptions, getEmailClient } from "../../../lib/email";
-import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
 import { BuildEmailTemplate } from "./email-template.service";
-import { redisConnection } from "../../../bull-mq/redis-connection";
 
-const emailTemplates = {
-  initialSyncComplete: InitialSyncCompleteEmail,
-};
+const emailTemplates = { initialSyncComplete: InitialSyncCompleteEmail };
 
 export type EmailType = keyof typeof emailTemplates;
 export type SendEmailPayload = Omit<EmailPayload, "from">;
@@ -18,6 +15,11 @@ export type SendEmailPayload = Omit<EmailPayload, "from">;
 export const enqueueEmail = (
   data: SendEmailPayload & { template: BuildEmailTemplate }
 ) => {
+  if (!env.EMAIL_ENABLED) {
+    logger.info("Skipping email due to falsy EMAIL_ENABLED");
+    return;
+  }
+
   const { template, ...payload } = data;
 
   return addJob(SweetQueue.SEND_EMAIL, { template, payload });
@@ -28,7 +30,8 @@ export const sendEmail = async (
   options?: EmailOptions
 ) => {
   if (!env.EMAIL_ENABLED) {
-    logger.debug("Skipping email due to falsy EMAIL_ENABLED");
+    logger.info("Skipping email due to falsy EMAIL_ENABLED");
+    return;
   }
 
   const client = getEmailClient();

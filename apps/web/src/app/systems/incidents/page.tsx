@@ -1,33 +1,33 @@
 import { Box, Button, Divider, Group, Skeleton, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useHotkeys } from "@mantine/hooks";
+import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox, IconCalendarFilled, IconServer } from "@tabler/icons-react";
 import { format, parseISO } from "date-fns";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
+import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import { HeaderActions } from "../../../components/header-actions";
 import { LoadableContent } from "../../../components/loadable-content";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
-import { parseNullableISO } from "../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
-import {
-  useListGroupedByYearMonth,
-  useInfiniteLoading,
-} from "../../../providers/pagination.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
 import {
   useApplicationAsyncOptions,
   useEnvironmentAsyncOptions,
 } from "../../../providers/async-options.provider";
-import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
-import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
-import { CardIncident } from "./components/card-incident";
-import { Incident } from "@sweetr/graphql-types/frontend/graphql";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useHotkeys } from "@mantine/hooks";
 import { useContextualActions } from "../../../providers/contextual-actions.provider";
-import { HeaderActions } from "../../../components/header-actions";
+import { parseNullableISO } from "../../../providers/date.provider";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
+import {
+  useInfiniteLoading,
+  useListGroupedByYearMonth,
+} from "../../../providers/pagination.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { CardIncident } from "./components/card-incident";
 
 export const IncidentsPage = () => {
   const { workspace } = useWorkspace();
@@ -210,6 +210,10 @@ export const IncidentsPage = () => {
                 });
                 searchParams.reset();
               }}
+              action="New incident"
+              onClick={() => {
+                navigate(`/systems/incidents/new/?${searchParams.toString()}`);
+              }}
             />
           </Box>
         }
@@ -231,9 +235,7 @@ export const IncidentsPage = () => {
                       <Divider
                         label={format(detectedAt, "MMMM yyyy")}
                         labelPosition="left"
-                        style={{
-                          gridColumn: "span 5",
-                        }}
+                        style={{ gridColumn: "span 5" }}
                       />
                     )}
                     <CardIncident incident={incident} />

@@ -3,7 +3,6 @@ import { UseFormReturnType } from "@mantine/form";
 import { ApplicationForm } from "../../../types";
 import { InputSelectRepository } from "../../../../../../components/input-select-repository";
 import { InputSelectTeam } from "../../../../../../components/input-select-team";
-import { IconFolder } from "@tabler/icons-react";
 import { InputDeploymentTrigger } from "./input-deployment-trigger";
 
 export interface FormUpsertApplicationProps {
@@ -55,8 +54,8 @@ export const FormUpsertApplication = ({ form }: FormUpsertApplicationProps) => {
           label="Subdirectory"
           description="The subdirectory of the application. Useful for monorepos."
           maxLength={150}
-          leftSection={<IconFolder size={16} stroke={1.5} />}
-          placeholder="/apps/example-app"
+          leftSection={"/"}
+          placeholder="apps/example-app"
           {...form.getInputProps("deploymentSettings.subdirectory")}
         />
 

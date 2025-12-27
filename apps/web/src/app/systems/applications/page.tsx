@@ -1,35 +1,31 @@
 import { Box, Button, Group, Skeleton, Stack } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useHotkeys } from "@mantine/hooks";
+import { Application } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox } from "@tabler/icons-react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import { HeaderActions } from "../../../components/header-actions";
+import { InputSearch } from "../../../components/input-search";
 import { LoadableContent } from "../../../components/loadable-content";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
-import { CardApplication } from "./components/card-application";
-import { HeaderActions } from "../../../components/header-actions";
-import { Application } from "@sweetr/graphql-types/frontend/graphql";
-import { useInfiniteLoading } from "../../../providers/pagination.provider";
-import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { useForm } from "@mantine/form";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useContextualActions } from "../../../providers/contextual-actions.provider";
-import { useHotkeys } from "@mantine/hooks";
-import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
 import { useTeamAsyncOptions } from "../../../providers/async-options.provider";
+import { useContextualActions } from "../../../providers/contextual-actions.provider";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconTeam } from "../../../providers/icon.provider";
-import { InputSearch } from "../../../components/input-search";
+import { useInfiniteLoading } from "../../../providers/pagination.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { CardApplication } from "./components/card-application";
 
 export const ApplicationsPage = () => {
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
-  const filters = useForm<{
-    teamIds: string[];
-  }>({
-    initialValues: {
-      teamIds: searchParams.getAll<string[]>("team") || [],
-    },
+  const filters = useForm<{ teamIds: string[] }>({
+    initialValues: { teamIds: searchParams.getAll<string[]>("team") || [] },
   });
   const navigate = useNavigate();
 
@@ -64,12 +60,7 @@ export const ApplicationsPage = () => {
     hasNextPage,
     isFetchedAfterMount,
   } = useApplicationsInfiniteQuery(
-    {
-      input: {
-        teamIds: filters.values.teamIds,
-      },
-      workspaceId: workspace?.id,
-    },
+    { input: { teamIds: filters.values.teamIds }, workspaceId: workspace?.id },
     {
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => {
@@ -147,10 +138,14 @@ export const ApplicationsPage = () => {
             <PageEmptyState
               message="No applications found."
               isFiltering={isFiltering}
+              action="New application"
+              onClick={() => {
+                navigate(
+                  `/systems/applications/new/?${searchParams.toString()}`,
+                );
+              }}
               onResetFilter={() => {
-                filters.setValues({
-                  teamIds: [],
-                });
+                filters.setValues({ teamIds: [] });
                 searchParams.reset();
               }}
             />
