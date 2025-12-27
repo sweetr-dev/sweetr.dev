@@ -6,9 +6,15 @@ import { DoraMetricsFilters } from "./dora-metrics.types";
 interface MetricResult {
   columns: string[];
   data: bigint[];
+  currentAmount: bigint;
+  previousAmount: bigint;
+  change: number;
+}
+
+interface FailureRateResult
+  extends Pick<MetricResult, "columns" | "data" | "change"> {
   currentAmount: number;
   previousAmount: number;
-  change: number;
 }
 
 interface DeploymentFrequencyResult extends MetricResult {
@@ -263,8 +269,8 @@ export const getLeadTimeMetric = async (
   return {
     columns,
     data,
-    currentAmount,
-    previousAmount,
+    currentAmount: BigInt(currentAmount),
+    previousAmount: BigInt(previousAmount),
     change,
   };
 };
@@ -317,7 +323,7 @@ const buildChangeFailureRateAggregateQuery = ({
  */
 export const getChangeFailureRateMetric = async (
   filters: DoraMetricsFilters
-): Promise<MetricResult> => {
+): Promise<FailureRateResult> => {
   const { dateRange, period } = filters;
   const { from, to } = dateRange;
   const { beforeFrom, beforeTo } = calculateBeforePeriod(from, to);
@@ -404,13 +410,7 @@ export const getChangeFailureRateMetric = async (
       ? ((currentAmount - previousAmount) / previousAmount) * 100
       : 0;
 
-  return {
-    columns,
-    data,
-    currentAmount,
-    previousAmount,
-    change,
-  };
+  return { columns, data, currentAmount, previousAmount, change };
 };
 
 /**
@@ -546,8 +546,8 @@ export const getDeploymentFrequencyMetric = async (
   return {
     columns,
     data,
-    currentAmount,
-    previousAmount,
+    currentAmount: BigInt(currentAmount),
+    previousAmount: BigInt(previousAmount),
     change,
     avg,
   };
@@ -774,8 +774,8 @@ export const getMeanTimeToRecoverMetric = async (
   return {
     columns,
     data,
-    currentAmount,
-    previousAmount,
+    currentAmount: BigInt(currentAmount),
+    previousAmount: BigInt(previousAmount),
     change,
   };
 };
