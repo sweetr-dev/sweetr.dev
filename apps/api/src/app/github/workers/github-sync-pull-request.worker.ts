@@ -3,18 +3,18 @@ import {
   PullRequestOpenedEvent,
   PullRequestSynchronizeEvent,
 } from "@octokit/webhooks-types";
+import { PullRequestState } from "@prisma/client";
 import { Job } from "bullmq";
 import { addJob, JobPriority, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
-import { syncPullRequest } from "../services/github-pull-request.service";
-import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
-import { PullRequestState } from "@prisma/client";
 import { logger } from "../../../lib/logger";
+import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import {
   incrementSyncBatchProgress,
   maybeFinishSyncBatch,
 } from "../../sync-batch/services/sync-batch.service";
+import { syncPullRequest } from "../services/github-pull-request.service";
+import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const syncPullRequestWorker = createWorker(
   SweetQueue.GITHUB_SYNC_PULL_REQUEST,
@@ -24,10 +24,7 @@ export const syncPullRequestWorker = createWorker(
         | PullRequestSynchronizeEvent
         | PullRequestOpenedEvent
         | PullRequestClosedEvent
-      ) & {
-        syncReviews?: boolean;
-        syncBatchId?: number;
-      }
+      ) & { syncReviews?: boolean; syncBatchId?: number }
     >,
     token?: string
   ) => {
@@ -55,12 +52,16 @@ export const syncPullRequestWorker = createWorker(
     }
 
     const pullRequest = await withDelayedRetryOnRateLimit(
-      () => syncPullRequest(installationId, job.data.pull_request.node_id),
-      {
-        job,
-        jobToken: token,
-        installationId,
-      }
+      () =>
+        syncPullRequest({
+          gitInstallationId: installationId,
+          pullRequestId: job.data.pull_request.node_id,
+          // GraphQL API is unreliable for getting the merge commit SHA, so we must use webhook data or refetch from HTTP API.
+          // Here we prefer just using webhook data since it shouldn't ever change after a PR is merged.
+          // See https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request
+          mergeCommitSha: job.data.pull_request.merge_commit_sha ?? undefined,
+        }),
+      { job, jobToken: token, installationId }
     );
 
     if (pullRequest) {
@@ -72,16 +73,10 @@ export const syncPullRequestWorker = createWorker(
         await addJob(
           SweetQueue.GITHUB_SYNC_CODE_REVIEW,
           {
-            pull_request: {
-              node_id: pullRequest.gitPullRequestId,
-            },
-            installation: {
-              id: installationId,
-            },
+            pull_request: { node_id: pullRequest.gitPullRequestId },
+            installation: { id: installationId },
           },
-          {
-            priority: JobPriority.LOW,
-          }
+          { priority: JobPriority.LOW }
         );
       }
 
@@ -97,10 +92,5 @@ export const syncPullRequestWorker = createWorker(
       }
     }
   },
-  {
-    limiter: {
-      max: 8,
-      duration: 1000,
-    },
-  }
+  { limiter: { max: 8, duration: 1000 } }
 );

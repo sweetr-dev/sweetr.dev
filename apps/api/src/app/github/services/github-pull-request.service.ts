@@ -1,11 +1,4 @@
-import {
-  getInstallationGraphQLOctoKit,
-  getInstallationOctoKit,
-  GITHUB_MAX_PAGE_LIMIT,
-} from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
-import { logger } from "../../../lib/logger";
-import { getPrisma } from "../../../prisma";
 import {
   ActivityEventType,
   GitProvider,
@@ -15,7 +8,17 @@ import {
   Repository,
   Workspace,
 } from "@prisma/client";
+import { parseNullableISO } from "../../../lib/date";
+import { logger } from "../../../lib/logger";
+import {
+  getInstallationGraphQLOctoKit,
+  getInstallationOctoKit,
+  GITHUB_MAX_PAGE_LIMIT,
+} from "../../../lib/octokit";
+import { getPrisma } from "../../../prisma";
+import { getActivityEventId } from "../../activity-events/services/activity-events.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import {
   getCycleTime,
   getFirstDraftAndReadyDates,
@@ -24,9 +27,6 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
-import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
-import { parseNullableISO } from "../../../lib/date";
-import { getActivityEventId } from "../../activity-events/services/activity-events.service";
 
 interface Author {
   id: string;
@@ -39,10 +39,17 @@ type RepositoryData = Omit<
   "id" | "workspaceId" | "createdAt" | "updatedAt"
 >;
 
-export const syncPullRequest = async (
-  gitInstallationId: number,
-  pullRequestId: string
-) => {
+export interface SyncPullRequestArgs {
+  gitInstallationId: number;
+  pullRequestId: string;
+  mergeCommitSha?: string;
+}
+
+export const syncPullRequest = async ({
+  gitInstallationId,
+  pullRequestId,
+  mergeCommitSha,
+}: SyncPullRequestArgs) => {
   logger.info("syncPullRequest", {
     installationId: gitInstallationId,
     pullRequestId,
@@ -62,17 +69,13 @@ export const syncPullRequest = async (
   const gitPrData = await fetchPullRequest(gitInstallationId, pullRequestId);
 
   if (gitPrData.repository.isFork) {
-    logger.info("syncPullRequest: Skipping forked repository", {
-      gitPrData,
-    });
+    logger.info("syncPullRequest: Skipping forked repository", { gitPrData });
 
     return null;
   }
 
   if (!gitPrData.author?.id || !gitPrData.author?.login) {
-    logger.info("syncPullRequest: Skipping unknown author", {
-      gitPrData,
-    });
+    logger.info("syncPullRequest: Skipping unknown author", { gitPrData });
 
     return null;
   }
@@ -84,7 +87,8 @@ export const syncPullRequest = async (
     gitInstallationId,
     gitProfile.id,
     repository,
-    gitPrData
+    gitPrData,
+    mergeCommitSha
   );
   await upsertActivityEvents(pullRequest);
 
@@ -121,11 +125,6 @@ const fetchPullRequest = async (
 
             createdAt
             updatedAt
-
-            headRefOid
-            mergeCommit {
-              oid
-            }
             
             author {
               ... on User {
@@ -179,9 +178,7 @@ const fetchPullRequest = async (
         }
       }
     `,
-    {
-      nodeId: pullRequestId,
-    }
+    { nodeId: pullRequestId }
   );
 
   return {
@@ -232,10 +229,7 @@ const getPullRequestFiles = async (
         }
       }
     `,
-      {
-        nodeId: pullRequestId,
-        cursor: fileQuery.pageInfo.endCursor,
-      }
+      { nodeId: pullRequestId, cursor: fileQuery.pageInfo.endCursor }
     );
 
     files.push(...response.node.files.nodes);
@@ -250,7 +244,8 @@ const upsertPullRequest = async (
   installationId: number,
   gitProfileId: number,
   repository: Repository,
-  gitPrData: any
+  gitPrData: any,
+  mergeCommitSha?: string
 ) => {
   const data: Prisma.PullRequestUncheckedCreateInput = {
     gitProvider: GitProvider.GITHUB,
@@ -262,9 +257,7 @@ const upsertPullRequest = async (
     changedFilesCount: gitPrData.changedFiles,
     linesAddedCount: gitPrData.additions,
     linesDeletedCount: gitPrData.deletions,
-    mergeCommitSha: gitPrData.mergedAt
-      ? (gitPrData.mergeCommit?.oid ?? gitPrData.headRefOid)
-      : null,
+    mergeCommitSha: gitPrData.mergedAt ? mergeCommitSha : undefined,
     state: getPullRequestState(gitPrData.state, gitPrData.isDraft),
     mergedAt: gitPrData.mergedAt,
     closedAt: gitPrData.closedAt,
@@ -321,9 +314,7 @@ const upsertPullRequestTracking = async (
   const tracking = await getPrisma(
     pullRequest.workspaceId
   ).pullRequestTracking.findUnique({
-    where: {
-      pullRequestId: pullRequest.id,
-    },
+    where: { pullRequestId: pullRequest.id },
   });
 
   const {
@@ -340,9 +331,7 @@ const upsertPullRequestTracking = async (
   const cycleTime = getCycleTime(pullRequest, firstCommitAt);
 
   await getPrisma(pullRequest.workspaceId).pullRequestTracking.upsert({
-    where: {
-      pullRequestId: pullRequest.id,
-    },
+    where: { pullRequestId: pullRequest.id },
     create: {
       pullRequestId: pullRequest.id,
       workspaceId: pullRequest.workspaceId,
@@ -441,15 +430,8 @@ const upsertRepository = async (workspaceId, gitRepositoryData: any) => {
         gitRepositoryId: gitRepositoryData.id,
       },
     },
-    create: {
-      ...data,
-      workspaceId: workspaceId,
-      createdAt: new Date(),
-    },
-    update: {
-      ...data,
-      workspaceId: workspaceId,
-    },
+    create: { ...data, workspaceId: workspaceId, createdAt: new Date() },
+    update: { ...data, workspaceId: workspaceId },
   });
 };
 
