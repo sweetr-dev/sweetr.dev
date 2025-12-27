@@ -16,6 +16,11 @@ export type SendEmailPayload = Omit<EmailPayload, "from">;
 export const enqueueEmail = (
   data: SendEmailPayload & { template: BuildEmailTemplate }
 ) => {
+  if (!env.EMAIL_ENABLED) {
+    logger.info("Skipping email due to falsy EMAIL_ENABLED");
+    return;
+  }
+
   const { template, ...payload } = data;
 
   return addJob(SweetQueue.SEND_EMAIL, { template, payload });
