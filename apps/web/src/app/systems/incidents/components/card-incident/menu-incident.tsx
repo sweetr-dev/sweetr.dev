@@ -92,7 +92,7 @@ export const MenuIncident = ({ incident }: MenuIncidentProps) => {
           </>
         )}
         <Menu.Item
-          leftSection={<IconArchive size={16} />}
+          leftSection={<IconArchive size={16} stroke={1.5} />}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

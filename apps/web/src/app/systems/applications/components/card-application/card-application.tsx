@@ -89,9 +89,9 @@ export const CardApplication = ({ application }: CardApplicationProps) => {
             >
               <Box>
                 <Text display="inline">Running </Text>
-                <Box
-                  role="button"
+                <Anchor
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     window.open(
                       getGithubCommitOrTagUrl(
@@ -104,7 +104,7 @@ export const CardApplication = ({ application }: CardApplicationProps) => {
                   className="link"
                 >
                   {formatVersion(application.lastProductionDeployment.version)}
-                </Box>
+                </Anchor>
               </Box>
             </Tooltip>
           )}

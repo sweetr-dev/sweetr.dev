@@ -109,7 +109,7 @@ export const MenuApplication = ({ application }: MenuApplicationProps) => {
           </>
         )}
         <Menu.Item
-          leftSection={<IconArchive size={16} />}
+          leftSection={<IconArchive size={16} stroke={1.5} />}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();

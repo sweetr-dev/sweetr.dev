@@ -8,13 +8,16 @@ import {
   useUnarchiveEnvironment,
 } from "../../../../../api/environments.api";
 import { IconInfo } from "../../../../../components/icon-info";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 import {
   IconDeployment,
   IconIncident,
 } from "../../../../../providers/icon.provider";
-import { showErrorNotification, showSuccessNotification } from "../../../../../providers/notification.provider";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
-import { getErrorMessage } from "../../../../../providers/error-message.provider";
 
 interface MenuEnvironmentProps {
   environment: Environment;
@@ -42,16 +45,17 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
       return;
     }
 
-    await archiveEnvironment({
-      input: { workspaceId: workspace.id, environmentId: environment.id },
-    },{
-      onSuccess: () => {
-        showSuccessNotification({ message: "Environment unarchived." });
+    await archiveEnvironment(
+      { input: { workspaceId: workspace.id, environmentId: environment.id } },
+      {
+        onSuccess: () => {
+          showSuccessNotification({ message: "Environment archived." });
+        },
+        onError: (error) => {
+          showErrorNotification({ message: getErrorMessage(error) });
+        },
       },
-      onError: (error) => {
-        showErrorNotification({ message: getErrorMessage(error) });
-      },
-    },;
+    );
   };
 
   return (
@@ -93,7 +97,7 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
           </>
         )}
         <Menu.Item
-          leftSection={<IconArchive size={16} />}
+          leftSection={<IconArchive size={16} stroke={1.5} />}
           onClick={handleToggleArchive}
           rightSection={
             !environment.archivedAt && (

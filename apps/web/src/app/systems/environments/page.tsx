@@ -1,18 +1,18 @@
 import { Box, Button, Skeleton, Stack } from "@mantine/core";
-import { Breadcrumbs } from "../../../components/breadcrumbs";
-import { PageContainer } from "../../../components/page-container";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { Fragment } from "react/jsx-runtime";
-import { LoadableContent } from "../../../components/loadable-content";
-import { PageEmptyState } from "../../../components/page-empty-state";
-import { useInfiniteLoading } from "../../../providers/pagination.provider";
-import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { Environment } from "@sweetr/graphql-types/frontend/graphql";
+import { Fragment } from "react/jsx-runtime";
 import { useEnvironmentsInfiniteQuery } from "../../../api/environments.api";
-import { CardEnvironment } from "./components/card-environment";
-import { HeaderActions } from "../../../components/header-actions";
-import { useInfoModal } from "../../../providers/modal.provider";
+import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { ButtonDocs } from "../../../components/button-docs";
+import { HeaderActions } from "../../../components/header-actions";
+import { LoadableContent } from "../../../components/loadable-content";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
+import { PageContainer } from "../../../components/page-container";
+import { PageEmptyState } from "../../../components/page-empty-state";
+import { useInfoModal } from "../../../providers/modal.provider";
+import { useInfiniteLoading } from "../../../providers/pagination.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { CardEnvironment } from "./components/card-environment";
 
 export const EnvironmentsPage = () => {
   const { workspace } = useWorkspace();
@@ -25,10 +25,7 @@ export const EnvironmentsPage = () => {
     hasNextPage,
     isFetchedAfterMount,
   } = useEnvironmentsInfiniteQuery(
-    {
-      input: { includeArchived: true },
-      workspaceId: workspace?.id,
-    },
+    { input: { includeArchived: true }, workspaceId: workspace?.id },
     {
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => {
@@ -91,13 +88,13 @@ export const EnvironmentsPage = () => {
         isEmpty={isEmpty}
         whenLoading={
           <Stack>
-            <Skeleton height={20} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
+            <Skeleton height={40} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
           </Stack>
         }
         whenEmpty={

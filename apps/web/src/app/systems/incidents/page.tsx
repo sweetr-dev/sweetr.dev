@@ -187,13 +187,13 @@ export const IncidentsPage = () => {
         isEmpty={isEmpty}
         whenLoading={
           <Stack>
-            <Skeleton height={20} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
+            <Skeleton height={40} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
           </Stack>
         }
         whenEmpty={

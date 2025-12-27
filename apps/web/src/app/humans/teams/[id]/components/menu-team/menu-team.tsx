@@ -1,17 +1,17 @@
 import { ActionIcon, Code, Menu } from "@mantine/core";
+import { useHotkeys } from "@mantine/hooks";
 import {
+  IconArchive,
   IconDotsCircleHorizontal,
   IconPencil,
-  IconArchive,
 } from "@tabler/icons-react";
 import { FC, useState } from "react";
 import {
   useArchiveTeam,
   useUnarchiveTeam,
 } from "../../../../../../api/teams.api";
-import { showSuccessNotification } from "../../../../../../providers/notification.provider";
-import { useHotkeys } from "@mantine/hooks";
 import { useContextualActions } from "../../../../../../providers/contextual-actions.provider";
+import { showSuccessNotification } from "../../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../../providers/workspace.provider";
 interface MenuTeamProps {
   teamId: string;
@@ -94,7 +94,7 @@ export const MenuTeam: FC<MenuTeamProps> = ({
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
-          leftSection={<IconArchive size={16} />}
+          leftSection={<IconArchive size={16} stroke={1.5} />}
           onClick={() => handleToggleArchive()}
         >
           {isTeamArchived ? "Unarchive" : "Archive"}
