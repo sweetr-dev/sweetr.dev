@@ -29,6 +29,7 @@ import {
 } from "../../providers/date.provider";
 import { useFilterSearchParameters } from "../../providers/filter.provider";
 import { IconDeployment, IconTeam } from "../../providers/icon.provider";
+import { useScreenSize } from "../../providers/screen.provider";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
 import { DoraMetricFilters } from "./types";
@@ -38,6 +39,7 @@ export const MetricsAndInsightsPage = () => {
   const { pathname } = useLocation();
   const searchParams = useFilterSearchParameters();
   const { workspace } = useWorkspace();
+  const { isSmallScreen } = useScreenSize();
 
   const filters = useForm<DoraMetricFilters>({
     initialValues: {
@@ -122,7 +124,7 @@ export const MetricsAndInsightsPage = () => {
         <Divider my="md" label="DORA Overview" labelPosition="left" />
 
         {!isLoading && (
-          <Group wrap="nowrap">
+          <Group wrap={isSmallScreen ? "wrap" : "nowrap"}>
             <CardDoraMetric
               name="Deployments"
               amount={
