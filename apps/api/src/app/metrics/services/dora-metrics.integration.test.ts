@@ -83,7 +83,7 @@ describe("DORA Metrics", () => {
       });
 
       // Lead time = 4 hours (10:00 to 14:00) = 4 * 60 * 60 * 1000 = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
       expect(result.columns.length).toBeGreaterThan(0);
       expect(result.data.length).toBe(result.columns.length); // Data aligns with columns
       // Chart data should include the deployment
@@ -157,7 +157,7 @@ describe("DORA Metrics", () => {
 
       // Lead time should use firstCommitAt (09:00) not createdAt (10:00)
       // 09:00 to 14:00 = 5 hours = 18,000,000 ms
-      expect(result.currentAmount).toBe(18000000);
+      expect(result.currentAmount).toBe(BigInt(18000000));
     });
 
     it("calculates lead time for batched PRs (multiple PRs per deployment)", async () => {
@@ -235,7 +235,7 @@ describe("DORA Metrics", () => {
 
       // Lead time should use earliest PR creation time (08:00)
       // 08:00 to 14:00 = 6 hours = 21,600,000 ms
-      expect(result.currentAmount).toBe(21600000);
+      expect(result.currentAmount).toBe(BigInt(21600000));
     });
 
     it("calculates previous period comparison correctly", async () => {
@@ -297,9 +297,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 6 hours = 21,600,000 ms
-      expect(result.currentAmount).toBe(21600000);
+      expect(result.currentAmount).toBe(BigInt(21600000));
       // Previous: 4 hours = 14,400,000 ms
-      expect(result.previousAmount).toBe(14400000);
+      expect(result.previousAmount).toBe(BigInt(14400000));
       // Change: (21,600,000 - 14,400,000) / 14,400,000 * 100 = 50%
       expect(result.change).toBeCloseTo(50, 1);
     });
@@ -363,7 +363,7 @@ describe("DORA Metrics", () => {
         environmentIds: [stagingEnv.environmentId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by applicationIds", async () => {
@@ -429,7 +429,7 @@ describe("DORA Metrics", () => {
         applicationIds: [app1.applicationId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by teamIds", async () => {
@@ -499,7 +499,7 @@ describe("DORA Metrics", () => {
         teamIds: [team1.teamId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by repositoryIds", async () => {
@@ -566,7 +566,7 @@ describe("DORA Metrics", () => {
         repositoryIds: [repo1.repositoryId],
       });
 
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -627,7 +627,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only match team1 + staging = 1 deployment, 4 hours lead time
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("excludes archived deployments from lead time", async () => {
@@ -695,7 +695,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count deployment1
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("excludes deployments without PRs from lead time calculation", async () => {
@@ -746,7 +746,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count deployment with PR: 4 hours = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("isolates data by workspace for lead time", async () => {
@@ -796,7 +796,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data
-      expect(result.currentAmount).toBe(14400000); // 4 hours
+      expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
     });
 
     it("handles division by zero when previousAmount is 0", async () => {
@@ -835,7 +835,7 @@ describe("DORA Metrics", () => {
       });
 
       // Previous period has no data, so previousAmount = 0
-      expect(result.previousAmount).toBe(0);
+      expect(result.previousAmount).toBe(BigInt(0));
       // Change should be 0 when previousAmount is 0
       expect(result.change).toBe(0);
     });
@@ -898,9 +898,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Previous: 6 hours = 21,600,000 ms
-      expect(result.previousAmount).toBe(21600000);
+      expect(result.previousAmount).toBe(BigInt(21600000));
       // Change: (7,200,000 - 21,600,000) / 21,600,000 * 100 = -66.67%
       expect(result.change).toBeCloseTo(-66.67, 1);
     });
@@ -1580,9 +1580,9 @@ describe("DORA Metrics", () => {
 
       // MTTR should only include the resolved incident
       // 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Unresolved incident should not affect the calculation
-      expect(result.previousAmount).toBe(0);
+      expect(result.previousAmount).toBe(BigInt(0));
     });
 
     it("calculates MTTR for multiple incidents correctly", async () => {
@@ -1643,7 +1643,7 @@ describe("DORA Metrics", () => {
       });
 
       // Average MTTR = (1 + 2 + 3) / 3 = 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("calculates previous period comparison correctly", async () => {
@@ -1713,9 +1713,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
       // Previous: 4 hours = 14,400,000 ms
-      expect(result.previousAmount).toBe(14400000);
+      expect(result.previousAmount).toBe(BigInt(14400000));
       // Change: (7,200,000 - 14,400,000) / 14,400,000 * 100 = -50% (improvement)
       expect(result.change).toBeCloseTo(-50, 1);
     });
@@ -1788,7 +1788,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count staging: 4 hours = 14,400,000 ms
-      expect(result.currentAmount).toBe(14400000);
+      expect(result.currentAmount).toBe(BigInt(14400000));
     });
 
     it("filters by applicationIds", async () => {
@@ -1840,7 +1840,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count app1: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by teamIds", async () => {
@@ -1901,7 +1901,7 @@ describe("DORA Metrics", () => {
       });
 
       // Average of 2 incidents, both 2 hours = 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by repositoryIds", async () => {
@@ -1954,7 +1954,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count repo1: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -2019,7 +2019,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only match team1 + staging = 1 incident, 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("excludes archived environments from MTTR", async () => {
@@ -2071,7 +2071,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count env1: 1 incident, 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
 
     it("isolates data by workspace for MTTR", async () => {
@@ -2125,7 +2125,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data: 2 hours = 7,200,000 ms
-      expect(result.currentAmount).toBe(7200000);
+      expect(result.currentAmount).toBe(BigInt(7200000));
     });
   });
 
@@ -2158,7 +2158,7 @@ describe("DORA Metrics", () => {
       });
 
       // 4 weeks * 5 deployments/week = 20 deployments
-      expect(result.currentAmount).toBe(20);
+      expect(result.currentAmount).toBe(BigInt(20));
       expect(result.columns.length).toBeGreaterThan(0);
       expect(result.data.length).toBe(result.columns.length); // Data aligns with columns
       // Chart data should show 5 deployments per week
@@ -2212,7 +2212,7 @@ describe("DORA Metrics", () => {
       });
 
       // 7 deployments over 7 days = 1 deployment per day
-      expect(result.currentAmount).toBe(7);
+      expect(result.currentAmount).toBe(BigInt(7));
       expect(result.avg).toBeCloseTo(1, 2);
       // Verify chart data structure
       expect(result.columns.length).toBeGreaterThan(0);
@@ -2269,9 +2269,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 10 deployments
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       // Previous: 5 deployments
-      expect(result.previousAmount).toBe(5);
+      expect(result.previousAmount).toBe(BigInt(5));
       // Change: (10 - 5) / 5 * 100 = 100% increase
       expect(result.change).toBeCloseTo(100, 1);
     });
@@ -2285,8 +2285,8 @@ describe("DORA Metrics", () => {
         period: Period.WEEKLY,
       });
 
-      expect(result.currentAmount).toBe(0);
-      expect(result.previousAmount).toBe(0);
+      expect(result.currentAmount).toBe(BigInt(0));
+      expect(result.previousAmount).toBe(BigInt(0));
       expect(result.change).toBe(0);
       expect(result.avg).toBe(0);
     });
@@ -2330,7 +2330,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count production deployment
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by environmentIds", async () => {
@@ -2392,7 +2392,7 @@ describe("DORA Metrics", () => {
         environmentIds: [stagingEnv.environmentId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by multiple environmentIds", async () => {
@@ -2436,7 +2436,7 @@ describe("DORA Metrics", () => {
         environmentIds: [env1.environmentId, env2.environmentId],
       });
 
-      expect(result.currentAmount).toBe(2);
+      expect(result.currentAmount).toBe(BigInt(2));
     });
 
     it("filters by applicationIds", async () => {
@@ -2483,7 +2483,7 @@ describe("DORA Metrics", () => {
         applicationIds: [app1.applicationId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by teamIds", async () => {
@@ -2534,7 +2534,7 @@ describe("DORA Metrics", () => {
         teamIds: [team1.teamId],
       });
 
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("filters by repositoryIds", async () => {
@@ -2586,7 +2586,7 @@ describe("DORA Metrics", () => {
         repositoryIds: [repo1.repositoryId, repo2.repositoryId],
       });
 
-      expect(result.currentAmount).toBe(2);
+      expect(result.currentAmount).toBe(BigInt(2));
     });
 
     it("filters by combined teamIds and environmentIds", async () => {
@@ -2647,7 +2647,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only match team1 + staging = 1 deployment
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("excludes archived environments from deployment frequency", async () => {
@@ -2695,7 +2695,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only count env1
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("calculates metrics with MONTHLY period", async () => {
@@ -2750,7 +2750,7 @@ describe("DORA Metrics", () => {
         period: Period.MONTHLY,
       });
 
-      expect(result.currentAmount).toBe(15);
+      expect(result.currentAmount).toBe(BigInt(15));
       expect(result.columns.length).toBeGreaterThanOrEqual(3);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -2806,7 +2806,7 @@ describe("DORA Metrics", () => {
         period: Period.QUARTERLY,
       });
 
-      expect(result.currentAmount).toBe(20);
+      expect(result.currentAmount).toBe(BigInt(20));
       expect(result.columns.length).toBeGreaterThanOrEqual(2);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -2851,7 +2851,7 @@ describe("DORA Metrics", () => {
         period: Period.YEARLY,
       });
 
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       expect(result.columns.length).toBeGreaterThanOrEqual(2);
       expect(result.data.length).toBe(result.columns.length);
     });
@@ -2903,7 +2903,7 @@ describe("DORA Metrics", () => {
       });
 
       // Should only see workspace 1's data
-      expect(result.currentAmount).toBe(1);
+      expect(result.currentAmount).toBe(BigInt(1));
     });
 
     it("handles large percentage changes", async () => {
@@ -2966,9 +2966,9 @@ describe("DORA Metrics", () => {
       });
 
       // Current: 10 deployments
-      expect(result.currentAmount).toBe(10);
+      expect(result.currentAmount).toBe(BigInt(10));
       // Previous: 1 deployment
-      expect(result.previousAmount).toBe(1);
+      expect(result.previousAmount).toBe(BigInt(1));
       // Change: (10 - 1) / 1 * 100 = 900%
       expect(result.change).toBeCloseTo(900, 1);
       // Should not be NaN or Infinity
