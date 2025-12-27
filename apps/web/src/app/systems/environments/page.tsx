@@ -1,14 +1,20 @@
-import { Box, Button, Skeleton, Stack } from "@mantine/core";
+import { Box, Button, Group, Skeleton, Stack } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { Environment } from "@sweetr/graphql-types/frontend/graphql";
 import { Fragment } from "react/jsx-runtime";
 import { useEnvironmentsInfiniteQuery } from "../../../api/environments.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { ButtonDocs } from "../../../components/button-docs";
+import {
+  FilterArchivedOnly,
+  FilterOptions,
+} from "../../../components/filter-options";
 import { HeaderActions } from "../../../components/header-actions";
 import { LoadableContent } from "../../../components/loadable-content";
 import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { useInfoModal } from "../../../providers/modal.provider";
 import { useInfiniteLoading } from "../../../providers/pagination.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
@@ -16,6 +22,13 @@ import { CardEnvironment } from "./components/card-environment";
 
 export const EnvironmentsPage = () => {
   const { workspace } = useWorkspace();
+  const searchParams = useFilterSearchParameters();
+  const filters = useForm<{ archivedOnly: boolean }>({
+    initialValues: {
+      archivedOnly: searchParams.get("archivedOnly") === "true",
+    },
+  });
+  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   const {
     data,
@@ -25,7 +38,10 @@ export const EnvironmentsPage = () => {
     hasNextPage,
     isFetchedAfterMount,
   } = useEnvironmentsInfiniteQuery(
-    { input: { includeArchived: true }, workspaceId: workspace?.id },
+    {
+      input: { archivedOnly: filters.values.archivedOnly },
+      workspaceId: workspace?.id,
+    },
     {
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => {
@@ -60,6 +76,7 @@ export const EnvironmentsPage = () => {
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Environments" }]} />
+
       <HeaderActions>
         <Button
           variant="light"
@@ -83,7 +100,20 @@ export const EnvironmentsPage = () => {
         </Button>
       </HeaderActions>
 
+      <Group gap={5}>
+        <FilterOptions>
+          <FilterArchivedOnly
+            checked={filters.values.archivedOnly}
+            onChange={(value) => {
+              filters.setFieldValue("archivedOnly", value);
+              searchParams.set("archivedOnly", value ? "true" : null);
+            }}
+          />
+        </FilterOptions>
+      </Group>
+
       <LoadableContent
+        mt="md"
         isLoading={isLoading}
         isEmpty={isEmpty}
         whenLoading={
@@ -99,7 +129,14 @@ export const EnvironmentsPage = () => {
         }
         whenEmpty={
           <Box mt={80}>
-            <PageEmptyState message="No environments found." />
+            <PageEmptyState
+              message="No environments found."
+              isFiltering={isFiltering}
+              onResetFilter={() => {
+                filters.setValues({ archivedOnly: false });
+                searchParams.reset();
+              }}
+            />
           </Box>
         }
         content={

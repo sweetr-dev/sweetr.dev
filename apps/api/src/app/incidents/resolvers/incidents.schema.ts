@@ -42,6 +42,9 @@ export default /* GraphQL */ `
 
     "The pagination limit"
     limit: Int
+
+    "Whether to only include archived incidents. Defaults to false."
+    archivedOnly: Boolean
   }
 
   input UpsertIncidentInput {

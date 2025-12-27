@@ -29,7 +29,7 @@ export const paginateIncidents = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
-      archivedAt: null,
+      archivedAt: args.archivedOnly ? { not: null } : null,
       causeDeployment: {
         archivedAt: null,
         environment: { archivedAt: null },

@@ -11,6 +11,7 @@ export interface PaginateIncidentsArgs {
   applicationIds?: number[];
   detectedAt?: DateTimeRange;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export interface UpsertIncidentInput {

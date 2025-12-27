@@ -8,7 +8,7 @@ export interface PaginateEnvironmentsArgs {
   query?: string;
   limit?: number;
   cursor?: number;
-  includeArchived?: boolean;
+  archivedOnly?: boolean;
 }
 
 export interface ArchiveEnvironmentArgs {

@@ -1,7 +1,7 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
   findApplicationById,
   paginateApplications,
@@ -24,6 +24,7 @@ export const applicationsQuery = createFieldResolver("Workspace", {
       teamIds: input.teamIds || undefined,
       cursor: input.cursor || undefined,
       limit: input.limit || undefined,
+      archivedOnly: input.archivedOnly || false,
     });
 
     return applications.map(transformApplication);

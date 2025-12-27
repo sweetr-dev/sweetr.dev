@@ -45,6 +45,9 @@ export default /* GraphQL */ `
 
     "The environments to filter by"
     environmentIds: [SweetID!]
+
+    "Whether to only include archived deployments. Defaults to false."
+    archivedOnly: Boolean
   }
 
   input ArchiveDeploymentInput {

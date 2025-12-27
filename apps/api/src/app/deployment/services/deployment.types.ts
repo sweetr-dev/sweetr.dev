@@ -9,6 +9,7 @@ export interface PaginateDeploymentsArgs {
   applicationIds?: number[];
   deployedAt?: DateTimeRange;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export interface FindDeploymentByIdArgs<

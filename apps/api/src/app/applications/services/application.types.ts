@@ -11,6 +11,7 @@ export interface PaginateApplicationsArgs {
   teamIds?: number[];
   query?: string;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export enum DeploymentSettingsTrigger {

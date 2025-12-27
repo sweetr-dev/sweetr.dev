@@ -52,6 +52,9 @@ export default /* GraphQL */ `
 
     "The amount of records to return."
     limit: Int
+
+    "Whether to only include archived applications. Defaults to false."
+    archivedOnly: Boolean
   }
 
   input DeploymentSettingsInput {

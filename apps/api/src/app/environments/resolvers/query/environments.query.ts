@@ -20,7 +20,7 @@ export const environmentsQuery = createFieldResolver("Workspace", {
       query: input.query || undefined,
       cursor: input.cursor || undefined,
       limit: input.limit || undefined,
-      includeArchived: input.includeArchived || undefined,
+      archivedOnly: input.archivedOnly || false,
     });
 
     return environments.map(transformEnvironment);

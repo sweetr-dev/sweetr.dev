@@ -84,6 +84,8 @@ export type Application = {
 };
 
 export type ApplicationsQueryInput = {
+  /** Whether to only include archived applications. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The ids to filter by */
@@ -328,6 +330,8 @@ export enum DeploymentSettingsTrigger {
 export type DeploymentsQueryInput = {
   /** The applications to filter by */
   applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** Whether to only include archived deployments. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the deployment went live */
@@ -408,12 +412,12 @@ export type Environment = {
 };
 
 export type EnvironmentsQueryInput = {
+  /** Whether to only include archived environments. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The ids to filter by */
   ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
-  /** Whether to include archived environments */
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name. */
@@ -451,6 +455,8 @@ export type Incident = {
 export type IncidentsQueryInput = {
   /** The applications to filter by */
   applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** Whether to only include archived incidents. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the incident was detected in */

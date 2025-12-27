@@ -7,6 +7,10 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import {
+  FilterArchivedOnly,
+  FilterOptions,
+} from "../../../components/filter-options";
 import { HeaderActions } from "../../../components/header-actions";
 import { InputSearch } from "../../../components/input-search";
 import { LoadableContent } from "../../../components/loadable-content";
@@ -24,8 +28,11 @@ import { CardApplication } from "./components/card-application";
 export const ApplicationsPage = () => {
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
-  const filters = useForm<{ teamIds: string[] }>({
-    initialValues: { teamIds: searchParams.getAll<string[]>("team") || [] },
+  const filters = useForm({
+    initialValues: {
+      teamIds: searchParams.getAll<string[]>("team") || [],
+      archivedOnly: searchParams.get("archivedOnly") === "true",
+    },
   });
   const navigate = useNavigate();
 
@@ -60,7 +67,13 @@ export const ApplicationsPage = () => {
     hasNextPage,
     isFetchedAfterMount,
   } = useApplicationsInfiniteQuery(
-    { input: { teamIds: filters.values.teamIds }, workspaceId: workspace?.id },
+    {
+      input: {
+        teamIds: filters.values.teamIds,
+        archivedOnly: filters.values.archivedOnly,
+      },
+      workspaceId: workspace?.id,
+    },
     {
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => {
@@ -116,6 +129,16 @@ export const ApplicationsPage = () => {
             searchParams.set("team", value);
           }}
         />
+
+        <FilterOptions>
+          <FilterArchivedOnly
+            checked={filters.values.archivedOnly}
+            onChange={(value) => {
+              filters.setFieldValue("archivedOnly", value);
+              searchParams.set("archivedOnly", value ? "true" : null);
+            }}
+          />
+        </FilterOptions>
       </Group>
 
       <LoadableContent
@@ -145,7 +168,7 @@ export const ApplicationsPage = () => {
                 );
               }}
               onResetFilter={() => {
-                filters.setValues({ teamIds: [] });
+                filters.setValues({ teamIds: [], archivedOnly: false });
                 searchParams.reset();
               }}
             />
@@ -159,7 +182,6 @@ export const ApplicationsPage = () => {
                 justifyContent: "space-between",
                 gap: "var(--stack-gap, var(--mantine-spacing-md))",
               }}
-              mt="md"
             >
               {applications?.map((application) => (
                 <CardApplication

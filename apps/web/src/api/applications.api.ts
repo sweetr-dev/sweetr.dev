@@ -109,7 +109,7 @@ export const useApplicationsInfiniteQuery = (
   >,
 ) =>
   useInfiniteQuery({
-    queryKey: ["applications", args.workspaceId, args.input.teamIds],
+    queryKey: ["applications", args.workspaceId, ...Object.values(args.input)],
     queryFn: ({ pageParam }) =>
       graphQLClient.request(
         graphql(/* GraphQL */ `

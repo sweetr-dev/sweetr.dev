@@ -1,7 +1,7 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
   findIncidentById,
   paginateIncidents,
@@ -27,6 +27,7 @@ export const incidentsQuery = createFieldResolver("Workspace", {
       },
       cursor: input.cursor || undefined,
       limit: input.limit || undefined,
+      archivedOnly: input.archivedOnly || false,
     });
 
     return incidents.map(transformIncident);

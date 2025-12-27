@@ -9,6 +9,10 @@ import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import {
+  FilterArchivedOnly,
+  FilterOptions,
+} from "../../../components/filter-options";
 import { LoadableContent } from "../../../components/loadable-content";
 import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { PageContainer } from "../../../components/page-container";
@@ -34,12 +38,14 @@ export const DeploymentsPage = () => {
     deployedAtTo: string | null;
     applicationIds: string[];
     environmentIds: string[];
+    archivedOnly: boolean;
   }>({
     initialValues: {
       deployedAtFrom: searchParams.get("deployedAtFrom"),
       deployedAtTo: searchParams.get("deployedAtTo"),
       applicationIds: searchParams.getAll("application"),
       environmentIds: searchParams.getAll("environment"),
+      archivedOnly: searchParams.get("archivedOnly") === "true",
     },
   });
 
@@ -59,6 +65,7 @@ export const DeploymentsPage = () => {
         },
         applicationIds: filters.values.applicationIds,
         environmentIds: filters.values.environmentIds,
+        archivedOnly: filters.values.archivedOnly,
       },
       workspaceId: workspace?.id,
     },
@@ -145,6 +152,16 @@ export const DeploymentsPage = () => {
             searchParams.set("environment", value);
           }}
         />
+
+        <FilterOptions>
+          <FilterArchivedOnly
+            checked={filters.values.archivedOnly}
+            onChange={(value) => {
+              filters.setFieldValue("archivedOnly", value);
+              searchParams.set("archivedOnly", value ? "true" : null);
+            }}
+          />
+        </FilterOptions>
       </Group>
 
       <LoadableContent
@@ -173,6 +190,7 @@ export const DeploymentsPage = () => {
                   deployedAtTo: null,
                   applicationIds: [],
                   environmentIds: [],
+                  archivedOnly: false,
                 });
                 searchParams.reset();
               }}

@@ -25,8 +25,8 @@ export default /* GraphQL */ `
     "The pagination cursor"
     cursor: SweetID
 
-    "Whether to include archived environments"
-    includeArchived: Boolean
+    "Whether to only include archived environments. Defaults to false."
+    archivedOnly: Boolean
   }
 
   input ArchiveEnvironmentInput {
