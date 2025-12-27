@@ -1,19 +1,23 @@
-import { useState } from "react";
-import { Menu, ActionIcon } from "@mantine/core";
-import { IconDotsVertical, IconArchive } from "@tabler/icons-react";
+import { ActionIcon, Menu } from "@mantine/core";
 import { Environment } from "@sweetr/graphql-types/frontend/graphql";
+import { IconArchive, IconDotsVertical } from "@tabler/icons-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   useArchiveEnvironment,
   useUnarchiveEnvironment,
 } from "../../../../../api/environments.api";
-import { useWorkspace } from "../../../../../providers/workspace.provider";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import { IconInfo } from "../../../../../components/icon-info";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 import {
   IconDeployment,
   IconIncident,
 } from "../../../../../providers/icon.provider";
-import { Link } from "react-router-dom";
-import { IconInfo } from "../../../../../components/icon-info";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../../providers/notification.provider";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
 
 interface MenuEnvironmentProps {
   environment: Environment;
@@ -27,17 +31,31 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
 
   const handleToggleArchive = async () => {
     if (environment.archivedAt) {
-      await unarchiveEnvironment({
-        input: { workspaceId: workspace.id, environmentId: environment.id },
-      });
-      showSuccessNotification({ message: "Environment unarchived." });
+      await unarchiveEnvironment(
+        { input: { workspaceId: workspace.id, environmentId: environment.id } },
+        {
+          onSuccess: () => {
+            showSuccessNotification({ message: "Environment unarchived." });
+          },
+          onError: (error) => {
+            showErrorNotification({ message: getErrorMessage(error) });
+          },
+        },
+      );
       return;
     }
 
-    await archiveEnvironment({
-      input: { workspaceId: workspace.id, environmentId: environment.id },
-    });
-    showSuccessNotification({ message: "Environment archived." });
+    await archiveEnvironment(
+      { input: { workspaceId: workspace.id, environmentId: environment.id } },
+      {
+        onSuccess: () => {
+          showSuccessNotification({ message: "Environment archived." });
+        },
+        onError: (error) => {
+          showErrorNotification({ message: getErrorMessage(error) });
+        },
+      },
+    );
   };
 
   return (
@@ -52,6 +70,7 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
           size="sm"
           variant="transparent"
           color="var(--mantine-color-text)"
+          className="row-action-menu"
         >
           <IconDotsVertical size={24} stroke={1.5} />
         </ActionIcon>
@@ -78,7 +97,7 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
           </>
         )}
         <Menu.Item
-          leftSection={<IconArchive size={16} />}
+          leftSection={<IconArchive size={16} stroke={1.5} />}
           onClick={handleToggleArchive}
           rightSection={
             !environment.archivedAt && (

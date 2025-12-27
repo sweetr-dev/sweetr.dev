@@ -1,4 +1,5 @@
 import { Environment, Prisma } from "@prisma/client";
+import { getPrisma, take } from "../../../prisma";
 import {
   ArchiveEnvironmentArgs,
   FindEnvironmentByIdArgs,
@@ -6,7 +7,6 @@ import {
   PaginateEnvironmentsArgs,
   UnarchiveEnvironmentArgs,
 } from "./environment.types";
-import { getPrisma, take } from "../../../prisma";
 
 export const DEFAULT_PRODUCTION_ENVIRONMENT_NAME = "production";
 
@@ -15,10 +15,7 @@ export const findEnvironmentById = async ({
   workspaceId,
 }: FindEnvironmentByIdArgs): Promise<Environment | null> => {
   return getPrisma(workspaceId).environment.findUnique({
-    where: {
-      id: environmentId,
-      workspaceId,
-    },
+    where: { id: environmentId, workspaceId },
   });
 };
 
@@ -32,28 +29,20 @@ export const paginateEnvironments = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
-      archivedAt: args.includeArchived ? undefined : null,
+      archivedAt: args.archivedOnly ? { not: null } : null,
     },
-    orderBy: {
-      id: "asc",
-    },
+    orderBy: { id: "asc" },
   };
 
   if (args.query) {
     query.where = {
       ...query.where,
-      name: {
-        contains: args.query,
-        mode: "insensitive",
-      },
+      name: { contains: args.query, mode: "insensitive" },
     };
   }
 
   if (args.environmentIds && args.environmentIds.length) {
-    query.where = {
-      ...query.where,
-      id: { in: args.environmentIds },
-    };
+    query.where = { ...query.where, id: { in: args.environmentIds } };
   }
 
   return getPrisma(workspaceId).environment.findMany(query);
@@ -84,12 +73,7 @@ export const findOrCreateEnvironment = async ({
   name,
 }: FindOrCreateEnvironmentArgs) => {
   const environment = await getPrisma(workspaceId).environment.findUnique({
-    where: {
-      workspaceId_name: {
-        workspaceId,
-        name,
-      },
-    },
+    where: { workspaceId_name: { workspaceId, name } },
   });
 
   if (environment) {

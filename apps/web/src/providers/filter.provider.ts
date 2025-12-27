@@ -1,5 +1,5 @@
-import { useSearchParams } from "react-router-dom";
 import { ReactNode } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export const useFilterSearchParameters = () => {
   const [searchParameters, setSearchParams] = useSearchParams();
@@ -59,8 +59,4 @@ export type UseAsyncFilterHook = ({
 }: {
   query?: string;
   ids?: string[]; // When loading filtered URL, we need to fetch selected items data
-}) => {
-  options: FilterOption[];
-  isLoading: boolean;
-  refetch: () => void;
-};
+}) => { options: FilterOption[]; isLoading: boolean; refetch: () => void };

@@ -9,7 +9,7 @@ interface CardEnvironmentProps {
 
 export const CardEnvironment = ({ environment }: CardEnvironmentProps) => {
   return (
-    <Paper p="md" radius="md" withBorder>
+    <Paper pl="lg" pr="md" radius="md" withBorder>
       <Group justify="space-between" align="center">
         <Group gap="xs">
           <IconEnvironment stroke={1.5} size={20} />

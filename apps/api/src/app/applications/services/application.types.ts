@@ -11,6 +11,7 @@ export interface PaginateApplicationsArgs {
   teamIds?: number[];
   query?: string;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export enum DeploymentSettingsTrigger {
@@ -37,4 +38,14 @@ export interface UpsertApplicationInput extends JsonObject {
 export interface FindApplicationByNameArgs {
   workspaceId: number;
   name: string;
+}
+
+export interface ArchiveApplicationArgs {
+  workspaceId: number;
+  applicationId: number;
+}
+
+export interface UnarchiveApplicationArgs {
+  workspaceId: number;
+  applicationId: number;
 }

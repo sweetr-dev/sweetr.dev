@@ -12,11 +12,15 @@ import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import { Optional } from "utility-types";
 import {
+  ArchiveIncidentMutation,
   IncidentQuery,
   IncidentQueryVariables,
   IncidentsQuery,
   IncidentsQueryVariables,
+  MutationArchiveIncidentArgs,
+  MutationUnarchiveIncidentArgs,
   MutationUpsertIncidentArgs,
+  UnarchiveIncidentMutation,
   UpsertIncidentMutation,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { queryClient } from "./clients/query-client";
@@ -114,6 +118,7 @@ export const useIncidentQuery = (
                 detectedAt
                 resolvedAt
                 postmortemUrl
+                archivedAt
                 causeDeployment {
                   id
                   version
@@ -164,6 +169,64 @@ export const useUpsertIncidentMutation = (
       queryClient.resetQueries({
         queryKey: ["incident", args.input.workspaceId, args.input.incidentId],
       });
+    },
+    ...options,
+  });
+
+export const useArchiveIncident = (
+  options?: UseMutationOptions<
+    ArchiveIncidentMutation,
+    unknown,
+    MutationArchiveIncidentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation ArchiveIncident($input: ArchiveIncidentInput!) {
+            archiveIncident(input: $input) {
+              id
+              detectedAt
+              resolvedAt
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+    },
+    ...options,
+  });
+
+export const useUnarchiveIncident = (
+  options?: UseMutationOptions<
+    UnarchiveIncidentMutation,
+    unknown,
+    MutationUnarchiveIncidentArgs,
+    unknown
+  >,
+) =>
+  useMutation({
+    mutationFn: (args) =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          mutation UnarchiveIncident($input: UnarchiveIncidentInput!) {
+            unarchiveIncident(input: $input) {
+              id
+              detectedAt
+              resolvedAt
+              archivedAt
+            }
+          }
+        `),
+        args,
+      ),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
     },
     ...options,
   });

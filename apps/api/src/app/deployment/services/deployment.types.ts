@@ -9,6 +9,7 @@ export interface PaginateDeploymentsArgs {
   applicationIds?: number[];
   deployedAt?: DateTimeRange;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export interface FindDeploymentByIdArgs<
@@ -46,4 +47,14 @@ export interface FindPreviousDeploymentArgs {
   applicationId: number;
   environmentId: number;
   beforeDeploymentId?: number;
+}
+
+export interface ArchiveDeploymentArgs {
+  workspaceId: number;
+  deploymentId: number;
+}
+
+export interface UnarchiveDeploymentArgs {
+  workspaceId: number;
+  deploymentId: number;
 }

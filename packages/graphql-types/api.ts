@@ -84,6 +84,8 @@ export type Application = {
 };
 
 export type ApplicationsQueryInput = {
+  /** Whether to only include archived applications. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The ids to filter by */
@@ -96,8 +98,23 @@ export type ApplicationsQueryInput = {
   teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
 };
 
+export type ArchiveApplicationInput = {
+  applicationId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type ArchiveDeploymentInput = {
+  deploymentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type ArchiveEnvironmentInput = {
   environmentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type ArchiveIncidentInput = {
+  incidentId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -313,6 +330,8 @@ export enum DeploymentSettingsTrigger {
 export type DeploymentsQueryInput = {
   /** The applications to filter by */
   applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** Whether to only include archived deployments. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the deployment went live */
@@ -393,12 +412,12 @@ export type Environment = {
 };
 
 export type EnvironmentsQueryInput = {
+  /** Whether to only include archived environments. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The ids to filter by */
   ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
-  /** Whether to include archived environments */
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   /** The amount of records to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** The query to search by. Looks up by name. */
@@ -436,6 +455,8 @@ export type Incident = {
 export type IncidentsQueryInput = {
   /** The applications to filter by */
   applicationIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** Whether to only include archived incidents. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the incident was detected in */
@@ -552,7 +573,10 @@ export type MetricsTimeToMergeArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  archiveApplication: Application;
+  archiveDeployment: Deployment;
   archiveEnvironment: Environment;
+  archiveIncident: Incident;
   archiveTeam: Team;
   installIntegration?: Maybe<Scalars['Void']['output']>;
   loginToStripe?: Maybe<Scalars['String']['output']>;
@@ -561,7 +585,10 @@ export type Mutation = {
   removeIntegration?: Maybe<Scalars['Void']['output']>;
   scheduleSyncBatch: SyncBatch;
   sendTestMessage?: Maybe<Scalars['Void']['output']>;
+  unarchiveApplication: Application;
+  unarchiveDeployment: Deployment;
   unarchiveEnvironment: Environment;
+  unarchiveIncident: Incident;
   unarchiveTeam: Team;
   updateAlert: Alert;
   updateAutomation: Automation;
@@ -573,8 +600,23 @@ export type Mutation = {
 };
 
 
+export type MutationArchiveApplicationArgs = {
+  input: ArchiveApplicationInput;
+};
+
+
+export type MutationArchiveDeploymentArgs = {
+  input: ArchiveDeploymentInput;
+};
+
+
 export type MutationArchiveEnvironmentArgs = {
   input: ArchiveEnvironmentInput;
+};
+
+
+export type MutationArchiveIncidentArgs = {
+  input: ArchiveIncidentInput;
 };
 
 
@@ -618,8 +660,23 @@ export type MutationSendTestMessageArgs = {
 };
 
 
+export type MutationUnarchiveApplicationArgs = {
+  input: UnarchiveApplicationInput;
+};
+
+
+export type MutationUnarchiveDeploymentArgs = {
+  input: UnarchiveDeploymentInput;
+};
+
+
 export type MutationUnarchiveEnvironmentArgs = {
   input: UnarchiveEnvironmentInput;
+};
+
+
+export type MutationUnarchiveIncidentArgs = {
+  input: UnarchiveIncidentInput;
 };
 
 
@@ -1022,8 +1079,23 @@ export type Trial = {
   endAt: Scalars['DateTime']['output'];
 };
 
+export type UnarchiveApplicationInput = {
+  applicationId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UnarchiveDeploymentInput = {
+  deploymentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
 export type UnarchiveEnvironmentInput = {
   environmentId: Scalars['SweetID']['input'];
+  workspaceId: Scalars['SweetID']['input'];
+};
+
+export type UnarchiveIncidentInput = {
+  incidentId: Scalars['SweetID']['input'];
   workspaceId: Scalars['SweetID']['input'];
 };
 
@@ -1360,7 +1432,10 @@ export type ResolversTypes = {
   ApiKey: ResolverTypeWrapper<DeepPartial<ApiKey>>;
   Application: ResolverTypeWrapper<DeepPartial<Application>>;
   ApplicationsQueryInput: ResolverTypeWrapper<DeepPartial<ApplicationsQueryInput>>;
+  ArchiveApplicationInput: ResolverTypeWrapper<DeepPartial<ArchiveApplicationInput>>;
+  ArchiveDeploymentInput: ResolverTypeWrapper<DeepPartial<ArchiveDeploymentInput>>;
   ArchiveEnvironmentInput: ResolverTypeWrapper<DeepPartial<ArchiveEnvironmentInput>>;
+  ArchiveIncidentInput: ResolverTypeWrapper<DeepPartial<ArchiveIncidentInput>>;
   ArchiveTeamInput: ResolverTypeWrapper<DeepPartial<ArchiveTeamInput>>;
   AuthProvider: ResolverTypeWrapper<DeepPartial<AuthProvider>>;
   AuthProviderInput: ResolverTypeWrapper<DeepPartial<AuthProviderInput>>;
@@ -1453,7 +1528,10 @@ export type ResolversTypes = {
   TimeZone: ResolverTypeWrapper<DeepPartial<Scalars['TimeZone']['output']>>;
   Token: ResolverTypeWrapper<DeepPartial<Token>>;
   Trial: ResolverTypeWrapper<DeepPartial<Trial>>;
+  UnarchiveApplicationInput: ResolverTypeWrapper<DeepPartial<UnarchiveApplicationInput>>;
+  UnarchiveDeploymentInput: ResolverTypeWrapper<DeepPartial<UnarchiveDeploymentInput>>;
   UnarchiveEnvironmentInput: ResolverTypeWrapper<DeepPartial<UnarchiveEnvironmentInput>>;
+  UnarchiveIncidentInput: ResolverTypeWrapper<DeepPartial<UnarchiveIncidentInput>>;
   UnarchiveTeamInput: ResolverTypeWrapper<DeepPartial<UnarchiveTeamInput>>;
   UpdateAlertInput: ResolverTypeWrapper<DeepPartial<UpdateAlertInput>>;
   UpdateAutomationInput: ResolverTypeWrapper<DeepPartial<UpdateAutomationInput>>;
@@ -1482,7 +1560,10 @@ export type ResolversParentTypes = {
   ApiKey: DeepPartial<ApiKey>;
   Application: DeepPartial<Application>;
   ApplicationsQueryInput: DeepPartial<ApplicationsQueryInput>;
+  ArchiveApplicationInput: DeepPartial<ArchiveApplicationInput>;
+  ArchiveDeploymentInput: DeepPartial<ArchiveDeploymentInput>;
   ArchiveEnvironmentInput: DeepPartial<ArchiveEnvironmentInput>;
+  ArchiveIncidentInput: DeepPartial<ArchiveIncidentInput>;
   ArchiveTeamInput: DeepPartial<ArchiveTeamInput>;
   AuthProviderInput: DeepPartial<AuthProviderInput>;
   AuthProviderResponse: DeepPartial<AuthProviderResponse>;
@@ -1562,7 +1643,10 @@ export type ResolversParentTypes = {
   TimeZone: DeepPartial<Scalars['TimeZone']['output']>;
   Token: DeepPartial<Token>;
   Trial: DeepPartial<Trial>;
+  UnarchiveApplicationInput: DeepPartial<UnarchiveApplicationInput>;
+  UnarchiveDeploymentInput: DeepPartial<UnarchiveDeploymentInput>;
   UnarchiveEnvironmentInput: DeepPartial<UnarchiveEnvironmentInput>;
+  UnarchiveIncidentInput: DeepPartial<UnarchiveIncidentInput>;
   UnarchiveTeamInput: DeepPartial<UnarchiveTeamInput>;
   UpdateAlertInput: DeepPartial<UpdateAlertInput>;
   UpdateAutomationInput: DeepPartial<UpdateAutomationInput>;
@@ -1846,7 +1930,10 @@ export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends Re
 };
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  archiveApplication?: Resolver<ResolversTypes['Application'], ParentType, ContextType, RequireFields<MutationArchiveApplicationArgs, 'input'>>;
+  archiveDeployment?: Resolver<ResolversTypes['Deployment'], ParentType, ContextType, RequireFields<MutationArchiveDeploymentArgs, 'input'>>;
   archiveEnvironment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType, RequireFields<MutationArchiveEnvironmentArgs, 'input'>>;
+  archiveIncident?: Resolver<ResolversTypes['Incident'], ParentType, ContextType, RequireFields<MutationArchiveIncidentArgs, 'input'>>;
   archiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationArchiveTeamArgs, 'input'>>;
   installIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInstallIntegrationArgs, 'input'>>;
   loginToStripe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginToStripeArgs, 'input'>>;
@@ -1855,7 +1942,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   removeIntegration?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationRemoveIntegrationArgs, 'input'>>;
   scheduleSyncBatch?: Resolver<ResolversTypes['SyncBatch'], ParentType, ContextType, RequireFields<MutationScheduleSyncBatchArgs, 'input'>>;
   sendTestMessage?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationSendTestMessageArgs, 'input'>>;
+  unarchiveApplication?: Resolver<ResolversTypes['Application'], ParentType, ContextType, RequireFields<MutationUnarchiveApplicationArgs, 'input'>>;
+  unarchiveDeployment?: Resolver<ResolversTypes['Deployment'], ParentType, ContextType, RequireFields<MutationUnarchiveDeploymentArgs, 'input'>>;
   unarchiveEnvironment?: Resolver<ResolversTypes['Environment'], ParentType, ContextType, RequireFields<MutationUnarchiveEnvironmentArgs, 'input'>>;
+  unarchiveIncident?: Resolver<ResolversTypes['Incident'], ParentType, ContextType, RequireFields<MutationUnarchiveIncidentArgs, 'input'>>;
   unarchiveTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationUnarchiveTeamArgs, 'input'>>;
   updateAlert?: Resolver<ResolversTypes['Alert'], ParentType, ContextType, RequireFields<MutationUpdateAlertArgs, 'input'>>;
   updateAutomation?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationUpdateAutomationArgs, 'input'>>;

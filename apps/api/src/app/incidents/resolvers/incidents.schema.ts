@@ -42,6 +42,9 @@ export default /* GraphQL */ `
 
     "The pagination limit"
     limit: Int
+
+    "Whether to only include archived incidents. Defaults to false."
+    archivedOnly: Boolean
   }
 
   input UpsertIncidentInput {
@@ -73,8 +76,20 @@ export default /* GraphQL */ `
     postmortemUrl: String
   }
 
+  input ArchiveIncidentInput {
+    incidentId: SweetID!
+    workspaceId: SweetID!
+  }
+
+  input UnarchiveIncidentInput {
+    incidentId: SweetID!
+    workspaceId: SweetID!
+  }
+
   type Mutation {
     upsertIncident(input: UpsertIncidentInput!): Incident!
+    archiveIncident(input: ArchiveIncidentInput!): Incident!
+    unarchiveIncident(input: UnarchiveIncidentInput!): Incident!
   }
 
   extend type Workspace {

@@ -10,6 +10,10 @@ import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import {
+  FilterArchivedOnly,
+  FilterOptions,
+} from "../../../components/filter-options";
 import { HeaderActions } from "../../../components/header-actions";
 import { LoadableContent } from "../../../components/loadable-content";
 import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
@@ -37,12 +41,14 @@ export const IncidentsPage = () => {
     detectedAtTo: string | null;
     applicationIds: string[];
     environmentIds: string[];
+    archivedOnly: boolean;
   }>({
     initialValues: {
       detectedAtFrom: searchParams.get("detectedAtFrom"),
       detectedAtTo: searchParams.get("detectedAtTo"),
       applicationIds: searchParams.getAll("application"),
       environmentIds: searchParams.getAll("environment"),
+      archivedOnly: searchParams.get("archivedOnly") === "true",
     },
   });
   const navigate = useNavigate();
@@ -86,6 +92,7 @@ export const IncidentsPage = () => {
         },
         applicationIds: filters.values.applicationIds,
         environmentIds: filters.values.environmentIds,
+        archivedOnly: filters.values.archivedOnly,
       },
       workspaceId: workspace?.id,
     },
@@ -179,6 +186,15 @@ export const IncidentsPage = () => {
             searchParams.set("environment", value);
           }}
         />
+        <FilterOptions>
+          <FilterArchivedOnly
+            checked={filters.values.archivedOnly}
+            onChange={(value) => {
+              filters.setFieldValue("archivedOnly", value);
+              searchParams.set("archivedOnly", value ? "true" : null);
+            }}
+          />
+        </FilterOptions>
       </Group>
 
       <LoadableContent
@@ -187,13 +203,13 @@ export const IncidentsPage = () => {
         isEmpty={isEmpty}
         whenLoading={
           <Stack>
-            <Skeleton height={20} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
+            <Skeleton height={40} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
           </Stack>
         }
         whenEmpty={
@@ -207,6 +223,7 @@ export const IncidentsPage = () => {
                   detectedAtTo: null,
                   applicationIds: [],
                   environmentIds: [],
+                  archivedOnly: false,
                 });
                 searchParams.reset();
               }}
@@ -235,7 +252,7 @@ export const IncidentsPage = () => {
                       <Divider
                         label={format(detectedAt, "MMMM yyyy")}
                         labelPosition="left"
-                        style={{ gridColumn: "span 5" }}
+                        style={{ gridColumn: "span 6" }}
                       />
                     )}
                     <CardIncident incident={incident} />

@@ -9,15 +9,16 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
+import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCalendarFilled, IconQuestionMark } from "@tabler/icons-react";
 import { parseISO } from "date-fns";
-import { formatLocaleDate } from "../../../../../providers/date.provider";
-import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
-import { IconPullRequest } from "../../../../../providers/icon.provider";
-import { AvatarUser } from "../../../../../components/avatar-user";
-import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";
 import { Link } from "react-router-dom";
+import { AvatarUser } from "../../../../../components/avatar-user";
+import { formatLocaleDate } from "../../../../../providers/date.provider";
+import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
+import { IconPullRequest } from "../../../../../providers/icon.provider";
+import { MenuDeployment } from "./menu-deployment";
 
 interface CardDeploymentProps {
   deployment: Deployment;
@@ -32,15 +33,15 @@ export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
       underline="never"
       c="dark.0"
       className="subgrid"
-      data-columns="6"
+      data-columns="7"
     >
       <Paper
-        p="md"
-        pl="lg"
+        px="md"
+        mih={60}
         radius="md"
         withBorder
-        className={`grow-on-hover subgrid`}
-        data-columns="6"
+        className={`grow-on-hover subgrid items-center`}
+        data-columns="7"
       >
         <Group gap={5}>
           <IconCalendarFilled stroke={1.5} size={20} />
@@ -89,6 +90,7 @@ export const CardDeployment = ({ deployment }: CardDeploymentProps) => {
         >
           {deployment.environment.name}
         </Badge>
+        <MenuDeployment deployment={deployment} />
       </Paper>
     </Anchor>
   );

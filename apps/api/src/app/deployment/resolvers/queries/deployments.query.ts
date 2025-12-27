@@ -1,12 +1,12 @@
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
-import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import { protectWithPaywall } from "../../../billing/services/billing.service";
-import { transformDeployment } from "../transformers/deployment.transformer";
+import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
   findDeploymentById,
   paginateDeployments,
 } from "../../services/deployment.service";
+import { transformDeployment } from "../transformers/deployment.transformer";
 
 export const deploymentsQuery = createFieldResolver("Workspace", {
   deployments: async (workspace, { input }) => {
@@ -29,6 +29,7 @@ export const deploymentsQuery = createFieldResolver("Workspace", {
       environmentIds: input.environmentIds || undefined,
       cursor: input.cursor || undefined,
       limit: input.limit || undefined,
+      archivedOnly: input.archivedOnly || false,
     });
 
     return deployments.map(transformDeployment);

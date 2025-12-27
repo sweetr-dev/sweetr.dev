@@ -45,6 +45,19 @@ export default /* GraphQL */ `
 
     "The environments to filter by"
     environmentIds: [SweetID!]
+
+    "Whether to only include archived deployments. Defaults to false."
+    archivedOnly: Boolean
+  }
+
+  input ArchiveDeploymentInput {
+    deploymentId: SweetID!
+    workspaceId: SweetID!
+  }
+
+  input UnarchiveDeploymentInput {
+    deploymentId: SweetID!
+    workspaceId: SweetID!
   }
 
   extend type Application {
@@ -55,5 +68,10 @@ export default /* GraphQL */ `
   extend type Workspace {
     deployment(deploymentId: SweetID!): Deployment
     deployments(input: DeploymentsQueryInput!): [Deployment!]!
+  }
+
+  type Mutation {
+    archiveDeployment(input: ArchiveDeploymentInput!): Deployment!
+    unarchiveDeployment(input: UnarchiveDeploymentInput!): Deployment!
   }
 `;

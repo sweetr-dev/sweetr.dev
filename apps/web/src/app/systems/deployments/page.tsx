@@ -1,30 +1,34 @@
 import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox, IconCalendarFilled, IconServer } from "@tabler/icons-react";
+import { format, parseISO } from "date-fns";
+import { Outlet } from "react-router-dom";
+import { Fragment } from "react/jsx-runtime";
+import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
-import { PageContainer } from "../../../components/page-container";
-import { parseNullableISO } from "../../../providers/date.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
-import { useForm } from "@mantine/form";
-import { parseISO, format } from "date-fns";
-import { Fragment } from "react/jsx-runtime";
-import { LoadableContent } from "../../../components/loadable-content";
-import { PageEmptyState } from "../../../components/page-empty-state";
-import {
-  useInfiniteLoading,
-  useListGroupedByYearMonth,
-} from "../../../providers/pagination.provider";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
-import { CardDeployment } from "./components/card-deployment";
+import {
+  FilterArchivedOnly,
+  FilterOptions,
+} from "../../../components/filter-options";
+import { LoadableContent } from "../../../components/loadable-content";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
+import { PageContainer } from "../../../components/page-container";
+import { PageEmptyState } from "../../../components/page-empty-state";
 import {
   useApplicationAsyncOptions,
   useEnvironmentAsyncOptions,
 } from "../../../providers/async-options.provider";
-import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
-import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
-import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
-import { Outlet } from "react-router-dom";
+import { parseNullableISO } from "../../../providers/date.provider";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
+import {
+  useInfiniteLoading,
+  useListGroupedByYearMonth,
+} from "../../../providers/pagination.provider";
+import { useWorkspace } from "../../../providers/workspace.provider";
+import { CardDeployment } from "./components/card-deployment";
 
 export const DeploymentsPage = () => {
   const { workspace } = useWorkspace();
@@ -34,12 +38,14 @@ export const DeploymentsPage = () => {
     deployedAtTo: string | null;
     applicationIds: string[];
     environmentIds: string[];
+    archivedOnly: boolean;
   }>({
     initialValues: {
       deployedAtFrom: searchParams.get("deployedAtFrom"),
       deployedAtTo: searchParams.get("deployedAtTo"),
       applicationIds: searchParams.getAll("application"),
       environmentIds: searchParams.getAll("environment"),
+      archivedOnly: searchParams.get("archivedOnly") === "true",
     },
   });
 
@@ -59,6 +65,7 @@ export const DeploymentsPage = () => {
         },
         applicationIds: filters.values.applicationIds,
         environmentIds: filters.values.environmentIds,
+        archivedOnly: filters.values.archivedOnly,
       },
       workspaceId: workspace?.id,
     },
@@ -145,6 +152,16 @@ export const DeploymentsPage = () => {
             searchParams.set("environment", value);
           }}
         />
+
+        <FilterOptions>
+          <FilterArchivedOnly
+            checked={filters.values.archivedOnly}
+            onChange={(value) => {
+              filters.setFieldValue("archivedOnly", value);
+              searchParams.set("archivedOnly", value ? "true" : null);
+            }}
+          />
+        </FilterOptions>
       </Group>
 
       <LoadableContent
@@ -153,13 +170,13 @@ export const DeploymentsPage = () => {
         isEmpty={isEmpty}
         whenLoading={
           <Stack>
-            <Skeleton height={20} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
-            <Skeleton height={85} />
+            <Skeleton height={40} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
+            <Skeleton height={60} />
           </Stack>
         }
         whenEmpty={
@@ -173,6 +190,7 @@ export const DeploymentsPage = () => {
                   deployedAtTo: null,
                   applicationIds: [],
                   environmentIds: [],
+                  archivedOnly: false,
                 });
                 searchParams.reset();
               }}
@@ -197,9 +215,7 @@ export const DeploymentsPage = () => {
                       <Divider
                         label={format(deployedAt, "MMMM yyyy")}
                         labelPosition="left"
-                        style={{
-                          gridColumn: "span 6",
-                        }}
+                        style={{ gridColumn: "span 7" }}
                       />
                     )}
                     <CardDeployment deployment={deployment} />

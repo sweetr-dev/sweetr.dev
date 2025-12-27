@@ -1,41 +1,39 @@
 import { ActionIcon, Menu } from "@mantine/core";
-import { Application } from "@sweetr/graphql-types/frontend/graphql";
+import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 import { IconArchive, IconDotsVertical, IconEdit } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  useArchiveApplication,
-  useUnarchiveApplication,
-} from "../../../../../api/applications.api";
+  useArchiveIncident,
+  useUnarchiveIncident,
+} from "../../../../../api/incidents.api";
 import { IconInfo } from "../../../../../components/icon-info";
 import { getErrorMessage } from "../../../../../providers/error-message.provider";
-import {
-  IconDeployment,
-  IconIncident,
-} from "../../../../../providers/icon.provider";
+import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 
-interface MenuApplicationProps {
-  application: Application;
+interface MenuIncidentProps {
+  incident: Incident;
 }
 
-export const MenuApplication = ({ application }: MenuApplicationProps) => {
+export const MenuIncident = ({ incident }: MenuIncidentProps) => {
   const [opened, setOpened] = useState(false);
-  const { mutate: archiveApplication } = useArchiveApplication();
-  const { mutate: unarchiveApplication } = useUnarchiveApplication();
+  const { mutate: archiveIncident } = useArchiveIncident();
+  const { mutate: unarchiveIncident } = useUnarchiveIncident();
   const { workspace } = useWorkspace();
+  const searchParams = useFilterSearchParameters();
 
   const handleToggleArchive = async () => {
-    if (application.archivedAt) {
-      await unarchiveApplication(
-        { input: { workspaceId: workspace.id, applicationId: application.id } },
+    if (incident.archivedAt) {
+      await unarchiveIncident(
+        { input: { workspaceId: workspace.id, incidentId: incident.id } },
         {
           onSuccess: () => {
-            showSuccessNotification({ message: "Application unarchived." });
+            showSuccessNotification({ message: "Incident unarchived." });
           },
           onError: (error) => {
             showErrorNotification({ message: getErrorMessage(error) });
@@ -45,11 +43,11 @@ export const MenuApplication = ({ application }: MenuApplicationProps) => {
       return;
     }
 
-    await archiveApplication(
-      { input: { workspaceId: workspace.id, applicationId: application.id } },
+    await archiveIncident(
+      { input: { workspaceId: workspace.id, incidentId: incident.id } },
       {
         onSuccess: () => {
-          showSuccessNotification({ message: "Application archived." });
+          showSuccessNotification({ message: "Incident archived." });
         },
         onError: (error) => {
           showErrorNotification({ message: getErrorMessage(error) });
@@ -81,50 +79,35 @@ export const MenuApplication = ({ application }: MenuApplicationProps) => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        {!application.archivedAt && (
+        {!incident.archivedAt && (
           <>
             <Menu.Item
               leftSection={<IconEdit stroke={1.5} size={16} />}
               component={Link}
-              to={`/systems/applications/edit/${application.id}`}
+              to={`/systems/incidents/edit/${incident.id}?${searchParams.toString()}`}
             >
               Edit
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item
-              leftSection={<IconDeployment stroke={1.5} size={16} />}
-              component={Link}
-              to={`/systems/deployments?application=${application.id}`}
-            >
-              Deployments
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconIncident stroke={1.5} size={16} />}
-              component={Link}
-              to={`/systems/incidents?application=${application.id}`}
-            >
-              Incidents
             </Menu.Item>
             <Menu.Divider />
           </>
         )}
         <Menu.Item
           leftSection={<IconArchive size={16} stroke={1.5} />}
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             handleToggleArchive();
           }}
           rightSection={
-            !application.archivedAt && (
+            !incident.archivedAt && (
               <IconInfo
                 position="bottom"
-                tooltip="All related deployments and incidents will be hidden from the dashboard and metrics. You can unarchive an application anytime."
+                tooltip="The incident will be hidden from the dashboard and metrics. You can unarchive an incident anytime."
               />
             )
           }
         >
-          {application.archivedAt ? "Unarchive" : "Archive"}
+          {incident.archivedAt ? "Unarchive" : "Archive"}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

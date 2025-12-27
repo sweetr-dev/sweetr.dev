@@ -11,6 +11,7 @@ export interface PaginateIncidentsArgs {
   applicationIds?: number[];
   detectedAt?: DateTimeRange;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export interface UpsertIncidentInput {
@@ -23,4 +24,14 @@ export interface UpsertIncidentInput {
   teamId?: number | null;
   postmortemUrl?: string | null;
   leaderId?: number | null;
+}
+
+export interface ArchiveIncidentArgs {
+  workspaceId: number;
+  incidentId: number;
+}
+
+export interface UnarchiveIncidentArgs {
+  workspaceId: number;
+  incidentId: number;
 }

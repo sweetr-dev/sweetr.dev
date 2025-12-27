@@ -1,26 +1,25 @@
+import { Application, Prisma } from "@prisma/client";
+import { JsonObject } from "@prisma/client/runtime/library";
 import { assign } from "radash";
 import { getPrisma, take } from "../../../prisma";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { validateInputOrThrow } from "../../validator.service";
 import {
+  ArchiveApplicationArgs,
   FindApplicationByIdArgs,
   FindApplicationByNameArgs,
   PaginateApplicationsArgs,
+  UnarchiveApplicationArgs,
   UpsertApplicationInput,
 } from "./application.types";
-import { Application, Prisma } from "@prisma/client";
-import { JsonObject } from "@prisma/client/runtime/library";
 import { getApplicationValidationSchema } from "./application.validation";
-import { validateInputOrThrow } from "../../validator.service";
-import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 export const findApplicationById = async ({
   applicationId,
   workspaceId,
 }: FindApplicationByIdArgs): Promise<Application | null> => {
   return getPrisma(workspaceId).application.findUnique({
-    where: {
-      id: applicationId,
-      workspaceId,
-    },
+    where: { id: applicationId, workspaceId },
   });
 };
 
@@ -42,9 +41,7 @@ export const findApplicationByName = async ({
   name,
 }: FindApplicationByNameArgs) => {
   return await getPrisma(workspaceId).application.findUnique({
-    where: {
-      workspaceId_name: { workspaceId, name },
-    },
+    where: { workspaceId_name: { workspaceId, name } },
   });
 };
 
@@ -58,33 +55,23 @@ export const paginateApplications = async (
     cursor: args.cursor ? { id: args.cursor } : undefined,
     where: {
       workspaceId,
+      archivedAt: args.archivedOnly ? { not: null } : null,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   };
 
   if (args.applicationIds?.length) {
-    query.where = {
-      ...query.where,
-      id: { in: args.applicationIds },
-    };
+    query.where = { ...query.where, id: { in: args.applicationIds } };
   }
 
   if (args.teamIds?.length) {
-    query.where = {
-      ...query.where,
-      teamId: { in: args.teamIds },
-    };
+    query.where = { ...query.where, teamId: { in: args.teamIds } };
   }
 
   if (args.query) {
     query.where = {
       ...query.where,
-      name: {
-        contains: args.query,
-        mode: "insensitive",
-      },
+      name: { contains: args.query, mode: "insensitive" },
     };
   }
 
@@ -106,11 +93,7 @@ export const upsertApplication = async (input: UpsertApplicationInput) => {
 
   if (!application) {
     const newApplication = await getPrisma(workspaceId).application.create({
-      data: {
-        ...data,
-        workspaceId,
-        deploymentSettings: deploymentSettings,
-      },
+      data: { ...data, workspaceId, deploymentSettings: deploymentSettings },
     });
 
     return newApplication;
@@ -121,13 +104,31 @@ export const upsertApplication = async (input: UpsertApplicationInput) => {
     : application.deploymentSettings;
 
   return getPrisma(workspaceId).application.update({
-    where: {
-      id: application.id,
-    },
+    where: { id: application.id },
     data: {
       ...data,
       workspaceId,
       deploymentSettings: updatedSettings as JsonObject,
     },
+  });
+};
+
+export const archiveApplication = async ({
+  workspaceId,
+  applicationId,
+}: ArchiveApplicationArgs) => {
+  return getPrisma(workspaceId).application.update({
+    where: { id: applicationId },
+    data: { archivedAt: new Date() },
+  });
+};
+
+export const unarchiveApplication = async ({
+  workspaceId,
+  applicationId,
+}: UnarchiveApplicationArgs) => {
+  return getPrisma(workspaceId).application.update({
+    where: { id: applicationId },
+    data: { archivedAt: null },
   });
 };
