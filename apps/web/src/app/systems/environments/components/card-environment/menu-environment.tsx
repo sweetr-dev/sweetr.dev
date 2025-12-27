@@ -12,8 +12,9 @@ import {
   IconDeployment,
   IconIncident,
 } from "../../../../../providers/icon.provider";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import { showErrorNotification, showSuccessNotification } from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 
 interface MenuEnvironmentProps {
   environment: Environment;
@@ -27,17 +28,30 @@ export const MenuEnvironment = ({ environment }: MenuEnvironmentProps) => {
 
   const handleToggleArchive = async () => {
     if (environment.archivedAt) {
-      await unarchiveEnvironment({
-        input: { workspaceId: workspace.id, environmentId: environment.id },
-      });
-      showSuccessNotification({ message: "Environment unarchived." });
+      await unarchiveEnvironment(
+        { input: { workspaceId: workspace.id, environmentId: environment.id } },
+        {
+          onSuccess: () => {
+            showSuccessNotification({ message: "Environment unarchived." });
+          },
+          onError: (error) => {
+            showErrorNotification({ message: getErrorMessage(error) });
+          },
+        },
+      );
       return;
     }
 
     await archiveEnvironment({
       input: { workspaceId: workspace.id, environmentId: environment.id },
-    });
-    showSuccessNotification({ message: "Environment archived." });
+    },{
+      onSuccess: () => {
+        showSuccessNotification({ message: "Environment unarchived." });
+      },
+      onError: (error) => {
+        showErrorNotification({ message: getErrorMessage(error) });
+      },
+    },;
   };
 
   return (

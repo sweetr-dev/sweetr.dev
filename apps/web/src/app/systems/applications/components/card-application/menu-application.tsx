@@ -8,11 +8,15 @@ import {
   useUnarchiveApplication,
 } from "../../../../../api/applications.api";
 import { IconInfo } from "../../../../../components/icon-info";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 import {
   IconDeployment,
   IconIncident,
 } from "../../../../../providers/icon.provider";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 
 interface MenuApplicationProps {
@@ -27,17 +31,31 @@ export const MenuApplication = ({ application }: MenuApplicationProps) => {
 
   const handleToggleArchive = async () => {
     if (application.archivedAt) {
-      await unarchiveApplication({
-        input: { workspaceId: workspace.id, applicationId: application.id },
-      });
-      showSuccessNotification({ message: "Application unarchived." });
+      await unarchiveApplication(
+        { input: { workspaceId: workspace.id, applicationId: application.id } },
+        {
+          onSuccess: () => {
+            showSuccessNotification({ message: "Application unarchived." });
+          },
+          onError: (error) => {
+            showErrorNotification({ message: getErrorMessage(error) });
+          },
+        },
+      );
       return;
     }
 
-    await archiveApplication({
-      input: { workspaceId: workspace.id, applicationId: application.id },
-    });
-    showSuccessNotification({ message: "Application archived." });
+    await archiveApplication(
+      { input: { workspaceId: workspace.id, applicationId: application.id } },
+      {
+        onSuccess: () => {
+          showSuccessNotification({ message: "Application archived." });
+        },
+        onError: (error) => {
+          showErrorNotification({ message: getErrorMessage(error) });
+        },
+      },
+    );
   };
 
   return (

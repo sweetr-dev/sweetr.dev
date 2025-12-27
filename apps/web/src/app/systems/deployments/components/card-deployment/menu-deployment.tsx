@@ -7,7 +7,11 @@ import {
   useUnarchiveDeployment,
 } from "../../../../../api/deployments.api";
 import { IconInfo } from "../../../../../components/icon-info";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 
 interface MenuDeploymentProps {
@@ -22,17 +26,31 @@ export const MenuDeployment = ({ deployment }: MenuDeploymentProps) => {
 
   const handleToggleArchive = async () => {
     if (deployment.archivedAt) {
-      await unarchiveDeployment({
-        input: { workspaceId: workspace.id, deploymentId: deployment.id },
-      });
-      showSuccessNotification({ message: "Deployment unarchived." });
+      await unarchiveDeployment(
+        { input: { workspaceId: workspace.id, deploymentId: deployment.id } },
+        {
+          onSuccess: () => {
+            showSuccessNotification({ message: "Deployment unarchived." });
+          },
+          onError: (error) => {
+            showErrorNotification({ message: getErrorMessage(error) });
+          },
+        },
+      );
       return;
     }
 
-    await archiveDeployment({
-      input: { workspaceId: workspace.id, deploymentId: deployment.id },
-    });
-    showSuccessNotification({ message: "Deployment archived." });
+    await archiveDeployment(
+      { input: { workspaceId: workspace.id, deploymentId: deployment.id } },
+      {
+        onSuccess: () => {
+          showSuccessNotification({ message: "Deployment archived." });
+        },
+        onError: (error) => {
+          showErrorNotification({ message: getErrorMessage(error) });
+        },
+      },
+    );
   };
 
   return (

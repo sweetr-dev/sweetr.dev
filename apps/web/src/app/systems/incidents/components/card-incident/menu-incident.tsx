@@ -8,8 +8,12 @@ import {
   useUnarchiveIncident,
 } from "../../../../../api/incidents.api";
 import { IconInfo } from "../../../../../components/icon-info";
+import { getErrorMessage } from "../../../../../providers/error-message.provider";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
-import { showSuccessNotification } from "../../../../../providers/notification.provider";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 
 interface MenuIncidentProps {
@@ -25,17 +29,31 @@ export const MenuIncident = ({ incident }: MenuIncidentProps) => {
 
   const handleToggleArchive = async () => {
     if (incident.archivedAt) {
-      await unarchiveIncident({
-        input: { workspaceId: workspace.id, incidentId: incident.id },
-      });
-      showSuccessNotification({ message: "Incident unarchived." });
+      await unarchiveIncident(
+        { input: { workspaceId: workspace.id, incidentId: incident.id } },
+        {
+          onSuccess: () => {
+            showSuccessNotification({ message: "Incident unarchived." });
+          },
+          onError: (error) => {
+            showErrorNotification({ message: getErrorMessage(error) });
+          },
+        },
+      );
       return;
     }
 
-    await archiveIncident({
-      input: { workspaceId: workspace.id, incidentId: incident.id },
-    });
-    showSuccessNotification({ message: "Incident archived." });
+    await archiveIncident(
+      { input: { workspaceId: workspace.id, incidentId: incident.id } },
+      {
+        onSuccess: () => {
+          showSuccessNotification({ message: "Incident archived." });
+        },
+        onError: (error) => {
+          showErrorNotification({ message: getErrorMessage(error) });
+        },
+      },
+    );
   };
 
   return (
