@@ -1,17 +1,17 @@
-import { UseFormReturnType } from "@mantine/form";
 import {
-  Stack,
-  Title,
+  Anchor,
+  Divider,
   Group,
   NumberInput,
-  Divider,
+  Stack,
   TagsInput,
-  Button,
   Text,
+  Title,
 } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
 import { PullRequestSize } from "@sweetr/graphql-types/frontend/graphql";
+import { Link } from "react-router-dom";
 import { BadgePullRequestSize } from "../../../../../../components/badge-pull-request-size";
-import { useSupportChat } from "../../../../../../components/navbar/use-support-chat";
 import { PullRequestSizeSettings } from "./types";
 
 export interface FormPullRequestSizeSettingsProps {
@@ -21,8 +21,6 @@ export interface FormPullRequestSizeSettingsProps {
 export const FormPullRequestSizeSettings = ({
   form,
 }: FormPullRequestSizeSettingsProps) => {
-  const { openChat } = useSupportChat();
-
   return (
     <>
       <Stack p="md">
@@ -66,14 +64,24 @@ export const FormPullRequestSizeSettings = ({
       <Divider my="sm" />
       <Stack p="md">
         <Title order={5}>Note</Title>
-        <Text c="dimmed" fz="sm">
-          We recalculate the Pull Request size every time it receives an update.{" "}
-          Reach out to support if you need all past stale Pull Requests
-          recalculated.
-        </Text>
-        <Button onClick={openChat} variant="default" w="fit-content">
-          Chat with support
-        </Button>
+        <Stack gap={5}>
+          <Text c="dimmed" fz="sm">
+            We recalculate the Pull Request size every time it receives an
+            update.
+          </Text>
+          <Text c="dimmed" fz="sm">
+            You can fully resync historical data from your{" "}
+            <Anchor
+              component={Link}
+              to="/settings/workspace/resync"
+              target="_blank"
+              fz="sm"
+            >
+              workspace settings
+            </Anchor>
+            .
+          </Text>
+        </Stack>
       </Stack>
     </>
   );

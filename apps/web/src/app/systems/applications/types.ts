@@ -11,7 +11,13 @@ export const ApplicationForm = z.object({
   teamId: z.string().optional(),
   deploymentSettings: z.object({
     trigger: z.nativeEnum(DeploymentSettingsTrigger),
-    subdirectory: z.string().optional().nullable(),
+    subdirectory: z
+      .string()
+      .optional()
+      .nullable()
+      .refine((value) => !value?.startsWith("/"), {
+        message: "Should not start with a slash",
+      }),
   }),
 });
 

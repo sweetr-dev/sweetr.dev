@@ -1,6 +1,6 @@
-import { Breadcrumbs } from "../../components/breadcrumbs";
-import { PageContainer } from "../../components/page-container";
-import { Box, Group, Divider, Skeleton } from "@mantine/core";
+import { Box, Divider, Group, Skeleton } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import {
   IconBox,
   IconCalendarFilled,
@@ -10,10 +10,13 @@ import {
   IconRefresh,
   IconServer,
 } from "@tabler/icons-react";
+import { endOfToday } from "date-fns";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Breadcrumbs } from "../../components/breadcrumbs";
+import { FilterDate } from "../../components/filter-date";
 import { FilterMultiSelect } from "../../components/filter-multi-select";
-import { useForm } from "@mantine/form";
-import { useFilterSearchParameters } from "../../providers/filter.provider";
-import { IconDeployment, IconTeam } from "../../providers/icon.provider";
+import { FilterSelect } from "../../components/filter-select";
+import { PageContainer } from "../../components/page-container";
 import {
   useApplicationAsyncOptions,
   useEnvironmentAsyncOptions,
@@ -24,15 +27,12 @@ import {
   parseNullableISO,
   thirtyDaysAgo,
 } from "../../providers/date.provider";
-import { FilterDate } from "../../components/filter-date";
-import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { FilterSelect } from "../../components/filter-select";
-import { Period } from "@sweetr/graphql-types/frontend/graphql";
-import { DoraMetricFilters } from "./types";
+import { useFilterSearchParameters } from "../../providers/filter.provider";
+import { IconDeployment, IconTeam } from "../../providers/icon.provider";
 import { useWorkspace } from "../../providers/workspace.provider";
+import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
+import { DoraMetricFilters } from "./types";
 import { useDoraMetrics } from "./useDoraMetrics";
-import { endOfToday } from "date-fns";
 
 export const MetricsAndInsightsPage = () => {
   const { pathname } = useLocation();
@@ -122,7 +122,7 @@ export const MetricsAndInsightsPage = () => {
         <Divider my="md" label="DORA Overview" labelPosition="left" />
 
         {!isLoading && (
-          <Group>
+          <Group wrap="nowrap">
             <CardDoraMetric
               name="Deployments"
               amount={
@@ -135,16 +135,18 @@ export const MetricsAndInsightsPage = () => {
             />
             <CardDoraMetric
               name="Lead time"
-              amount={metrics.leadTime?.currentAmount?.toString() || "0"}
+              amount={
+                metrics.leadTime?.currentAmount
+                  ? humanizeDuration(metrics.leadTime?.currentAmount)
+                  : "0"
+              }
               change={metrics.leadTime?.change || 0}
               icon={IconClock}
               href="/metrics-and-insights/lead-time"
             />
             <CardDoraMetric
               name="Failure rate"
-              amount={
-                metrics.changeFailureRate?.currentAmount?.toString() || "0"
-              }
+              amount={`${metrics.changeFailureRate?.currentAmount?.toString() || "0"}%`}
               change={metrics.changeFailureRate?.change || 0}
               icon={IconFlame}
               href="/metrics-and-insights/failure-rate"

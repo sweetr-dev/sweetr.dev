@@ -27,16 +27,16 @@ services:
     depends_on:
       - api
   postgres:
-    image: postgres
+    image: postgres:16
     restart: always
     env_file:
       - ./apps/api/.env
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: sweetr
+      DB_USERNAME: sweetr
+      DB_PASSWORD: sweetr
     ports:
       - "5432:5432"
     volumes:

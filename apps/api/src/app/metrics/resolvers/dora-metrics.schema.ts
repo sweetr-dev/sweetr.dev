@@ -33,11 +33,11 @@ export default /* GraphQL */ `
   }
 
   type LeadTimeMetric {
-    "The lead time for the current period"
-    currentAmount: Int!
+    "The lead time in milliseconds for the current period"
+    currentAmount: BigInt!
 
-    "The lead time before the current period"
-    previousAmount: Int!
+    "The lead time in milliseconds before the current period"
+    previousAmount: BigInt!
 
     "The change in lead time"
     change: Float!
@@ -68,13 +68,13 @@ export default /* GraphQL */ `
 
   type DeploymentFrequencyMetric {
     "The amount of deployments for the current period"
-    currentAmount: Int!
+    currentAmount: BigInt!
 
     "The average number of deployments per day"
     avg: Float!
 
     "The number of deployments before the current period"
-    previousAmount: Int!
+    previousAmount: BigInt!
 
     "The change in the number of deployments"
     change: Float!
@@ -88,10 +88,10 @@ export default /* GraphQL */ `
 
   type MeanTimeToRecoverMetric {
     "The mean time to recover in milliseconds for the current period"
-    currentAmount: Int!
+    currentAmount: BigInt!
 
     "The mean time to recover in milliseconds before the current period"
-    previousAmount: Int!
+    previousAmount: BigInt!
 
     "The change in mean time to recover"
     change: Float!

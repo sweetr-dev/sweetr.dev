@@ -1,9 +1,9 @@
 import { Paper, Skeleton } from "@mantine/core";
-import { DoraMetricsChart } from "../components/dora-metrics-chart/dora-metrics-chart";
-import { useDoraMetrics } from "../useDoraMetrics";
-import { useWorkspace } from "../../../providers/workspace.provider";
 import { useOutletContext } from "react-router-dom";
+import { useWorkspace } from "../../../providers/workspace.provider";
 import { DoraMetricFilters } from "../types";
+import { useDoraMetrics } from "../useDoraMetrics";
+import { ChartFailureRate } from "./chart-failure-rate/chart-failure-rate";
 
 export const DoraFailureRatePage = () => {
   const { workspace } = useWorkspace();
@@ -20,7 +20,7 @@ export const DoraFailureRatePage = () => {
   return (
     <>
       <Paper withBorder bg="dark.6" h={400} p="xs">
-        <DoraMetricsChart
+        <ChartFailureRate
           chartData={{
             columns: metrics.changeFailureRate.columns,
             series: [

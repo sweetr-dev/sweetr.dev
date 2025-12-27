@@ -1,9 +1,9 @@
-import { DoraMetricsChart } from "../components/dora-metrics-chart/dora-metrics-chart";
 import { Paper, Skeleton } from "@mantine/core";
 import { useOutletContext } from "react-router-dom";
 import { useWorkspace } from "../../../providers/workspace.provider";
-import { useDoraMetrics } from "../useDoraMetrics";
+import { ChartAverageTime } from "../../humans/teams/[id]/health-and-performance/components/chart-average-time";
 import { DoraMetricFilters } from "../types";
+import { useDoraMetrics } from "../useDoraMetrics";
 
 export const DoraLeadTimePage = () => {
   const { workspace } = useWorkspace();
@@ -20,16 +20,10 @@ export const DoraLeadTimePage = () => {
   return (
     <>
       <Paper withBorder bg="dark.6" h={400} p="xs">
-        <DoraMetricsChart
+        <ChartAverageTime
           chartData={{
             columns: metrics.leadTime.columns,
-            series: [
-              {
-                name: "Lead Time",
-                data: metrics.leadTime.data,
-                color: "#8ce99a",
-              },
-            ],
+            data: metrics.leadTime.data,
           }}
           period={filters.period}
         />

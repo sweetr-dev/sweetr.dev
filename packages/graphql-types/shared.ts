@@ -7,10 +7,7 @@ enum OAuthProvider {
 export interface GraphQLContext {
   workspaceId?: number;
   chartFilter?: {
-    dateTimeRange: {
-      from: string;
-      to: string;
-    };
+    dateTimeRange: { from: string; to: string };
     period: Period;
     teamId: number;
   };
@@ -29,6 +26,7 @@ export interface GraphQLContext {
 export enum ErrorCode {
   UNAUTHORIZED = "UNAUTHORIZED",
   BUSINESS_RULE = "BUSINESS_RULE",
+  DATA_INTEGRITY = "DATA_INTEGRITY",
   UNAUTHENTICATED = "UNAUTHENTICATED",
   RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND",
   INPUT_VALIDATION_FAILED = "INPUT_VALIDATION_FAILED",

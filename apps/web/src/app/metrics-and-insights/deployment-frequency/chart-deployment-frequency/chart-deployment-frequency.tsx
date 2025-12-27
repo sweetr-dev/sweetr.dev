@@ -1,3 +1,5 @@
+import { UTCDate } from "@date-fns/utc";
+import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { useEffect } from "react";
 import {
   ECOption,
@@ -5,31 +7,27 @@ import {
   formatAxisDate,
   formatTooltipDate,
 } from "../../../../providers/echarts.provider";
-import { Period } from "@sweetr/graphql-types/frontend/graphql";
-import { UTCDate } from "@date-fns/utc";
 
-interface DoraMetricsChartData {
+interface ChartDeploymentFrequencyData {
   columns: string[];
-  series: {
-    name: string;
-    data: number[];
-    color?: string;
-  }[];
+  series: { name: string; data: number[]; color?: string }[];
 }
 
-interface DoraMetricsChartProps {
-  chartData?: DoraMetricsChartData | null;
+interface ChartDeploymentFrequencyProps {
+  chartData?: ChartDeploymentFrequencyData | null;
   period: Period;
+  id?: string;
 }
 
-export const DoraMetricsChart = ({
+export const ChartDeploymentFrequency = ({
   chartData,
   period,
-}: DoraMetricsChartProps) => {
+  id: chartId = "chart-deployment-frequency",
+}: ChartDeploymentFrequencyProps) => {
   useEffect(() => {
     if (!chartData) return;
 
-    const chart = echarts.init(document.getElementById("dora-chart"), "dark");
+    const chart = echarts.init(document.getElementById(chartId), "dark");
 
     const options: ECOption = {
       backgroundColor: "#25262B",
@@ -38,14 +36,8 @@ export const DoraMetricsChart = ({
         backgroundColor: "#25262B",
         borderColor: "#303030",
         padding: [10, 15],
-        textStyle: {
-          color: "#fff",
-          fontSize: 16,
-        },
+        textStyle: { color: "#fff", fontSize: 16 },
         valueFormatter(value) {
-          if (typeof value === "number") {
-            return value.toFixed(2);
-          }
           return value;
         },
         axisPointer: {
@@ -58,9 +50,7 @@ export const DoraMetricsChart = ({
       },
       legend: {
         data: chartData.series.map((s) => s.name),
-        textStyle: {
-          color: "#fff",
-        },
+        textStyle: { color: "#fff" },
         top: 10,
       },
       grid: {
@@ -84,7 +74,7 @@ export const DoraMetricsChart = ({
         min: 0,
         axisLabel: {
           formatter(value) {
-            return value.toFixed(1);
+            return value;
           },
         },
       },
@@ -96,20 +86,12 @@ export const DoraMetricsChart = ({
         emphasis: { focus: "series" },
         color: series.color || "#8ce99a",
         symbolSize: 7,
-        lineStyle: {
-          width: 3,
-        },
+        lineStyle: { width: 3 },
         areaStyle: {
           opacity: 0.3,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: series.color || "#8ce99a",
-            },
-            {
-              offset: 1,
-              color: "rgba(1, 191, 236, 0)",
-            },
+            { offset: 0, color: series.color || "#8ce99a" },
+            { offset: 1, color: "rgba(1, 191, 236, 0)" },
           ]),
         },
       })),
@@ -119,5 +101,5 @@ export const DoraMetricsChart = ({
     chart.renderToCanvas();
   }, [chartData, period]);
 
-  return <div id="dora-chart" style={{ width: "100%", height: "100%" }}></div>;
+  return <div id={chartId} style={{ width: "100%", height: "100%" }}></div>;
 };
