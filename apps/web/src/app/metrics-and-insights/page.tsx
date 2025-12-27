@@ -168,7 +168,7 @@ export const MetricsAndInsightsPage = () => {
         )}
 
         {isLoading && (
-          <Group wrap="nowrap">
+          <Group wrap={isSmallScreen ? "wrap" : "nowrap"}>
             <Skeleton h={168} />
             <Skeleton h={168} />
             <Skeleton h={168} />
