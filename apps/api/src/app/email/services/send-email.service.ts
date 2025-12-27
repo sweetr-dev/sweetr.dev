@@ -1,8 +1,7 @@
 import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
-import { env } from "process";
 import { addJob, SweetQueue } from "../../../bull-mq/queues";
 import { redisConnection } from "../../../bull-mq/redis-connection";
-import { isProduction } from "../../../env";
+import { env, isProduction } from "../../../env";
 import { EmailOptions, EmailPayload, getEmailClient } from "../../../lib/email";
 import { logger } from "../../../lib/logger";
 import { captureException } from "../../../lib/sentry";
