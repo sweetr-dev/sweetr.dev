@@ -16,7 +16,6 @@ interface DeploymentTriggeredByPullRequestMergeJobData {
   workspaceId: number;
   pullRequest: PullRequest;
   installationId: string;
-  targetBranch: string;
 }
 
 export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
@@ -51,7 +50,7 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
               {
                 deploymentSettings: {
                   path: ["targetBranch"],
-                  equals: job.data.targetBranch,
+                  equals: pullRequest.targetBranch,
                 },
               },
             ],

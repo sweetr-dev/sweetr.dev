@@ -364,8 +364,9 @@ model PullRequest {
   gitPullRequestId String
   gitUrl           String
 
-  title  String
-  number String
+  title        String
+  number       String
+  targetBranch String @default("main")
 
   files             Json @default("[]")
   commentCount      Int

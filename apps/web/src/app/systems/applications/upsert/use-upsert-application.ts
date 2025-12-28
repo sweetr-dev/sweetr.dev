@@ -35,7 +35,7 @@ export const useUpsertApplication = ({
       deploymentSettings: {
         trigger: DeploymentSettingsTrigger.WEBHOOK,
         subdirectory: "",
-        targetBranch: null,
+        targetBranch: "",
       },
     },
     validate: zodResolver(ApplicationForm),

@@ -122,6 +122,7 @@ const fetchPullRequest = async (
             isDraft
             closedAt
             mergedAt
+            baseRefName
 
             createdAt
             updatedAt
@@ -252,6 +253,7 @@ const upsertPullRequest = async (
     gitPullRequestId: gitPrData.id,
     gitUrl: gitPrData.url,
     title: gitPrData.title,
+    targetBranch: gitPrData.baseRefName,
     number: gitPrData.number.toString(),
     commentCount: gitPrData.totalCommentsCount,
     changedFilesCount: gitPrData.changedFiles,

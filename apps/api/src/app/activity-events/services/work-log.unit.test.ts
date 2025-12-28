@@ -1,17 +1,17 @@
-import { describe, it, expect } from "vitest";
-import {
-  groupSerialReviews,
-  REVIEW_GROUPING_WINDOW_MINS,
-} from "./work-log.service";
 import { ActivityEventType, PullRequestState } from "@prisma/client";
 import { addMinutes, addSeconds } from "date-fns";
+import { describe, expect, it } from "vitest";
 import { CodeReviewState } from "../../../graphql-types";
 import {
   ActivityEventData,
   CodeReviewActivityEvent,
-  PullRequestActivityEvent,
   isCodeReviewActivityEvent,
+  PullRequestActivityEvent,
 } from "./activity-events.types";
+import {
+  groupSerialReviews,
+  REVIEW_GROUPING_WINDOW_MINS,
+} from "./work-log.service";
 
 type CreateCodeReviewEventArgs = {
   eventAt: Date;
@@ -58,6 +58,7 @@ describe("groupSerialReviews", () => {
     type,
     eventAt,
     pullRequest: {
+      targetBranch: "main",
       mergeCommitSha: null,
       gitProvider: "GITHUB",
       gitPullRequestId: "1",
@@ -87,19 +88,11 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
       ];
 
@@ -116,35 +109,19 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS + 5),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 1,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 1 },
         }),
       ];
 
@@ -171,19 +148,11 @@ describe("groupSerialReviews", () => {
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 5),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
         createPullRequestEvent({
           type: "PULL_REQUEST_MERGED",
@@ -192,11 +161,7 @@ describe("groupSerialReviews", () => {
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 25),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: Jack,
-            commentCount: 1,
-          },
+          codeReview: { pullRequestId: 1, authorId: Jack, commentCount: 1 },
         }),
       ];
 
@@ -213,35 +178,19 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 5),
-          codeReview: {
-            pullRequestId: 2,
-            authorId: Jack,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 2, authorId: Jack, commentCount: 3 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 20),
-          codeReview: {
-            pullRequestId: 2,
-            authorId: John,
-            commentCount: 1,
-          },
+          codeReview: { pullRequestId: 2, authorId: John, commentCount: 1 },
         }),
       ];
 
@@ -266,19 +215,11 @@ describe("groupSerialReviews", () => {
       const baseDate = new Date("2024-01-01T00:00:00Z");
       const events = [
         createCodeReviewEvent({
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 1,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 1 },
           eventAt: baseDate,
         }),
         createCodeReviewEvent({
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 1,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 1 },
           eventAt: addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
         }),
       ];
@@ -319,19 +260,11 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 2,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 2, authorId: John, commentCount: 3 },
         }),
       ];
 
@@ -356,19 +289,11 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addMinutes(baseDate, 15),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: Jack,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: Jack, commentCount: 3 },
         }),
       ];
 
@@ -392,22 +317,14 @@ describe("groupSerialReviews", () => {
       const events: ActivityEventData[] = [
         createCodeReviewEvent({
           eventAt: baseDate,
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 2,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 2 },
         }),
         createCodeReviewEvent({
           eventAt: addSeconds(
             addMinutes(baseDate, REVIEW_GROUPING_WINDOW_MINS),
             1
           ),
-          codeReview: {
-            pullRequestId: 1,
-            authorId: John,
-            commentCount: 3,
-          },
+          codeReview: { pullRequestId: 1, authorId: John, commentCount: 3 },
         }),
       ];
 
