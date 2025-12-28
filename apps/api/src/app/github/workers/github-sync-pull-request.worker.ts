@@ -88,6 +88,7 @@ export const syncPullRequestWorker = createWorker(
           workspaceId: pullRequest.workspaceId,
           pullRequest,
           installationId,
+          targetBranch: job.data.pull_request.base.ref,
         });
       }
     }

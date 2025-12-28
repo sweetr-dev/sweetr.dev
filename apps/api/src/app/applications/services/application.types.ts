@@ -23,6 +23,7 @@ export enum DeploymentSettingsTrigger {
 export interface DeploymentSettings extends JsonObject {
   trigger: DeploymentSettingsTrigger;
   subdirectory?: string | null;
+  targetBranch?: string | null;
 }
 
 export interface UpsertApplicationInput extends JsonObject {

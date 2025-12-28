@@ -5,6 +5,9 @@ export default /* GraphQL */ `
 
     "The subdirectory of the application. Useful for monorepos."
     subdirectory: String
+
+    "The target branch for merge-based deployments"
+    targetBranch: String
   }
 
   "The trigger for the deployment."
@@ -63,6 +66,9 @@ export default /* GraphQL */ `
 
     "The subdirectory of the application. Useful for monorepos."
     subdirectory: String
+
+    "The target branch for merge-based deployments"
+    targetBranch: String
   }
 
   input UpsertApplicationInput {

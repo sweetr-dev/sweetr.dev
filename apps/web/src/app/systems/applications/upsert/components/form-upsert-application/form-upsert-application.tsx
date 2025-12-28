@@ -1,8 +1,9 @@
-import { Stack, Title, TextInput, Divider } from "@mantine/core";
+import { Divider, Stack, TextInput, Title } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
-import { ApplicationForm } from "../../../types";
+import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
 import { InputSelectRepository } from "../../../../../../components/input-select-repository";
 import { InputSelectTeam } from "../../../../../../components/input-select-team";
+import { ApplicationForm } from "../../../types";
 import { InputDeploymentTrigger } from "./input-deployment-trigger";
 
 export interface FormUpsertApplicationProps {
@@ -60,6 +61,16 @@ export const FormUpsertApplication = ({ form }: FormUpsertApplicationProps) => {
         />
 
         <InputDeploymentTrigger form={form} />
+
+        {form.values.deploymentSettings?.trigger ===
+          DeploymentSettingsTrigger.MERGE && (
+          <TextInput
+            label="Target branch"
+            maxLength={150}
+            placeholder="main"
+            {...form.getInputProps("deploymentSettings.targetBranch")}
+          />
+        )}
       </Stack>
     </>
   );
