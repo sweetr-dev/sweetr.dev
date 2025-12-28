@@ -54,6 +54,7 @@ export const useApplicationQuery = (
                 deploymentSettings {
                   trigger
                   subdirectory
+                  targetBranch
                 }
                 archivedAt
               }

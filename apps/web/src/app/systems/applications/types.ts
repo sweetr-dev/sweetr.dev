@@ -12,7 +12,7 @@ export const ApplicationForm = z.object({
   deploymentSettings: z
     .object({
       trigger: z.nativeEnum(DeploymentSettingsTrigger),
-      targetBranch: z.string().optional(),
+      targetBranch: z.string().optional().nullable(),
       subdirectory: z
         .string()
         .optional()
