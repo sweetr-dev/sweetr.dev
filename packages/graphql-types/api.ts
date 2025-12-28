@@ -309,6 +309,8 @@ export type DeploymentSettings = {
   __typename?: 'DeploymentSettings';
   /** The subdirectory of the application. Useful for monorepos. */
   subdirectory?: Maybe<Scalars['String']['output']>;
+  /** The target branch for merge-based deployments */
+  targetBranch?: Maybe<Scalars['String']['output']>;
   /** The trigger for the deployment */
   trigger: DeploymentSettingsTrigger;
 };
@@ -316,6 +318,8 @@ export type DeploymentSettings = {
 export type DeploymentSettingsInput = {
   /** The subdirectory of the application. Useful for monorepos. */
   subdirectory?: InputMaybe<Scalars['String']['input']>;
+  /** The target branch for merge-based deployments */
+  targetBranch?: InputMaybe<Scalars['String']['input']>;
   /** The trigger for the deployment */
   trigger: DeploymentSettingsTrigger;
 };
@@ -1825,6 +1829,7 @@ export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, Par
 
 export type DeploymentSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentSettings'] = ResolversParentTypes['DeploymentSettings']> = {
   subdirectory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targetBranch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trigger?: Resolver<ResolversTypes['DeploymentSettingsTrigger'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

@@ -1,14 +1,14 @@
 import { useForm, zodResolver } from "@mantine/form";
+import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
 import { FormEventHandler } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUpsertApplicationMutation } from "../../../../api/applications.api";
 import {
-  showSuccessNotification,
   showErrorNotification,
+  showSuccessNotification,
 } from "../../../../providers/notification.provider";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { ApplicationForm } from "../types";
-import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
-import { useUpsertApplicationMutation } from "../../../../api/applications.api";
 
 interface UseUpsertApplicationProps {
   applicationId?: string;
@@ -35,6 +35,7 @@ export const useUpsertApplication = ({
       deploymentSettings: {
         trigger: DeploymentSettingsTrigger.WEBHOOK,
         subdirectory: "",
+        targetBranch: "",
       },
     },
     validate: zodResolver(ApplicationForm),
@@ -63,16 +64,9 @@ export const useUpsertApplication = ({
     if (form.validate().hasErrors) return;
 
     await mutate({
-      input: {
-        ...form.values,
-        teamId: form.values.teamId || null,
-      },
+      input: { ...form.values, teamId: form.values.teamId || null },
     });
   };
 
-  return {
-    form,
-    isPending,
-    handleSave,
-  };
+  return { form, isPending, handleSave };
 };

@@ -1,16 +1,16 @@
-import { DrawerScrollable } from "../../../../../components/drawer-scrollable";
-import { useDrawerPage } from "../../../../../providers/drawer-page.provider";
-import { FormUpsertApplication } from "../components/form-upsert-application/form-upsert-application";
 import { Box, Button, Skeleton } from "@mantine/core";
-import { useUpsertApplication } from "../use-upsert-application";
-import { useApplicationQuery } from "../../../../../api/applications.api";
-import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
 import { useParams } from "react-router-dom";
-import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.exception";
+import { useApplicationQuery } from "../../../../../api/applications.api";
+import { DrawerScrollable } from "../../../../../components/drawer-scrollable";
 import { LoadableContent } from "../../../../../components/loadable-content";
+import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.exception";
+import { useDrawerPage } from "../../../../../providers/drawer-page.provider";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 import { useFormAsyncData } from "../../../../../providers/form.provider";
-import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { FormUpsertApplication } from "../components/form-upsert-application/form-upsert-application";
+import { useUpsertApplication } from "../use-upsert-application";
 
 export const ApplicationsEditPage = () => {
   const searchParams = useFilterSearchParameters();
@@ -50,6 +50,7 @@ export const ApplicationsEditPage = () => {
           application?.deploymentSettings.trigger ||
           DeploymentSettingsTrigger.WEBHOOK,
         subdirectory: application?.deploymentSettings.subdirectory ?? "",
+        targetBranch: application?.deploymentSettings.targetBranch ?? "",
       },
     },
   });
