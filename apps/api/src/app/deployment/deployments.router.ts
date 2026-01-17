@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { catchErrors } from "../../lib/express-helpers";
-import { addJob, SweetQueue } from "../../bull-mq/queues";
+import { addJob } from "../../bull-mq/queues";
 import { validateInputOrThrow } from "../validator.service";
 import { postDeploymentValidationSchema } from "./services/deployment.validation";
 import { logger } from "../../lib/logger";
@@ -20,7 +20,7 @@ deploymentsRouter.post(
       req.body
     );
 
-    await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_API, {
+    await addJob("DEPLOYMENT_TRIGGERED_BY_API", {
       workspaceId: apiKey.workspaceId,
       deployedAt: payload.deployedAt
         ? new Date(payload.deployedAt)

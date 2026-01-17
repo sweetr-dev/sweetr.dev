@@ -1,20 +1,13 @@
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { SweetQueues, QueuePayload } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { syncOrganizationMembers } from "../services/github-member.service";
-import {
-  OrganizationMemberAddedEvent,
-  OrganizationMemberRemovedEvent,
-} from "@octokit/webhooks-types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const githubMemberSyncWorker = createWorker(
-  SweetQueue.GITHUB_MEMBERS_SYNC,
-  async (
-    job: Job<OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent>,
-    token?: string
-  ) => {
+  SweetQueues.GITHUB_MEMBERS_SYNC.name,
+  async (job: Job<QueuePayload<"GITHUB_MEMBERS_SYNC">>, token?: string) => {
     const installationId = job.data.installation?.id;
 
     if (!installationId || !job.data.organization) {

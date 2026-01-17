@@ -1,5 +1,4 @@
 import { addDelayedJob, addJobs } from "../../../bull-mq/queues";
-import { SweetQueue } from "../../../bull-mq/queues";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { CreateSyncBatchArgs, SyncBatchMetadata } from "./sync-batch.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
@@ -34,7 +33,7 @@ export const scheduleSyncBatch = async ({
 
   await setSyncBatchProgress(syncBatch.id);
 
-  await addDelayedJob(scheduledAt, SweetQueue.SYNC_BATCH, {
+  await addDelayedJob(scheduledAt, "SYNC_BATCH", {
     syncBatchId: syncBatch.id,
   });
 
@@ -136,9 +135,9 @@ export const startSyncBatch = async (syncBatchId: number) => {
   const metadata = syncBatch.metadata as SyncBatchMetadata;
 
   return addJobs(
-    SweetQueue.GITHUB_SYNC_REPOSITORY_PULL_REQUESTS,
+    "GITHUB_SYNC_REPOSITORY_PULL_REQUESTS",
     metadata.repositories.map((repositoryName) => ({
-      gitInstallationId: installation.gitInstallationId,
+      gitInstallationId: parseInt(installation.gitInstallationId),
       repositoryName,
       sinceDaysAgo: syncBatch.sinceDaysAgo,
       syncBatchId,

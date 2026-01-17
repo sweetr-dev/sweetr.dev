@@ -1,10 +1,10 @@
-import { addJobs, SweetQueue } from "../../../bull-mq/queues";
+import { addJobs, SweetQueues } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { logger } from "../../../lib/logger";
 import { findScheduledDigests } from "../services/digest-schedule.service";
 
 export const cronScheduleDigestsWorker = createWorker(
-  SweetQueue.CRON_SCHEDULE_DIGESTS,
+  SweetQueues.CRON_SCHEDULE_DIGESTS.name,
   async () => {
     logger.info("cronScheduleDigestsWorker");
 
@@ -17,6 +17,6 @@ export const cronScheduleDigestsWorker = createWorker(
       }
     );
 
-    await addJobs(SweetQueue.DIGEST_SEND, digests);
+    await addJobs("DIGEST_SEND", digests);
   }
 );

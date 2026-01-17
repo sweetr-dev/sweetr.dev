@@ -1,11 +1,11 @@
-import {
-  PullRequestClosedEvent,
-  PullRequestOpenedEvent,
-  PullRequestSynchronizeEvent,
-} from "@octokit/webhooks-types";
 import { PullRequestState } from "@prisma/client";
 import { Job } from "bullmq";
-import { addJob, JobPriority, SweetQueue } from "../../../bull-mq/queues";
+import {
+  addJob,
+  JobPriority,
+  QueuePayload,
+  SweetQueues,
+} from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { logger } from "../../../lib/logger";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
@@ -17,15 +17,9 @@ import { syncPullRequest } from "../services/github-pull-request.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
 export const syncPullRequestWorker = createWorker(
-  SweetQueue.GITHUB_SYNC_PULL_REQUEST,
+  SweetQueues.GITHUB_SYNC_PULL_REQUEST.name,
   async (
-    job: Job<
-      (
-        | PullRequestSynchronizeEvent
-        | PullRequestOpenedEvent
-        | PullRequestClosedEvent
-      ) & { syncReviews?: boolean; syncBatchId?: number }
-    >,
+    job: Job<QueuePayload<"GITHUB_SYNC_PULL_REQUEST">>,
     token?: string
   ) => {
     if (!job.data.installation?.id) {
@@ -71,7 +65,7 @@ export const syncPullRequestWorker = createWorker(
         });
 
         await addJob(
-          SweetQueue.GITHUB_SYNC_CODE_REVIEW,
+          "GITHUB_SYNC_CODE_REVIEW",
           {
             pull_request: { node_id: pullRequest.gitPullRequestId },
             installation: { id: installationId },
@@ -80,11 +74,11 @@ export const syncPullRequestWorker = createWorker(
         );
       }
 
-      await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
+      await addJob("AUTOMATION_PR_SIZE_LABELER", job.data);
 
       if (pullRequest.state === PullRequestState.MERGED) {
-        await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
-        await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE, {
+        await addJob("ALERT_MERGED_WITHOUT_APPROVAL", job.data);
+        await addJob("DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE", {
           workspaceId: pullRequest.workspaceId,
           pullRequest,
           installationId,

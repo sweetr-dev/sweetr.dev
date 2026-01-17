@@ -1,20 +1,14 @@
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { QueuePayload, SweetQueues } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { syncGitHubRepositoryPullRequests } from "../services/github-repository-pull-requests.service";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
+import { syncGitHubRepositoryPullRequests } from "../services/github-repository-pull-requests.service";
 
 export const githubRepositoryPullRequestsSyncWorker = createWorker(
-  SweetQueue.GITHUB_SYNC_REPOSITORY_PULL_REQUESTS,
+  SweetQueues.GITHUB_SYNC_REPOSITORY_PULL_REQUESTS.name,
   async (
-    job: Job<{
-      gitInstallationId: number;
-      repositoryName: string;
-      sinceDaysAgo: number;
-      syncBatchId: number;
-      isOnboarding: boolean;
-    }>,
+    job: Job<QueuePayload<"GITHUB_SYNC_REPOSITORY_PULL_REQUESTS">>,
     token?: string
   ) => {
     const installationId = job.data.gitInstallationId;

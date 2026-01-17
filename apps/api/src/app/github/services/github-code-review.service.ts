@@ -1,10 +1,4 @@
-import {
-  GITHUB_MAX_PAGE_LIMIT,
-  getInstallationGraphQLOctoKit,
-} from "../../../lib/octokit";
 import type { GraphQlQueryResponseData } from "@octokit/graphql";
-import { logger } from "../../../lib/logger";
-import { getPrisma } from "../../../prisma";
 import {
   ActivityEventType,
   CodeReviewState,
@@ -14,15 +8,21 @@ import {
   PullRequestTracking,
 } from "@prisma/client";
 import { parallel, pick } from "radash";
+import { addJob } from "../../../bull-mq/queues";
+import { parseNullableISO } from "../../../lib/date";
+import { logger } from "../../../lib/logger";
+import {
+  GITHUB_MAX_PAGE_LIMIT,
+  getInstallationGraphQLOctoKit,
+} from "../../../lib/octokit";
+import { getPrisma } from "../../../prisma";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import {
   getReviewCompareTime,
   getTimeForReview,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
-import { parseNullableISO } from "../../../lib/date";
-import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
-import { SweetQueue, addJob } from "../../../bull-mq/queues";
-import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 
 interface Author {
   id: string;
@@ -75,7 +75,7 @@ export const syncCodeReviews = async (
       pullRequestId,
     });
 
-    await addJob(SweetQueue.GITHUB_SYNC_PULL_REQUEST, {
+    await addJob("GITHUB_SYNC_PULL_REQUEST", {
       pull_request: {
         node_id: pullRequestId,
       },

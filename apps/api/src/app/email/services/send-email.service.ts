@@ -1,5 +1,5 @@
 import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
-import { addJob, SweetQueue } from "../../../bull-mq/queues";
+import { addJob } from "../../../bull-mq/queues";
 import { redisConnection } from "../../../bull-mq/redis-connection";
 import { env, isProduction } from "../../../env";
 import { EmailOptions, EmailPayload, getEmailClient } from "../../../lib/email";
@@ -22,7 +22,7 @@ export const enqueueEmail = (
 
   const { template, ...payload } = data;
 
-  return addJob(SweetQueue.SEND_EMAIL, { template, payload });
+  return addJob("SEND_EMAIL", { template, payload });
 };
 
 export const sendEmail = async (

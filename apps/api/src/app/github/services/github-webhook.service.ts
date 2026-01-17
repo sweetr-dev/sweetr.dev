@@ -1,52 +1,50 @@
 import { WebhookEvent } from "@octokit/webhooks-types";
-import { SweetQueue, addJob } from "../../../bull-mq/queues";
+import { addJob, SweetQueueName } from "../../../bull-mq/queues";
 import { getAppOctoKit } from "../../../lib/octokit";
 import { config } from "../../../config";
 import { GitHubAppWebhook } from "./github-webhook.types";
 import { logger } from "../../../lib/logger";
 
-const webhookToQueueMap: Record<string, SweetQueue[]> = {
+const webhookToQueueMap: Partial<Record<string, SweetQueueName[]>> = {
   // Installation
-  "installation.created": [SweetQueue.GITHUB_INSTALLATION_SYNC],
-  "installation_target.renamed": [SweetQueue.GITHUB_INSTALLATION_SYNC],
-  "installation.new_permissions_accepted": [
-    SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC,
-  ],
-  "installation.suspend": [SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC],
-  "installation.unsuspend": [SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC],
-  "installation_repositories.added": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
-  "installation_repositories.removed": [SweetQueue.GITHUB_REPOSITORIES_SYNC],
-  "installation.deleted": [SweetQueue.GITHUB_INSTALLATION_DELETED],
-  "github_app_authorization.revoked": [SweetQueue.GITHUB_OAUTH_REVOKED],
+  "installation.created": ["GITHUB_INSTALLATION_SYNC"],
+  "installation_target.renamed": ["GITHUB_INSTALLATION_SYNC"],
+  "installation.new_permissions_accepted": ["GITHUB_INSTALLATION_CONFIG_SYNC"],
+  "installation.suspend": ["GITHUB_INSTALLATION_CONFIG_SYNC"],
+  "installation.unsuspend": ["GITHUB_INSTALLATION_CONFIG_SYNC"],
+  "installation_repositories.added": ["GITHUB_REPOSITORIES_SYNC"],
+  "installation_repositories.removed": ["GITHUB_REPOSITORIES_SYNC"],
+  "installation.deleted": ["GITHUB_INSTALLATION_DELETED"],
+  "github_app_authorization.revoked": ["GITHUB_OAUTH_REVOKED"],
 
   // Pull Request
   "pull_request.opened": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+    "GITHUB_SYNC_PULL_REQUEST",
+    "AUTOMATION_PR_TITLE_CHECK",
   ],
   "pull_request.synchronize": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+    "GITHUB_SYNC_PULL_REQUEST",
+    "AUTOMATION_PR_TITLE_CHECK",
   ],
   "pull_request.edited": [
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-    SweetQueue.AUTOMATION_PR_TITLE_CHECK,
+    "GITHUB_SYNC_PULL_REQUEST",
+    "AUTOMATION_PR_TITLE_CHECK",
   ],
-  "pull_request.closed": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.converted_to_draft": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.ready_for_review": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
-  "pull_request.reopened": [SweetQueue.GITHUB_SYNC_PULL_REQUEST],
+  "pull_request.closed": ["GITHUB_SYNC_PULL_REQUEST"],
+  "pull_request.converted_to_draft": ["GITHUB_SYNC_PULL_REQUEST"],
+  "pull_request.ready_for_review": ["GITHUB_SYNC_PULL_REQUEST"],
+  "pull_request.reopened": ["GITHUB_SYNC_PULL_REQUEST"],
 
   // Code Review
-  "pull_request.review_requested": [SweetQueue.GITHUB_SYNC_CODE_REVIEW],
-  "pull_request.review_request_removed": [SweetQueue.GITHUB_SYNC_CODE_REVIEW],
-  "pull_request_review.submitted": [SweetQueue.GITHUB_SYNC_CODE_REVIEW],
-  "pull_request_review.dismissed": [SweetQueue.GITHUB_SYNC_CODE_REVIEW],
+  "pull_request.review_requested": ["GITHUB_SYNC_CODE_REVIEW"],
+  "pull_request.review_request_removed": ["GITHUB_SYNC_CODE_REVIEW"],
+  "pull_request_review.submitted": ["GITHUB_SYNC_CODE_REVIEW"],
+  "pull_request_review.dismissed": ["GITHUB_SYNC_CODE_REVIEW"],
   "pull_request_review.edited": [],
 
   // Organization
-  "organization.member_added": [SweetQueue.GITHUB_MEMBERS_SYNC],
-  "organization.member_removed": [SweetQueue.GITHUB_MEMBERS_SYNC],
+  "organization.member_added": ["GITHUB_MEMBERS_SYNC"],
+  "organization.member_removed": ["GITHUB_MEMBERS_SYNC"],
 
   // "organization.renamed": [], // TO-DO: Handle org rename
 };
@@ -61,8 +59,9 @@ export const enqueueGithubWebhook = async (
     return;
   }
 
-  for (const queue of webhookToQueueMap[event]) {
-    await addJob(queue, payload);
+  for (const queue of webhookToQueueMap[event]!) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await addJob(queue, payload as any);
   }
 };
 
@@ -82,58 +81,60 @@ export const retryFailedWebhooks = async () => {
   );
 
   for (const [guid, attempts] of Object.entries(deliveries)) {
-    if (attempts.some((attempt) => attempt.status.toLowerCase() === "ok"))
-      continue;
+    const latestAttempt = attempts[0];
 
-    logger.info(`Retrying webhook delivery ${guid}`, { webhook: attempts[0] });
+    if (
+      attempts.length >= config.github.failedWebhooks.maxRetries ||
+      latestAttempt.status === "OK"
+    ) {
+      continue;
+    }
+
+    if (!webhookToQueueMap[latestAttempt.event]) {
+      continue;
+    }
+
+    logger.info("Retrying failed GitHub webhook", { guid, latestAttempt });
 
     await octokit.rest.apps.redeliverWebhookDelivery({
-      delivery_id: attempts[0].id,
+      delivery_id: latestAttempt.id,
     });
   }
 };
 
-// https://docs.github.com/en/webhooks/using-webhooks/automatically-redelivering-failed-deliveries-for-a-github-app-webhook
-const fetchWebhookDeliveriesSince = async (fetchSince: number) => {
+const fetchWebhookDeliveriesSince = async (sinceTimestamp: number) => {
   const octokit = getAppOctoKit();
 
-  const iterator = octokit.paginate.iterator("GET /app/hook/deliveries", {
-    per_page: 100,
-  });
+  const since = new Date(sinceTimestamp);
 
-  const deliveries: GitHubAppWebhook[] = [];
+  let hasMore = true;
+  let cursor: string | undefined = undefined;
+  const deliveries: Record<string, GitHubAppWebhook[]> = {};
 
-  for await (const { data } of iterator) {
-    const lastDelivery = data[data.length - 1];
+  while (hasMore) {
+    const result = await octokit.rest.apps.listWebhookDeliveries({
+      per_page: 100,
+      cursor,
+    });
 
-    if (!lastDelivery) break;
+    for (const delivery of result.data) {
+      const deliveredAt = new Date(delivery.delivered_at);
 
-    const oldestDeliveryTimestamp = new Date(
-      lastDelivery.delivered_at
-    ).getTime();
-
-    if (oldestDeliveryTimestamp < fetchSince) {
-      for (const delivery of data) {
-        if (new Date(delivery.delivered_at).getTime() > fetchSince) {
-          deliveries.push(delivery);
-        } else {
-          break;
-        }
+      if (deliveredAt < since) {
+        hasMore = false;
+        break;
       }
-      break;
-    } else {
-      deliveries.push(...data);
+
+      deliveries[delivery.guid] ??= [];
+      deliveries[delivery.guid].push(delivery);
+    }
+
+    cursor = result.data.at(-1)?.id?.toString();
+
+    if (!cursor || result.data.length < 100) {
+      hasMore = false;
     }
   }
 
-  const deliveriesByGuid: Record<string, GitHubAppWebhook[]> = {};
-
-  // Group deliveries by guid
-  for (const delivery of deliveries) {
-    deliveriesByGuid[delivery.guid]
-      ? deliveriesByGuid[delivery.guid].push(delivery)
-      : (deliveriesByGuid[delivery.guid] = [delivery]);
-  }
-
-  return deliveriesByGuid;
+  return deliveries;
 };

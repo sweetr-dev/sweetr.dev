@@ -1,6 +1,5 @@
-import { PullRequest } from "@prisma/client";
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { SweetQueues, QueuePayload } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { logger } from "../../../lib/logger";
 import { DeploymentSettingsTrigger } from "../../applications/services/application.types";
@@ -12,15 +11,11 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 import { findRepositoryById } from "../../repositories/services/repository.service";
 import { createDeploymentFromPullRequestMerge } from "../services/deployment-create-from-merge.service";
 
-interface DeploymentTriggeredByPullRequestMergeJobData {
-  workspaceId: number;
-  pullRequest: PullRequest;
-  installationId: string;
-}
-
 export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
-  SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE,
-  async (job: Job<DeploymentTriggeredByPullRequestMergeJobData>) => {
+  SweetQueues.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE.name,
+  async (
+    job: Job<QueuePayload<"DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE">>
+  ) => {
     logger.info("deploymentTriggeredByPullRequestMergeWorker", {
       data: job.data,
     });

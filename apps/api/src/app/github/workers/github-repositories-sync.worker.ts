@@ -1,15 +1,14 @@
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { QueuePayload, SweetQueues } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import { InstallationRepositoriesEvent } from "@octokit/webhooks-types";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
-import { syncGitHubRepositories } from "../services/github-repository.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
+import { syncGitHubRepositories } from "../services/github-repository.service";
 
 export const githubRepositoriesSyncWorker = createWorker(
-  SweetQueue.GITHUB_REPOSITORIES_SYNC,
+  SweetQueues.GITHUB_REPOSITORIES_SYNC.name,
   async (
-    job: Job<InstallationRepositoriesEvent | { installation?: { id: number } }>,
+    job: Job<QueuePayload<"GITHUB_REPOSITORIES_SYNC">>,
     token?: string
   ) => {
     const installationId = job.data.installation?.id;

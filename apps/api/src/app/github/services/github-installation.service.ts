@@ -11,7 +11,7 @@ import {
   Installation as GitHubInstallation,
   User as GitHubUser,
 } from "@octokit/webhooks-types";
-import { SweetQueue, addJob } from "../../../bull-mq/queues";
+import { addJob } from "../../../bull-mq/queues";
 import { logger } from "../../../lib/logger";
 import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
 import { addDays, endOfDay } from "date-fns";
@@ -32,12 +32,12 @@ export const syncGitHubInstallation = async (
 
   await connectUserToWorkspace(gitProfile, workspace);
 
-  await addJob(SweetQueue.GITHUB_REPOSITORIES_SYNC, {
+  await addJob("GITHUB_REPOSITORIES_SYNC", {
     installation: { id: parseInt(installation.gitInstallationId) },
   });
 
   if (workspace.organization) {
-    await addJob(SweetQueue.GITHUB_MEMBERS_SYNC, {
+    await addJob("GITHUB_MEMBERS_SYNC", {
       organization: { login: workspace.organization.handle },
       installation: { id: parseInt(installation.gitInstallationId) },
     });

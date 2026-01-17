@@ -1,12 +1,11 @@
-import { InstallationDeletedEvent } from "@octokit/webhooks-types";
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { SweetQueues, QueuePayload } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { handleAppUninstall } from "../services/github-deleted.service";
 
 export const githubInstallationDeletedWorker = createWorker(
-  SweetQueue.GITHUB_INSTALLATION_DELETED,
-  async (job: Job<InstallationDeletedEvent>) => {
+  SweetQueues.GITHUB_INSTALLATION_DELETED.name,
+  async (job: Job<QueuePayload<"GITHUB_INSTALLATION_DELETED">>) => {
     await handleAppUninstall(job.data.installation);
   }
 );

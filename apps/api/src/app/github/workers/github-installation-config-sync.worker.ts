@@ -1,22 +1,11 @@
-import {
-  InstallationNewPermissionsAcceptedEvent,
-  InstallationSuspendEvent,
-  InstallationUnsuspendEvent,
-} from "@octokit/webhooks-types";
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
-import { syncInstallationConfig as syncInstallationConfig } from "../services/github-installation.service";
+import { QueuePayload, SweetQueues } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
+import { syncInstallationConfig } from "../services/github-installation.service";
 
 export const githubInstallationConfigSyncWorker = createWorker(
-  SweetQueue.GITHUB_INSTALLATION_CONFIG_SYNC,
-  async (
-    job: Job<
-      | InstallationNewPermissionsAcceptedEvent
-      | InstallationSuspendEvent
-      | InstallationUnsuspendEvent
-    >
-  ) => {
+  SweetQueues.GITHUB_INSTALLATION_CONFIG_SYNC.name,
+  async (job: Job<QueuePayload<"GITHUB_INSTALLATION_CONFIG_SYNC">>) => {
     await syncInstallationConfig(job.data.installation.id);
   }
 );

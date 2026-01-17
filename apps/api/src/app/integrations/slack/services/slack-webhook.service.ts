@@ -1,7 +1,7 @@
-import { addJob, SweetQueue } from "../../../../bull-mq/queues";
+import { addJob, SweetQueueName } from "../../../../bull-mq/queues";
 
-const webhookToQueueMap: Record<string, SweetQueue[]> = {
-  app_uninstalled: [SweetQueue.SLACK_APP_UNINSTALLED],
+const webhookToQueueMap: Partial<Record<string, SweetQueueName[]>> = {
+  app_uninstalled: ["SLACK_APP_UNINSTALLED"],
 };
 
 export const enqueueSlackWebhook = async (
@@ -12,7 +12,7 @@ export const enqueueSlackWebhook = async (
     return;
   }
 
-  for (const queue of webhookToQueueMap[type]) {
-    await addJob(queue, payload);
+  for (const queue of webhookToQueueMap[type]!) {
+    await addJob(queue, payload as { team_id: string });
   }
 };

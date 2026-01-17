@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { addJob, SweetQueue } from "../../../bull-mq/queues";
+import { addJob, SweetQueueName } from "../../../bull-mq/queues";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { getStripeClient } from "../../../lib/stripe";
 import { getPrisma } from "../../../prisma";
@@ -7,10 +7,10 @@ import { CreateSessionArgs } from "./stripe.types";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { env } from "../../../env";
 
-const webhookToQueueMap: Record<string, SweetQueue[]> = {
-  "customer.subscription.created": [SweetQueue.STRIPE_SUBSCRIPTION_UPDATED],
-  "customer.subscription.updated": [SweetQueue.STRIPE_SUBSCRIPTION_UPDATED],
-  "customer.subscription.deleted": [SweetQueue.STRIPE_SUBSCRIPTION_UPDATED],
+const webhookToQueueMap: Partial<Record<string, SweetQueueName[]>> = {
+  "customer.subscription.created": ["STRIPE_SUBSCRIPTION_UPDATED"],
+  "customer.subscription.updated": ["STRIPE_SUBSCRIPTION_UPDATED"],
+  "customer.subscription.deleted": ["STRIPE_SUBSCRIPTION_UPDATED"],
 };
 
 export const enqueueStripeWebhook = async (event: Stripe.Event) => {
@@ -20,7 +20,7 @@ export const enqueueStripeWebhook = async (event: Stripe.Event) => {
     });
   }
 
-  for (const queue of webhookToQueueMap[event.type]) {
+  for (const queue of webhookToQueueMap[event.type]!) {
     await addJob(queue, event.data);
   }
 };
@@ -38,46 +38,68 @@ export const createStripeCustomerPortalSession = async (
     },
   });
 
-  if (!workspace?.subscription) return null;
+  if (!workspace?.subscription?.stripeCustomerId) {
+    throw new ResourceNotFoundException("Subscription not found", {
+      extra: { workspaceId },
+    });
+  }
 
   const session = await getStripeClient().billingPortal.sessions.create({
-    customer: workspace.subscription.customerId,
-    return_url: `${env.FRONTEND_URL}/settings/billing`,
+    customer: workspace.subscription.stripeCustomerId,
+    return_url: `${env.WEB_APP_URL}/settings/billing`,
   });
 
   return session;
 };
 
 export const createStripeCheckoutSession = async ({
-  key,
-  quantity,
   workspaceId,
+  gitInstallationId,
+  successUrl,
+  priceId,
 }: CreateSessionArgs) => {
-  const prices = await getStripeClient().prices.list({
-    lookup_keys: [key],
-    expand: ["data.product"],
-  });
+  const stripe = getStripeClient();
 
-  if (!prices.data[0]) {
-    throw new ResourceNotFoundException("Could not find plan");
-  }
-
-  return getStripeClient().checkout.sessions.create({
-    billing_address_collection: "auto",
-    allow_promotion_codes: true,
-    line_items: [
-      {
-        price: prices.data[0].id,
-        quantity: quantity,
-      },
-    ],
-    subscription_data: {
-      metadata: {
-        workspaceId,
+  const workspace = await getPrisma(workspaceId).workspace.findFirst({
+    where: { id: workspaceId },
+    include: {
+      subscription: true,
+      _count: {
+        select: {
+          gitProfiles: true,
+        },
       },
     },
-    mode: "subscription",
-    success_url: `${env.FRONTEND_URL}/settings/billing?newPurchase=true`,
-    cancel_url: `${env.FRONTEND_URL}/settings/billing`,
   });
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found", {
+      extra: { workspaceId },
+    });
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    billing_address_collection: "auto",
+    mode: "subscription",
+    line_items: [
+      {
+        price: priceId,
+        quantity: workspace._count.gitProfiles,
+      },
+    ],
+    success_url: successUrl,
+    cancel_url: successUrl,
+    metadata: {
+      workspaceId: workspaceId.toString(),
+      gitInstallationId: gitInstallationId.toString(),
+    },
+    subscription_data: {
+      metadata: {
+        workspaceId: workspaceId.toString(),
+        gitInstallationId: gitInstallationId.toString(),
+      },
+    },
+  });
+
+  return session;
 };

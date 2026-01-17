@@ -1,6 +1,6 @@
 import { Job } from "bullmq";
 import { env } from "../../env";
-import { SweetQueue } from "../../bull-mq/queues";
+import { SweetQueues, QueuePayload } from "../../bull-mq/queues";
 import { getHttpClient } from "../../lib/got";
 import { createWorker } from "../../bull-mq/workers";
 import { getBypassRlsPrisma } from "../../prisma";
@@ -13,8 +13,8 @@ import {
 import { InstallationTargetType } from "@prisma/client";
 
 export const saasNotifyNewInstallationWorker = createWorker(
-  SweetQueue.SAAS_NOTIFY_NEW_INSTALLATION,
-  async (job: Job<{ installationId: number }>) => {
+  SweetQueues.SAAS_NOTIFY_NEW_INSTALLATION.name,
+  async (job: Job<QueuePayload<"SAAS_NOTIFY_NEW_INSTALLATION">>) => {
     if (!env.SLACK_INSTALL_NOTIFICATION_WEBHOOK_URL) return;
 
     const installation = await getBypassRlsPrisma().installation.findUnique({

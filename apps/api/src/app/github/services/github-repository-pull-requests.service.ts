@@ -9,7 +9,7 @@ import {
   getWorkspaceHandle,
 } from "../../workspaces/services/workspace.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
-import { JobPriority, SweetQueue, addJobs } from "../../../bull-mq/queues";
+import { JobPriority, addJobs } from "../../../bull-mq/queues";
 import { sleep } from "radash";
 import { isAfter, parseISO, startOfDay, subDays } from "date-fns";
 import { isAppSelfHosted } from "../../../lib/self-host";
@@ -59,7 +59,7 @@ export const syncGitHubRepositoryPullRequests = async (
   );
 
   addJobs(
-    SweetQueue.GITHUB_SYNC_PULL_REQUEST,
+    "GITHUB_SYNC_PULL_REQUEST",
     gitHubPullRequests.map((pullRequest) => ({
       installation: { id: gitInstallationId },
       pull_request: { node_id: pullRequest.id },

@@ -1,4 +1,4 @@
-import { SweetQueue } from "../../../bull-mq/queues";
+import { SweetQueues } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { logger } from "../../../lib/logger";
 import {
@@ -7,7 +7,7 @@ import {
 } from "../services/billing.service";
 
 export const cronUpdateSeatsWorker = createWorker(
-  SweetQueue.CRON_STRIPE_UPDATE_SEATS,
+  SweetQueues.CRON_STRIPE_UPDATE_SEATS.name,
   async () => {
     logger.info("cronUpdateSeatsWorker");
 

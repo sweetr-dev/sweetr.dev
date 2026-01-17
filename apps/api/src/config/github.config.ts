@@ -9,6 +9,7 @@ export default {
   redirectPath: env.GITHUB_OAUTH_REDIRECT_PATH,
   scope: "read:user, user:email",
   failedWebhooks: {
+    maxRetries: 3,
     repeatEveryMinutes: env.CRON_GITHUB_RETRY_FAILED_WEBHOOKS_EVERY_MINUTES,
     recentWebhooksTimeframe: minutesToMilliseconds(
       env.CRON_GITHUB_RETRY_FAILED_WEBHOOKS_EVERY_MINUTES + 5

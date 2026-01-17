@@ -1,5 +1,5 @@
 import { group } from "radash";
-import { addJob, SweetQueue } from "../bull-mq/queues";
+import { addJob } from "../bull-mq/queues";
 import { getAppOctoKit } from "../lib/octokit";
 
 const ownerProfileHandle = "waltergalvao";
@@ -28,7 +28,7 @@ const run = async () => {
     return;
   }
 
-  await addJob(SweetQueue.GITHUB_INSTALLATION_SYNC, {
+  await addJob("GITHUB_INSTALLATION_SYNC", {
     installation: installationGroupedByAccount[targetHandle][0],
     sender: gitProfile,
   });

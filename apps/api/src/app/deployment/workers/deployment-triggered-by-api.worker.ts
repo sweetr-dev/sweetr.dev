@@ -1,18 +1,12 @@
 import { Job } from "bullmq";
-import { addJob, SweetQueue } from "../../../bull-mq/queues";
+import { addJob, SweetQueues, QueuePayload } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
-import type { PostDeploymentInput } from "../services/deployment.validation";
 import { logger } from "../../../lib/logger";
 import { handleDeploymentTriggeredByApi } from "../services/deployment-create-from-api.service";
 
-type DeploymentCreateJobData = Omit<PostDeploymentInput, "deployedAt"> & {
-  workspaceId: number;
-  deployedAt: Date;
-};
-
 export const deploymentTriggeredByApiWorker = createWorker(
-  SweetQueue.DEPLOYMENT_TRIGGERED_BY_API,
-  async (job: Job<DeploymentCreateJobData>) => {
+  SweetQueues.DEPLOYMENT_TRIGGERED_BY_API.name,
+  async (job: Job<QueuePayload<"DEPLOYMENT_TRIGGERED_BY_API">>) => {
     logger.info("deploymentTriggeredByApiWorker", { data: job.data });
 
     const deployment = await handleDeploymentTriggeredByApi(job.data);
@@ -21,7 +15,7 @@ export const deploymentTriggeredByApiWorker = createWorker(
       deployment,
     });
 
-    await addJob(SweetQueue.DEPLOYMENT_AUTO_LINK_PULL_REQUESTS, {
+    await addJob("DEPLOYMENT_AUTO_LINK_PULL_REQUESTS", {
       deploymentId: deployment.id,
       workspaceId: job.data.workspaceId,
     });

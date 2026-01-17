@@ -1,6 +1,6 @@
-import { Processor, Worker, WorkerOptions } from "bullmq";
+import { Job, Worker, WorkerOptions } from "bullmq";
 import { redisConnection } from "./redis-connection";
-import { SweetQueue } from "./queues";
+import { SweetQueues, QueuePayload } from "./queues";
 import {
   bullMQErrorHandler,
   workerFailedHandler,
@@ -10,9 +10,16 @@ import { logger } from "../lib/logger";
 
 const workers: Worker[] = [];
 
-export const createWorker = (
-  queueName: SweetQueue,
-  processor: Processor,
+// Helper type to get queue name strings
+type QueueNameString = (typeof SweetQueues)[keyof typeof SweetQueues]["name"];
+
+/**
+ * Create a worker for a queue.
+ * Pass the queue name string (e.g., SweetQueues.SEND_EMAIL.name).
+ */
+export const createWorker = <T>(
+  queueName: QueueNameString,
+  processor: (job: Job<T>, token?: string) => Promise<void>,
   workerOptions?: Omit<WorkerOptions, "connection">
 ) => {
   const worker = new Worker(
@@ -20,7 +27,7 @@ export const createWorker = (
     async (job, token) => {
       logger.info(`🐂▶️ BullmQ: ${job.name} - Processing job #${job.id}`);
 
-      return processor(job, token);
+      return processor(job as Job<T>, token);
     },
     {
       connection: redisConnection,
