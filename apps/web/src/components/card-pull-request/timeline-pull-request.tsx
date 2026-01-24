@@ -1,29 +1,17 @@
-import {
-  Timeline,
-  Text,
-  ThemeIcon,
-  Stack,
-  Paper,
-  Box,
-  Divider,
-  Group,
-  Title,
-} from "@mantine/core";
-import {
-  IconClock,
-  IconEyeCode,
-  IconGitMerge,
-  IconGitPullRequestDraft,
-  IconSquareRoundedCheck,
-} from "@tabler/icons-react";
-import { formatDistanceToNow } from "date-fns";
-import { humanizeDuration, msToHour } from "../../providers/date.provider";
+import { Box, Divider, Text, ThemeIcon, Timeline } from "@mantine/core";
 import {
   PullRequest,
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
+import {
+  IconClock,
+  IconEyeCode,
+  IconGitMerge,
+  IconSquareRoundedCheck,
+} from "@tabler/icons-react";
+import { formatDistanceToNow } from "date-fns";
+import { humanizeDuration, msToHour } from "../../providers/date.provider";
 import { useBadges } from "./use-badges";
-import { IconPullRequest } from "../../providers/icon.provider";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
