@@ -100,13 +100,13 @@ export const getTimeToMerge = (
  */
 export const getCycleTime = (
   pullRequest: PullRequest,
-  firstCommitAt: Date | null
+  fromDate: Date | null
 ) => {
-  if (!firstCommitAt) return undefined;
+  if (!fromDate) return undefined;
 
   if (!pullRequest.mergedAt) return undefined;
 
-  return differenceInBusinessMilliseconds(firstCommitAt, pullRequest.mergedAt);
+  return differenceInBusinessMilliseconds(fromDate, pullRequest.mergedAt);
 };
 
 /**
