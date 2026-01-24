@@ -64,6 +64,7 @@ export const usePullRequestsInfiniteQuery = (
                   timeToFirstApproval
                   firstReviewAt
                   firstApprovalAt
+                  cycleTime
                 }
                 author {
                   id

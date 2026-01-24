@@ -87,8 +87,11 @@ export default /* GraphQL */ `
     "The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first approval"
     timeToFirstApproval: BigInt
 
-    "The duration, in milliseconds, between the first approval of the Pull Request and the time it received it was merged. Compares with creation date when merged without reviews"
+    "The duration, in milliseconds, between the first approval of the Pull Request and the time it was merged. Compares with creation date when merged without reviews"
     timeToMerge: BigInt
+
+    "The duration, in milliseconds, between the first commit and the time it was merged"
+    cycleTime: BigInt
   }
 
   input PullRequestsQueryInput {
