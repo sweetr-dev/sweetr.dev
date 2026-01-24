@@ -126,7 +126,7 @@ const fetchPullRequest = async (
 
             createdAt
             updatedAt
-            
+
             author {
               ... on User {
                 id
@@ -160,7 +160,7 @@ const fetchPullRequest = async (
               }
               pageInfo {
                 hasNextPage
-                endCursor 
+                endCursor
               }
             }
 
@@ -223,7 +223,7 @@ const getPullRequestFiles = async (
               }
               pageInfo {
                 hasNextPage
-                endCursor 
+                endCursor
               }
             }
           }
@@ -328,9 +328,31 @@ const upsertPullRequestTracking = async (
   const size = getPullRequestSize(workspace, linesChangedCount);
   const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
 
-  const firstCommitAt = parseNullableISO(firstCommit?.commit?.committer?.date);
-  const timeToCode = getTimeToCode(firstCommitAt, tracking?.firstReadyAt);
-  const cycleTime = getCycleTime(pullRequest, firstCommitAt);
+  // Use author date (more stable across rebases) with fallback to committer date
+  const candidateFirstCommitAt = parseNullableISO(
+    firstCommit?.commit?.author?.date ?? firstCommit?.commit?.committer?.date
+  );
+
+  // Keep the earliest firstCommitAt date we've ever seen
+  const firstCommitAt =
+    tracking?.firstCommitAt && candidateFirstCommitAt
+      ? new Date(
+          Math.min(
+            tracking.firstCommitAt.getTime(),
+            candidateFirstCommitAt.getTime()
+          )
+        )
+      : (tracking?.firstCommitAt ?? candidateFirstCommitAt);
+
+  // In some cases firstCommitAt is after PR creation due to rebases.
+  // We want the earliest reliable date to be our starting "coding" anchor.
+  const startedCodingAt =
+    firstCommitAt && firstCommitAt < pullRequest.createdAt
+      ? firstCommitAt
+      : pullRequest.createdAt;
+
+  const timeToCode = getTimeToCode(startedCodingAt, tracking?.firstReadyAt);
+  const cycleTime = getCycleTime(pullRequest, startedCodingAt);
 
   await getPrisma(pullRequest.workspaceId).pullRequestTracking.upsert({
     where: { pullRequestId: pullRequest.id },
