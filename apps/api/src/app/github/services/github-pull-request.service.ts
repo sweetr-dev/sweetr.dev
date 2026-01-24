@@ -344,16 +344,15 @@ const upsertPullRequestTracking = async (
         )
       : (tracking?.firstCommitAt ?? candidateFirstCommitAt);
 
-  const timeToCode = getTimeToCode(firstCommitAt, tracking?.firstReadyAt);
-
   // In some cases firstCommitAt is after PR creation due to rebases.
-  // We want the earliest reliable date to be our starting anchor.
-  const cycleTimeAnchor =
+  // We want the earliest reliable date to be our starting "coding" anchor.
+  const startedCodingAt =
     firstCommitAt && firstCommitAt < pullRequest.createdAt
       ? firstCommitAt
       : pullRequest.createdAt;
 
-  const cycleTime = getCycleTime(pullRequest, cycleTimeAnchor);
+  const timeToCode = getTimeToCode(startedCodingAt, tracking?.firstReadyAt);
+  const cycleTime = getCycleTime(pullRequest, startedCodingAt);
 
   await getPrisma(pullRequest.workspaceId).pullRequestTracking.upsert({
     where: { pullRequestId: pullRequest.id },
