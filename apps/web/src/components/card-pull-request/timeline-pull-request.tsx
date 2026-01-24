@@ -9,7 +9,6 @@ import {
   IconGitMerge,
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
-import { formatDistanceToNow } from "date-fns";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 import { useBadges } from "./use-badges";
 
@@ -23,15 +22,10 @@ interface TimeLinePullRequestProps {
 export const TimelinePullRequest = ({
   pullRequest,
 }: TimeLinePullRequestProps) => {
-  const openedAgo = formatDistanceToNow(pullRequest.createdAt, {
-    addSuffix: true,
-  });
-
   const successColor = "var(--mantine-color-green-4)";
   const errorColor = "var(--mantine-color-red-4)";
   const warningColor = "var(--mantine-color-yellow-4)";
 
-  const isDraft = pullRequest.state === PullRequestState.DRAFT;
   const isClosed = pullRequest.state === PullRequestState.CLOSED;
   const isMerged = !!pullRequest.mergedAt;
   const isDone = isMerged || isClosed;
