@@ -860,6 +860,8 @@ export type PullRequestTracking = {
   __typename?: 'PullRequestTracking';
   /** The amount of files changed (ignores auto-generated files) */
   changedFilesCount: Scalars['Int']['output'];
+  /** The duration, in milliseconds, between the first commit and the time it was merged */
+  cycleTime?: Maybe<Scalars['BigInt']['output']>;
   /** The time when the pull request received its first approval */
   firstApprovalAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time when the pull request received its first review */
@@ -874,7 +876,7 @@ export type PullRequestTracking = {
   timeToFirstApproval?: Maybe<Scalars['BigInt']['output']>;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first review */
   timeToFirstReview?: Maybe<Scalars['BigInt']['output']>;
-  /** The duration, in milliseconds, between the first approval of the Pull Request and the time it received it was merged. Compares with creation date when merged without reviews */
+  /** The duration, in milliseconds, between the first approval of the Pull Request and the time it was merged. Compares with creation date when merged without reviews */
   timeToMerge?: Maybe<Scalars['BigInt']['output']>;
 };
 
@@ -2037,6 +2039,7 @@ export type PullRequestMergedEventResolvers<ContextType = GraphQLContext, Parent
 
 export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestTracking'] = ResolversParentTypes['PullRequestTracking']> = {
   changedFilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  cycleTime?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   firstApprovalAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   firstReviewAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   linesAddedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

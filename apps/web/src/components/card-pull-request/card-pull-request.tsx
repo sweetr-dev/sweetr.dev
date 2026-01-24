@@ -153,7 +153,7 @@ export const CardPullRequest = ({
           </Paper>
         </Anchor>
       </HoverCard.Target>
-      <HoverCard.Dropdown bg="dark.7" w="auto" p="lg">
+      <HoverCard.Dropdown bg="dark.7" w="auto" p={0}>
         <TimelinePullRequest pullRequest={pullRequest} />
       </HoverCard.Dropdown>
     </HoverCard>

@@ -24,8 +24,14 @@ export const transformPullRequestTracking = (
       timeToFirstApproval: null,
       timeToFirstReview: null,
       timeToMerge: null,
+      cycleTime: null,
     };
   }
+
+  const startedCodingAt =
+    tracking.firstCommitAt && tracking.firstCommitAt > prCreatedAt
+      ? prCreatedAt
+      : (tracking.firstCommitAt ?? prCreatedAt);
 
   return {
     size: tracking.size as PullRequestSize,
@@ -47,6 +53,11 @@ export const transformPullRequestTracking = (
     timeToMerge: calculateTimeForEvent(
       tracking.firstReadyAt || prCreatedAt,
       tracking.timeToMerge,
+      prState
+    ),
+    cycleTime: calculateTimeForEvent(
+      startedCodingAt,
+      tracking.cycleTime,
       prState
     ),
   };
