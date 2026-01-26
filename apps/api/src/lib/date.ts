@@ -104,3 +104,14 @@ export const subBusinessHours = (date: Date, hours: number): Date => {
 export const thirtyDaysAgo = () => {
   return startOfDay(subDays(new UTCDate(), 30));
 };
+
+// Given a date range, calculate the previous date range (exclusive end becomes inclusive)
+export const getPreviousPeriod = (from: string, to: string) => {
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+  const duration = toDate.getTime() - fromDate.getTime();
+  const beforeTo = new Date(fromDate.getTime() - 1);
+  const beforeFrom = new Date(beforeTo.getTime() - duration + 1);
+
+  return [beforeFrom.toISOString(), beforeTo.toISOString()];
+};

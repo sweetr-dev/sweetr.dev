@@ -36,6 +36,12 @@ export default /* GraphQL */ `
     "The lead time in milliseconds for the current period"
     currentAmount: BigInt!
 
+    "The date range for the current period"
+    currentPeriod: DateTimeRangeValue!
+
+    "The date range for the previous period"
+    previousPeriod: DateTimeRangeValue!
+
     "The lead time in milliseconds before the current period"
     previousAmount: BigInt!
 
@@ -47,11 +53,54 @@ export default /* GraphQL */ `
 
     "The amounts over time for the chart"
     data: [BigInt!]!
+
+    "Breakdown of lead time by development stages"
+    breakdown: LeadTimeBreakdown!
+  }
+
+  type LeadTimeBreakdown {
+    "Time spent coding (first commit to PR creation)"
+    codingTime: BreakdownStage!
+
+    "The date range for the current period"
+    currentPeriod: DateTimeRangeValue!
+
+    "The date range for the previous period"
+    previousPeriod: DateTimeRangeValue!
+
+    "Time waiting for first review"
+    timeToFirstReview: BreakdownStage!
+
+    "Time from first review to approval"
+    timeToApprove: BreakdownStage!
+
+    "Time from approval to merge"
+    timeToMerge: BreakdownStage!
+
+    "Time from merge to deploy"
+    timeToDeploy: BreakdownStage!
+  }
+
+  type BreakdownStage {
+    "Average time in milliseconds for current period"
+    currentAmount: BigInt!
+
+    "Average time in milliseconds for previous period"
+    previousAmount: BigInt!
+
+    "Percentage change from previous period"
+    change: Float!
   }
 
   type ChangeFailureRateMetric {
     "The change failure rate for the current period"
     currentAmount: Float!
+
+    "The date range for the current period"
+    currentPeriod: DateTimeRangeValue!
+
+    "The date range for the previous period"
+    previousPeriod: DateTimeRangeValue!
 
     "The change failure rate before the current period"
     previousAmount: Float!
@@ -69,6 +118,12 @@ export default /* GraphQL */ `
   type DeploymentFrequencyMetric {
     "The amount of deployments for the current period"
     currentAmount: BigInt!
+
+    "The date range for the current period"
+    currentPeriod: DateTimeRangeValue!
+
+    "The date range for the previous period"
+    previousPeriod: DateTimeRangeValue!
 
     "The average number of deployments per day"
     avg: Float!
@@ -89,6 +144,12 @@ export default /* GraphQL */ `
   type MeanTimeToRecoverMetric {
     "The mean time to recover in milliseconds for the current period"
     currentAmount: BigInt!
+
+    "The date range for the current period"
+    currentPeriod: DateTimeRangeValue!
+
+    "The date range for the previous period"
+    previousPeriod: DateTimeRangeValue!
 
     "The mean time to recover in milliseconds before the current period"
     previousAmount: BigInt!

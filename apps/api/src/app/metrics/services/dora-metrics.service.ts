@@ -1,177 +1,22 @@
 import { Prisma } from "@prisma/client";
+import { getPreviousPeriod } from "../../../lib/date";
 import { getPrisma } from "../../../prisma";
 import { periodToDateTrunc, periodToInterval } from "./chart.service";
-import { DoraMetricsFilters } from "./dora-metrics.types";
+import {
+  AggregateQueryArgs,
+  DeploymentFiltersResult,
+  DeploymentFrequencyResult,
+  DoraMetricsFilters,
+  FailureRateResult,
+  MetricResult,
+} from "./dora-metrics.types";
 
-interface MetricResult {
-  columns: string[];
-  data: bigint[];
-  currentAmount: bigint;
-  previousAmount: bigint;
-  change: number;
-}
-
-interface FailureRateResult
-  extends Pick<MetricResult, "columns" | "data" | "change"> {
-  currentAmount: number;
-  previousAmount: number;
-}
-
-interface DeploymentFrequencyResult extends MetricResult {
-  avg: number;
-}
-
-/**
- * Calculate the "before" period dates based on exact duration
- */
-const calculateBeforePeriod = (
-  from: string,
-  to: string
-): { beforeFrom: string; beforeTo: string } => {
-  const fromDate = new Date(from);
-  const toDate = new Date(to);
-  const duration = toDate.getTime() - fromDate.getTime();
-  const beforeTo = fromDate;
-  const beforeFrom = new Date(beforeTo.getTime() - duration);
-
-  return {
-    beforeFrom: beforeFrom.toISOString(),
-    beforeTo: beforeTo.toISOString(),
-  };
-};
-
-/**
- * Build filter joins and conditions for DORA metrics queries using optimized JOINs
- */
-const buildDeploymentFilters = (
-  filters: DoraMetricsFilters,
-  alias: string = "d"
-): { joins: Prisma.Sql[]; conditions: Prisma.Sql[] } => {
-  const joins: Prisma.Sql[] = [];
-  const conditions: Prisma.Sql[] = [];
-
-  // Workspace filter
-  conditions.push(
-    Prisma.sql`${Prisma.raw(alias)}."workspaceId" = ${filters.workspaceId}`
-  );
-
-  // Environment filter - use JOIN for production filter
-  if (filters.environmentIds && filters.environmentIds.length > 0) {
-    conditions.push(
-      Prisma.sql`${Prisma.raw(alias)}."environmentId" = ANY(ARRAY[${Prisma.join(
-        filters.environmentIds.map((id) => Prisma.sql`${id}`),
-        ", "
-      )}])`
-    );
-  } else {
-    // Join with Environment table to filter by isProduction
-    joins.push(
-      Prisma.sql`INNER JOIN "Environment" e ON e."id" = ${Prisma.raw(alias)}."environmentId" AND e."workspaceId" = ${Prisma.raw(alias)}."workspaceId"`
-    );
-    conditions.push(
-      Prisma.sql`e."isProduction" = true AND e."archivedAt" IS NULL`
-    );
-  }
-
-  // Application filter
-  if (filters.applicationIds && filters.applicationIds.length > 0) {
-    conditions.push(
-      Prisma.sql`${Prisma.raw(alias)}."applicationId" = ANY(ARRAY[${Prisma.join(
-        filters.applicationIds.map((id) => Prisma.sql`${id}`),
-        ", "
-      )}])`
-    );
-  }
-
-  // Team or Repository filter - use single JOIN for Application
-  const needsApplicationJoin =
-    (filters.teamIds && filters.teamIds.length > 0) ||
-    (filters.repositoryIds && filters.repositoryIds.length > 0);
-
-  if (needsApplicationJoin) {
-    joins.push(
-      Prisma.sql`INNER JOIN "Application" a ON a."id" = ${Prisma.raw(alias)}."applicationId" AND a."workspaceId" = ${Prisma.raw(alias)}."workspaceId" AND a."archivedAt" IS NULL`
-    );
-
-    if (filters.teamIds && filters.teamIds.length > 0) {
-      conditions.push(
-        Prisma.sql`a."teamId" = ANY(ARRAY[${Prisma.join(
-          filters.teamIds.map((id) => Prisma.sql`${id}`),
-          ", "
-        )}])`
-      );
-    }
-
-    if (filters.repositoryIds && filters.repositoryIds.length > 0) {
-      conditions.push(
-        Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
-          filters.repositoryIds.map((id) => Prisma.sql`${id}`),
-          ", "
-        )}])`
-      );
-    }
-  }
-
-  return { joins, conditions };
-};
-
-/**
- * Build lead time aggregate query with optimized JOINs
- */
-const buildLeadTimeAggregateQuery = ({
-  filters,
-  from,
-  to,
-  isPreviousPeriod = false,
-}: {
-  filters: DoraMetricsFilters;
-  from: string;
-  to: string;
-  isPreviousPeriod?: boolean;
-}): Prisma.Sql => {
-  const upperOperator = isPreviousPeriod ? Prisma.raw("<") : Prisma.raw("<=");
-  const { joins, conditions } = buildDeploymentFilters(filters, "d");
-
-  const allJoins = [
-    ...joins,
-    Prisma.sql`INNER JOIN "DeploymentPullRequest" dpr ON d."id" = dpr."deploymentId"`,
-    Prisma.sql`INNER JOIN "PullRequest" pr ON dpr."pullRequestId" = pr."id"`,
-    Prisma.sql`LEFT JOIN "PullRequestTracking" prt ON pr."id" = prt."pullRequestId"`,
-  ];
-
-  conditions.push(
-    Prisma.sql`d."deployedAt" >= ${new Date(from)}`,
-    Prisma.sql`d."deployedAt" ${upperOperator} ${new Date(to)}`,
-    Prisma.sql`d."archivedAt" IS NULL`
-  );
-
-  const whereClause = Prisma.join(conditions, " AND ");
-  const joinClause = Prisma.join(allJoins, " ");
-
-  return Prisma.sql`
-    SELECT AVG(deployment_lead_times.lead_time_ms) AS value
-    FROM (
-      SELECT 
-        d."id",
-        EXTRACT(EPOCH FROM (d."deployedAt" - MIN(COALESCE(prt."firstCommitAt", pr."createdAt")))) * 1000 AS lead_time_ms
-      FROM "Deployment" d
-      ${joinClause}
-      WHERE ${whereClause}
-      GROUP BY d."id", d."deployedAt"
-    ) AS deployment_lead_times;
-  `;
-};
-
-/**
- * Calculate lead time metric
- * Lead time = time from earliest PR first commit to deployment
- */
 export const getLeadTimeMetric = async (
   filters: DoraMetricsFilters
 ): Promise<MetricResult> => {
   const { dateRange, period } = filters;
   const { from, to } = dateRange;
-  const { beforeFrom, beforeTo } = calculateBeforePeriod(from, to);
+  const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
   const { joins, conditions } = buildDeploymentFilters(filters, "d");
   const trunc = periodToDateTrunc(period);
@@ -230,14 +75,12 @@ export const getLeadTimeMetric = async (
     filters,
     from,
     to,
-    isPreviousPeriod: false,
   });
 
   const previousAmountQuery = buildLeadTimeAggregateQuery({
     filters,
     from: beforeFrom,
     to: beforeTo,
-    isPreviousPeriod: true,
   });
 
   const [chartResults, amountResult, beforeResult] = await Promise.all([
@@ -272,24 +115,120 @@ export const getLeadTimeMetric = async (
     currentAmount: BigInt(currentAmount),
     previousAmount: BigInt(previousAmount),
     change,
+    currentPeriod: { from, to },
+    previousPeriod: { from: beforeFrom, to: beforeTo },
   };
 };
 
-/**
- * Build change failure rate aggregate query with optimized JOINs
- */
+const buildDeploymentFilters = (
+  filters: DoraMetricsFilters,
+  alias: string = "d"
+): DeploymentFiltersResult => {
+  const joins: Prisma.Sql[] = [];
+  const conditions: Prisma.Sql[] = [];
+
+  conditions.push(
+    Prisma.sql`${Prisma.raw(alias)}."workspaceId" = ${filters.workspaceId}`
+  );
+
+  if (filters.environmentIds && filters.environmentIds.length > 0) {
+    conditions.push(
+      Prisma.sql`${Prisma.raw(alias)}."environmentId" = ANY(ARRAY[${Prisma.join(
+        filters.environmentIds.map((id) => Prisma.sql`${id}`),
+        ", "
+      )}])`
+    );
+  } else {
+    joins.push(
+      Prisma.sql`INNER JOIN "Environment" e ON e."id" = ${Prisma.raw(alias)}."environmentId" AND e."workspaceId" = ${Prisma.raw(alias)}."workspaceId"`
+    );
+    conditions.push(
+      Prisma.sql`e."isProduction" = true AND e."archivedAt" IS NULL`
+    );
+  }
+
+  if (filters.applicationIds && filters.applicationIds.length > 0) {
+    conditions.push(
+      Prisma.sql`${Prisma.raw(alias)}."applicationId" = ANY(ARRAY[${Prisma.join(
+        filters.applicationIds.map((id) => Prisma.sql`${id}`),
+        ", "
+      )}])`
+    );
+  }
+
+  const needsApplicationJoin =
+    (filters.teamIds && filters.teamIds.length > 0) ||
+    (filters.repositoryIds && filters.repositoryIds.length > 0);
+
+  if (needsApplicationJoin) {
+    joins.push(
+      Prisma.sql`INNER JOIN "Application" a ON a."id" = ${Prisma.raw(alias)}."applicationId" AND a."workspaceId" = ${Prisma.raw(alias)}."workspaceId" AND a."archivedAt" IS NULL`
+    );
+
+    if (filters.teamIds && filters.teamIds.length > 0) {
+      conditions.push(
+        Prisma.sql`a."teamId" = ANY(ARRAY[${Prisma.join(
+          filters.teamIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])`
+      );
+    }
+
+    if (filters.repositoryIds && filters.repositoryIds.length > 0) {
+      conditions.push(
+        Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
+          filters.repositoryIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])`
+      );
+    }
+  }
+
+  return { joins, conditions };
+};
+
+const buildLeadTimeAggregateQuery = ({
+  filters,
+  from,
+  to,
+}: AggregateQueryArgs): Prisma.Sql => {
+  const { joins, conditions } = buildDeploymentFilters(filters, "d");
+
+  const allJoins = [
+    ...joins,
+    Prisma.sql`INNER JOIN "DeploymentPullRequest" dpr ON d."id" = dpr."deploymentId"`,
+    Prisma.sql`INNER JOIN "PullRequest" pr ON dpr."pullRequestId" = pr."id"`,
+    Prisma.sql`LEFT JOIN "PullRequestTracking" prt ON pr."id" = prt."pullRequestId"`,
+  ];
+
+  conditions.push(
+    Prisma.sql`d."deployedAt" >= ${new Date(from)}`,
+    Prisma.sql`d."deployedAt" <= ${new Date(to)}`,
+    Prisma.sql`d."archivedAt" IS NULL`
+  );
+
+  const whereClause = Prisma.join(conditions, " AND ");
+  const joinClause = Prisma.join(allJoins, " ");
+
+  return Prisma.sql`
+    SELECT AVG(deployment_lead_times.lead_time_ms) AS value
+    FROM (
+      SELECT 
+        d."id",
+        EXTRACT(EPOCH FROM (d."deployedAt" - MIN(COALESCE(prt."firstCommitAt", pr."createdAt")))) * 1000 AS lead_time_ms
+      FROM "Deployment" d
+      ${joinClause}
+      WHERE ${whereClause}
+      GROUP BY d."id", d."deployedAt"
+    ) AS deployment_lead_times;
+  `;
+};
+
 const buildChangeFailureRateAggregateQuery = ({
   filters,
   from,
   to,
-  isPreviousPeriod = false,
-}: {
-  filters: DoraMetricsFilters;
-  from: string;
-  to: string;
-  isPreviousPeriod?: boolean;
-}): Prisma.Sql => {
-  const upperOperator = isPreviousPeriod ? Prisma.raw("<") : Prisma.raw("<=");
+}: AggregateQueryArgs): Prisma.Sql => {
   const { joins, conditions } = buildDeploymentFilters(filters, "d");
 
   const allJoins = [
@@ -299,7 +238,7 @@ const buildChangeFailureRateAggregateQuery = ({
 
   conditions.push(
     Prisma.sql`d."deployedAt" >= ${new Date(from)}`,
-    Prisma.sql`d."deployedAt" ${upperOperator} ${new Date(to)}`,
+    Prisma.sql`d."deployedAt" <= ${new Date(to)}`,
     Prisma.sql`d."archivedAt" IS NULL`
   );
 
@@ -317,16 +256,12 @@ const buildChangeFailureRateAggregateQuery = ({
   `;
 };
 
-/**
- * Calculate change failure rate metric
- * Change failure rate = (incidents / deployments) * 100
- */
 export const getChangeFailureRateMetric = async (
   filters: DoraMetricsFilters
 ): Promise<FailureRateResult> => {
   const { dateRange, period } = filters;
   const { from, to } = dateRange;
-  const { beforeFrom, beforeTo } = calculateBeforePeriod(from, to);
+  const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
   const { joins, conditions } = buildDeploymentFilters(filters, "d");
   const trunc = periodToDateTrunc(period);
@@ -377,15 +312,13 @@ export const getChangeFailureRateMetric = async (
 
   const currentAmountQuery = buildChangeFailureRateAggregateQuery({
     filters,
-    from: from,
-    to: to,
-    isPreviousPeriod: false,
+    from,
+    to,
   });
   const previousAmountQuery = buildChangeFailureRateAggregateQuery({
     filters,
     from: beforeFrom,
     to: beforeTo,
-    isPreviousPeriod: true,
   });
 
   const [chartResults, amountResult, beforeResult] = await Promise.all([
@@ -405,34 +338,31 @@ export const getChangeFailureRateMetric = async (
 
   const currentAmount = amountResult[0]?.value || 0;
   const previousAmount = beforeResult[0]?.value || 0;
-  const change =
-    previousAmount !== 0
-      ? ((currentAmount - previousAmount) / previousAmount) * 100
-      : 0;
 
-  return { columns, data, currentAmount, previousAmount, change };
+  // Failure rate is already a percentage, so use the difference in percentage points
+  const change = currentAmount - previousAmount;
+
+  return {
+    columns,
+    data,
+    currentAmount,
+    previousAmount,
+    change,
+    currentPeriod: { from, to },
+    previousPeriod: { from: beforeFrom, to: beforeTo },
+  };
 };
 
-/**
- * Build deployment frequency aggregate query with optimized JOINs
- */
 const buildDeploymentFrequencyAggregateQuery = ({
   filters,
   from,
   to,
-  isPreviousPeriod = false,
-}: {
-  filters: DoraMetricsFilters;
-  from: string;
-  to: string;
-  isPreviousPeriod?: boolean;
-}): Prisma.Sql => {
-  const upperOperator = isPreviousPeriod ? Prisma.raw("<") : Prisma.raw("<=");
+}: AggregateQueryArgs): Prisma.Sql => {
   const { joins, conditions } = buildDeploymentFilters(filters, "d");
 
   conditions.push(
     Prisma.sql`d."deployedAt" >= ${new Date(from)}`,
-    Prisma.sql`d."deployedAt" ${upperOperator} ${new Date(to)}`,
+    Prisma.sql`d."deployedAt" <= ${new Date(to)}`,
     Prisma.sql`d."archivedAt" IS NULL`
   );
 
@@ -447,16 +377,12 @@ const buildDeploymentFrequencyAggregateQuery = ({
   `;
 };
 
-/**
- * Calculate deployment frequency metric
- * Deployment frequency = count of deployments per period
- */
 export const getDeploymentFrequencyMetric = async (
   filters: DoraMetricsFilters
 ): Promise<DeploymentFrequencyResult> => {
   const { dateRange, period } = filters;
   const { from, to } = dateRange;
-  const { beforeFrom, beforeTo } = calculateBeforePeriod(from, to);
+  const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
   const { joins, conditions } = buildDeploymentFilters(filters, "d");
   const trunc = periodToDateTrunc(period);
@@ -502,14 +428,12 @@ export const getDeploymentFrequencyMetric = async (
     filters,
     from,
     to,
-    isPreviousPeriod: false,
   });
 
   const previousAmountQuery = buildDeploymentFrequencyAggregateQuery({
     filters,
     from: beforeFrom,
     to: beforeTo,
-    isPreviousPeriod: true,
   });
 
   const [chartResults, amountResult, beforeResult] = await Promise.all([
@@ -534,7 +458,6 @@ export const getDeploymentFrequencyMetric = async (
       ? ((currentAmount - previousAmount) / previousAmount) * 100
       : 0;
 
-  // Calculate average deployments per day for current period
   const fromDate = new Date(from);
   const toDate = new Date(to);
   const daysDiff = Math.max(
@@ -550,30 +473,24 @@ export const getDeploymentFrequencyMetric = async (
     previousAmount: BigInt(previousAmount),
     change,
     avg,
+    currentPeriod: { from, to },
+    previousPeriod: { from: beforeFrom, to: beforeTo },
   };
 };
 
-/**
- * Build filter joins and conditions for incident queries using optimized JOINs
- */
 const buildIncidentFilters = (
   filters: DoraMetricsFilters
-): { joins: Prisma.Sql[]; conditions: Prisma.Sql[] } => {
+): DeploymentFiltersResult => {
   const joins: Prisma.Sql[] = [];
   const conditions: Prisma.Sql[] = [];
 
-  // Workspace filter
   conditions.push(Prisma.sql`i."workspaceId" = ${filters.workspaceId}`);
-
-  // Only resolved incidents
   conditions.push(Prisma.sql`i."resolvedAt" IS NOT NULL`);
 
-  // Always join with Deployment (causeDeployment)
   joins.push(
     Prisma.sql`INNER JOIN "Deployment" cd ON i."causeDeploymentId" = cd."id" AND cd."workspaceId" = i."workspaceId"`
   );
 
-  // Environment filter - use JOIN for production filter
   if (filters.environmentIds && filters.environmentIds.length > 0) {
     conditions.push(
       Prisma.sql`cd."environmentId" = ANY(ARRAY[${Prisma.join(
@@ -582,7 +499,6 @@ const buildIncidentFilters = (
       )}])`
     );
   } else {
-    // Join with Environment table to filter by isProduction
     joins.push(
       Prisma.sql`INNER JOIN "Environment" e ON e."id" = cd."environmentId" AND e."workspaceId" = cd."workspaceId"`
     );
@@ -591,7 +507,6 @@ const buildIncidentFilters = (
     );
   }
 
-  // Application filter
   if (filters.applicationIds && filters.applicationIds.length > 0) {
     conditions.push(
       Prisma.sql`cd."applicationId" = ANY(ARRAY[${Prisma.join(
@@ -601,7 +516,7 @@ const buildIncidentFilters = (
     );
   }
 
-  // Team filter - can be via incident.teamId or application.teamId
+  // Team filter can match via incident.teamId or application.teamId
   const needsApplicationJoin =
     (filters.teamIds && filters.teamIds.length > 0) ||
     (filters.repositoryIds && filters.repositoryIds.length > 0);
@@ -635,7 +550,6 @@ const buildIncidentFilters = (
       );
     }
   } else if (filters.teamIds && filters.teamIds.length > 0) {
-    // Only team filter via incident.teamId, no Application join needed
     conditions.push(
       Prisma.sql`i."teamId" = ANY(ARRAY[${Prisma.join(
         filters.teamIds.map((id) => Prisma.sql`${id}`),
@@ -647,26 +561,16 @@ const buildIncidentFilters = (
   return { joins, conditions };
 };
 
-/**
- * Build mean time to recover aggregate query with optimized JOINs
- */
 const buildMeanTimeToRecoverAggregateQuery = ({
   filters,
   from,
   to,
-  isPreviousPeriod = false,
-}: {
-  filters: DoraMetricsFilters;
-  from: string;
-  to: string;
-  isPreviousPeriod?: boolean;
-}): Prisma.Sql => {
-  const upperOperator = isPreviousPeriod ? Prisma.raw("<") : Prisma.raw("<=");
+}: AggregateQueryArgs): Prisma.Sql => {
   const { joins, conditions } = buildIncidentFilters(filters);
 
   conditions.push(
     Prisma.sql`i."detectedAt" >= ${new Date(from)}`,
-    Prisma.sql`i."detectedAt" ${upperOperator} ${new Date(to)}`,
+    Prisma.sql`i."detectedAt" <= ${new Date(to)}`,
     Prisma.sql`i."archivedAt" IS NULL`
   );
 
@@ -681,16 +585,12 @@ const buildMeanTimeToRecoverAggregateQuery = ({
   `;
 };
 
-/**
- * Calculate mean time to recover metric
- * MTTR = average time from incident detection to resolution
- */
 export const getMeanTimeToRecoverMetric = async (
   filters: DoraMetricsFilters
 ): Promise<MetricResult> => {
   const { dateRange, period } = filters;
   const { from, to } = dateRange;
-  const { beforeFrom, beforeTo } = calculateBeforePeriod(from, to);
+  const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
   const { joins, conditions } = buildIncidentFilters(filters);
   const trunc = periodToDateTrunc(period);
@@ -735,14 +635,12 @@ export const getMeanTimeToRecoverMetric = async (
     filters,
     from,
     to,
-    isPreviousPeriod: false,
   });
 
   const previousAmountQuery = buildMeanTimeToRecoverAggregateQuery({
     filters,
     from: beforeFrom,
     to: beforeTo,
-    isPreviousPeriod: true,
   });
 
   const [chartResults, amountResult, beforeResult] = await Promise.all([
@@ -777,5 +675,7 @@ export const getMeanTimeToRecoverMetric = async (
     currentAmount: BigInt(currentAmount),
     previousAmount: BigInt(previousAmount),
     change,
+    currentPeriod: { from, to },
+    previousPeriod: { from: beforeFrom, to: beforeTo },
   };
 };

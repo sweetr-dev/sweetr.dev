@@ -1,9 +1,10 @@
-import { Paper, Skeleton } from "@mantine/core";
+import { Box, Paper, Skeleton } from "@mantine/core";
 import { useOutletContext } from "react-router-dom";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { ChartAverageTime } from "../../humans/teams/[id]/health-and-performance/components/chart-average-time";
 import { DoraMetricFilters } from "../types";
 import { useDoraMetrics } from "../useDoraMetrics";
+import { LeadTimeBreakdown } from "./components/lead-time-breakdown";
 
 export const DoraLeadTimePage = () => {
   const { workspace } = useWorkspace();
@@ -28,6 +29,12 @@ export const DoraLeadTimePage = () => {
           period={filters.period}
         />
       </Paper>
+
+      {metrics.leadTime.breakdown && (
+        <Box mt="xl">
+          <LeadTimeBreakdown breakdown={metrics.leadTime.breakdown} previousPeriod={metrics.leadTime.previousPeriod} />
+        </Box>
+      )}
     </>
   );
 };

@@ -1,18 +1,23 @@
-import { Text, Paper, Group, Stack } from "@mantine/core";
+import { Group, HoverCard, Paper, Stack, Text } from "@mantine/core";
 import {
   IconArrowDownRight,
+  IconArrowNarrowRightDashed,
   IconArrowUpRight,
   IconProps,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
+import { DateTimeRange, formatLocaleDate } from "../../../../providers/date.provider";
 
 interface CardDoraMetricProps {
   name: string;
   amount: string;
   amountDescription?: string;
+  previousAmount: string;
   change: number;
   icon: React.ComponentType<IconProps>;
   href: string;
+  higherIsBetter: boolean;
+  previousPeriod?: Partial<DateTimeRange>;
 }
 
 export const CardDoraMetric = ({
@@ -20,11 +25,25 @@ export const CardDoraMetric = ({
   amount,
   change,
   amountDescription,
+  previousAmount,
   icon: Icon,
   href,
+  higherIsBetter,
+  previousPeriod,
 }: CardDoraMetricProps) => {
   const { pathname } = useLocation();
   const isActive = pathname === href;
+
+  const getTrendColor = () => {
+    if (change === 0) {
+      return "dimmed";
+    }
+
+    const isPositiveChange = change >= 0;
+    const isGood = higherIsBetter ? isPositiveChange : !isPositiveChange;
+
+    return isGood ? "green.4" : "red";
+  };
 
   return (
     <Paper
@@ -58,29 +77,60 @@ export const CardDoraMetric = ({
         )}
       </Group>
 
-      <Stack gap="xs">
-        <Group gap={5} align="center">
-          <Text
-            c={change >= 0 ? "teal" : "red"}
-            fz="sm"
-            fw={500}
-            style={{ display: "flex", alignItems: "center", gap: 4 }}
-          >
-            <span>
-              {change >= 0 ? "+" : ""}
-              {change}%
-            </span>
-            {change >= 0 ? (
-              <IconArrowUpRight size="1rem" stroke={1.5} />
-            ) : (
-              <IconArrowDownRight size="1rem" stroke={1.5} />
-            )}
+      <HoverCard withArrow>
+        <HoverCard.Target>
+          <Stack gap="xs">
+            <Text
+              c={getTrendColor()}
+              fz="sm"
+              fw={500}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              {change === 0 && (
+                <>
+                  <span>0%</span>
+                  <IconArrowNarrowRightDashed size="1rem" stroke={1.5} />
+                </>
+              )}
+
+              {change !== 0 && (
+                <>
+                  <span>
+                    {change >= 0 ? "+" : ""}
+                    {change}%
+                  </span>
+                  {change >= 0 ? (
+                    <IconArrowUpRight size="1rem" stroke={1.5} />
+                  ) : (
+                    <IconArrowDownRight size="1rem" stroke={1.5} />
+                  )}
+                </>
+              )}
+            </Text>
+            <Text fz="xs" c="dimmed" lineClamp={2}>
+              Compared to previous UTC period.
+            </Text>
+          </Stack>
+        </HoverCard.Target>
+        <HoverCard.Dropdown>
+          <Text c="dimmed" size="sm">
+            {previousPeriod?.from && formatLocaleDate(new Date(previousPeriod.from), {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}{" "}
+              -{" "}
+              {previousPeriod?.to && formatLocaleDate(new Date(previousPeriod.to), {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
           </Text>
-        </Group>
-        <Text fz="xs" c="dimmed" lineClamp={2}>
-          Compared to previous UTC period.
-        </Text>
-      </Stack>
+          <Text size="lg" fw={500} c="bright" display="inline-block">
+            {previousAmount}
+          </Text>
+        </HoverCard.Dropdown>
+      </HoverCard>
     </Paper>
   );
 };

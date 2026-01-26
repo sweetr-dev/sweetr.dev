@@ -1,10 +1,10 @@
-import { Text, Paper, Group } from "@mantine/core";
-import classes from "./card-stat.module.css";
+import { Group, Paper, Text } from "@mantine/core";
 import {
   IconArrowDownRight,
   IconArrowUpRight,
   IconProps,
 } from "@tabler/icons-react";
+import classes from "./card-stat.module.css";
 
 interface CardStatProps {
   name: string;
@@ -41,7 +41,7 @@ export const CardStat = ({
       <Group gap={5} align="center" mt="xs" h={21}>
         {!!previous && (
           <Text
-            c={change >= 0 ? "teal" : "red"}
+            c={change >= 0 ? "green.4" : "red"}
             fz="sm"
             fw={500}
             className={classes.diff}

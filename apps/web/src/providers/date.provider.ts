@@ -1,7 +1,7 @@
-import { UTCDate } from "@date-fns/utc";
 import { DayOfTheWeek } from "@sweetr/graphql-types/frontend/graphql";
 import {
   differenceInDays,
+  Duration,
   DurationUnit,
   format,
   formatDistanceToNow,
@@ -13,6 +13,11 @@ import {
   startOfDay,
   subDays,
 } from "date-fns";
+
+export interface DateTimeRange {
+  from: string | null;
+  to: string | null;
+}
 
 export const msToHour = 1000 * 60 * 60;
 
@@ -38,6 +43,52 @@ export const formatMsDuration = (
   });
 
   return formatDuration(duration, { format, delimiter: ", " });
+};
+
+export const getDurationHighestUnit = (durationInMs: number) => {
+  const duration = formatMsDuration(durationInMs);
+
+  return duration.split(",").at(0);
+};
+
+export const getAbbreviatedDuration = (durationInMs: number): string => {
+  const duration = intervalToDuration({
+    start: 0,
+    end: durationInMs,
+  });
+
+  // Units in order of magnitude
+  const units: Array<keyof Duration> = [
+    "years",
+    "months",
+    "days",
+    "hours",
+    "minutes",
+    "seconds",
+  ];
+
+  const abbreviations: Record<string, string> = {
+    years: "y",
+    months: "m",
+    days: "d",
+    hours: "h",
+    minutes: "m",
+    seconds: "s",
+  };
+
+  const parts = [];
+
+  for (const unit of units) {
+    const value = duration[unit];
+    if (value && value > 0) {
+      parts.push(`${value}${abbreviations[unit]}`);
+    }
+    if (parts.length >= 2) break;
+  }
+
+  if (parts.length === 0) return "0s";
+
+  return parts.join(" ");
 };
 
 export const parseNullableISO = (
@@ -98,5 +149,5 @@ export const formatDateAgo = (date: Date, type: "relative" | "ago") => {
 };
 
 export const thirtyDaysAgo = () => {
-  return startOfDay(subDays(new UTCDate(), 30));
+  return startOfDay(subDays(new Date(), 30));
 };
