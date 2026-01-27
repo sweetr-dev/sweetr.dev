@@ -7,7 +7,6 @@ import {
   IconClock,
   IconFireExtinguisher,
   IconFlame,
-  IconRefresh,
   IconServer,
 } from "@tabler/icons-react";
 import { endOfToday } from "date-fns";
@@ -15,7 +14,6 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { FilterDate } from "../../components/filter-date";
 import { FilterMultiSelect } from "../../components/filter-multi-select";
-import { FilterSelect } from "../../components/filter-select";
 import { PageContainer } from "../../components/page-container";
 import {
   useApplicationAsyncOptions,
@@ -32,7 +30,7 @@ import { IconDeployment, IconTeam } from "../../providers/icon.provider";
 import { useScreenSize } from "../../providers/screen.provider";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
-import { DoraMetricFilters } from "./types";
+import { DoraMetricFilters, DoraMetricOutletContext } from "./types";
 import { useDoraMetrics } from "./useDoraMetrics";
 
 export const MetricsAndInsightsPage = () => {
@@ -201,26 +199,17 @@ export const MetricsAndInsightsPage = () => {
         <Divider mt="xl" mb="md" label="Trends" labelPosition="left" />
 
         <Box mt="md">
-          <FilterSelect
-            label="Period"
-            icon={IconRefresh}
-            items={[
-              Period.DAILY,
-              Period.WEEKLY,
-              Period.MONTHLY,
-              Period.QUARTERLY,
-              Period.YEARLY,
-            ]}
-            value={filters.values.period}
-            onChange={(value) => {
-              filters.setFieldValue("period", value as Period);
-              searchParams.set("period", value);
-            }}
+          <Outlet
+            context={
+              {
+                filters: filters.values,
+                onPeriodChange: (period: Period) => {
+                  filters.setFieldValue("period", period);
+                  searchParams.set("period", period);
+                },
+              } satisfies DoraMetricOutletContext
+            }
           />
-        </Box>
-
-        <Box mt="md">
-          <Outlet context={filters.values} />
         </Box>
       </Box>
     </PageContainer>
