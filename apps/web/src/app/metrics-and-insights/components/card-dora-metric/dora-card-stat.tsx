@@ -55,6 +55,7 @@ export const CardDoraMetric = ({
       radius="md"
       h="100%"
       ta="left"
+      w="100%"
       style={{
         borderColor: isActive ? "var(--mantine-color-dark-2)" : undefined,
       }}
@@ -111,7 +112,7 @@ export const CardDoraMetric = ({
               )}
             </Text>
             <Text fz="xs" c="dimmed" lineClamp={2}>
-              Compared to previous UTC period.
+              Compared to previous period.
             </Text>
           </Stack>
         </HoverCard.Target>

@@ -58,9 +58,7 @@ export const CardStat = ({
           </Text>
         )}
         <Text fz="xs" c="dimmed">
-          {previous
-            ? "Compared to previous UTC period."
-            : "No data to compare."}
+          {previous ? "Compared to previous period." : "No data to compare."}
         </Text>
       </Group>
     </Paper>
