@@ -29,7 +29,7 @@ export const transformChangeFailureRateMetric = (
     ...metric,
     currentAmount: parseFloat(metric.currentAmount.toFixed(2)),
     previousAmount: parseFloat(metric.previousAmount.toFixed(2)),
-    change: parseFloat(metric.change.toFixed(1)),
+    change: parseFloat(metric.change.toFixed(2)),
     currentPeriod: {
       from: metric.currentPeriod.from,
       to: metric.currentPeriod.to,

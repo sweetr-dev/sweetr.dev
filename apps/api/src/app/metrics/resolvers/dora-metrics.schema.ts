@@ -112,7 +112,7 @@ export default /* GraphQL */ `
     columns: [DateTime!]!
 
     "The amounts over time for the chart"
-    data: [BigInt!]!
+    data: [Float!]!
   }
 
   type DeploymentFrequencyMetric {

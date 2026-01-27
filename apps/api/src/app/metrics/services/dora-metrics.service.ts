@@ -334,7 +334,7 @@ export const getChangeFailureRateMetric = async (
   ]);
 
   const columns = chartResults.map((r) => r.period.toISOString());
-  const data = chartResults.map((r) => BigInt(Math.floor(r.value || 0)));
+  const data = chartResults.map((r) => parseFloat(r.value?.toFixed(2) || "0"));
 
   const currentAmount = amountResult[0]?.value || 0;
   const previousAmount = beforeResult[0]?.value || 0;

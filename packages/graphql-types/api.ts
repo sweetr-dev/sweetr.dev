@@ -196,7 +196,7 @@ export type ChangeFailureRateMetric = {
   /** The date range for the current period */
   currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
-  data: Array<Scalars['BigInt']['output']>;
+  data: Array<Scalars['Float']['output']>;
   /** The change failure rate before the current period */
   previousAmount: Scalars['Float']['output'];
   /** The date range for the previous period */
@@ -1825,7 +1825,7 @@ export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, Paren
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
-  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
