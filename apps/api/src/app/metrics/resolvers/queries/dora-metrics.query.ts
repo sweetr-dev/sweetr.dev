@@ -3,15 +3,15 @@ import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
-  getLeadTimeMetric,
   getChangeFailureRateMetric,
   getDeploymentFrequencyMetric,
+  getLeadTimeMetric,
   getMeanTimeToRecoverMetric,
 } from "../../services/dora-metrics.service";
 import {
-  transformLeadTimeMetric,
   transformChangeFailureRateMetric,
   transformDeploymentFrequencyMetric,
+  transformLeadTimeMetric,
   transformMeanTimeToRecoverMetric,
 } from "../transformers/dora-metrics.transformer";
 
@@ -26,7 +26,7 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       throw new ResourceNotFoundException("Workspace not found");
     }
 
-    const result = await getLeadTimeMetric({
+    const filters = {
       workspaceId: context.workspaceId,
       dateRange: {
         from: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
@@ -37,9 +37,14 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
       applicationIds: input.applicationIds ?? undefined,
       environmentIds: input.environmentIds ?? undefined,
       repositoryIds: input.repositoryIds ?? undefined,
-    });
+    };
 
-    return transformLeadTimeMetric(result);
+    const result = await getLeadTimeMetric(filters);
+
+    return {
+      ...transformLeadTimeMetric(result),
+      doraFilters: filters,
+    };
   },
   changeFailureRate: async (_, { input }, context) => {
     logger.info("query.metrics.dora.changeFailureRate", {

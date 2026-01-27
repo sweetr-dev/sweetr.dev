@@ -1032,8 +1032,8 @@ describe("DORA Metrics", () => {
       expect(result.currentAmount).toBeCloseTo(10, 1);
       // Previous: 20% (2/10)
       expect(result.previousAmount).toBeCloseTo(20, 1);
-      // Change: (10 - 20) / 20 * 100 = -50% (improvement)
-      expect(result.change).toBeCloseTo(-50, 1);
+      // Change: 10 - 20 = -10 percentage points (improvement)
+      expect(result.change).toBeCloseTo(-10, 1);
     });
 
     it("handles 100% failure rate correctly", async () => {

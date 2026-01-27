@@ -14,4 +14,12 @@ export default /* GraphQL */ `
     "The end of the date range"
     to: DateTime
   }
+
+  type DateTimeRangeValue {
+    "The start of the date range"
+    from: DateTime
+
+    "The end of the date range"
+    to: DateTime
+  }
 `;

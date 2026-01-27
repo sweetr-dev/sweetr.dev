@@ -175,6 +175,16 @@ export type Billing = {
   trial?: Maybe<Trial>;
 };
 
+export type BreakdownStage = {
+  __typename?: 'BreakdownStage';
+  /** Percentage change from previous period */
+  change: Scalars['Float']['output'];
+  /** Average time in milliseconds for current period */
+  currentAmount: Scalars['BigInt']['output'];
+  /** Average time in milliseconds for previous period */
+  previousAmount: Scalars['BigInt']['output'];
+};
+
 export type ChangeFailureRateMetric = {
   __typename?: 'ChangeFailureRateMetric';
   /** The change in change failure rate */
@@ -183,10 +193,14 @@ export type ChangeFailureRateMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The change failure rate for the current period */
   currentAmount: Scalars['Float']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
-  data: Array<Scalars['BigInt']['output']>;
+  data: Array<Scalars['Float']['output']>;
   /** The change failure rate before the current period */
   previousAmount: Scalars['Float']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type ChartNumericSeries = {
@@ -256,6 +270,14 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type DateTimeRangeValue = {
+  __typename?: 'DateTimeRangeValue';
+  /** The start of the date range */
+  from?: Maybe<Scalars['DateTime']['output']>;
+  /** The end of the date range */
+  to?: Maybe<Scalars['DateTime']['output']>;
+};
+
 export enum DayOfTheWeek {
   FRIDAY = 'FRIDAY',
   MONDAY = 'MONDAY',
@@ -299,10 +321,14 @@ export type DeploymentFrequencyMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The amount of deployments for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The number of deployments before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type DeploymentSettings = {
@@ -491,18 +517,42 @@ export enum IntegrationApp {
   SLACK = 'SLACK'
 }
 
+export type LeadTimeBreakdown = {
+  __typename?: 'LeadTimeBreakdown';
+  /** Time spent coding (first commit to PR creation) */
+  codingTime: BreakdownStage;
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
+  /** Time from first review to approval */
+  timeToApprove: BreakdownStage;
+  /** Time from merge to deploy */
+  timeToDeploy: BreakdownStage;
+  /** Time waiting for first review */
+  timeToFirstReview: BreakdownStage;
+  /** Time from approval to merge */
+  timeToMerge: BreakdownStage;
+};
+
 export type LeadTimeMetric = {
   __typename?: 'LeadTimeMetric';
+  /** Breakdown of lead time by development stages */
+  breakdown: LeadTimeBreakdown;
   /** The change in lead time */
   change: Scalars['Float']['output'];
   /** The columns for the chart */
   columns: Array<Scalars['DateTime']['output']>;
   /** The lead time in milliseconds for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The lead time in milliseconds before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type LoginToStripeInput = {
@@ -528,10 +578,14 @@ export type MeanTimeToRecoverMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The mean time to recover in milliseconds for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The mean time to recover in milliseconds before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type Metrics = {
@@ -1453,6 +1507,7 @@ export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<DeepPartial<Scalars['BigInt']['output']>>;
   Billing: ResolverTypeWrapper<DeepPartial<Billing>>;
   Boolean: ResolverTypeWrapper<DeepPartial<Scalars['Boolean']['output']>>;
+  BreakdownStage: ResolverTypeWrapper<DeepPartial<BreakdownStage>>;
   ChangeFailureRateMetric: ResolverTypeWrapper<DeepPartial<ChangeFailureRateMetric>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
   CodeReview: ResolverTypeWrapper<DeepPartial<CodeReview>>;
@@ -1463,6 +1518,7 @@ export type ResolversTypes = {
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
+  DateTimeRangeValue: ResolverTypeWrapper<DeepPartial<DateTimeRangeValue>>;
   DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
   Deployment: ResolverTypeWrapper<DeepPartial<Deployment>>;
   DeploymentFrequencyMetric: ResolverTypeWrapper<DeepPartial<DeploymentFrequencyMetric>>;
@@ -1487,6 +1543,7 @@ export type ResolversTypes = {
   Integration: ResolverTypeWrapper<DeepPartial<Integration>>;
   IntegrationApp: ResolverTypeWrapper<DeepPartial<IntegrationApp>>;
   JSONObject: ResolverTypeWrapper<DeepPartial<Scalars['JSONObject']['output']>>;
+  LeadTimeBreakdown: ResolverTypeWrapper<DeepPartial<LeadTimeBreakdown>>;
   LeadTimeMetric: ResolverTypeWrapper<DeepPartial<LeadTimeMetric>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
@@ -1579,6 +1636,7 @@ export type ResolversParentTypes = {
   BigInt: DeepPartial<Scalars['BigInt']['output']>;
   Billing: DeepPartial<Billing>;
   Boolean: DeepPartial<Scalars['Boolean']['output']>;
+  BreakdownStage: DeepPartial<BreakdownStage>;
   ChangeFailureRateMetric: DeepPartial<ChangeFailureRateMetric>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
   CodeReview: DeepPartial<CodeReview>;
@@ -1588,6 +1646,7 @@ export type ResolversParentTypes = {
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
+  DateTimeRangeValue: DeepPartial<DateTimeRangeValue>;
   Deployment: DeepPartial<Deployment>;
   DeploymentFrequencyMetric: DeepPartial<DeploymentFrequencyMetric>;
   DeploymentSettings: DeepPartial<DeploymentSettings>;
@@ -1607,6 +1666,7 @@ export type ResolversParentTypes = {
   Int: DeepPartial<Scalars['Int']['output']>;
   Integration: DeepPartial<Integration>;
   JSONObject: DeepPartial<Scalars['JSONObject']['output']>;
+  LeadTimeBreakdown: DeepPartial<LeadTimeBreakdown>;
   LeadTimeMetric: DeepPartial<LeadTimeMetric>;
   LoginToStripeInput: DeepPartial<LoginToStripeInput>;
   LoginWithGithubInput: DeepPartial<LoginWithGithubInput>;
@@ -1753,12 +1813,21 @@ export type BillingResolvers<ContextType = GraphQLContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type BreakdownStageResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['BreakdownStage'] = ResolversParentTypes['BreakdownStage']> = {
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChangeFailureRateMetric'] = ResolversParentTypes['ChangeFailureRateMetric']> = {
   change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1805,6 +1874,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DateTimeRangeValueResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DateTimeRangeValue'] = ResolversParentTypes['DateTimeRangeValue']> = {
+  from?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  to?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Deployment'] = ResolversParentTypes['Deployment']> = {
   application?: Resolver<ResolversTypes['Application'], ParentType, ContextType>;
   archivedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1824,8 +1899,10 @@ export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, Par
   change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1901,12 +1978,26 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
   name: 'JSONObject';
 }
 
+export type LeadTimeBreakdownResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeadTimeBreakdown'] = ResolversParentTypes['LeadTimeBreakdown']> = {
+  codingTime?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  timeToApprove?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
+  timeToDeploy?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
+  timeToFirstReview?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
+  timeToMerge?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LeadTimeMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeadTimeMetric'] = ResolversParentTypes['LeadTimeMetric']> = {
+  breakdown?: Resolver<ResolversTypes['LeadTimeBreakdown'], ParentType, ContextType>;
   change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1920,8 +2011,10 @@ export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, Paren
   change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -2207,6 +2300,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   AutomationBenefits?: AutomationBenefitsResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Billing?: BillingResolvers<ContextType>;
+  BreakdownStage?: BreakdownStageResolvers<ContextType>;
   ChangeFailureRateMetric?: ChangeFailureRateMetricResolvers<ContextType>;
   ChartNumericSeries?: ChartNumericSeriesResolvers<ContextType>;
   CodeReview?: CodeReviewResolvers<ContextType>;
@@ -2214,6 +2308,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  DateTimeRangeValue?: DateTimeRangeValueResolvers<ContextType>;
   Deployment?: DeploymentResolvers<ContextType>;
   DeploymentFrequencyMetric?: DeploymentFrequencyMetricResolvers<ContextType>;
   DeploymentSettings?: DeploymentSettingsResolvers<ContextType>;
@@ -2225,6 +2320,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Incident?: IncidentResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   JSONObject?: GraphQLScalarType;
+  LeadTimeBreakdown?: LeadTimeBreakdownResolvers<ContextType>;
   LeadTimeMetric?: LeadTimeMetricResolvers<ContextType>;
   LoginWithGithubResponse?: LoginWithGithubResponseResolvers<ContextType>;
   MeanTimeToRecoverMetric?: MeanTimeToRecoverMetricResolvers<ContextType>;
