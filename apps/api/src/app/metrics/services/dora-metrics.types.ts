@@ -36,8 +36,9 @@ export interface MetricResult {
 export interface FailureRateResult
   extends Pick<
     MetricResult,
-    "columns" | "data" | "change" | "currentPeriod" | "previousPeriod"
+    "columns" | "change" | "currentPeriod" | "previousPeriod"
   > {
+  data: number[];
   currentAmount: number;
   previousAmount: number;
 }

@@ -6,7 +6,10 @@ import {
   IconProps,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
-import { DateTimeRange, formatLocaleDate } from "../../../../providers/date.provider";
+import {
+  DateTimeRange,
+  formatLocaleDate,
+} from "../../../../providers/date.provider";
 
 interface CardDoraMetricProps {
   name: string;
@@ -114,17 +117,23 @@ export const CardDoraMetric = ({
         </HoverCard.Target>
         <HoverCard.Dropdown>
           <Text c="dimmed" size="sm">
-            {previousPeriod?.from && formatLocaleDate(new Date(previousPeriod.from), {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}{" "}
-              -{" "}
-              {previousPeriod?.to && formatLocaleDate(new Date(previousPeriod.to), {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+            {previousPeriod?.from && previousPeriod?.to ? (
+              <>
+                {formatLocaleDate(new Date(previousPeriod.from), {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}{" "}
+                -{" "}
+                {formatLocaleDate(new Date(previousPeriod.to), {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </>
+            ) : (
+              "Previous period unavailable"
+            )}
           </Text>
           <Text size="lg" fw={500} c="bright" display="inline-block">
             {previousAmount}

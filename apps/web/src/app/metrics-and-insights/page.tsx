@@ -145,12 +145,12 @@ export const MetricsAndInsightsPage = () => {
               amount={
                 metrics.leadTime?.currentAmount
                   ? humanizeDuration(metrics.leadTime?.currentAmount)
-                  : "0"
+                  : "0 hours"
               }
               previousAmount={
                 metrics.leadTime?.previousAmount
                   ? humanizeDuration(metrics.leadTime?.previousAmount)
-                  : "0"
+                  : "0 hours"
               }
               change={metrics.leadTime?.change || 0}
               icon={IconClock}

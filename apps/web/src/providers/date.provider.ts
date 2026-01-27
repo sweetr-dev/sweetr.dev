@@ -69,7 +69,7 @@ export const getAbbreviatedDuration = (durationInMs: number): string => {
 
   const abbreviations: Record<string, string> = {
     years: "y",
-    months: "m",
+    months: "mo",
     days: "d",
     hours: "h",
     minutes: "m",

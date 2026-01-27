@@ -32,7 +32,10 @@ export const DoraLeadTimePage = () => {
 
       {metrics.leadTime.breakdown && (
         <Box mt="xl">
-          <LeadTimeBreakdown breakdown={metrics.leadTime.breakdown} previousPeriod={metrics.leadTime.previousPeriod} />
+          <LeadTimeBreakdown
+            breakdown={metrics.leadTime.breakdown}
+            previousPeriod={metrics.leadTime.previousPeriod}
+          />
         </Box>
       )}
     </>

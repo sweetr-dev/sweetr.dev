@@ -32,15 +32,17 @@ describe("Lead Time Breakdown", () => {
       }
     );
 
-    // Seed tracking data with specific durations
-    // coding: 1h, review lag: 2h, review: 3h, merge: 4h, deploy: 5h
+    // Seed tracking data with cumulative times (from PR creation)
+    // Durations: coding: 1h, review lag: 1h, approval: 1h, merge: 4h, deploy: 5h
+    // Note: timeToFirstReview and timeToFirstApproval are cumulative, so actual durations
+    // are calculated as deltas (e.g., review lag = 2h - 1h = 1h)
     // All in milliseconds
     const trackingData = {
-      timeToCode: BigInt(3600000), // 1h
-      timeToFirstReview: BigInt(7200000), // 2h
-      timeToFirstApproval: BigInt(10800000), // 3h
-      timeToMerge: BigInt(14400000), // 4h
-      timeToDeploy: BigInt(18000000), // 5h
+      timeToCode: BigInt(3600000), // 1h (coding duration)
+      timeToFirstReview: BigInt(7200000), // 2h cumulative (review lag = 2h - 1h = 1h)
+      timeToFirstApproval: BigInt(10800000), // 3h cumulative (approval = 3h - 2h = 1h)
+      timeToMerge: BigInt(14400000), // 4h (merge duration)
+      timeToDeploy: BigInt(18000000), // 5h (deploy duration)
     };
 
     await ctx.prisma.pullRequestTracking.create({

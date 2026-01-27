@@ -109,8 +109,20 @@ export const thirtyDaysAgo = () => {
 export const getPreviousPeriod = (from: string, to: string) => {
   const fromDate = new Date(from);
   const toDate = new Date(to);
-  const duration = toDate.getTime() - fromDate.getTime();
-  const beforeTo = new Date(fromDate.getTime() - 1);
+
+  const fromMs = fromDate.getTime();
+  const toMs = toDate.getTime();
+
+  if (!Number.isFinite(fromMs) || !Number.isFinite(toMs)) {
+    throw new Error("Invalid date range: dates could not be parsed");
+  }
+
+  if (toMs <= fromMs) {
+    throw new Error("Invalid date range: 'to' must be after 'from'");
+  }
+
+  const duration = toMs - fromMs;
+  const beforeTo = new Date(fromMs - 1);
   const beforeFrom = new Date(beforeTo.getTime() - duration + 1);
 
   return [beforeFrom.toISOString(), beforeTo.toISOString()];

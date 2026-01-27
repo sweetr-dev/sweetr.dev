@@ -113,7 +113,9 @@ export const Step = ({
                 </Text>
               )}
               <Text size="lg" fw={500} c="bright" display="inline-block">
-                {getAbbreviatedDuration(stage.previousAmount)}
+                {stage.previousAmount
+                  ? getAbbreviatedDuration(stage.previousAmount)
+                  : "0s"}
               </Text>
             </HoverCard.Dropdown>
           </HoverCard>
