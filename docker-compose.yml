@@ -6,9 +6,11 @@ services:
       dockerfile: ./apps/api/Dockerfile
     env_file:
       - ./apps/api/.env
+    environment:
+      - USE_SELF_SIGNED_SSL=false
     ports:
       - "8000:8000"
-    restart: always
+    restart: unless-stopped
     networks:
       - app_network
     depends_on:
@@ -23,12 +25,12 @@ services:
       - ./apps/web/.env
     ports:
       - "80:80"
-    restart: always
+    restart: unless-stopped
     depends_on:
       - api
   postgres:
     image: postgres:16
-    restart: always
+    restart: on-failure
     env_file:
       - ./apps/api/.env
     environment:
@@ -49,7 +51,7 @@ services:
     container_name: sweetr-test-postgres
     env_file:
       - ./apps/api/.env
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
