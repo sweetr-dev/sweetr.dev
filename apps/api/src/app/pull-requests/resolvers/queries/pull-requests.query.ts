@@ -28,6 +28,10 @@ export const pullRequestsQuery = createFieldResolver("Workspace", {
         from: input.createdAt?.from || undefined,
         to: input.createdAt?.to || undefined,
       },
+      mergedAt: {
+        from: input.mergedAt?.from || undefined,
+        to: input.mergedAt?.to || undefined,
+      },
       finalizedAt: {
         from: input.finalizedAt?.from || undefined,
         to: input.finalizedAt?.to || undefined,
