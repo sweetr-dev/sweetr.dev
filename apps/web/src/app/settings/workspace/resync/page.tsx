@@ -203,7 +203,7 @@ export const WorkspaceResyncPage = () => {
               variant="default"
               onClick={() => navigate("/settings/workspace")}
             >
-              Cancel
+              Close
             </Button>
             <Button onClick={handleResync} disabled={!canResync}>
               Resync

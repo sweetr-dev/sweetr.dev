@@ -107,6 +107,9 @@ export default /* GraphQL */ `
     "The time range the pull request was created in"
     createdAt: DateTimeRange
 
+    "The time range the pull request was merged in"
+    mergedAt: DateTimeRange
+
     "The time range the pull request was merged or closed"
     finalizedAt: DateTimeRange
 

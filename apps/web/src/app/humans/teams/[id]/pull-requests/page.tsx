@@ -20,6 +20,7 @@ import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { parseNullableISO } from "../../../../../providers/date.provider";
 import {
   IconCalendarFilled,
+  IconGitMerge,
   IconRuler,
   IconStatusChange,
 } from "@tabler/icons-react";
@@ -39,12 +40,16 @@ export const TeamPullRequestsPage = () => {
     sizes: PullRequestSize[];
     createdAtFrom: string | null;
     createdAtTo: string | null;
+    mergedAtFrom: string | null;
+    mergedAtTo: string | null;
   }>({
     initialValues: {
       states: searchParams.getAll<PullRequestState[]>("state") || [],
       sizes: searchParams.getAll<PullRequestSize[]>("size") || [],
       createdAtFrom: searchParams.get("createdAtFrom"),
       createdAtTo: searchParams.get("createdAtTo"),
+      mergedAtFrom: searchParams.get("mergedAtFrom"),
+      mergedAtTo: searchParams.get("mergedAtTo"),
     },
   });
 
@@ -65,6 +70,10 @@ export const TeamPullRequestsPage = () => {
         createdAt: {
           from: filters.values.createdAtFrom,
           to: filters.values.createdAtTo,
+        },
+        mergedAt: {
+          from: filters.values.mergedAtFrom,
+          to: filters.values.mergedAtTo,
         },
       },
       workspaceId: workspace?.id,
@@ -119,6 +128,24 @@ export const TeamPullRequestsPage = () => {
           value={[
             parseNullableISO(filters.values.createdAtFrom) || null,
             parseNullableISO(filters.values.createdAtTo) || null,
+          ]}
+        />
+        <FilterDate
+          label="Merged"
+          icon={IconGitMerge}
+          onChange={(dates) => {
+            const mergedAtFrom = dates[0]?.toISOString() || null;
+            const mergedAtTo = dates[1]?.toISOString() || null;
+
+            filters.setFieldValue("mergedAtFrom", mergedAtFrom);
+            filters.setFieldValue("mergedAtTo", mergedAtTo);
+            searchParams.set("mergedAtFrom", mergedAtFrom);
+            searchParams.set("mergedAtTo", mergedAtTo);
+          }}
+          clearable
+          value={[
+            parseNullableISO(filters.values.mergedAtFrom) || null,
+            parseNullableISO(filters.values.mergedAtTo) || null,
           ]}
         />
         <FilterMultiSelect

@@ -80,6 +80,16 @@ export const paginatePullRequests = async (
     };
   }
 
+  if (args.mergedAt?.from || args.mergedAt?.to) {
+    query.where = {
+      ...query.where,
+      mergedAt: {
+        gte: args.mergedAt.from,
+        lte: args.mergedAt.to,
+      },
+    };
+  }
+
   if (args.finalizedAt?.from || args.finalizedAt?.to) {
     query.where = {
       ...query.where,

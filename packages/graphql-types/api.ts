@@ -953,6 +953,8 @@ export type PullRequestsQueryInput = {
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
   /** The time range the pull request was merged or closed */
   finalizedAt?: InputMaybe<DateTimeRange>;
+  /** The time range the pull request was merged in */
+  mergedAt?: InputMaybe<DateTimeRange>;
   /** The ids to filter by */
   ownerIds: Array<Scalars['SweetID']['input']>;
   /** Whether the ids refer to teams or people */
