@@ -172,6 +172,16 @@ export type Billing = {
   trial?: Maybe<Trial>;
 };
 
+export type BreakdownStage = {
+  __typename?: 'BreakdownStage';
+  /** Percentage change from previous period */
+  change: Scalars['Float']['output'];
+  /** Average time in milliseconds for current period */
+  currentAmount: Scalars['BigInt']['output'];
+  /** Average time in milliseconds for previous period */
+  previousAmount: Scalars['BigInt']['output'];
+};
+
 export type ChangeFailureRateMetric = {
   __typename?: 'ChangeFailureRateMetric';
   /** The change in change failure rate */
@@ -180,10 +190,14 @@ export type ChangeFailureRateMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The change failure rate for the current period */
   currentAmount: Scalars['Float']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
-  data: Array<Scalars['BigInt']['output']>;
+  data: Array<Scalars['Float']['output']>;
   /** The change failure rate before the current period */
   previousAmount: Scalars['Float']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type ChartNumericSeries = {
@@ -253,6 +267,14 @@ export type DateTimeRange = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type DateTimeRangeValue = {
+  __typename?: 'DateTimeRangeValue';
+  /** The start of the date range */
+  from?: Maybe<Scalars['DateTime']['output']>;
+  /** The end of the date range */
+  to?: Maybe<Scalars['DateTime']['output']>;
+};
+
 export enum DayOfTheWeek {
   FRIDAY = 'FRIDAY',
   MONDAY = 'MONDAY',
@@ -296,10 +318,14 @@ export type DeploymentFrequencyMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The amount of deployments for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The number of deployments before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type DeploymentSettings = {
@@ -488,18 +514,42 @@ export enum IntegrationApp {
   SLACK = 'SLACK'
 }
 
+export type LeadTimeBreakdown = {
+  __typename?: 'LeadTimeBreakdown';
+  /** Time spent coding (first commit to PR creation) */
+  codingTime: BreakdownStage;
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
+  /** Time from first review to approval */
+  timeToApprove: BreakdownStage;
+  /** Time from merge to deploy */
+  timeToDeploy: BreakdownStage;
+  /** Time waiting for first review */
+  timeToFirstReview: BreakdownStage;
+  /** Time from approval to merge */
+  timeToMerge: BreakdownStage;
+};
+
 export type LeadTimeMetric = {
   __typename?: 'LeadTimeMetric';
+  /** Breakdown of lead time by development stages */
+  breakdown: LeadTimeBreakdown;
   /** The change in lead time */
   change: Scalars['Float']['output'];
   /** The columns for the chart */
   columns: Array<Scalars['DateTime']['output']>;
   /** The lead time in milliseconds for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The lead time in milliseconds before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type LoginToStripeInput = {
@@ -525,10 +575,14 @@ export type MeanTimeToRecoverMetric = {
   columns: Array<Scalars['DateTime']['output']>;
   /** The mean time to recover in milliseconds for the current period */
   currentAmount: Scalars['BigInt']['output'];
+  /** The date range for the current period */
+  currentPeriod: DateTimeRangeValue;
   /** The amounts over time for the chart */
   data: Array<Scalars['BigInt']['output']>;
   /** The mean time to recover in milliseconds before the current period */
   previousAmount: Scalars['BigInt']['output'];
+  /** The date range for the previous period */
+  previousPeriod: DateTimeRangeValue;
 };
 
 export type Metrics = {
@@ -1562,7 +1616,7 @@ export type DoraMetricsQueryVariables = Exact<{
 }>;
 
 
-export type DoraMetricsQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', metrics: { __typename?: 'Metrics', dora: { __typename?: 'DoraMetrics', deploymentFrequency: { __typename?: 'DeploymentFrequencyMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number>, avg: number }, leadTime: { __typename?: 'LeadTimeMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number> }, changeFailureRate: { __typename?: 'ChangeFailureRateMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number> }, meanTimeToRecover: { __typename?: 'MeanTimeToRecoverMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number> } } } } };
+export type DoraMetricsQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', metrics: { __typename?: 'Metrics', dora: { __typename?: 'DoraMetrics', deploymentFrequency: { __typename?: 'DeploymentFrequencyMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number>, avg: number, currentPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null }, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } }, leadTime: { __typename?: 'LeadTimeMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number>, currentPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null }, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null }, breakdown: { __typename?: 'LeadTimeBreakdown', codingTime: { __typename?: 'BreakdownStage', currentAmount: number, previousAmount: number, change: number }, timeToFirstReview: { __typename?: 'BreakdownStage', currentAmount: number, previousAmount: number, change: number }, timeToApprove: { __typename?: 'BreakdownStage', currentAmount: number, previousAmount: number, change: number }, timeToMerge: { __typename?: 'BreakdownStage', currentAmount: number, previousAmount: number, change: number }, timeToDeploy: { __typename?: 'BreakdownStage', currentAmount: number, previousAmount: number, change: number } } }, changeFailureRate: { __typename?: 'ChangeFailureRateMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number>, currentPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null }, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } }, meanTimeToRecover: { __typename?: 'MeanTimeToRecoverMetric', currentAmount: number, previousAmount: number, change: number, columns: Array<string>, data: Array<number>, currentPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null }, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } } } } } };
 
 export type EnvironmentOptionsQueryVariables = Exact<{
   workspaceId: Scalars['SweetID']['input'];
@@ -1902,7 +1956,7 @@ export const UnarchiveDeploymentDocument = {"kind":"Document","definitions":[{"k
 export const TeamDigestsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamDigests"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"digests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TeamDigestsQuery, TeamDigestsQueryVariables>;
 export const TeamDigestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamDigest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DigestQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"digest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"channel"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfTheWeek"}},{"kind":"Field","name":{"kind":"Name","value":"timeOfDay"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"settings"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TeamDigestQuery, TeamDigestQueryVariables>;
 export const UpdateDigestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateDigest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateDigestInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDigest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]} as unknown as DocumentNode<UpdateDigestMutation, UpdateDigestMutationVariables>;
-export const DoraMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DoraMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"WorkspaceMetricInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metrics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dora"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deploymentFrequency"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"avg"}}]}},{"kind":"Field","name":{"kind":"Name","value":"leadTime"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"Field","name":{"kind":"Name","value":"changeFailureRate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meanTimeToRecover"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<DoraMetricsQuery, DoraMetricsQueryVariables>;
+export const DoraMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DoraMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"WorkspaceMetricInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metrics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dora"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deploymentFrequency"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"avg"}},{"kind":"Field","name":{"kind":"Name","value":"currentPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"leadTime"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"currentPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}},{"kind":"Field","name":{"kind":"Name","value":"breakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"codingTime"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeToFirstReview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeToApprove"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeToMerge"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeToDeploy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"changeFailureRate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"currentPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"meanTimeToRecover"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"currentPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<DoraMetricsQuery, DoraMetricsQueryVariables>;
 export const EnvironmentOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EnvironmentOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EnvironmentsQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"environments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isProduction"}}]}}]}}]}}]} as unknown as DocumentNode<EnvironmentOptionsQuery, EnvironmentOptionsQueryVariables>;
 export const EnvironmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Environments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EnvironmentsQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"environments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isProduction"}},{"kind":"Field","name":{"kind":"Name","value":"archivedAt"}}]}}]}}]}}]} as unknown as DocumentNode<EnvironmentsQuery, EnvironmentsQueryVariables>;
 export const ArchiveEnvironmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ArchiveEnvironment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ArchiveEnvironmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"archiveEnvironment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isProduction"}},{"kind":"Field","name":{"kind":"Name","value":"archivedAt"}}]}}]}}]} as unknown as DocumentNode<ArchiveEnvironmentMutation, ArchiveEnvironmentMutationVariables>;

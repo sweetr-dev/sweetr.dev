@@ -8,3 +8,8 @@ export type DoraMetricFilters = {
   environmentIds: string[];
   period: Period;
 };
+
+export type DoraMetricOutletContext = {
+  filters: DoraMetricFilters;
+  onPeriodChange: (period: Period) => void;
+};

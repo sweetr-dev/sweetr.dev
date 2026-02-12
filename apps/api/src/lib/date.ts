@@ -104,3 +104,26 @@ export const subBusinessHours = (date: Date, hours: number): Date => {
 export const thirtyDaysAgo = () => {
   return startOfDay(subDays(new UTCDate(), 30));
 };
+
+// Given a date range, calculate the previous date range (exclusive end becomes inclusive)
+export const getPreviousPeriod = (from: string, to: string) => {
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  const fromMs = fromDate.getTime();
+  const toMs = toDate.getTime();
+
+  if (!Number.isFinite(fromMs) || !Number.isFinite(toMs)) {
+    throw new Error("Invalid date range: dates could not be parsed");
+  }
+
+  if (toMs <= fromMs) {
+    throw new Error("Invalid date range: 'to' must be after 'from'");
+  }
+
+  const duration = toMs - fromMs;
+  const beforeTo = new Date(fromMs - 1);
+  const beforeFrom = new Date(beforeTo.getTime() - duration + 1);
+
+  return [beforeFrom.toISOString(), beforeTo.toISOString()];
+};

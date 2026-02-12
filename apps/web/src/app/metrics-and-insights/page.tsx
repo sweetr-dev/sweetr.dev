@@ -7,7 +7,6 @@ import {
   IconClock,
   IconFireExtinguisher,
   IconFlame,
-  IconRefresh,
   IconServer,
 } from "@tabler/icons-react";
 import { endOfToday } from "date-fns";
@@ -15,7 +14,6 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { FilterDate } from "../../components/filter-date";
 import { FilterMultiSelect } from "../../components/filter-multi-select";
-import { FilterSelect } from "../../components/filter-select";
 import { PageContainer } from "../../components/page-container";
 import {
   useApplicationAsyncOptions,
@@ -32,7 +30,7 @@ import { IconDeployment, IconTeam } from "../../providers/icon.provider";
 import { useScreenSize } from "../../providers/screen.provider";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
-import { DoraMetricFilters } from "./types";
+import { DoraMetricFilters, DoraMetricOutletContext } from "./types";
 import { useDoraMetrics } from "./useDoraMetrics";
 
 export const MetricsAndInsightsPage = () => {
@@ -121,7 +119,7 @@ export const MetricsAndInsightsPage = () => {
           />
         </Group>
 
-        <Divider my="md" label="DORA Overview" labelPosition="left" />
+        <Divider mt="xl" mb="md" label="DORA Overview" labelPosition="left" />
 
         {!isLoading && (
           <Group wrap={isSmallScreen ? "wrap" : "nowrap"}>
@@ -130,39 +128,61 @@ export const MetricsAndInsightsPage = () => {
               amount={
                 metrics.deploymentFrequency?.currentAmount?.toString() || "0"
               }
+              previousAmount={
+                metrics.deploymentFrequency?.previousAmount?.toString() || "0"
+              }
               amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
               change={metrics.deploymentFrequency?.change || 0}
               icon={IconDeployment}
               href="/metrics-and-insights/deployment-frequency"
+              higherIsBetter={true}
+              previousPeriod={metrics.deploymentFrequency?.previousPeriod}
             />
             <CardDoraMetric
               name="Lead time"
               amount={
                 metrics.leadTime?.currentAmount
                   ? humanizeDuration(metrics.leadTime?.currentAmount)
-                  : "0"
+                  : "0 hours"
+              }
+              previousAmount={
+                metrics.leadTime?.previousAmount
+                  ? humanizeDuration(metrics.leadTime?.previousAmount)
+                  : "0 hours"
               }
               change={metrics.leadTime?.change || 0}
               icon={IconClock}
               href="/metrics-and-insights/lead-time"
+              higherIsBetter={false}
+              previousPeriod={metrics.leadTime?.previousPeriod}
             />
             <CardDoraMetric
               name="Failure rate"
               amount={`${metrics.changeFailureRate?.currentAmount?.toString() || "0"}%`}
+              previousAmount={`${metrics.changeFailureRate?.previousAmount?.toString() || "0"}%`}
               change={metrics.changeFailureRate?.change || 0}
               icon={IconFlame}
               href="/metrics-and-insights/failure-rate"
+              higherIsBetter={false}
+              previousPeriod={metrics.changeFailureRate?.previousPeriod}
             />
             <CardDoraMetric
               name="MTTR"
               amount={
                 metrics.meanTimeToRecover?.currentAmount
                   ? humanizeDuration(metrics.meanTimeToRecover?.currentAmount)
-                  : "0"
+                  : "0 hours"
+              }
+              previousAmount={
+                metrics.meanTimeToRecover?.previousAmount
+                  ? humanizeDuration(metrics.meanTimeToRecover?.previousAmount)
+                  : "0 hours"
               }
               change={metrics.meanTimeToRecover?.change || 0}
               icon={IconFireExtinguisher}
               href="/metrics-and-insights/mttr"
+              higherIsBetter={false}
+              previousPeriod={metrics.meanTimeToRecover?.previousPeriod}
             />
           </Group>
         )}
@@ -176,29 +196,20 @@ export const MetricsAndInsightsPage = () => {
           </Group>
         )}
 
-        <Divider my="md" label="Trends" labelPosition="left" />
+        <Divider mt="xl" mb="md" label="Trends" labelPosition="left" />
 
         <Box mt="md">
-          <FilterSelect
-            label="Period"
-            icon={IconRefresh}
-            items={[
-              Period.DAILY,
-              Period.WEEKLY,
-              Period.MONTHLY,
-              Period.QUARTERLY,
-              Period.YEARLY,
-            ]}
-            value={filters.values.period}
-            onChange={(value) => {
-              filters.setFieldValue("period", value as Period);
-              searchParams.set("period", value);
-            }}
+          <Outlet
+            context={
+              {
+                filters: filters.values,
+                onPeriodChange: (period: Period) => {
+                  filters.setFieldValue("period", period);
+                  searchParams.set("period", period);
+                },
+              } satisfies DoraMetricOutletContext
+            }
           />
-        </Box>
-
-        <Box mt="md">
-          <Outlet context={filters.values} />
         </Box>
       </Box>
     </PageContainer>
