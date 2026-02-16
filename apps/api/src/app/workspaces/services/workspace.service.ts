@@ -6,6 +6,7 @@ import {
   Workspace,
 } from "@prisma/client";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
+import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 
 type WorkspaceWithUserOrOrganization = Workspace & {
   gitProfile: GitProfile | null;
@@ -43,6 +44,22 @@ export const findWorkspaceByGitInstallationId = (
       ...include,
     },
   });
+};
+
+export const findWorkspaceByGitInstallationIdOrThrow = (
+  gitInstallationId: string,
+  include: Partial<Prisma.WorkspaceInclude> = {}
+) => {
+  const workspace = findWorkspaceByGitInstallationId(
+    gitInstallationId,
+    include
+  );
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found");
+  }
+
+  return workspace;
 };
 
 export const findUserWorkspaces = async (gitProfileId: number) => {

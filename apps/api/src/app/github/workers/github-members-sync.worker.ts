@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import { SweetQueue } from "../../../bull-mq/queues";
+import { addJob, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
 import { syncOrganizationMembers } from "../services/github-member.service";
 import {
@@ -33,6 +33,11 @@ export const githubMemberSyncWorker = createWorker(
         installationId,
       }
     );
+
+    await addJob(SweetQueue.GITHUB_SYNC_TEAMS, {
+      installationId,
+      organizationName: job.data.organization.login,
+    });
   },
   {
     limiter: {

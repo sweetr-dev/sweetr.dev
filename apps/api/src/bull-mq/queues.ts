@@ -23,6 +23,7 @@ export enum SweetQueue {
   GITHUB_SYNC_PULL_REQUEST = "{github.sync.pull_request}",
   GITHUB_SYNC_CODE_REVIEW = "{github.sync.code_review}",
   GITHUB_SYNC_REPOSITORY_PULL_REQUESTS = "{github.sync.repository.pull_requests}",
+  GITHUB_SYNC_TEAMS = "{github.sync.teams}",
 
   // Sync Batch
   SYNC_BATCH = "{sync.batch}",
