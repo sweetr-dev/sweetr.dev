@@ -59,6 +59,7 @@ export const FormUpsertIncident = ({ form }: FormUpsertIncidentProps) => {
                 }}
                 withAsterisk
                 flex="1"
+                searchPlaceholder="Search by version"
               />
 
               <DateTimePicker
@@ -125,6 +126,7 @@ export const FormUpsertIncident = ({ form }: FormUpsertIncidentProps) => {
                 }}
                 clearable
                 flex="1"
+                searchPlaceholder="Search by version"
               />
 
               <DateTimePicker

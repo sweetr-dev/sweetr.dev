@@ -32,6 +32,7 @@ export interface InputSelectAsyncProps extends InputBaseProps {
   renderLabel?: (item: Item) => string | ReactNode;
   clearable?: boolean;
   placeholder?: string;
+  searchPlaceholder?: string;
 }
 
 export const InputSelectAsync = ({
@@ -155,7 +156,7 @@ export const InputSelectAsync = ({
           <Combobox.Search
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
-            placeholder="Search"
+            placeholder={props.searchPlaceholder || "Search"}
           />
           <Combobox.Options>
             {options}
