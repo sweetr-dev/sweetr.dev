@@ -16,7 +16,7 @@ export const navItems: (Omit<NavbarItemProps, "href"> & {
   { icon: IconHome2, label: "Home", href: "/" },
   {
     icon: IconUser,
-    label: "Humans",
+    label: "Teams",
     href: "/humans",
   },
   {
