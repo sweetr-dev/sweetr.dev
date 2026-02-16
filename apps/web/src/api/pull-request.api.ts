@@ -24,12 +24,7 @@ export const usePullRequestsInfiniteQuery = (
   >,
 ) =>
   useInfiniteQuery({
-    queryKey: [
-      "team",
-      args.workspaceId,
-      "pull-requests",
-      JSON.stringify(args.input),
-    ],
+    queryKey: ["team", args.workspaceId, "pull-requests", args.input],
     queryFn: ({ pageParam }) =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
