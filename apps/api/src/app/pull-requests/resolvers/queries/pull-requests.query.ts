@@ -28,9 +28,9 @@ export const pullRequestsQuery = createFieldResolver("Workspace", {
         from: input.createdAt?.from || undefined,
         to: input.createdAt?.to || undefined,
       },
-      finalizedAt: {
-        from: input.finalizedAt?.from || undefined,
-        to: input.finalizedAt?.to || undefined,
+      completedAt: {
+        from: input.completedAt?.from || undefined,
+        to: input.completedAt?.to || undefined,
       },
       states: input.states || undefined,
       sizes: input.sizes || undefined,

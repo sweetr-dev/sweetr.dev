@@ -944,12 +944,12 @@ export type PullRequestsInProgressResponse = {
 };
 
 export type PullRequestsQueryInput = {
+  /** The time range the pull request was merged or closed */
+  completedAt?: InputMaybe<DateTimeRange>;
   /** The time range the pull request was created in */
   createdAt?: InputMaybe<DateTimeRange>;
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
-  /** The time range the pull request was merged or closed */
-  finalizedAt?: InputMaybe<DateTimeRange>;
   /** The ids to filter by */
   ownerIds: Array<Scalars['SweetID']['input']>;
   /** Whether the ids refer to teams or people */

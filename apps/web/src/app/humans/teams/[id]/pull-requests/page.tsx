@@ -27,7 +27,10 @@ import { FilterMultiSelect } from "../../../../../components/filter-multi-select
 import { useForm } from "@mantine/form";
 import { LoadableContent } from "../../../../../components/loadable-content/loadable-content";
 import { FilterDate } from "../../../../../components/filter-date";
-import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
+import {
+  FilterOption,
+  useFilterSearchParameters,
+} from "../../../../../providers/filter.provider";
 import { useTeamId } from "../use-team";
 
 export const TeamPullRequestsPage = () => {
@@ -39,12 +42,16 @@ export const TeamPullRequestsPage = () => {
     sizes: PullRequestSize[];
     createdAtFrom: string | null;
     createdAtTo: string | null;
+    completedAtFrom: string | null;
+    completedAtTo: string | null;
   }>({
     initialValues: {
       states: searchParams.getAll<PullRequestState[]>("state") || [],
       sizes: searchParams.getAll<PullRequestSize[]>("size") || [],
       createdAtFrom: searchParams.get("createdAtFrom"),
       createdAtTo: searchParams.get("createdAtTo"),
+      completedAtFrom: searchParams.get("completedAtFrom"),
+      completedAtTo: searchParams.get("completedAtTo"),
     },
   });
 
@@ -65,6 +72,10 @@ export const TeamPullRequestsPage = () => {
         createdAt: {
           from: filters.values.createdAtFrom,
           to: filters.values.createdAtTo,
+        },
+        completedAt: {
+          from: filters.values.completedAtFrom,
+          to: filters.values.completedAtTo,
         },
       },
       workspaceId: workspace?.id,
@@ -101,6 +112,23 @@ export const TeamPullRequestsPage = () => {
   const isEmpty = !!(pullRequests && pullRequests.length === 0 && !isLoading);
   const isFiltering = Object.keys(searchParams.values).length > 0;
 
+  const completedStates = [PullRequestState.CLOSED, PullRequestState.MERGED];
+
+  const possibleStates: FilterOption[] = filters.values.completedAtFrom
+    ? completedStates.map((state) => ({
+        label: state,
+        value: state,
+      }))
+    : Object.values(PullRequestState).map((state) => ({
+        label: state,
+        value: state,
+      }));
+
+  const handleStateChange = (states: PullRequestState[]) => {
+    filters.setFieldValue("states", states);
+    searchParams.set("state", states);
+  };
+
   return (
     <>
       <Group gap={5}>
@@ -121,14 +149,37 @@ export const TeamPullRequestsPage = () => {
             parseNullableISO(filters.values.createdAtTo) || null,
           ]}
         />
+        <FilterDate
+          label="Completed"
+          icon={IconCalendarFilled}
+          onChange={(dates) => {
+            const completedAtFrom = dates[0]?.toISOString() || null;
+            const completedAtTo = dates[1]?.toISOString() || null;
+
+            filters.setFieldValue("completedAtFrom", completedAtFrom);
+            filters.setFieldValue("completedAtTo", completedAtTo);
+            searchParams.set("completedAtFrom", completedAtFrom);
+            searchParams.set("completedAtTo", completedAtTo);
+
+            if (completedAtFrom) {
+              const selectedCompletedStates = filters.values.states.filter(
+                (state) => completedStates.includes(state as PullRequestState),
+              );
+
+              handleStateChange(selectedCompletedStates);
+            }
+          }}
+          value={[
+            parseNullableISO(filters.values.completedAtFrom) || null,
+            parseNullableISO(filters.values.completedAtTo) || null,
+          ]}
+          clearable
+        />
         <FilterMultiSelect
           width="target"
           label="State"
           icon={IconStatusChange}
-          items={Object.values(PullRequestState).map((state) => ({
-            label: state,
-            value: state,
-          }))}
+          items={possibleStates}
           onChange={(states) => {
             filters.setFieldValue("states", states as PullRequestState[]);
             searchParams.set("state", states);
