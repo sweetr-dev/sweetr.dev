@@ -6,6 +6,7 @@ import {
   IconApplication,
   IconDeployment,
   IconIncident,
+  IconPullRequest,
   IconRepository,
 } from "../../../../providers/icon.provider";
 
@@ -32,6 +33,13 @@ export const SubnavSystems = () => {
         component={Link}
         label="Incidents"
         leftSection={<IconIncident stroke={1.5} size={18} />}
+      />
+      <NavLink
+        to="/systems/pull-requests"
+        active={pathname.startsWith("/systems/pull-requests")}
+        component={Link}
+        label="Pull Requests"
+        leftSection={<IconPullRequest stroke={1.5} size={18} />}
       />
       <Divider label="Catalog" labelPosition="left" mt="sm" />
       <NavLink

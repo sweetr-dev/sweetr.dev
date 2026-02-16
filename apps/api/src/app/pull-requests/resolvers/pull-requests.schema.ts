@@ -108,7 +108,7 @@ export default /* GraphQL */ `
     createdAt: DateTimeRange
 
     "The time range the pull request was merged or closed"
-    finalizedAt: DateTimeRange
+    completedAt: DateTimeRange
 
     "The state to filter by"
     states: [PullRequestState!]

@@ -39,7 +39,7 @@ export const paginatePullRequests = async (
     },
   };
 
-  if (args.teamIds) {
+  if (args.teamIds && args.teamIds.length) {
     query.where = {
       ...query.where,
       author: {
@@ -80,20 +80,20 @@ export const paginatePullRequests = async (
     };
   }
 
-  if (args.finalizedAt?.from || args.finalizedAt?.to) {
+  if (args.completedAt?.from || args.completedAt?.to) {
     query.where = {
       ...query.where,
       OR: [
         {
           mergedAt: {
-            gte: args.finalizedAt.from,
-            lte: args.finalizedAt.to,
+            gte: args.completedAt.from,
+            lte: args.completedAt.to,
           },
         },
         {
           closedAt: {
-            gte: args.finalizedAt.from,
-            lte: args.finalizedAt.to,
+            gte: args.completedAt.from,
+            lte: args.completedAt.to,
           },
         },
       ],

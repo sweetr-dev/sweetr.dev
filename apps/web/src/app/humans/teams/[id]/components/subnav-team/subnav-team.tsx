@@ -1,6 +1,7 @@
-import { Divider, Title, NavLink, Badge } from "@mantine/core";
+import { Divider, Title, NavLink, Badge, Group } from "@mantine/core";
 import {
   IconActivity,
+  IconArrowLeft,
   IconBell,
   IconChartArcs,
   IconMessage,
@@ -12,6 +13,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../../components/subnav";
 import { IconPullRequest } from "../../../../../../providers/icon.provider";
+import { ActionIcon } from "@mantine/core";
 
 interface SubnavTeamProps {
   team: Pick<Team, "id" | "name" | "icon">;
@@ -25,9 +27,20 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
 
   return (
     <Subnav>
-      <Title order={3} mt={34} lineClamp={1} title={team.name}>
-        {team.name} {team.icon}
-      </Title>
+      <Group mt={34} align="center" gap={5}>
+        <ActionIcon
+          variant="transparent"
+          aria-label="Settings"
+          component={Link}
+          to="/humans/teams"
+          c="var(--mantine-color-text)"
+        >
+          <IconArrowLeft stroke={1.5} size={20} />
+        </ActionIcon>
+        <Title order={3} lineClamp={1} title={team.name}>
+          {team.name} {team.icon}
+        </Title>
+      </Group>
 
       <Divider label="Team" labelPosition="left" mt="sm" />
       <NavLink

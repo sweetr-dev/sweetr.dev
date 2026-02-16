@@ -71,6 +71,7 @@ import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/deployme
 import { DoraLeadTimePage } from "./app/metrics-and-insights/lead-time/page";
 import { DoraMttrPage } from "./app/metrics-and-insights/mttr/page";
 import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
+import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
 
 export const router = createBrowserRouter([
   {
@@ -164,6 +165,10 @@ export const router = createBrowserRouter([
                     element: <ApplicationsEditPage />,
                   },
                 ],
+              },
+              {
+                path: "/systems/pull-requests",
+                element: <SystemsPullRequestsPage />,
               },
               {
                 path: "/systems/deployments",

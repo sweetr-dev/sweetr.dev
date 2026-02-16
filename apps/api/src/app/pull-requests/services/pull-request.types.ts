@@ -6,7 +6,7 @@ export interface PaginatePullRequestsArgs {
   teamIds?: number[];
   gitProfileIds?: number[];
   createdAt?: DateTimeRange;
-  finalizedAt?: DateTimeRange;
+  completedAt?: DateTimeRange;
   states?: PullRequestState[];
   sizes?: PullRequestSize[];
 }
