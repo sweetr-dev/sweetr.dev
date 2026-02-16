@@ -1,25 +1,32 @@
 import { Stack, Divider, Skeleton, Box, Group } from "@mantine/core";
-import { CardPullRequest } from "../../../../../components/card-pull-request";
+import { CardPullRequest } from "../../../components/card-pull-request";
 import { parseISO } from "date-fns";
-import { LoaderInfiniteScroll } from "../../../../../components/loader-infinite-scroll";
+import { LoaderInfiniteScroll } from "../../../components/loader-infinite-scroll";
 import { PullRequestSize } from "@sweetr/graphql-types/frontend/graphql";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { format } from "date-fns";
-import { PageEmptyState } from "../../../../../components/page-empty-state";
-import { parseNullableISO } from "../../../../../providers/date.provider";
+import { PageEmptyState } from "../../../components/page-empty-state";
+import { parseNullableISO } from "../../../providers/date.provider";
 import {
   IconCalendarFilled,
   IconRuler,
   IconStatusChange,
 } from "@tabler/icons-react";
-import { LoadableContent } from "../../../../../components/loadable-content/loadable-content";
-import { FilterDate } from "../../../../../components/filter-date";
-import { FilterMultiSelect } from "../../../../../components/filter-multi-select";
-import { useTeamId } from "../use-team";
-import { usePullRequestList } from "../../../../../providers/pull-request-list.provider";
+import { LoadableContent } from "../../../components/loadable-content/loadable-content";
+import { FilterDate } from "../../../components/filter-date";
+import { FilterMultiSelect } from "../../../components/filter-multi-select";
+import { IconTeam } from "../../../providers/icon.provider";
+import { useTeamAsyncOptions } from "../../../providers/async-options.provider";
+import { PageContainer } from "../../../components/page-container";
+import { Breadcrumbs } from "../../../components/breadcrumbs";
+import { usePullRequestList } from "../../../providers/pull-request-list.provider";
+import { useFilterSearchParameters } from "../../../providers/filter.provider";
 
-export const TeamPullRequestsPage = () => {
-  const teamId = useTeamId();
+export const SystemsPullRequestsPage = () => {
+  const teamSearchParams = useFilterSearchParameters();
+  const [teamIds, setTeamIds] = useState<string[]>(
+    teamSearchParams.getAll<string[]>("team") || [],
+  );
 
   const {
     pullRequests,
@@ -36,10 +43,13 @@ export const TeamPullRequestsPage = () => {
     handleCreatedAtChange,
     handleCompletedAtChange,
     resetFilters,
-  } = usePullRequestList({ ownerIds: [teamId] });
+    searchParams,
+  } = usePullRequestList({ ownerIds: teamIds });
 
   return (
-    <>
+    <PageContainer>
+      <Breadcrumbs items={[{ label: "Pull Requests" }]} />
+
       <Group gap={5}>
         <FilterDate
           label="Created"
@@ -60,6 +70,19 @@ export const TeamPullRequestsPage = () => {
           ]}
           clearable
         />
+
+        <FilterMultiSelect
+          label="Team"
+          icon={IconTeam}
+          asyncController={useTeamAsyncOptions}
+          withSearch
+          value={teamIds}
+          onChange={(value) => {
+            setTeamIds(value);
+            searchParams.set("team", value);
+          }}
+        />
+
         <FilterMultiSelect
           width="target"
           label="State"
@@ -101,9 +124,12 @@ export const TeamPullRequestsPage = () => {
         whenEmpty={
           <Box mt={80}>
             <PageEmptyState
-              message="This team has no pull requests."
+              message="No Pull Requests found."
               isFiltering={isFiltering}
-              onResetFilter={resetFilters}
+              onResetFilter={() => {
+                resetFilters();
+                setTeamIds([]);
+              }}
             />
           </Box>
         }
@@ -128,6 +154,6 @@ export const TeamPullRequestsPage = () => {
           </Stack>
         }
       />
-    </>
+    </PageContainer>
   );
 };

@@ -39,7 +39,7 @@ export const paginatePullRequests = async (
     },
   };
 
-  if (args.teamIds) {
+  if (args.teamIds && args.teamIds.length) {
     query.where = {
       ...query.where,
       author: {
