@@ -8,7 +8,10 @@ import { syncOrganizationTeams } from "../services/github-team.service";
 export const githubTeamsSyncWorker = createWorker(
   SweetQueue.GITHUB_SYNC_TEAMS,
   async (
-    job: Job<{ installationId: number; organizationName: string }>,
+    job: Job<{
+      installationId: number;
+      organizationName: string;
+    }>,
     token?: string
   ) => {
     const { installationId, organizationName } = job.data;

@@ -38,6 +38,7 @@ export const syncGitHubInstallation = async (
 
   if (workspace.organization) {
     await addJob(SweetQueue.GITHUB_MEMBERS_SYNC, {
+      action: "installation",
       organization: { login: workspace.organization.handle },
       installation: { id: parseInt(installation.gitInstallationId) },
     });

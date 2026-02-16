@@ -12,7 +12,14 @@ import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.servi
 export const githubMemberSyncWorker = createWorker(
   SweetQueue.GITHUB_MEMBERS_SYNC,
   async (
-    job: Job<OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent>,
+    job: Job<
+      (
+        | Omit<OrganizationMemberAddedEvent, "action">
+        | Omit<OrganizationMemberRemovedEvent, "action">
+      ) & {
+        action: "installation" | "member_added" | "member_removed";
+      }
+    >,
     token?: string
   ) => {
     const installationId = job.data.installation?.id;
@@ -34,10 +41,12 @@ export const githubMemberSyncWorker = createWorker(
       }
     );
 
-    await addJob(SweetQueue.GITHUB_SYNC_TEAMS, {
-      installationId,
-      organizationName: job.data.organization.login,
-    });
+    if (job.data.action === "installation") {
+      await addJob(SweetQueue.GITHUB_SYNC_TEAMS, {
+        installationId,
+        organizationName: job.data.organization.login,
+      });
+    }
   },
   {
     limiter: {
