@@ -93,9 +93,9 @@ export const TeamsPage = () => {
                   endColor={team.endColor}
                   iconEmoji={team.icon}
                   members={team.members.map((member) => ({
-                    name: member.person?.name || member.person?.handle,
+                    name: member.person.name || member.person.handle,
                     handle: member.person.handle,
-                    avatar: member.person?.avatar || undefined,
+                    avatar: member.person.avatar || undefined,
                   }))}
                 />
               ))}

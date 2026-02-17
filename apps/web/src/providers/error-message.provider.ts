@@ -32,7 +32,7 @@ export const getErrorMessage = (error: unknown) => {
 };
 
 export const setFormErrorsFromFailedRequest = (
-  form: UseFormReturnType<any>,
+  form: UseFormReturnType<unknown>,
   error: unknown,
 ) => {
   if (typeof error === "object" && error !== null && "response" in error) {
