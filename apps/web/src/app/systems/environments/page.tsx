@@ -28,7 +28,6 @@ export const EnvironmentsPage = () => {
       archivedOnly: searchParams.get("archivedOnly") === "true",
     },
   });
-  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   const {
     data,
@@ -131,7 +130,7 @@ export const EnvironmentsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No environments found."
-              isFiltering={isFiltering}
+              isFiltering={searchParams.hasAny}
               onResetFilter={() => {
                 filters.setValues({ archivedOnly: false });
                 searchParams.reset();

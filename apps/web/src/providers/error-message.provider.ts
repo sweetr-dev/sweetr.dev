@@ -39,6 +39,8 @@ export const setFormErrorsFromFailedRequest = (
     const graphQLErrors = (error as ClientError).response
       ?.errors as GraphQLError[];
 
+    if (!graphQLErrors) return;
+
     for (const error of graphQLErrors) {
       const extensions = error.extensions as
         | {

@@ -102,7 +102,6 @@ export const ApplicationsPage = () => {
       isFetching &&
       (applications?.length === 0 || !applications));
   const isEmpty = !!(applications && applications.length === 0 && !isLoading);
-  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   return (
     <PageContainer>
@@ -160,7 +159,7 @@ export const ApplicationsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No applications found."
-              isFiltering={isFiltering}
+              isFiltering={searchParams.hasAny}
               action="New application"
               onClick={() => {
                 navigate(

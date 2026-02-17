@@ -125,7 +125,7 @@ export const SystemsPullRequestsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No Pull Requests found."
-              isFiltering={isFiltering}
+              isFiltering={isFiltering || searchParams.hasAny}
               onResetFilter={() => {
                 resetFilters();
                 setTeamIds([]);

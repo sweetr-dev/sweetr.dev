@@ -50,7 +50,6 @@ export const TeamsPage = () => {
 
   const teams = data?.workspace.teams;
   const hasTeams = teams && teams.length > 0;
-  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   return (
     <PageContainer>
@@ -113,7 +112,7 @@ export const TeamsPage = () => {
         whenEmpty={
           <PageEmptyState
             message="This workspace has no teams."
-            isFiltering={isFiltering}
+            isFiltering={searchParams.hasAny}
             onResetFilter={() => {
               filters.setValues({ archivedOnly: false });
               searchParams.reset();
