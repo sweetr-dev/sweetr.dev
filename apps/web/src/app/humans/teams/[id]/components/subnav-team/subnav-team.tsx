@@ -27,7 +27,7 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
 
   return (
     <Subnav>
-      <Group mt={34} align="center" gap={5}>
+      <Group mt={34} align="center" gap={5} wrap="nowrap">
         <ActionIcon
           variant="transparent"
           aria-label="Settings"
