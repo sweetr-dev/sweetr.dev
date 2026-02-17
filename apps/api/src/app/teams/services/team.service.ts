@@ -68,6 +68,15 @@ export const findTeamsByWorkspace = async ({
     };
   }
 
+  if (args.archivedOnly) {
+    query.where = {
+      ...query.where,
+      archivedAt: {
+        not: null,
+      },
+    };
+  }
+
   return getPrisma(workspaceId).team.findMany(query);
 };
 
