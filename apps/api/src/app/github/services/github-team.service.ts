@@ -73,6 +73,14 @@ const upsertTeam = async (
 ) => {
   const { icon, startColor, endColor } = getTeamFlair(teamData.name);
 
+  const members = teamData.members
+    .filter((member) => gitProfileMap[member.login])
+    .map((member) => ({
+      workspaceId,
+      gitProfileId: gitProfileMap[member.login].id,
+      role: TeamMemberRole.ENGINEER,
+    }));
+
   return getPrisma(workspaceId).team.upsert({
     where: {
       workspaceId_name: {
@@ -89,11 +97,7 @@ const upsertTeam = async (
       endColor,
       members: {
         createMany: {
-          data: teamData.members.map((member) => ({
-            workspaceId,
-            gitProfileId: gitProfileMap[member.login].id,
-            role: TeamMemberRole.ENGINEER,
-          })),
+          data: members,
         },
       },
     },
