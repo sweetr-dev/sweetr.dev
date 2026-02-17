@@ -9,6 +9,7 @@ import {
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { validateInputOrThrow } from "../../validator.service";
 import { getTeamValidationSchema } from "./team.validation";
+import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 
 export const findTeamById = async ({
   teamId,
@@ -165,13 +166,6 @@ export const upsertTeam = async (input: UpsertTeamInput) => {
     input
   );
 
-  if (teamId) {
-    // Remove all existing members to recreate it below
-    await getPrisma(input.workspaceId).teamMember.deleteMany({
-      where: { teamId },
-    });
-  }
-
   const memberCreateQuery = {
     createMany: {
       data: members.map((member) => ({
@@ -182,21 +176,44 @@ export const upsertTeam = async (input: UpsertTeamInput) => {
     },
   };
 
-  const team = getPrisma(input.workspaceId).team.upsert({
+  const existingTeam = await getPrisma(input.workspaceId).team.findUnique({
     where: {
-      id: teamId || 0,
+      workspaceId_name: {
+        workspaceId: input.workspaceId,
+        name: teamData.name,
+      },
     },
-    create: {
-      ...teamData,
-      members: memberCreateQuery,
-    },
-    update: {
+  });
+
+  if (existingTeam && existingTeam.id !== teamId) {
+    throw new InputValidationException("Input is invalid", {
+      validationErrors: {
+        name: "A team with this name already exists",
+      },
+    });
+  }
+
+  if (teamId) {
+    // Remove all existing members to recreate it below
+    await getPrisma(input.workspaceId).teamMember.deleteMany({
+      where: { teamId },
+    });
+
+    return getPrisma(input.workspaceId).team.update({
+      where: { id: teamId },
+      data: {
+        ...teamData,
+        members: memberCreateQuery,
+      },
+    });
+  }
+
+  return getPrisma(input.workspaceId).team.create({
+    data: {
       ...teamData,
       members: memberCreateQuery,
     },
   });
-
-  return team;
 };
 
 export const archiveTeam = async (workspaceId: number, teamId: number) => {
