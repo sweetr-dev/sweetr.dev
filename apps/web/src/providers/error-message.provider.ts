@@ -37,7 +37,7 @@ export const setFormErrorsFromFailedRequest = (
 ) => {
   if (typeof error === "object" && error !== null && "response" in error) {
     const graphQLErrors = (error as ClientError).response
-      .errors as GraphQLError[];
+      ?.errors as GraphQLError[];
 
     for (const error of graphQLErrors) {
       const extensions = error.extensions as
@@ -48,7 +48,12 @@ export const setFormErrorsFromFailedRequest = (
           }
         | undefined;
 
-      if (extensions && extensions.code === "INPUT_VALIDATION_FAILED") {
+      if (
+        extensions &&
+        extensions.code === "INPUT_VALIDATION_FAILED" &&
+        extensions.validationErrors &&
+        typeof extensions.validationErrors === "object"
+      ) {
         for (const [key, value] of Object.entries(
           extensions.validationErrors,
         )) {
