@@ -12,6 +12,10 @@ import {
 import { FormUpsertTeam } from "./form-upsert-team";
 import { TeamForm } from "./types";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
+import {
+  getErrorMessage,
+  setFormErrorsFromFailedRequest,
+} from "../../../../../providers/error-message.provider";
 
 interface DrawerUpsertTeamProps {
   isOpen: boolean;
@@ -48,10 +52,12 @@ export const DrawerUpsertTeam: FC<DrawerUpsertTeamProps> = ({
       onClose();
       navigate(`/humans/teams/${team.upsertTeam.id}`);
     },
-    onError: () => {
+    onError: (error) => {
       showErrorNotification({
-        message: "Something went wrong. Please try again.",
+        message: getErrorMessage(error),
       });
+
+      setFormErrorsFromFailedRequest(form, error);
     },
   });
 

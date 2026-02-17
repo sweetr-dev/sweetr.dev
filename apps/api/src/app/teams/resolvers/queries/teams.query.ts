@@ -31,6 +31,7 @@ export const teamsQuery = createFieldResolver("Workspace", {
       teamIds: input?.ids || undefined,
       query: input?.query || undefined,
       limit: input?.limit || undefined,
+      archivedOnly: input?.archivedOnly || false,
     });
 
     return teams.map(transformTeam);

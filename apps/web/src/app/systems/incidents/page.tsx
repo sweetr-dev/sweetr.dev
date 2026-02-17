@@ -129,7 +129,6 @@ export const IncidentsPage = () => {
       isFetching &&
       (incidents?.length === 0 || !incidents));
   const isEmpty = !!(incidents && incidents.length === 0 && !isLoading);
-  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   return (
     <PageContainer>
@@ -186,7 +185,7 @@ export const IncidentsPage = () => {
             searchParams.set("environment", value);
           }}
         />
-        <FilterOptions>
+        <FilterOptions isFiltering={filters.values.archivedOnly}>
           <FilterArchivedOnly
             checked={filters.values.archivedOnly}
             onChange={(value) => {
@@ -216,7 +215,7 @@ export const IncidentsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No incidents found."
-              isFiltering={isFiltering}
+              isFiltering={searchParams.hasAny}
               onResetFilter={() => {
                 filters.setValues({
                   detectedAtFrom: null,

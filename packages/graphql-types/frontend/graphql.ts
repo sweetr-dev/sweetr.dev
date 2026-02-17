@@ -1118,6 +1118,8 @@ export type TeamWorkLogResponse = {
 };
 
 export type TeamsQueryInput = {
+  /** Whether to only include archived teams. Defaults to false. */
+  archivedOnly?: InputMaybe<Scalars['Boolean']['input']>;
   /** The ids to filter by. */
   ids?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The amount of records to return. */

@@ -100,7 +100,7 @@ const fetchPullRequest = async (
   pullRequestId: string
 ) => {
   const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
-  const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
+  const response: any = await fireGraphQLRequest<GraphQlQueryResponseData>(
     `
       query PullRequestQuery(
         $nodeId: ID!
@@ -205,7 +205,7 @@ const getPullRequestFiles = async (
 
   while (fileQuery.pageInfo.hasNextPage) {
     const fireGraphQLRequest = getInstallationGraphQLOctoKit(installationId);
-    const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
+    const response: any = await fireGraphQLRequest<GraphQlQueryResponseData>(
       `
       query PullRequestFilesQuery(
         $nodeId: ID!

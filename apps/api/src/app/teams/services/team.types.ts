@@ -29,6 +29,7 @@ export interface FindTeamsByWorkspaceArgs {
   teamIds?: number[];
   query?: string;
   limit?: number;
+  archivedOnly?: boolean;
 }
 
 export interface CountTeamMembersArgs {

@@ -97,7 +97,6 @@ export const DeploymentsPage = () => {
       isFetching &&
       (deployments?.length === 0 || !deployments));
   const isEmpty = !!(deployments && deployments.length === 0 && !isLoading);
-  const isFiltering = Object.keys(searchParams.values).length > 0;
 
   const { isFirstOfYearMonth } = useListGroupedByYearMonth(
     deployments,
@@ -153,7 +152,7 @@ export const DeploymentsPage = () => {
           }}
         />
 
-        <FilterOptions>
+        <FilterOptions isFiltering={filters.values.archivedOnly}>
           <FilterArchivedOnly
             checked={filters.values.archivedOnly}
             onChange={(value) => {
@@ -183,7 +182,7 @@ export const DeploymentsPage = () => {
           <Box mt={80}>
             <PageEmptyState
               message="No deployments found."
-              isFiltering={isFiltering}
+              isFiltering={searchParams.hasAny}
               onResetFilter={() => {
                 filters.setValues({
                   deployedAtFrom: null,

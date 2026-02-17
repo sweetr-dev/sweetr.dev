@@ -68,11 +68,18 @@ export const TeamPage = () => {
       />
 
       <HeaderActions>
-        <MenuTeam
-          teamId={team.id}
-          isTeamArchived={isArchived}
-          upsertDrawerControl={drawerControl}
-        />
+        <Group>
+          {isArchived && (
+            <Badge variant="light" color="gray">
+              Archived Team
+            </Badge>
+          )}
+          <MenuTeam
+            teamId={team.id}
+            isTeamArchived={isArchived}
+            upsertDrawerControl={drawerControl}
+          />
+        </Group>
       </HeaderActions>
 
       <Portal target="#subnav">
@@ -102,12 +109,6 @@ export const TeamPage = () => {
                   {team.icon}
                 </Text>
               </Group>
-
-              {isArchived && (
-                <Badge variant="dot" color="dark">
-                  Archived
-                </Badge>
-              )}
             </Group>
             {team.description}
           </Stack>

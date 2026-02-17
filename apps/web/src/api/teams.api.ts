@@ -31,7 +31,7 @@ export const useTeamsQuery = (
   options?: Partial<UseQueryOptions<TeamsQuery>>,
 ) =>
   useQuery({
-    queryKey: ["teams", args.workspaceId],
+    queryKey: ["teams", args.workspaceId, args.input],
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `

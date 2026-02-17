@@ -64,6 +64,9 @@ export default /* GraphQL */ `
 
     "The amount of records to return."
     limit: Int
+
+    "Whether to only include archived teams. Defaults to false."
+    archivedOnly: Boolean
   }
 
   extend type Workspace {

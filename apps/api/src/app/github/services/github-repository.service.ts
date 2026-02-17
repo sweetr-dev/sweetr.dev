@@ -63,7 +63,7 @@ const fetchGitHubRepositories = async (
   let cursor: string | null = null;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest({
+    const response: any = await fireGraphQLRequest({
       query: `
           query GetOrganizationRepositories($cursor: String) {
             viewer {
