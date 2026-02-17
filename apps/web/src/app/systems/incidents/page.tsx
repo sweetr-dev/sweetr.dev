@@ -186,7 +186,7 @@ export const IncidentsPage = () => {
             searchParams.set("environment", value);
           }}
         />
-        <FilterOptions>
+        <FilterOptions isFiltering={filters.values.archivedOnly}>
           <FilterArchivedOnly
             checked={filters.values.archivedOnly}
             onChange={(value) => {

@@ -67,7 +67,7 @@ export const TeamsPage = () => {
       </HeaderActions>
 
       <Group>
-        <FilterOptions>
+        <FilterOptions isFiltering={filters.values.archivedOnly}>
           <FilterArchivedOnly
             checked={filters.values.archivedOnly}
             onChange={(value) => {

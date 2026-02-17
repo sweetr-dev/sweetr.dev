@@ -153,7 +153,7 @@ export const DeploymentsPage = () => {
           }}
         />
 
-        <FilterOptions>
+        <FilterOptions isFiltering={filters.values.archivedOnly}>
           <FilterArchivedOnly
             checked={filters.values.archivedOnly}
             onChange={(value) => {
