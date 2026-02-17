@@ -171,7 +171,7 @@ const fetchPullRequestReviews = async (
   }`;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest<GraphQlQueryResponseData>(
+    const response: any = await fireGraphQLRequest<GraphQlQueryResponseData>(
       `
       query PullRequestQuery(
         $nodeId: ID!

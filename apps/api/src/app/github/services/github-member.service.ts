@@ -87,7 +87,7 @@ const fetchGitHubOrganizationMembers = async (
   let cursor: string | null = null;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest({
+    const response: any = await fireGraphQLRequest({
       query: `
           query GetOrganizationMembers($login: String!, $cursor: String) {
             organization(login: $login) {

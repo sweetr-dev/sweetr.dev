@@ -117,7 +117,7 @@ const fetchGitHubOrganizationTeams = async (
   let cursor: string | null = null;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest({
+    const response: any = await fireGraphQLRequest({
       query: `
           query GetOrganizationTeams($login: String!, $cursor: String) {
             organization(login: $login) {
@@ -201,7 +201,7 @@ const fetchGitHubTeamMembers = async (
   let cursor: string | null = startCursor;
 
   while (hasNextPage) {
-    const response = await fireGraphQLRequest({
+    const response: any = await fireGraphQLRequest({
       query: `
           query GetTeamMembers($login: String!, $cursor: String, $slug: String!) {
             organization(login: $login) {
