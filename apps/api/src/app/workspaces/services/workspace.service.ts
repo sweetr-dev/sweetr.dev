@@ -46,11 +46,11 @@ export const findWorkspaceByGitInstallationId = (
   });
 };
 
-export const findWorkspaceByGitInstallationIdOrThrow = (
+export const findWorkspaceByGitInstallationIdOrThrow = async (
   gitInstallationId: string,
   include: Partial<Prisma.WorkspaceInclude> = {}
 ) => {
-  const workspace = findWorkspaceByGitInstallationId(
+  const workspace = await findWorkspaceByGitInstallationId(
     gitInstallationId,
     include
   );

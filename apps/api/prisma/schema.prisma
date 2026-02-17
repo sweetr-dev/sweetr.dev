@@ -509,6 +509,7 @@ model Team {
   Incident    Incident[]
   Application Application[]
 
+  @@unique([workspaceId, name])
   @@index([workspaceId])
 }
 
