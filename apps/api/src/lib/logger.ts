@@ -34,7 +34,7 @@ export const logger = {
       }
     }
 
-    pinoLogger.info(cleanObj || {}, msg);
+    pinoLogger.info(cleanObj, msg);
     addBreadcrumb({
       message: msg,
       category: "log",
