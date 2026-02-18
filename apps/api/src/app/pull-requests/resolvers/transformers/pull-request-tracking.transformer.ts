@@ -55,7 +55,7 @@ export const transformPullRequestTracking = ({
     firstDeployedAt: tracking.firstDeployedAt?.toISOString(),
     timeToFirstApproval: calculateTimeForEvent({
       from:
-        tracking.firstApprovalAt ||
+        tracking.firstReviewAt ||
         tracking.firstReadyAt ||
         pullRequest.createdAt,
       duration: tracking.timeToFirstApproval,

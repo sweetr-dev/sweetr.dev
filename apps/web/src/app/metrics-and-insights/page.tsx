@@ -130,8 +130,8 @@ export const MetricsAndInsightsPage = () => {
                 metrics.deploymentFrequency?.currentAmount?.toString() || "0"
               }
               previousAmount={
-                metrics.deploymentFrequency?.previousAmount?.toString() +
-                  " deployments" || "0 deployments"
+                (metrics.deploymentFrequency?.previousAmount || 0) +
+                " deployments"
               }
               amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
               change={metrics.deploymentFrequency?.change || 0}
