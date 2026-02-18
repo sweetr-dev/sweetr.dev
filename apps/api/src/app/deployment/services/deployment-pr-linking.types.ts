@@ -38,6 +38,6 @@ export interface LinkPullRequestsToDeploymentArgs {
 
 export interface UpdatePullRequestDeploymentTrackingArgs {
   workspaceId: number;
-  pullRequest: PullRequest & { tracking: PullRequestTracking | null };
+  pullRequest: PullRequest & { tracking: PullRequestTracking };
   deployment: Pick<Deployment, "id" | "deployedAt">;
 }

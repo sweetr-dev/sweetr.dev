@@ -21,6 +21,7 @@ import {
 } from "@tabler/icons-react";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 import { useBadges } from "./use-badges";
+import { isNumber } from "radash";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -130,7 +131,7 @@ export const TimelinePullRequest = ({
             c="var(--mantine-color-text)"
           >
             <Text size="xs" mt={5}>
-              {timeToCode && <>{humanizeDuration(timeToCode)}</>}
+              {isNumber(timeToCode) && <>{humanizeDuration(timeToCode)}</>}
             </Text>
           </Timeline.Item>
 

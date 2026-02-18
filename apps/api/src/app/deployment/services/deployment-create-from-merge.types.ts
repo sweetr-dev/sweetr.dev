@@ -8,6 +8,6 @@ import {
 export interface CreateDeploymentFromPullRequestMergeArgs {
   application: Application;
   environment: Environment;
-  pullRequest: PullRequest & { tracking: PullRequestTracking | null };
+  pullRequest: PullRequest & { tracking: PullRequestTracking };
   workspaceId: number;
 }

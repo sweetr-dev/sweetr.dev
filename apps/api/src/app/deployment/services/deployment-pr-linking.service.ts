@@ -1,4 +1,8 @@
-import { DeploymentChangeType } from "@prisma/client";
+import {
+  DeploymentChangeType,
+  PullRequest,
+  PullRequestTracking,
+} from "@prisma/client";
 import { getInstallationOctoKit } from "../../../lib/octokit";
 import { getPrisma } from "../../../prisma";
 import {
@@ -153,10 +157,19 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     pullRequestIds: filteredPullRequests.map((pr) => pr.id),
   });
 
-  await Promise.all(
+  await Promise.allSettled(
     filteredPullRequests.map(async (pr) => {
+      if (!pr.tracking) {
+        throw new DataIntegrityException(
+          "[updatePullRequestDeploymentTracking] Pull Request tracking not found",
+          {
+            extra: { pr },
+          }
+        );
+      }
+
       return updatePullRequestDeploymentTracking({
-        pullRequest: pr,
+        pullRequest: pr as PullRequest & { tracking: PullRequestTracking },
         deployment,
         workspaceId,
       });

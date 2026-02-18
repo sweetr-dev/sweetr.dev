@@ -11,6 +11,7 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 import { findRepositoryById } from "../../repositories/services/repository.service";
 import { createDeploymentFromPullRequestMerge } from "../services/deployment-create-from-merge.service";
 import { findPullRequestById } from "../../pull-requests/services/pull-request.service";
+import { PullRequest, PullRequestTracking } from "@prisma/client";
 
 interface DeploymentTriggeredByPullRequestMergeJobData {
   workspaceId: number;
@@ -39,9 +40,9 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
       },
     });
 
-    if (!pullRequest) {
+    if (!pullRequest?.tracking) {
       throw new ResourceNotFoundException("Pull request not found", {
-        extra: { data: job.data },
+        extra: { data: job.data, pullRequest },
       });
     }
 
@@ -101,7 +102,9 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
       createDeploymentFromPullRequestMerge({
         application,
         environment,
-        pullRequest,
+        pullRequest: pullRequest as PullRequest & {
+          tracking: PullRequestTracking;
+        },
         workspaceId: workspaceId,
       })
     );
