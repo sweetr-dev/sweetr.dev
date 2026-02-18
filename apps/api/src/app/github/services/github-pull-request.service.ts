@@ -27,6 +27,7 @@ import {
   getTimeToCode,
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
+import { captureException } from "../../../lib/sentry";
 
 interface Author {
   id: string;
@@ -196,18 +197,24 @@ const fetchPullRequestMergeCommitSha = async (
   installationId: number,
   gitPrData: any
 ) => {
-  if (!gitPrData.mergedAt) return undefined;
+  try {
+    if (!gitPrData.mergedAt) return undefined;
 
-  const octokit = await getInstallationOctoKit(installationId);
-  const [owner, ...repo] = gitPrData.repository.nameWithOwner.split("/");
+    const octokit = await getInstallationOctoKit(installationId);
+    const [owner, ...repo] = gitPrData.repository.nameWithOwner.split("/");
 
-  const response = await octokit.rest.pulls.get({
-    owner,
-    repo: repo.join("/"),
-    pull_number: parseInt(gitPrData.number),
-  });
+    const response = await octokit.rest.pulls.get({
+      owner,
+      repo: repo.join("/"),
+      pull_number: parseInt(gitPrData.number),
+    });
 
-  return response.data.merge_commit_sha || undefined;
+    return response.data.merge_commit_sha;
+  } catch (error) {
+    captureException(error);
+
+    return undefined;
+  }
 };
 
 const getPullRequestFiles = async (
@@ -435,6 +442,8 @@ const getFirstCommit = async (
 
     return response.data.at(0);
   } catch (error) {
+    captureException(error);
+
     return undefined;
   }
 };

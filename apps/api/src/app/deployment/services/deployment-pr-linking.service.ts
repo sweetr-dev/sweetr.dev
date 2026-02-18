@@ -158,7 +158,7 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     pullRequestIds: filteredPullRequests.map((pr) => pr.id),
   });
 
-  await Promise.allSettled(
+  await Promise.all(
     filteredPullRequests.map(async (pr) => {
       if (!pr.tracking) {
         captureException(
