@@ -81,7 +81,7 @@ export const CardDoraMetric = ({
         )}
       </Group>
 
-      <HoverCard withArrow>
+      <HoverCard withArrow offset={20}>
         <HoverCard.Target>
           <Stack gap="xs">
             <Text
@@ -96,7 +96,6 @@ export const CardDoraMetric = ({
                   <IconArrowNarrowRightDashed size="1rem" stroke={1.5} />
                 </>
               )}
-
               {change !== 0 && (
                 <>
                   <span>
@@ -118,6 +117,9 @@ export const CardDoraMetric = ({
           </Stack>
         </HoverCard.Target>
         <HoverCard.Dropdown>
+          <Text c="dimmed" size="sm" fw={500}>
+            Previous Period:
+          </Text>
           <Text c="dimmed" size="sm">
             {previousPeriod?.from && previousPeriod?.to ? (
               <>
@@ -136,6 +138,9 @@ export const CardDoraMetric = ({
             ) : (
               "Previous period unavailable"
             )}
+          </Text>
+          <Text mt="sm" fw={500} size="sm" c="dimmed">
+            {name}:
           </Text>
           <Text size="lg" fw={500} c="bright" display="inline-block">
             {previousAmount}

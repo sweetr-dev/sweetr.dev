@@ -21,6 +21,7 @@ import {
   useTeamAsyncOptions,
 } from "../../providers/async-options.provider";
 import {
+  getAbbreviatedDuration,
   humanizeDuration,
   parseNullableISO,
   thirtyDaysAgo,
@@ -129,7 +130,8 @@ export const MetricsAndInsightsPage = () => {
                 metrics.deploymentFrequency?.currentAmount?.toString() || "0"
               }
               previousAmount={
-                metrics.deploymentFrequency?.previousAmount?.toString() || "0"
+                metrics.deploymentFrequency?.previousAmount?.toString() +
+                  " deployments" || "0 deployments"
               }
               amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
               change={metrics.deploymentFrequency?.change || 0}
@@ -139,7 +141,7 @@ export const MetricsAndInsightsPage = () => {
               previousPeriod={metrics.deploymentFrequency?.previousPeriod}
             />
             <CardDoraMetric
-              name="Lead time"
+              name="Lead Time"
               amount={
                 metrics.leadTime?.currentAmount
                   ? humanizeDuration(metrics.leadTime?.currentAmount)
@@ -157,7 +159,7 @@ export const MetricsAndInsightsPage = () => {
               previousPeriod={metrics.leadTime?.previousPeriod}
             />
             <CardDoraMetric
-              name="Failure rate"
+              name="Failure Rate"
               amount={`${metrics.changeFailureRate?.currentAmount?.toString() || "0"}%`}
               previousAmount={`${metrics.changeFailureRate?.previousAmount?.toString() || "0"}%`}
               change={metrics.changeFailureRate?.change || 0}
@@ -170,12 +172,16 @@ export const MetricsAndInsightsPage = () => {
               name="MTTR"
               amount={
                 metrics.meanTimeToRecover?.currentAmount
-                  ? humanizeDuration(metrics.meanTimeToRecover?.currentAmount)
+                  ? getAbbreviatedDuration(
+                      metrics.meanTimeToRecover?.currentAmount,
+                    )
                   : "0 hours"
               }
               previousAmount={
                 metrics.meanTimeToRecover?.previousAmount
-                  ? humanizeDuration(metrics.meanTimeToRecover?.previousAmount)
+                  ? getAbbreviatedDuration(
+                      metrics.meanTimeToRecover?.previousAmount,
+                    )
                   : "0 hours"
               }
               change={metrics.meanTimeToRecover?.change || 0}
