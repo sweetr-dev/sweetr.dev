@@ -171,7 +171,7 @@ export const updatePullRequestDeploymentTracking = async ({
 }: UpdatePullRequestDeploymentTrackingArgs) => {
   if (!pullRequest.mergedAt) {
     throw new DataIntegrityException(
-      "[updatePullRequestDeploymentTracking] Depoloyed Pull Request is not merged",
+      "[updatePullRequestDeploymentTracking] Deployed Pull Request is not merged",
       {
         extra: { pullRequest },
       }
