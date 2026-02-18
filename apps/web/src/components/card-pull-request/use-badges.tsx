@@ -180,7 +180,8 @@ const getDeployBadge = (
   const isDeployed = !!pullRequest.tracking.firstDeployedAt;
   const timeToDeploy = pullRequest.tracking.timeToDeploy;
 
-  if (!isNumber(timeToDeploy)) return null; // Only nullish when PR is closed
+  // Only show badge if already deployed
+  if (!isNumber(timeToDeploy) || !isDeployed) return null;
 
   const getVariant = (): Variant => {
     const hoursToDeploy = timeToDeploy / msToHour;
@@ -194,19 +195,9 @@ const getDeployBadge = (
     return "default";
   };
 
-  const variant = getVariant();
-
-  const getLabel = () => {
-    if (isDeployed) return "Deployed";
-
-    if (variant === "error") return "Stuck on deploy";
-
-    return "Not deployed";
-  };
-
   return {
-    variant,
-    label: getLabel(),
+    variant: getVariant(),
+    label: "Deployed",
     icon: IconDeployment,
   };
 };

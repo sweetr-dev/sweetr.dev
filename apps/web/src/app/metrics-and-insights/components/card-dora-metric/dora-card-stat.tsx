@@ -103,7 +103,7 @@ export const CardDoraMetric = ({
                     {change >= 0 ? "+" : ""}
                     {change}%
                   </span>
-                  {change >= 0 ? (
+                  {change >= 0 && higherIsBetter ? (
                     <IconArrowUpRight size="1rem" stroke={1.5} />
                   ) : (
                     <IconArrowDownRight size="1rem" stroke={1.5} />

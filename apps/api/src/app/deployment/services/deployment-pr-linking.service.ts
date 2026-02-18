@@ -24,6 +24,7 @@ import { findWorkspaceById } from "../../workspaces/services/workspace.service";
 import { getTimeToDeploy } from "../../github/services/github-pull-request-tracking.service";
 import { DataIntegrityException } from "../../errors/exceptions/data-integrity.exception";
 import { isBefore } from "date-fns";
+import { captureException } from "../../../lib/sentry";
 
 export const handleDeploymentPullRequestAutoLinking = async ({
   workspaceId,
@@ -160,12 +161,16 @@ export const handleDeploymentPullRequestAutoLinking = async ({
   await Promise.allSettled(
     filteredPullRequests.map(async (pr) => {
       if (!pr.tracking) {
-        throw new DataIntegrityException(
-          "[updatePullRequestDeploymentTracking] Pull Request tracking not found",
-          {
-            extra: { pr },
-          }
+        captureException(
+          new DataIntegrityException(
+            "[updatePullRequestDeploymentTracking] Pull Request tracking not found",
+            {
+              extra: { pr },
+            }
+          )
         );
+
+        return;
       }
 
       return updatePullRequestDeploymentTracking({

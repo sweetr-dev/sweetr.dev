@@ -29,10 +29,12 @@ export const transformPullRequestTracking = ({
       linesDeletedCount: 0,
       firstApprovalAt: null,
       firstReviewAt: null,
+      firstDeployedAt: null,
       timeToCode: null,
       timeToFirstApproval: null,
       timeToFirstReview: null,
       timeToMerge: null,
+      timeToDeploy: null,
       cycleTime: null,
     };
   }
