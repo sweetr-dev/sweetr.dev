@@ -26,7 +26,7 @@ const loggableFields = {
 
 export const logger = {
   info: (msg: string, obj?: object) => {
-    const cleanObj = obj || {};
+    const cleanObj = { ...(obj || {}) };
 
     for (const key of Object.keys(cleanObj)) {
       if (loggableFields[key]) {
