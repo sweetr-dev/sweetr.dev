@@ -180,7 +180,7 @@ const getDeployBadge = (
   const isDeployed = !!pullRequest.tracking.firstDeployedAt;
   const timeToDeploy = pullRequest.tracking.timeToDeploy;
 
-  if (!isNumber(timeToDeploy) || !isDeployed) return null;
+  if (!isNumber(timeToDeploy)) return null; // Only nullish when PR is closed
 
   const getVariant = (): Variant => {
     const hoursToDeploy = timeToDeploy / msToHour;

@@ -162,11 +162,15 @@ export const useDeploymentQuery = (
                     changedFilesCount
                     linesAddedCount
                     linesDeletedCount
+                    timeToCode
                     timeToFirstReview
-                    timeToMerge
                     timeToFirstApproval
+                    timeToMerge
+                    timeToDeploy
                     firstReviewAt
                     firstApprovalAt
+                    firstDeployedAt
+                    cycleTime
                   }
                   author {
                     id

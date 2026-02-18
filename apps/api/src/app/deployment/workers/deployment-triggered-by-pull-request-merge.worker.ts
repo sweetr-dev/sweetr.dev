@@ -27,7 +27,13 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
     const { workspaceId, pullRequestId } = job.data;
 
     if (!workspaceId) {
-      throw new ResourceNotFoundException("Workspace not found", {
+      throw new ResourceNotFoundException("Workspace ID not found", {
+        extra: { data: job.data },
+      });
+    }
+
+    if (!pullRequestId) {
+      throw new ResourceNotFoundException("Pull Request ID not found", {
         extra: { data: job.data },
       });
     }
