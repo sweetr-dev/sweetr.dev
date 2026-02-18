@@ -22,6 +22,7 @@ import {
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
 import { useBadges } from "./use-badges";
 import { isNumber } from "radash";
+import { IconDeployment } from "../../providers/icon.provider";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -39,7 +40,8 @@ export const TimelinePullRequest = ({
 
   const isClosed = pullRequest.state === PullRequestState.CLOSED;
   const isMerged = !!pullRequest.mergedAt;
-  const isDone = isMerged || isClosed;
+  const isDeployed = !!pullRequest.tracking.firstDeployedAt;
+  const isDone = isMerged || isClosed || isDeployed;
   const hasReviews = !!pullRequest.tracking.firstReviewAt;
   const isApproved = !!pullRequest.tracking.firstApprovalAt;
 
@@ -47,6 +49,7 @@ export const TimelinePullRequest = ({
   const timeToFirstReview = pullRequest.tracking.timeToFirstReview;
   const timeToFirstApproval = pullRequest.tracking.timeToFirstApproval;
   const timeToMerge = pullRequest.tracking.timeToMerge;
+  const timeToDeploy = pullRequest.tracking.timeToDeploy;
   const cycleTime = pullRequest.tracking.cycleTime;
 
   const { badges } = useBadges(pullRequest);
@@ -59,14 +62,16 @@ export const TimelinePullRequest = ({
     return "dashed";
   };
 
-  const getColor = (level: number) => {
-    if (level === 1) {
+  const getColor = (
+    level: "coding" | "review" | "approval" | "merge" | "deploy",
+  ) => {
+    if (level === "coding") {
       if (badges.staleDraft?.variant === "error") return errorColor;
 
       return "var(--mantine-color-text)";
     }
 
-    if (level === 2) {
+    if (level === "review") {
       if (badges.reviewed?.variant === "success") return successColor;
       if (badges.reviewed?.variant === "error") return errorColor;
       if (badges.reviewed?.variant === "warning") return warningColor;
@@ -76,7 +81,7 @@ export const TimelinePullRequest = ({
         : "var(--mantine-color-dark-3)";
     }
 
-    if (level === 3) {
+    if (level === "approval") {
       if (badges.approved?.variant === "success") return successColor;
       if (badges.approved?.variant === "error") return errorColor;
       if (badges.approved?.variant === "warning") return warningColor;
@@ -89,17 +94,29 @@ export const TimelinePullRequest = ({
         : "var(--mantine-color-dark-3)";
     }
 
-    if (badges.merged?.variant === "success") return successColor;
-    if (badges.merged?.variant === "error") return errorColor;
-    if (badges.merged?.variant === "warning") return warningColor;
+    if (level === "merge") {
+      if (badges.merged?.variant === "success") return successColor;
+      if (badges.merged?.variant === "error") return errorColor;
+      if (badges.merged?.variant === "warning") return warningColor;
 
-    if (isMerged && timeToMerge) {
-      const hoursToMerge = timeToMerge / msToHour;
+      if (isMerged && timeToMerge) {
+        const hoursToMerge = timeToMerge / msToHour;
 
-      if (hoursToMerge <= 2) return successColor;
+        if (hoursToMerge <= 2) return successColor;
+      }
+
+      return isDone
+        ? "var(--mantine-color-text)"
+        : "var(--mantine-color-dark-3)";
     }
 
-    return isDone ? "var(--mantine-color-text)" : "var(--mantine-color-dark-3)";
+    if (level === "deploy") {
+      if (badges.deployed?.variant === "success") return successColor;
+      if (badges.deployed?.variant === "error") return errorColor;
+      if (badges.deployed?.variant === "warning") return warningColor;
+    }
+
+    return "var(--mantine-color-dark-3)";
   };
 
   return (
@@ -139,17 +156,21 @@ export const TimelinePullRequest = ({
             lineVariant={getStrokeLevel(2)}
             bullet={
               <ThemeIcon variant="filled" color="dark.7">
-                <IconEyeCode size={20} stroke={1.5} color={getColor(2)} />
+                <IconEyeCode
+                  size={20}
+                  stroke={1.5}
+                  color={getColor("review")}
+                />
               </ThemeIcon>
             }
             title={hasReviews ? "First reviewed" : "First review"}
-            c={getColor(2)}
+            c={getColor("review")}
           >
             <Text size="xs" mt={5}>
-              {hasReviews && timeToFirstReview && (
+              {hasReviews && isNumber(timeToFirstReview) && (
                 <>in {humanizeDuration(timeToFirstReview)}</>
               )}
-              {!hasReviews && timeToFirstReview && (
+              {!hasReviews && isNumber(timeToFirstReview) && (
                 <>pending for {humanizeDuration(timeToFirstReview)}</>
               )}
               {!hasReviews && isDone && <>skipped</>}
@@ -164,17 +185,17 @@ export const TimelinePullRequest = ({
                 <IconSquareRoundedCheck
                   size={20}
                   stroke={1.5}
-                  color={getColor(3)}
+                  color={getColor("approval")}
                 />
               </ThemeIcon>
             }
-            c={getColor(3)}
+            c={getColor("approval")}
           >
             <Text size="xs" mt={5}>
-              {isApproved && timeToFirstApproval && (
+              {isApproved && isNumber(timeToFirstApproval) && (
                 <>in {humanizeDuration(timeToFirstApproval)}</>
               )}
-              {!isApproved && timeToFirstApproval && (
+              {!isApproved && isNumber(timeToFirstApproval) && (
                 <>pending for {humanizeDuration(timeToFirstApproval)}</>
               )}
               {!isApproved && isDone && <>skipped</>}
@@ -185,21 +206,51 @@ export const TimelinePullRequest = ({
             title={isClosed ? "Closed" : isMerged ? "Merged" : "Merge"}
             bullet={
               <ThemeIcon variant="filled" color="dark.7">
-                <IconGitMerge size={20} stroke={1.5} color={getColor(4)} />
+                <IconGitMerge
+                  size={20}
+                  stroke={1.5}
+                  color={getColor("merge")}
+                />
               </ThemeIcon>
             }
-            c={getColor(4)}
+            c={getColor("merge")}
           >
             <Text size="xs" mt={5}>
-              {isMerged && timeToMerge && (
+              {isMerged && isNumber(timeToMerge) && (
                 <>in {humanizeDuration(timeToMerge)}</>
               )}
 
-              {!isMerged && timeToMerge && (
+              {!isMerged && isNumber(timeToMerge) && (
                 <>pending for {humanizeDuration(timeToMerge)}</>
               )}
             </Text>
           </Timeline.Item>
+
+          {!isClosed && (
+            <Timeline.Item
+              title={isDeployed ? "Deployed" : "Deploy"}
+              bullet={
+                <ThemeIcon variant="filled" color="dark.7">
+                  <IconDeployment
+                    size={20}
+                    stroke={1.5}
+                    color={getColor("deploy")}
+                  />
+                </ThemeIcon>
+              }
+              c={getColor("deploy")}
+            >
+              <Text size="xs" mt={5}>
+                {isDeployed && isNumber(timeToDeploy) && (
+                  <>in {humanizeDuration(timeToDeploy)}</>
+                )}
+
+                {!isDeployed && isNumber(timeToDeploy) && (
+                  <>pending for {humanizeDuration(timeToDeploy)}</>
+                )}
+              </Text>
+            </Timeline.Item>
+          )}
         </Timeline>
       </Box>
       {cycleTime && isMerged && (
@@ -210,7 +261,11 @@ export const TimelinePullRequest = ({
               <Timeline.Item
                 bullet={
                   <ThemeIcon variant="filled" color="dark.7">
-                    <IconClock size={20} stroke={1.5} color={getColor(1)} />
+                    <IconClock
+                      size={20}
+                      stroke={1.5}
+                      color="var(--mantine-color-text)"
+                    />
                   </ThemeIcon>
                 }
                 title="Cycle time"

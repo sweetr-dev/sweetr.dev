@@ -1,6 +1,7 @@
 import {
   PullRequestTracking as DatabasePullRequestTracking,
   PullRequestState,
+  PullRequest as DatabasePullRequest,
 } from "@prisma/client";
 import {
   PullRequestTracking as ApiPullRequestTracking,
@@ -8,11 +9,18 @@ import {
 } from "../../../../graphql-types";
 import { differenceInBusinessMilliseconds } from "../../../../lib/date";
 
-export const transformPullRequestTracking = (
-  tracking: DatabasePullRequestTracking | null,
-  prCreatedAt: Date,
-  prState?: PullRequestState
-): ApiPullRequestTracking => {
+type PullRequest = Pick<
+  DatabasePullRequest,
+  "createdAt" | "state" | "mergedAt"
+>;
+
+export const transformPullRequestTracking = ({
+  tracking,
+  pullRequest,
+}: {
+  tracking: DatabasePullRequestTracking | null;
+  pullRequest: PullRequest;
+}): ApiPullRequestTracking => {
   if (!tracking) {
     return {
       size: PullRequestSize.MEDIUM,
@@ -30,9 +38,9 @@ export const transformPullRequestTracking = (
   }
 
   const startedCodingAt =
-    tracking.firstCommitAt && tracking.firstCommitAt > prCreatedAt
-      ? prCreatedAt
-      : (tracking.firstCommitAt ?? prCreatedAt);
+    tracking.firstCommitAt && tracking.firstCommitAt > pullRequest.createdAt
+      ? pullRequest.createdAt
+      : (tracking.firstCommitAt ?? pullRequest.createdAt);
 
   return {
     size: tracking.size as PullRequestSize,
@@ -42,45 +50,65 @@ export const transformPullRequestTracking = (
     firstApprovalAt: tracking.firstApprovalAt?.toISOString(),
     firstReviewAt: tracking.firstReviewAt?.toISOString(),
     timeToCode: tracking.timeToCode,
-    timeToFirstApproval: calculateTimeForEvent(
-      tracking.firstApprovalAt || tracking.firstReadyAt || prCreatedAt,
-      tracking.timeToFirstApproval,
-      prState
-    ),
-    timeToFirstReview: calculateTimeForEvent(
-      tracking.firstReadyAt || prCreatedAt,
-      tracking.timeToFirstReview,
-      prState
-    ),
-    timeToMerge: calculateTimeForEvent(
-      tracking.firstReadyAt || prCreatedAt,
-      tracking.timeToMerge,
-      prState
-    ),
-    cycleTime: calculateTimeForEvent(
-      startedCodingAt,
-      tracking.cycleTime,
-      prState
-    ),
+    firstDeployedAt: tracking.firstDeployedAt?.toISOString(),
+    timeToFirstApproval: calculateTimeForEvent({
+      from:
+        tracking.firstApprovalAt ||
+        tracking.firstReadyAt ||
+        pullRequest.createdAt,
+      duration: tracking.timeToFirstApproval,
+      pullRequest,
+      uselessAfterMerge: true,
+    }),
+    timeToFirstReview: calculateTimeForEvent({
+      from: tracking.firstReadyAt || pullRequest.createdAt,
+      duration: tracking.timeToFirstReview,
+      pullRequest,
+      uselessAfterMerge: true,
+    }),
+    timeToMerge: calculateTimeForEvent({
+      from: tracking.firstReadyAt || pullRequest.createdAt,
+      duration: tracking.timeToMerge,
+      pullRequest,
+      uselessAfterMerge: true,
+    }),
+    timeToDeploy: calculateTimeForEvent({
+      from: pullRequest.mergedAt || pullRequest.createdAt,
+      duration: tracking.timeToDeploy,
+      pullRequest,
+      uselessAfterMerge: false,
+    }),
+    cycleTime: calculateTimeForEvent({
+      from: startedCodingAt,
+      duration: tracking.cycleTime,
+      pullRequest,
+      uselessAfterMerge: false,
+    }),
   };
 };
 
-const calculateTimeForEvent = (
-  prDate: Date | null,
-  duration: bigint | null,
-  prState?: PullRequestState
-) => {
-  if (duration) return duration;
+const calculateTimeForEvent = ({
+  from,
+  duration,
+  pullRequest,
+  uselessAfterMerge = false,
+}: {
+  from: Date | null;
+  duration: bigint | null;
+  pullRequest?: PullRequest;
+  uselessAfterMerge?: boolean;
+}) => {
+  if (duration !== null) return duration;
 
-  if (!prDate) return null;
+  if (!from) return null;
 
-  // If PR is already merged or closed, we don't need to calculate the time it has been open
-  if (
-    prState === PullRequestState.MERGED ||
-    prState === PullRequestState.CLOSED
-  ) {
+  if (pullRequest?.state === PullRequestState.CLOSED) {
     return null;
   }
 
-  return BigInt(differenceInBusinessMilliseconds(prDate, new Date()));
+  if (uselessAfterMerge && pullRequest?.state === PullRequestState.MERGED) {
+    return null;
+  }
+
+  return BigInt(differenceInBusinessMilliseconds(from, new Date()));
 };

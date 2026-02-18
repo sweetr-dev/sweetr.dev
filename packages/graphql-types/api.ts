@@ -918,6 +918,8 @@ export type PullRequestTracking = {
   cycleTime?: Maybe<Scalars['BigInt']['output']>;
   /** The time when the pull request received its first approval */
   firstApprovalAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time when the pull request was deployed */
+  firstDeployedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time when the pull request received its first review */
   firstReviewAt?: Maybe<Scalars['DateTime']['output']>;
   /** The amount of lines added (ignores auto-generated files) */
@@ -928,6 +930,8 @@ export type PullRequestTracking = {
   size: PullRequestSize;
   /** The duration, in milliseconds, between the first commit and the time it was ready for review */
   timeToCode?: Maybe<Scalars['BigInt']['output']>;
+  /** The duration, in milliseconds, between the pull request being merged and being deployed */
+  timeToDeploy?: Maybe<Scalars['BigInt']['output']>;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first approval */
   timeToFirstApproval?: Maybe<Scalars['BigInt']['output']>;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first review */
@@ -2138,11 +2142,13 @@ export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentTyp
   changedFilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   cycleTime?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   firstApprovalAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  firstDeployedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   firstReviewAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   linesAddedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   linesDeletedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   size?: Resolver<ResolversTypes['PullRequestSize'], ParentType, ContextType>;
   timeToCode?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToDeploy?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstApproval?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstReview?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToMerge?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;

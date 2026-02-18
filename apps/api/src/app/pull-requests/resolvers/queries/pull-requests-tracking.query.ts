@@ -12,6 +12,7 @@ export const teamPullRequestsQuery = createFieldResolver("PullRequest", {
     if (
       !pullRequest.id ||
       !pullRequest.createdAt ||
+      !pullRequest.state ||
       !pullRequest["workspaceId"]
     ) {
       throw new ResourceNotFoundException("Pull Request not found");
@@ -22,10 +23,13 @@ export const teamPullRequestsQuery = createFieldResolver("PullRequest", {
       pullRequest.id
     );
 
-    return transformPullRequestTracking(
+    return transformPullRequestTracking({
       tracking,
-      parseISO(pullRequest.createdAt),
-      pullRequest.state
-    );
+      pullRequest: {
+        createdAt: parseISO(pullRequest.createdAt),
+        state: pullRequest.state,
+        mergedAt: pullRequest.mergedAt ? parseISO(pullRequest.mergedAt) : null,
+      },
+    });
   },
 });

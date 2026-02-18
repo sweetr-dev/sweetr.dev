@@ -78,6 +78,9 @@ export default /* GraphQL */ `
     "The time when the pull request received its first review"
     firstReviewAt: DateTime
 
+    "The time when the pull request was deployed"
+    firstDeployedAt: DateTime
+
     "The time when the pull request received its first approval"
     firstApprovalAt: DateTime
 
@@ -92,6 +95,9 @@ export default /* GraphQL */ `
 
     "The duration, in milliseconds, between the first approval of the Pull Request and the time it was merged. Compares with creation date when merged without reviews"
     timeToMerge: BigInt
+
+    "The duration, in milliseconds, between the pull request being merged and being deployed"
+    timeToDeploy: BigInt
 
     "The duration, in milliseconds, between the first commit and the time it was merged"
     cycleTime: BigInt
