@@ -21,7 +21,7 @@ const pinoLogger = pino(
 
 const loggableFields = {
   workspace: ["id", "name", "handle", "createdAt", "updatedAt"],
-  pullRequest: ["id", "name", "description", "createdAt", "updatedAt"],
+  pullRequest: ["id", "title", "number", "createdAt", "updatedAt"],
 };
 
 export const logger = {
