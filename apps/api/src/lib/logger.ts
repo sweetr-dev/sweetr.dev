@@ -29,10 +29,13 @@ export const logger = {
     const cleanObj = { ...(obj || {}) };
 
     for (const key of Object.keys(cleanObj)) {
-      if (loggableFields[key] && typeof cleanObj[key] === "object" && cleanObj[key] !== null) {
+      if (
+        loggableFields[key] &&
+        typeof cleanObj[key] === "object" &&
+        cleanObj[key] !== null
+      ) {
         cleanObj[key] = pick(cleanObj[key], loggableFields[key]);
       }
-    }
     }
 
     pinoLogger.info(cleanObj, msg);
