@@ -209,7 +209,7 @@ const fetchPullRequestMergeCommitSha = async (
       pull_number: parseInt(gitPrData.number),
     });
 
-    return response.data.merge_commit_sha;
+    return response.data.merge_commit_sha || undefined;
   } catch (error) {
     captureException(error);
 
