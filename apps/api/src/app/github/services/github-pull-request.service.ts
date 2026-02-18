@@ -42,13 +42,13 @@ type RepositoryData = Omit<
 export interface SyncPullRequestArgs {
   gitInstallationId: number;
   pullRequestId: string;
-  mergeCommitSha?: string;
+  webhookMergeCommitSha?: string;
 }
 
 export const syncPullRequest = async ({
   gitInstallationId,
   pullRequestId,
-  mergeCommitSha,
+  webhookMergeCommitSha,
 }: SyncPullRequestArgs) => {
   logger.info("syncPullRequest", {
     installationId: gitInstallationId,
@@ -88,7 +88,7 @@ export const syncPullRequest = async ({
     gitProfile.id,
     repository,
     gitPrData,
-    mergeCommitSha
+    webhookMergeCommitSha
   );
   await upsertActivityEvents(pullRequest);
 
@@ -192,6 +192,24 @@ const fetchPullRequest = async (
   };
 };
 
+const fetchPullRequestMergeCommitSha = async (
+  installationId: number,
+  gitPrData: any
+) => {
+  if (!gitPrData.mergedAt) return undefined;
+
+  const octokit = await getInstallationOctoKit(installationId);
+  const [owner, ...repo] = gitPrData.repository.nameWithOwner.split("/");
+
+  const response = await octokit.rest.pulls.get({
+    owner,
+    repo: repo.join("/"),
+    pull_number: parseInt(gitPrData.number),
+  });
+
+  return response.data.merge_commit_sha || undefined;
+};
+
 const getPullRequestFiles = async (
   installationId: number,
   pullRequestId: string,
@@ -242,12 +260,21 @@ const getPullRequestFiles = async (
 
 const upsertPullRequest = async (
   workspace: Workspace,
-  installationId: number,
+  gitInstallationId: number,
   gitProfileId: number,
   repository: Repository,
   gitPrData: any,
-  mergeCommitSha?: string
+  webhookMergeCommitSha?: string
 ) => {
+  let mergeCommitSha = webhookMergeCommitSha;
+
+  if (gitPrData.mergedAt && !webhookMergeCommitSha) {
+    mergeCommitSha = await fetchPullRequestMergeCommitSha(
+      gitInstallationId,
+      gitPrData
+    );
+  }
+
   const data: Prisma.PullRequestUncheckedCreateInput = {
     gitProvider: GitProvider.GITHUB,
     gitPullRequestId: gitPrData.id,
@@ -286,7 +313,7 @@ const upsertPullRequest = async (
 
   await upsertPullRequestTracking(
     workspace,
-    installationId,
+    gitInstallationId,
     repository,
     pullRequest,
     gitPrData
@@ -326,7 +353,11 @@ const upsertPullRequestTracking = async (
     linesChangedCount,
   } = getPullRequestLinesTracked(workspace, pullRequest);
   const size = getPullRequestSize(workspace, linesChangedCount);
-  const timeToMerge = getTimeToMerge(pullRequest, tracking?.firstApprovalAt);
+  const timeToMerge = getTimeToMerge(
+    pullRequest,
+    tracking?.firstApprovalAt,
+    firstReadyAt
+  );
 
   // Use author date (more stable across rebases) with fallback to committer date
   const candidateFirstCommitAt = parseNullableISO(

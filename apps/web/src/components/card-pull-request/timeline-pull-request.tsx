@@ -1,12 +1,22 @@
-import { Box, Divider, Text, ThemeIcon, Timeline } from "@mantine/core";
+import {
+  Box,
+  Divider,
+  Group,
+  Text,
+  ThemeIcon,
+  Timeline,
+  Tooltip,
+} from "@mantine/core";
 import {
   PullRequest,
   PullRequestState,
 } from "@sweetr/graphql-types/frontend/graphql";
 import {
   IconClock,
+  IconCode,
   IconEyeCode,
   IconGitMerge,
+  IconInfoCircle,
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
 import { humanizeDuration, msToHour } from "../../providers/date.provider";
@@ -32,6 +42,7 @@ export const TimelinePullRequest = ({
   const hasReviews = !!pullRequest.tracking.firstReviewAt;
   const isApproved = !!pullRequest.tracking.firstApprovalAt;
 
+  const timeToCode = pullRequest.tracking.timeToCode;
   const timeToFirstReview = pullRequest.tracking.timeToFirstReview;
   const timeToFirstApproval = pullRequest.tracking.timeToFirstApproval;
   const timeToMerge = pullRequest.tracking.timeToMerge;
@@ -94,6 +105,35 @@ export const TimelinePullRequest = ({
     <>
       <Box p="md">
         <Timeline bulletSize={28} lineWidth={1} color="dark.3" active={4}>
+          <Timeline.Item
+            lineVariant="solid"
+            bullet={
+              <ThemeIcon variant="filled" color="dark.7">
+                <IconCode
+                  size={20}
+                  stroke={1.5}
+                  color="var(--mantine-color-text)"
+                />
+              </ThemeIcon>
+            }
+            title={
+              <Group align="center" gap={5}>
+                Coding
+                <Tooltip
+                  withArrow
+                  label="Time between first commit and opening the PR"
+                >
+                  <IconInfoCircle stroke={1.5} size={16} />
+                </Tooltip>
+              </Group>
+            }
+            c="var(--mantine-color-text)"
+          >
+            <Text size="xs" mt={5}>
+              {timeToCode && <>{humanizeDuration(timeToCode)}</>}
+            </Text>
+          </Timeline.Item>
+
           <Timeline.Item
             lineVariant={getStrokeLevel(2)}
             bullet={

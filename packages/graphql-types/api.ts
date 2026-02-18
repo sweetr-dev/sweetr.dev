@@ -926,6 +926,8 @@ export type PullRequestTracking = {
   linesDeletedCount: Scalars['Int']['output'];
   /** The size of the pull request */
   size: PullRequestSize;
+  /** The duration, in milliseconds, between the first commit and the time it was ready for review */
+  timeToCode?: Maybe<Scalars['BigInt']['output']>;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first approval */
   timeToFirstApproval?: Maybe<Scalars['BigInt']['output']>;
   /** The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first review */
@@ -2140,6 +2142,7 @@ export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentTyp
   linesAddedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   linesDeletedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   size?: Resolver<ResolversTypes['PullRequestSize'], ParentType, ContextType>;
+  timeToCode?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstApproval?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstReview?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToMerge?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;

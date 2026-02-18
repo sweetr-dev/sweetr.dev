@@ -86,13 +86,21 @@ export const getTimeToCode = (
  */
 export const getTimeToMerge = (
   pullRequest: PullRequest,
-  firstApprovalAt?: Date | null
+  firstApprovalAt?: Date | null,
+  firstReadyAt?: Date | null
 ) => {
-  const compareWith = firstApprovalAt || pullRequest.createdAt;
+  const compareWith = firstApprovalAt || firstReadyAt || pullRequest.createdAt;
 
   if (!pullRequest.mergedAt) return undefined;
 
   return differenceInBusinessMilliseconds(compareWith, pullRequest.mergedAt);
+};
+
+/**
+ * Time between the PR merge and being deployed
+ */
+export const getTimeToDeploy = (mergedAt: Date, deployedAt: Date) => {
+  return differenceInBusinessMilliseconds(mergedAt, deployedAt);
 };
 
 /**

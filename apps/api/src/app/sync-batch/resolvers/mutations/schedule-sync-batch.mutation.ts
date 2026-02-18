@@ -11,6 +11,7 @@ import {
 import { transformSyncBatch } from "../transformers/sync-batch.transformer";
 import { validateInputOrThrow } from "../../../validator.service";
 import { scheduleSyncBatchValidationSchema } from "../../services/sync-batch.validation";
+import { isLive } from "../../../../env";
 
 export const scheduleSyncBatchMutation = createMutationResolver({
   scheduleSyncBatch: async (_, { input }) => {
@@ -26,6 +27,7 @@ export const scheduleSyncBatchMutation = createMutationResolver({
     const lastSyncBatch = await findLastSyncBatch(workspaceId);
 
     if (
+      isLive &&
       lastSyncBatch?.scheduledAt &&
       isAfter(lastSyncBatch.scheduledAt, addHours(new Date(), -24))
     ) {

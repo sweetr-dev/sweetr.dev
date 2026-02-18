@@ -81,6 +81,9 @@ export default /* GraphQL */ `
     "The time when the pull request received its first approval"
     firstApprovalAt: DateTime
 
+    "The duration, in milliseconds, between the first commit and the time it was ready for review"
+    timeToCode: BigInt
+
     "The duration, in milliseconds, between the time the first reviewer was requested and the time it received its first review"
     timeToFirstReview: BigInt
 

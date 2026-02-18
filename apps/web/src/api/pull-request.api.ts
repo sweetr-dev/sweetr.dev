@@ -50,6 +50,7 @@ export const usePullRequestsInfiniteQuery = (
                   changedFilesCount
                   linesAddedCount
                   linesDeletedCount
+                  timeToCode
                   timeToFirstReview
                   timeToMerge
                   timeToFirstApproval
