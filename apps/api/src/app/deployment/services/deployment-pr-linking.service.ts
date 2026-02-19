@@ -1,4 +1,8 @@
-import { DeploymentChangeType } from "@prisma/client";
+import {
+  DeploymentChangeType,
+  PullRequest,
+  PullRequestTracking,
+} from "@prisma/client";
 import { getInstallationOctoKit } from "../../../lib/octokit";
 import { getPrisma } from "../../../prisma";
 import {
@@ -7,6 +11,7 @@ import {
   HandleDeploymentPullRequestAutoLinkingArgs,
   LinkPullRequestsToDeploymentArgs,
   UpdateDeploymentChangeTypeInput,
+  UpdatePullRequestDeploymentTrackingArgs,
 } from "./deployment-pr-linking.types";
 import { logger } from "../../../lib/logger";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
@@ -16,6 +21,10 @@ import {
   findLatestDeployment,
 } from "./deployment.service";
 import { findWorkspaceById } from "../../workspaces/services/workspace.service";
+import { getTimeToDeploy } from "../../github/services/github-pull-request-tracking.service";
+import { DataIntegrityException } from "../../errors/exceptions/data-integrity.exception";
+import { isBefore } from "date-fns";
+import { captureException } from "../../../lib/sentry";
 
 export const handleDeploymentPullRequestAutoLinking = async ({
   workspaceId,
@@ -103,7 +112,7 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     return;
   }
 
-  const pullRequests = await findPullRequestsByCommitHashes({
+  const mergedPullRequests = await findMergedPullRequestsByCommitHashes({
     workspaceId: workspaceId,
     repositoryId: deployment.application.repositoryId,
     commitHashes: commits,
@@ -113,8 +122,10 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     subdirectory?: string;
   };
 
-  const filteredPullRequests = filterPullRequestsBySubdirectory({
-    pullRequests,
+  const filteredPullRequests = filterPullRequestsBySubdirectory<
+    (typeof mergedPullRequests)[number]
+  >({
+    pullRequests: mergedPullRequests,
     subdirectory: deploymentSettings?.subdirectory,
   });
 
@@ -124,7 +135,7 @@ export const handleDeploymentPullRequestAutoLinking = async ({
       {
         deploymentId: deploymentId,
         workspaceId: workspaceId,
-        pullRequests,
+        pullRequests: mergedPullRequests,
         subdirectory: deploymentSettings?.subdirectory,
       }
     );
@@ -132,10 +143,90 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     return;
   }
 
+  if (filteredPullRequests.some((pr) => !pr.mergedAt)) {
+    throw new DataIntegrityException(
+      "handleDeploymentPullRequestAutoLinking: Some PRs are not merged",
+      {
+        extra: { filteredPullRequests },
+      }
+    );
+  }
+
   await linkPullRequestsToDeployment({
     workspaceId: workspaceId,
     deploymentId: deploymentId,
     pullRequestIds: filteredPullRequests.map((pr) => pr.id),
+  });
+
+  await Promise.all(
+    filteredPullRequests.map(async (pr) => {
+      if (!pr.tracking) {
+        captureException(
+          new DataIntegrityException(
+            "[updatePullRequestDeploymentTracking] Pull Request tracking not found",
+            {
+              extra: { pr },
+            }
+          )
+        );
+
+        return;
+      }
+
+      return updatePullRequestDeploymentTracking({
+        pullRequest: pr as PullRequest & { tracking: PullRequestTracking },
+        deployment,
+        workspaceId,
+      });
+    })
+  );
+};
+
+export const updatePullRequestDeploymentTracking = async ({
+  pullRequest,
+  deployment,
+  workspaceId,
+}: UpdatePullRequestDeploymentTrackingArgs) => {
+  if (!pullRequest.mergedAt) {
+    throw new DataIntegrityException(
+      "[updatePullRequestDeploymentTracking] Deployed Pull Request is not merged",
+      {
+        extra: { pullRequest },
+      }
+    );
+  }
+
+  const previousDeployedAt = pullRequest.tracking?.firstDeployedAt;
+
+  if (
+    previousDeployedAt &&
+    isBefore(previousDeployedAt, deployment.deployedAt)
+  ) {
+    logger.info(
+      "[updatePullRequestDeploymentTracking] Previous deployment is earlier than this deployment. Skipping PR tracking update.",
+      {
+        previousDeployedAt,
+        deploymentDeployedAt: deployment.deployedAt,
+        pullRequest,
+        workspaceId,
+      }
+    );
+
+    return;
+  }
+
+  await getPrisma(workspaceId).pullRequestTracking.update({
+    where: {
+      pullRequestId: pullRequest.id,
+      workspaceId: workspaceId,
+    },
+    data: {
+      firstDeployedAt: deployment.deployedAt,
+      timeToDeploy: getTimeToDeploy(
+        pullRequest.mergedAt,
+        deployment.deployedAt
+      ),
+    },
   });
 };
 
@@ -192,7 +283,7 @@ const getChangeTypeFromGitHubComparisonStatus = (
   return statusToChangeTypeMap[status];
 };
 
-export const findPullRequestsByCommitHashes = async ({
+export const findMergedPullRequestsByCommitHashes = async ({
   workspaceId,
   repositoryId,
   commitHashes,
@@ -202,6 +293,7 @@ export const findPullRequestsByCommitHashes = async ({
       mergeCommitSha: { in: commitHashes },
       workspaceId,
       repositoryId,
+      mergedAt: { not: null },
     },
     include: {
       deploymentEvents: true,

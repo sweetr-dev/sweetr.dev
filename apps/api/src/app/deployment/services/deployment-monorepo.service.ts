@@ -3,11 +3,12 @@ import {
   FilterPullRequestsBySubdirectoryArgs,
   HasChangedFilesInSubdirectoryArgs,
 } from "./deployment-monorepo.types";
+import { PullRequest } from "@prisma/client";
 
-export const filterPullRequestsBySubdirectory = ({
+export const filterPullRequestsBySubdirectory = <T extends PullRequest>({
   pullRequests,
   subdirectory,
-}: FilterPullRequestsBySubdirectoryArgs) => {
+}: FilterPullRequestsBySubdirectoryArgs<T>) => {
   if (!subdirectory) {
     return pullRequests;
   }

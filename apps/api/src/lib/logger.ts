@@ -1,6 +1,7 @@
 import pino from "pino";
 import { env } from "../env";
 import { addBreadcrumb } from "@sentry/node";
+import { pick } from "radash";
 
 const logTailStream = pino.transport({
   target: "@logtail/pino",
@@ -18,9 +19,26 @@ const pinoLogger = pino(
   stream
 );
 
+const loggableFields = {
+  workspace: ["id", "name", "handle", "createdAt", "updatedAt"],
+  pullRequest: ["id", "title", "number", "createdAt", "updatedAt"],
+};
+
 export const logger = {
   info: (msg: string, obj?: object) => {
-    pinoLogger.info(obj || {}, msg);
+    const cleanObj = { ...(obj || {}) };
+
+    for (const key of Object.keys(cleanObj)) {
+      if (
+        loggableFields[key] &&
+        typeof cleanObj[key] === "object" &&
+        cleanObj[key] !== null
+      ) {
+        cleanObj[key] = pick(cleanObj[key], loggableFields[key]);
+      }
+    }
+
+    pinoLogger.info(cleanObj, msg);
     addBreadcrumb({
       message: msg,
       category: "log",

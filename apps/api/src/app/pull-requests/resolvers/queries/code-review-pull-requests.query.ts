@@ -12,10 +12,10 @@ export const codeReviewPullRequestsQuery = createFieldResolver("CodeReview", {
       throw new ResourceNotFoundException("Code Review Pull Request not found");
     }
 
-    const pullRequest = await findPullRequestById(
-      codeReview["workspaceId"],
-      codeReview["pullRequestId"]
-    );
+    const pullRequest = await findPullRequestById({
+      workspaceId: codeReview["workspaceId"],
+      pullRequestId: codeReview["pullRequestId"],
+    });
 
     if (!pullRequest) {
       throw new ResourceNotFoundException("Pull Request not found");

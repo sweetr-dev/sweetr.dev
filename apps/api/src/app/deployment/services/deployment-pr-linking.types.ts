@@ -1,4 +1,9 @@
-import { DeploymentChangeType } from "@prisma/client";
+import {
+  Deployment,
+  DeploymentChangeType,
+  PullRequest,
+  PullRequestTracking,
+} from "@prisma/client";
 
 export interface HandleDeploymentPullRequestAutoLinkingArgs {
   workspaceId: number;
@@ -29,4 +34,10 @@ export interface LinkPullRequestsToDeploymentArgs {
   workspaceId: number;
   deploymentId: number;
   pullRequestIds: number[];
+}
+
+export interface UpdatePullRequestDeploymentTrackingArgs {
+  workspaceId: number;
+  pullRequest: PullRequest & { tracking: PullRequestTracking };
+  deployment: Pick<Deployment, "id" | "deployedAt">;
 }

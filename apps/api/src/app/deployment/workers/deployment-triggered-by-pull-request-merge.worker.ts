@@ -1,4 +1,3 @@
-import { PullRequest } from "@prisma/client";
 import { Job } from "bullmq";
 import { SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
@@ -11,26 +10,45 @@ import {
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { findRepositoryById } from "../../repositories/services/repository.service";
 import { createDeploymentFromPullRequestMerge } from "../services/deployment-create-from-merge.service";
+import { findPullRequestById } from "../../pull-requests/services/pull-request.service";
+import { PullRequest, PullRequestTracking } from "@prisma/client";
 
 interface DeploymentTriggeredByPullRequestMergeJobData {
   workspaceId: number;
-  pullRequest: PullRequest;
+  pullRequestId: number;
   installationId: string;
 }
 
 export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
   SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE,
   async (job: Job<DeploymentTriggeredByPullRequestMergeJobData>) => {
-    logger.info("deploymentTriggeredByPullRequestMergeWorker", {
-      data: job.data,
-    });
+    logger.info("deploymentTriggeredByPullRequestMergeWorker", job.data);
 
-    const workspaceId = job.data.workspaceId;
-    const pullRequest = job.data.pullRequest;
+    const { workspaceId, pullRequestId } = job.data;
 
     if (!workspaceId) {
-      throw new ResourceNotFoundException("Workspace not found", {
+      throw new ResourceNotFoundException("Workspace ID not found", {
         extra: { data: job.data },
+      });
+    }
+
+    if (!pullRequestId) {
+      throw new ResourceNotFoundException("Pull Request ID not found", {
+        extra: { data: job.data },
+      });
+    }
+
+    const pullRequest = await findPullRequestById({
+      workspaceId,
+      pullRequestId,
+      include: {
+        tracking: true,
+      },
+    });
+
+    if (!pullRequest?.tracking) {
+      throw new ResourceNotFoundException("Pull request not found", {
+        extra: { data: job.data, pullRequest },
       });
     }
 
@@ -66,7 +84,7 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
     if (!pullRequest.mergedAt || !pullRequest.mergeCommitSha) {
       logger.info(
         "deploymentTriggeredByPullRequestMergeWorker: Pull request not merged",
-        { data: job.data }
+        job.data
       );
 
       return;
@@ -75,7 +93,7 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
     if (!repository.applications?.length) {
       logger.info(
         "deploymentTriggeredByPullRequestMergeWorker: No applications found",
-        { data: job.data }
+        job.data
       );
 
       return;
@@ -90,7 +108,9 @@ export const deploymentTriggeredByPullRequestMergeWorker = createWorker(
       createDeploymentFromPullRequestMerge({
         application,
         environment,
-        pullRequest,
+        pullRequest: pullRequest as PullRequest & {
+          tracking: PullRequestTracking;
+        },
         workspaceId: workspaceId,
       })
     );

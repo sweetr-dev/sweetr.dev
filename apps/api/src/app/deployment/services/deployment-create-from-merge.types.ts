@@ -1,8 +1,13 @@
-import { Application, Environment, PullRequest } from "@prisma/client";
+import {
+  Application,
+  Environment,
+  PullRequest,
+  PullRequestTracking,
+} from "@prisma/client";
 
 export interface CreateDeploymentFromPullRequestMergeArgs {
   application: Application;
   environment: Environment;
-  pullRequest: PullRequest;
+  pullRequest: PullRequest & { tracking: PullRequestTracking };
   workspaceId: number;
 }

@@ -1,4 +1,4 @@
-import { PullRequestSize, PullRequestState } from "@prisma/client";
+import { Prisma, PullRequestSize, PullRequestState } from "@prisma/client";
 import { DateTimeRange } from "../../types";
 
 export interface PaginatePullRequestsArgs {
@@ -26,4 +26,10 @@ export interface FindPullRequestsByDeploymentIdArgs {
 export interface CountPullRequestsByDeploymentIdArgs {
   workspaceId: number;
   deploymentId: number;
+}
+
+export interface FindPullRequestByIdArgs {
+  workspaceId: number;
+  pullRequestId: number;
+  include?: Partial<Prisma.PullRequestInclude>;
 }

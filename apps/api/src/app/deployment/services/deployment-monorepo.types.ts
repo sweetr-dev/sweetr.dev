@@ -1,7 +1,9 @@
 import { PullRequest } from "@prisma/client";
 
-export interface FilterPullRequestsBySubdirectoryArgs {
-  pullRequests: PullRequest[];
+export interface FilterPullRequestsBySubdirectoryArgs<
+  T extends PullRequest = PullRequest,
+> {
+  pullRequests: T[];
   subdirectory?: string;
 }
 

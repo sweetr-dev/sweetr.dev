@@ -14,6 +14,8 @@ import {
 import React from "react";
 import { msToHour } from "../../providers/date.provider";
 import { isBefore, parseISO, subDays } from "date-fns";
+import { IconDeployment } from "../../providers/icon.provider";
+import { isNumber } from "radash";
 
 type Variant = "success" | "warning" | "error" | "default";
 
@@ -34,6 +36,7 @@ export const useBadges = (
     reviewed: getReviewBadge(pullRequest),
     approved: getApprovalBadge(pullRequest),
     merged: getMergeBadge(pullRequest),
+    deployed: getDeployBadge(pullRequest),
   };
 
   const getCardColor = () => {
@@ -135,10 +138,8 @@ const getApprovalBadge = (
     return "default";
   };
 
-  const variant = getVariant();
-
   return {
-    variant,
+    variant: getVariant(),
     label: isApproved ? "Approved" : "Not approved",
     icon: isApproved ? IconSquareRoundedCheck : IconSquareRoundedX,
   };
@@ -168,6 +169,36 @@ const getMergeBadge = (
     variant: "error" as Variant,
     label: isMerged ? "Slow merge" : "Stuck on merge",
     icon: IconGitMerge,
+  };
+};
+
+const getDeployBadge = (
+  pullRequest: Pick<PullRequest, "state" | "tracking">,
+) => {
+  if (pullRequest.state !== PullRequestState.MERGED) return null;
+
+  const isDeployed = !!pullRequest.tracking.firstDeployedAt;
+  const timeToDeploy = pullRequest.tracking.timeToDeploy;
+
+  // Only show badge if already deployed
+  if (!isNumber(timeToDeploy) || !isDeployed) return null;
+
+  const getVariant = (): Variant => {
+    const hoursToDeploy = timeToDeploy / msToHour;
+
+    if (hoursToDeploy >= 48) return "error";
+
+    if (hoursToDeploy >= 24) return "warning";
+
+    if (hoursToDeploy <= 2) return "success";
+
+    return "default";
+  };
+
+  return {
+    variant: getVariant(),
+    label: "Deployed",
+    icon: IconDeployment,
   };
 };
 

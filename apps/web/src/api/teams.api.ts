@@ -171,11 +171,15 @@ export const useTeamPullRequestsInProgressQuery = (
                       changedFilesCount
                       linesAddedCount
                       linesDeletedCount
+                      timeToCode
                       timeToFirstReview
-                      timeToMerge
                       timeToFirstApproval
+                      timeToMerge
+                      timeToDeploy
                       firstReviewAt
                       firstApprovalAt
+                      firstDeployedAt
+                      cycleTime
                     }
                     author {
                       id
@@ -206,11 +210,15 @@ export const useTeamPullRequestsInProgressQuery = (
                       changedFilesCount
                       linesAddedCount
                       linesDeletedCount
+                      timeToCode
                       timeToFirstReview
-                      timeToMerge
                       timeToFirstApproval
+                      timeToMerge
+                      timeToDeploy
                       firstReviewAt
                       firstApprovalAt
+                      firstDeployedAt
+                      cycleTime
                     }
                     author {
                       id
@@ -241,11 +249,15 @@ export const useTeamPullRequestsInProgressQuery = (
                       changedFilesCount
                       linesAddedCount
                       linesDeletedCount
+                      timeToCode
                       timeToFirstReview
-                      timeToMerge
                       timeToFirstApproval
+                      timeToMerge
+                      timeToDeploy
                       firstReviewAt
                       firstApprovalAt
+                      firstDeployedAt
+                      cycleTime
                     }
                     author {
                       id
@@ -276,11 +288,15 @@ export const useTeamPullRequestsInProgressQuery = (
                       changedFilesCount
                       linesAddedCount
                       linesDeletedCount
+                      timeToCode
                       timeToFirstReview
-                      timeToMerge
                       timeToFirstApproval
+                      timeToMerge
+                      timeToDeploy
                       firstReviewAt
                       firstApprovalAt
+                      firstDeployedAt
+                      cycleTime
                     }
                     author {
                       id

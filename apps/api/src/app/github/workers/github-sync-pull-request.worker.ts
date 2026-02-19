@@ -57,9 +57,10 @@ export const syncPullRequestWorker = createWorker(
           gitInstallationId: installationId,
           pullRequestId: job.data.pull_request.node_id,
           // GraphQL API is unreliable for getting the merge commit SHA, so we must use webhook data or refetch from HTTP API.
-          // Here we prefer just using webhook data since it shouldn't ever change after a PR is merged.
+          // To avoid over-fetching, we attempt to use the webhook data first, and if it's not available, we refetch from the HTTP API.
           // See https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request
-          mergeCommitSha: job.data.pull_request.merge_commit_sha ?? undefined,
+          webhookMergeCommitSha:
+            job.data.pull_request.merge_commit_sha ?? undefined,
         }),
       { job, jobToken: token, installationId }
     );
@@ -86,7 +87,7 @@ export const syncPullRequestWorker = createWorker(
         await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
         await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE, {
           workspaceId: pullRequest.workspaceId,
-          pullRequest,
+          pullRequestId: pullRequest.id,
           installationId,
         });
       }

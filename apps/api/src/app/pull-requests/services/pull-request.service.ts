@@ -8,6 +8,7 @@ import {
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
 import {
   CountPullRequestsByDeploymentIdArgs,
+  FindPullRequestByIdArgs,
   FindPullRequestsByDeploymentIdArgs,
   PaginatePullRequestsArgs,
 } from "./pull-request.types";
@@ -119,14 +120,18 @@ export const paginatePullRequests = async (
   return getPrisma(workspaceId).pullRequest.findMany(query);
 };
 
-export const findPullRequestById = async (
-  workspaceId: number,
-  pullRequestId: number
-) => {
+export const findPullRequestById = async ({
+  workspaceId,
+  pullRequestId,
+  include = {},
+}: FindPullRequestByIdArgs) => {
   return getPrisma(workspaceId).pullRequest.findUnique({
     where: {
       id: pullRequestId,
       workspaceId,
+    },
+    include: {
+      ...include,
     },
   });
 };
