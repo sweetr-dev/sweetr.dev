@@ -242,7 +242,7 @@ const fetchPullRequestReviews = async (
     const { nodes, pageInfo } = pullRequest.reviews;
 
     // Sort chronologically
-    const sortedReviews = sort(nodes, (node) =>
+    const sortedReviews: any[] = sort(nodes, (node) =>
       parseISO(node.submittedAt).getTime()
     );
 
