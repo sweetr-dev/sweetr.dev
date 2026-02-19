@@ -39,6 +39,7 @@ export const TimelinePullRequest = ({
   const warningColor = "var(--mantine-color-yellow-4)";
 
   const isClosed = pullRequest.state === PullRequestState.CLOSED;
+  const isDraft = pullRequest.state === PullRequestState.DRAFT;
   const isMerged = !!pullRequest.mergedAt;
   const isDeployed = !!pullRequest.tracking.firstDeployedAt;
   const isDone = isMerged || isClosed || isDeployed;
@@ -123,34 +124,36 @@ export const TimelinePullRequest = ({
     <>
       <Box p="md">
         <Timeline bulletSize={28} lineWidth={1} color="dark.3" active={4}>
-          <Timeline.Item
-            lineVariant="solid"
-            bullet={
-              <ThemeIcon variant="filled" color="dark.7">
-                <IconCode
-                  size={20}
-                  stroke={1.5}
-                  color="var(--mantine-color-text)"
-                />
-              </ThemeIcon>
-            }
-            title={
-              <Group align="center" gap={5}>
-                Coding
-                <Tooltip
-                  withArrow
-                  label="Time between first commit and opening the PR"
-                >
-                  <IconInfoCircle stroke={1.5} size={16} />
-                </Tooltip>
-              </Group>
-            }
-            c="var(--mantine-color-text)"
-          >
-            <Text size="xs" mt={5}>
-              {isNumber(timeToCode) && <>{humanizeDuration(timeToCode)}</>}
-            </Text>
-          </Timeline.Item>
+          {!isDraft && (
+            <Timeline.Item
+              lineVariant="solid"
+              bullet={
+                <ThemeIcon variant="filled" color="dark.7">
+                  <IconCode
+                    size={20}
+                    stroke={1.5}
+                    color="var(--mantine-color-text)"
+                  />
+                </ThemeIcon>
+              }
+              title={
+                <Group align="center" gap={5}>
+                  Coding
+                  <Tooltip
+                    withArrow
+                    label="Time between first commit and opening the PR"
+                  >
+                    <IconInfoCircle stroke={1.5} size={16} />
+                  </Tooltip>
+                </Group>
+              }
+              c="var(--mantine-color-text)"
+            >
+              <Text size="xs" mt={5}>
+                {isNumber(timeToCode) && <>{humanizeDuration(timeToCode)}</>}
+              </Text>
+            </Timeline.Item>
+          )}
 
           <Timeline.Item
             lineVariant={getStrokeLevel(2)}
