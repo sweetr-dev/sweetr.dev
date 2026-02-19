@@ -13,7 +13,7 @@ import {
   PullRequest,
   PullRequestTracking,
 } from "@prisma/client";
-import { parallel, pick } from "radash";
+import { parallel, pick, sort } from "radash";
 import {
   getReviewCompareTime,
   getTimeForReview,
@@ -23,6 +23,7 @@ import { parseNullableISO } from "../../../lib/date";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
+import { parseISO } from "date-fns";
 
 interface Author {
   id: string;
@@ -102,9 +103,10 @@ export const syncCodeReviews = async (
 
   await upsertCodeReviewRequests(pullRequest, reviewRequests);
   await upsertCodeReviews(pullRequest, reviews);
+
   await updatePullRequestTracking(
     pullRequest,
-    reviews,
+    reviewEvents,
     parseNullableISO(firstReviewerRequestedAt)
   );
   await upsertActivityEvents(pullRequest, reviewEvents);
@@ -239,7 +241,12 @@ const fetchPullRequestReviews = async (
     const pullRequest = response.node;
     const { nodes, pageInfo } = pullRequest.reviews;
 
-    for (const review of nodes) {
+    // Sort chronologically
+    const sortedReviews = sort(nodes, (node) =>
+      parseISO(node.submittedAt).getTime()
+    );
+
+    for (const review of sortedReviews) {
       const authorHandle = review.author.login;
 
       // Ignore self-reviews
@@ -424,12 +431,12 @@ const upsertCodeReviews = async (
 
 const updatePullRequestTracking = async (
   pullRequest: PullRequest & { tracking: PullRequestTracking | null },
-  reviews: ReviewData[],
+  reviewEvents: ReviewDataWithId[],
   firstReviewerRequestedAt: Date | null
 ) => {
-  const firstReviewAt = parseNullableISO(reviews[0]?.createdAt);
+  const firstReviewAt = parseNullableISO(reviewEvents[0]?.createdAt);
   const firstApprovalAt = parseNullableISO(
-    reviews.find((review) => review.state === CodeReviewState.APPROVED)
+    reviewEvents.find((review) => review.state === CodeReviewState.APPROVED)
       ?.createdAt
   );
 
