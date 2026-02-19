@@ -1,4 +1,4 @@
-import { PrismaClient, GitProvider, PullRequestState } from "@prisma/client";
+import { PrismaClient, GitProvider, PullRequestState, TeamMemberRole } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 /**
@@ -120,6 +120,29 @@ export async function seedTeam(
     teamId: team.id,
     workspaceId: ctx.workspaceId,
   };
+}
+
+/**
+ * Creates a TeamMember linking a GitProfile to a Team.
+ */
+export async function seedTeamMember(
+  ctx: SeedWorkspace,
+  teamId: number,
+  gitProfileId: number,
+  options: {
+    role?: TeamMemberRole;
+  } = {}
+): Promise<{ teamMemberId: number }> {
+  const teamMember = await ctx.prisma.teamMember.create({
+    data: {
+      teamId,
+      gitProfileId,
+      role: options.role ?? TeamMemberRole.ENGINEER,
+      workspaceId: ctx.workspaceId,
+    },
+  });
+
+  return { teamMemberId: teamMember.id };
 }
 
 /**

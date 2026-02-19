@@ -15,6 +15,7 @@ import {
   seedPullRequest,
   seedRepository,
   seedTeam,
+  seedTeamMember,
 } from "../../../../test/seed";
 import { Period } from "../../../graphql-types";
 import {
@@ -434,10 +435,13 @@ describe("DORA Metrics", () => {
 
     it("filters by teamIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -448,11 +452,10 @@ describe("DORA Metrics", () => {
       });
       const environment = await seedEnvironment(ctx, { isProduction: true });
 
-      // Create deployments for both teams
       const pr1 = await seedPullRequest(
         ctx,
         repository.repositoryId,
-        gitProfile.gitProfileId,
+        gitProfile1.gitProfileId,
         { createdAt: new Date("2024-01-15T10:00:00Z") }
       );
       const deployment1 = await seedDeployment(
@@ -461,7 +464,7 @@ describe("DORA Metrics", () => {
         environment.environmentId,
         {
           deployedAt: new Date("2024-01-15T14:00:00Z"),
-          authorId: gitProfile.gitProfileId,
+          authorId: gitProfile1.gitProfileId,
         }
       );
       await seedDeploymentPullRequest(
@@ -473,7 +476,7 @@ describe("DORA Metrics", () => {
       const pr2 = await seedPullRequest(
         ctx,
         repository.repositoryId,
-        gitProfile.gitProfileId,
+        gitProfile2.gitProfileId,
         { createdAt: new Date("2024-01-15T10:00:00Z") }
       );
       const deployment2 = await seedDeployment(
@@ -482,7 +485,7 @@ describe("DORA Metrics", () => {
         environment.environmentId,
         {
           deployedAt: new Date("2024-01-15T14:00:00Z"),
-          authorId: gitProfile.gitProfileId,
+          authorId: gitProfile2.gitProfileId,
         }
       );
       await seedDeploymentPullRequest(
@@ -491,7 +494,7 @@ describe("DORA Metrics", () => {
         pr2.pullRequestId
       );
 
-      // Filter by team1 only
+      // Filter by team1 only — should match by deployment author membership
       const result = await getLeadTimeMetric({
         workspaceId: ctx.workspaceId,
         dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
@@ -500,6 +503,59 @@ describe("DORA Metrics", () => {
       });
 
       expect(result.currentAmount).toBe(BigInt(14400000)); // 4 hours
+    });
+
+    it("filters by teamIds based on deployment author, not application owner", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const teamA = await seedTeam(ctx, { name: "teamA-app-owner" });
+      const teamB = await seedTeam(ctx, { name: "teamB-author-team" });
+      await seedTeamMember(ctx, teamB.teamId, gitProfile.gitProfileId);
+      const app = await seedApplication(ctx, repository.repositoryId, {
+        name: "app-owned-by-teamA",
+        teamId: teamA.teamId,
+      });
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        app.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      // Filter by teamB (author's team) — should find the deployment
+      const resultTeamB = await getLeadTimeMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamB.teamId],
+      });
+      expect(resultTeamB.currentAmount).toBe(BigInt(14400000)); // 4 hours
+
+      // Filter by teamA (app owner, but no members deployed) — should find nothing
+      const resultTeamA = await getLeadTimeMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamA.teamId],
+      });
+      expect(resultTeamA.currentAmount).toBe(BigInt(0));
     });
 
     it("filters by repositoryIds", async () => {
@@ -571,10 +627,13 @@ describe("DORA Metrics", () => {
 
     it("filters by combined teamIds and environmentIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -588,17 +647,17 @@ describe("DORA Metrics", () => {
 
       // Create deployments: team1+prod, team1+staging, team2+prod, team2+staging
       const deployments = [
-        { app: app1, env: prodEnv },
-        { app: app1, env: stagingEnv },
-        { app: app2, env: prodEnv },
-        { app: app2, env: stagingEnv },
+        { app: app1, env: prodEnv, author: gitProfile1 },
+        { app: app1, env: stagingEnv, author: gitProfile1 },
+        { app: app2, env: prodEnv, author: gitProfile2 },
+        { app: app2, env: stagingEnv, author: gitProfile2 },
       ];
 
-      for (const { app, env } of deployments) {
+      for (const { app, env, author } of deployments) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -607,7 +666,7 @@ describe("DORA Metrics", () => {
           env.environmentId,
           {
             deployedAt: new Date("2024-01-15T14:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -1206,10 +1265,13 @@ describe("DORA Metrics", () => {
 
     it("filters by teamIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -1220,12 +1282,16 @@ describe("DORA Metrics", () => {
       });
       const environment = await seedEnvironment(ctx, { isProduction: true });
 
-      // Create deployments with incidents for both teams
-      for (const app of [app1, app2]) {
+      const teams = [
+        { app: app1, author: gitProfile1 },
+        { app: app2, author: gitProfile2 },
+      ];
+
+      for (const { app, author } of teams) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -1234,7 +1300,7 @@ describe("DORA Metrics", () => {
           environment.environmentId,
           {
             deployedAt: new Date("2024-01-15T12:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -1248,7 +1314,7 @@ describe("DORA Metrics", () => {
         });
       }
 
-      // Filter by team1 only
+      // Filter by team1 only — should match by deployment author membership
       const result = await getChangeFailureRateMetric({
         workspaceId: ctx.workspaceId,
         dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
@@ -1258,6 +1324,63 @@ describe("DORA Metrics", () => {
 
       // 1 deployment, 1 incident = 100%
       expect(result.currentAmount).toBeCloseTo(100, 1);
+    });
+
+    it("filters by teamIds based on deployment author, not application owner", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const teamA = await seedTeam(ctx, { name: "teamA-app-owner" });
+      const teamB = await seedTeam(ctx, { name: "teamB-author-team" });
+      await seedTeamMember(ctx, teamB.teamId, gitProfile.gitProfileId);
+      const app = await seedApplication(ctx, repository.repositoryId, {
+        name: "app-owned-by-teamA",
+        teamId: teamA.teamId,
+      });
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        app.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T12:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T12:30:00Z"),
+        resolvedAt: new Date("2024-01-15T13:00:00Z"),
+      });
+
+      // Filter by teamB (author's team) — should find the deployment
+      const resultTeamB = await getChangeFailureRateMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamB.teamId],
+      });
+      expect(resultTeamB.currentAmount).toBeCloseTo(100, 1);
+
+      // Filter by teamA (app owner, but no members deployed) — should find nothing
+      const resultTeamA = await getChangeFailureRateMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamA.teamId],
+      });
+      expect(resultTeamA.currentAmount).toBe(0);
     });
 
     it("filters by repositoryIds", async () => {
@@ -1315,10 +1438,13 @@ describe("DORA Metrics", () => {
 
     it("filters by combined teamIds and environmentIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -1332,17 +1458,17 @@ describe("DORA Metrics", () => {
 
       // Create deployments with incidents: team1+prod, team1+staging, team2+prod, team2+staging
       const deployments = [
-        { app: app1, env: prodEnv },
-        { app: app1, env: stagingEnv },
-        { app: app2, env: prodEnv },
-        { app: app2, env: stagingEnv },
+        { app: app1, env: prodEnv, author: gitProfile1 },
+        { app: app1, env: stagingEnv, author: gitProfile1 },
+        { app: app2, env: prodEnv, author: gitProfile2 },
+        { app: app2, env: stagingEnv, author: gitProfile2 },
       ];
 
-      for (const { app, env } of deployments) {
+      for (const { app, env, author } of deployments) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -1351,7 +1477,7 @@ describe("DORA Metrics", () => {
           env.environmentId,
           {
             deployedAt: new Date("2024-01-15T12:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -1845,11 +1971,16 @@ describe("DORA Metrics", () => {
 
     it("filters by teamIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
+      const gitProfile3 = await seedGitProfile(ctx, { handle: "user3" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
       const team3 = await seedTeam(ctx, { name: "team3" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
+      await seedTeamMember(ctx, team3.teamId, gitProfile3.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -1864,12 +1995,17 @@ describe("DORA Metrics", () => {
       });
       const environment = await seedEnvironment(ctx, { isProduction: true });
 
-      // Create incidents for all teams
-      for (const app of [app1, app2, app3]) {
+      const teams = [
+        { app: app1, author: gitProfile1 },
+        { app: app2, author: gitProfile2 },
+        { app: app3, author: gitProfile3 },
+      ];
+
+      for (const { app, author } of teams) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -1878,7 +2014,7 @@ describe("DORA Metrics", () => {
           environment.environmentId,
           {
             deployedAt: new Date("2024-01-15T10:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -1892,7 +2028,7 @@ describe("DORA Metrics", () => {
         });
       }
 
-      // Filter by team1 and team2 only
+      // Filter by team1 and team2 only — should match by deployment author membership
       const result = await getMeanTimeToRecoverMetric({
         workspaceId: ctx.workspaceId,
         dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
@@ -1902,6 +2038,63 @@ describe("DORA Metrics", () => {
 
       // Average of 2 incidents, both 2 hours = 2 hours = 7,200,000 ms
       expect(result.currentAmount).toBe(BigInt(7200000));
+    });
+
+    it("filters by teamIds based on deployment author, not application owner", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const teamA = await seedTeam(ctx, { name: "teamA-app-owner" });
+      const teamB = await seedTeam(ctx, { name: "teamB-author-team" });
+      await seedTeamMember(ctx, teamB.teamId, gitProfile.gitProfileId);
+      const app = await seedApplication(ctx, repository.repositoryId, {
+        name: "app-owned-by-teamA",
+        teamId: teamA.teamId,
+      });
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        app.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T10:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T10:00:00Z"),
+        resolvedAt: new Date("2024-01-15T12:00:00Z"), // 2 hours
+      });
+
+      // Filter by teamB (author's team) — should find the incident
+      const resultTeamB = await getMeanTimeToRecoverMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamB.teamId],
+      });
+      expect(resultTeamB.currentAmount).toBe(BigInt(7200000)); // 2 hours
+
+      // Filter by teamA (app owner, but no members deployed) — should find nothing
+      const resultTeamA = await getMeanTimeToRecoverMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamA.teamId],
+      });
+      expect(resultTeamA.currentAmount).toBe(BigInt(0));
     });
 
     it("filters by repositoryIds", async () => {
@@ -1959,10 +2152,13 @@ describe("DORA Metrics", () => {
 
     it("filters by combined teamIds and environmentIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -1976,17 +2172,17 @@ describe("DORA Metrics", () => {
 
       // Create incidents: team1+prod, team1+staging, team2+prod, team2+staging
       const deployments = [
-        { app: app1, env: prodEnv },
-        { app: app1, env: stagingEnv },
-        { app: app2, env: prodEnv },
-        { app: app2, env: stagingEnv },
+        { app: app1, env: prodEnv, author: gitProfile1 },
+        { app: app1, env: stagingEnv, author: gitProfile1 },
+        { app: app2, env: prodEnv, author: gitProfile2 },
+        { app: app2, env: stagingEnv, author: gitProfile2 },
       ];
 
-      for (const { app, env } of deployments) {
+      for (const { app, env, author } of deployments) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -1995,7 +2191,7 @@ describe("DORA Metrics", () => {
           env.environmentId,
           {
             deployedAt: new Date("2024-01-15T10:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -2488,10 +2684,13 @@ describe("DORA Metrics", () => {
 
     it("filters by teamIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -2502,12 +2701,16 @@ describe("DORA Metrics", () => {
       });
       const environment = await seedEnvironment(ctx, { isProduction: true });
 
-      // Create deployments for both teams
-      for (const app of [app1, app2]) {
+      const teams = [
+        { app: app1, author: gitProfile1 },
+        { app: app2, author: gitProfile2 },
+      ];
+
+      for (const { app, author } of teams) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -2516,7 +2719,7 @@ describe("DORA Metrics", () => {
           environment.environmentId,
           {
             deployedAt: new Date("2024-01-15T12:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
@@ -2526,7 +2729,7 @@ describe("DORA Metrics", () => {
         );
       }
 
-      // Filter by team1 only
+      // Filter by team1 only — should match by deployment author membership
       const result = await getDeploymentFrequencyMetric({
         workspaceId: ctx.workspaceId,
         dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
@@ -2535,6 +2738,59 @@ describe("DORA Metrics", () => {
       });
 
       expect(result.currentAmount).toBe(BigInt(1));
+    });
+
+    it("filters by teamIds based on deployment author, not application owner", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const teamA = await seedTeam(ctx, { name: "teamA-app-owner" });
+      const teamB = await seedTeam(ctx, { name: "teamB-author-team" });
+      await seedTeamMember(ctx, teamB.teamId, gitProfile.gitProfileId);
+      const app = await seedApplication(ctx, repository.repositoryId, {
+        name: "app-owned-by-teamA",
+        teamId: teamA.teamId,
+      });
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        app.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T12:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      // Filter by teamB (author's team) — should find the deployment
+      const resultTeamB = await getDeploymentFrequencyMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamB.teamId],
+      });
+      expect(resultTeamB.currentAmount).toBe(BigInt(1));
+
+      // Filter by teamA (app owner, but no members deployed) — should find nothing
+      const resultTeamA = await getDeploymentFrequencyMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [teamA.teamId],
+      });
+      expect(resultTeamA.currentAmount).toBe(BigInt(0));
     });
 
     it("filters by repositoryIds", async () => {
@@ -2591,10 +2847,13 @@ describe("DORA Metrics", () => {
 
     it("filters by combined teamIds and environmentIds", async () => {
       const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
+      const gitProfile1 = await seedGitProfile(ctx, { handle: "user1" });
+      const gitProfile2 = await seedGitProfile(ctx, { handle: "user2" });
       const repository = await seedRepository(ctx);
       const team1 = await seedTeam(ctx, { name: "team1" });
       const team2 = await seedTeam(ctx, { name: "team2" });
+      await seedTeamMember(ctx, team1.teamId, gitProfile1.gitProfileId);
+      await seedTeamMember(ctx, team2.teamId, gitProfile2.gitProfileId);
       const app1 = await seedApplication(ctx, repository.repositoryId, {
         name: "app1",
         teamId: team1.teamId,
@@ -2608,17 +2867,17 @@ describe("DORA Metrics", () => {
 
       // Create deployments: team1+prod, team1+staging, team2+prod, team2+staging
       const deployments = [
-        { app: app1, env: prodEnv },
-        { app: app1, env: stagingEnv },
-        { app: app2, env: prodEnv },
-        { app: app2, env: stagingEnv },
+        { app: app1, env: prodEnv, author: gitProfile1 },
+        { app: app1, env: stagingEnv, author: gitProfile1 },
+        { app: app2, env: prodEnv, author: gitProfile2 },
+        { app: app2, env: stagingEnv, author: gitProfile2 },
       ];
 
-      for (const { app, env } of deployments) {
+      for (const { app, env, author } of deployments) {
         const pr = await seedPullRequest(
           ctx,
           repository.repositoryId,
-          gitProfile.gitProfileId,
+          author.gitProfileId,
           { createdAt: new Date("2024-01-15T10:00:00Z") }
         );
         const deployment = await seedDeployment(
@@ -2627,7 +2886,7 @@ describe("DORA Metrics", () => {
           env.environmentId,
           {
             deployedAt: new Date("2024-01-15T12:00:00Z"),
-            authorId: gitProfile.gitProfileId,
+            authorId: author.gitProfileId,
           }
         );
         await seedDeploymentPullRequest(
