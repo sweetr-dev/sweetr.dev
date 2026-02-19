@@ -156,32 +156,30 @@ const buildDeploymentFilters = (
     );
   }
 
-  const needsApplicationJoin =
-    (filters.teamIds && filters.teamIds.length > 0) ||
-    (filters.repositoryIds && filters.repositoryIds.length > 0);
-
-  if (needsApplicationJoin) {
+  if (filters.repositoryIds && filters.repositoryIds.length > 0) {
     joins.push(
       Prisma.sql`INNER JOIN "Application" a ON a."id" = ${Prisma.raw(alias)}."applicationId" AND a."workspaceId" = ${Prisma.raw(alias)}."workspaceId" AND a."archivedAt" IS NULL`
     );
+    conditions.push(
+      Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
+        filters.repositoryIds.map((id) => Prisma.sql`${id}`),
+        ", "
+      )}])`
+    );
+  }
 
-    if (filters.teamIds && filters.teamIds.length > 0) {
-      conditions.push(
-        Prisma.sql`a."teamId" = ANY(ARRAY[${Prisma.join(
+  if (filters.teamIds && filters.teamIds.length > 0) {
+    conditions.push(
+      Prisma.sql`EXISTS (
+        SELECT 1 FROM "TeamMember" tm
+        WHERE tm."gitProfileId" = ${Prisma.raw(alias)}."authorId"
+        AND tm."workspaceId" = ${Prisma.raw(alias)}."workspaceId"
+        AND tm."teamId" = ANY(ARRAY[${Prisma.join(
           filters.teamIds.map((id) => Prisma.sql`${id}`),
           ", "
-        )}])`
-      );
-    }
-
-    if (filters.repositoryIds && filters.repositoryIds.length > 0) {
-      conditions.push(
-        Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
-          filters.repositoryIds.map((id) => Prisma.sql`${id}`),
-          ", "
-        )}])`
-      );
-    }
+        )}])
+      )`
+    );
   }
 
   return { joins, conditions };
@@ -516,45 +514,29 @@ const buildIncidentFilters = (
     );
   }
 
-  // Team filter can match via incident.teamId or application.teamId
-  const needsApplicationJoin =
-    (filters.teamIds && filters.teamIds.length > 0) ||
-    (filters.repositoryIds && filters.repositoryIds.length > 0);
-
-  if (needsApplicationJoin) {
+  if (filters.repositoryIds && filters.repositoryIds.length > 0) {
     joins.push(
       Prisma.sql`INNER JOIN "Application" a ON a."id" = cd."applicationId" AND a."workspaceId" = cd."workspaceId" AND a."archivedAt" IS NULL`
     );
-
-    if (filters.teamIds && filters.teamIds.length > 0) {
-      conditions.push(
-        Prisma.sql`(
-          i."teamId" = ANY(ARRAY[${Prisma.join(
-            filters.teamIds.map((id) => Prisma.sql`${id}`),
-            ", "
-          )}])
-          OR a."teamId" = ANY(ARRAY[${Prisma.join(
-            filters.teamIds.map((id) => Prisma.sql`${id}`),
-            ", "
-          )}])
-        )`
-      );
-    }
-
-    if (filters.repositoryIds && filters.repositoryIds.length > 0) {
-      conditions.push(
-        Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
-          filters.repositoryIds.map((id) => Prisma.sql`${id}`),
-          ", "
-        )}])`
-      );
-    }
-  } else if (filters.teamIds && filters.teamIds.length > 0) {
     conditions.push(
-      Prisma.sql`i."teamId" = ANY(ARRAY[${Prisma.join(
-        filters.teamIds.map((id) => Prisma.sql`${id}`),
+      Prisma.sql`a."repositoryId" = ANY(ARRAY[${Prisma.join(
+        filters.repositoryIds.map((id) => Prisma.sql`${id}`),
         ", "
       )}])`
+    );
+  }
+
+  if (filters.teamIds && filters.teamIds.length > 0) {
+    conditions.push(
+      Prisma.sql`EXISTS (
+        SELECT 1 FROM "TeamMember" tm
+        WHERE tm."gitProfileId" = cd."authorId"
+        AND tm."workspaceId" = cd."workspaceId"
+        AND tm."teamId" = ANY(ARRAY[${Prisma.join(
+          filters.teamIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])
+      )`
     );
   }
 
