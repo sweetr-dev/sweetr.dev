@@ -10,7 +10,7 @@ import { BuildEmailTemplate } from "./email-template.service";
 const emailTemplates = { initialSyncComplete: InitialSyncCompleteEmail };
 
 export type EmailType = keyof typeof emailTemplates;
-export type SendEmailPayload = Omit<EmailPayload, "from">;
+export type SendEmailPayload = Omit<EmailPayload, "from" | "template">;
 
 export const enqueueEmail = (
   data: SendEmailPayload & { template: BuildEmailTemplate }

@@ -16,7 +16,7 @@ interface SendEmailJob {
 export const sendEmailWorker = createWorker(
   SweetQueue.SEND_EMAIL,
   async (job: Job<SendEmailJob>) => {
-    const template = renderEmailTemplate(
+    const template = await renderEmailTemplate(
       emailTemplates[job.data.template.type],
       job.data.template.props
     );

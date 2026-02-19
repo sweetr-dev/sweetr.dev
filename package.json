@@ -27,6 +27,7 @@
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
+    "eslint": "^10.0.0",
     "devcert": "^1.2.2",
     "dotenv-cli": "^7.4.2",
     "prettier": "latest",

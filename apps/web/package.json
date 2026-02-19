@@ -42,7 +42,7 @@
     "react": "^18.3.0",
     "react-canvas-confetti": "^1.4.0",
     "react-dom": "^18.3.0",
-    "react-router-dom": "^6.17.0",
+    "react-router-dom": "^6.30.3",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
@@ -54,7 +54,6 @@
     "@typescript-eslint/parser": "^8.26.0",
     "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
-    "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",

@@ -125,8 +125,8 @@ export const syncSubscriptionWithStripe = async (subscriptionId: string) => {
     interval: item.plan.interval,
     quantity: item.quantity,
     startedAt: new Date(subscription.start_date * 1000),
-    currentPeriodStart: new Date(subscription.current_period_start * 1000),
-    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+    currentPeriodStart: new Date(item.current_period_start * 1000),
+    currentPeriodEnd: new Date(item.current_period_end * 1000),
     object: JSON.stringify(subscription),
   };
 
