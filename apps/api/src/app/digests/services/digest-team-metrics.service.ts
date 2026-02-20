@@ -1,4 +1,4 @@
-import { AnyBlock, RichTextElement } from "@slack/web-api";
+import { ActionsBlockElement, AnyBlock, RichTextElement } from "@slack/web-api";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
@@ -216,7 +216,7 @@ const getDigestMessageBlocks = async (
     "minutes",
   ];
 
-  const buttons = [
+  const buttons: ActionsBlockElement[] = [
     {
       type: "button",
       text: {
