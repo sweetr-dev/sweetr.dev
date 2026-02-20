@@ -109,6 +109,6 @@ CREATE POLICY tenant_isolation_policy ON "Incident" USING ("workspaceId" = curre
 CREATE POLICY bypass_rls_policy ON "Incident" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
 
 -- DeployedPullRequest
-ALTER TABLE "DeployedPullRequest" ENABLE ROW LEVEL SECURITY;
-CREATE POLICY tenant_isolation_policy ON "DeployedPullRequest" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
-CREATE POLICY bypass_rls_policy ON "DeployedPullRequest" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+ALTER TABLE "DeploymentPullRequest" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON "DeploymentPullRequest" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "DeploymentPullRequest" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
