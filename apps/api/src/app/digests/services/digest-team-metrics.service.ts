@@ -21,6 +21,14 @@ import { UTCDate } from "@date-fns/utc";
 import { formatMsDuration } from "../../../lib/date";
 import { AverageMetricFilters } from "../../metrics/services/average-metrics.types";
 import { logger } from "../../../lib/logger";
+import { Period } from "../../../graphql-types";
+import {
+  getDeploymentFrequencyMetric,
+  getLeadTimeMetric,
+  getChangeFailureRateMetric,
+  getMeanTimeToRecoverMetric,
+} from "../../metrics/services/dora-metrics.service";
+import { DoraMetricsFilters } from "../../metrics/services/dora-metrics.types";
 
 export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
   logger.info("sendTeamMetricsDigest", { digest });
@@ -36,8 +44,11 @@ export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
     throw new ResourceNotFoundException("Slack channel not found");
   }
 
-  const metrics = await getTeamMetrics(digest);
-  const blocks = await getDigestMessageBlocks(digest, metrics);
+  const [metrics, doraMetrics] = await Promise.all([
+    getTeamMetrics(digest),
+    getDoraMetrics(digest),
+  ]);
+  const blocks = await getDigestMessageBlocks(digest, metrics, doraMetrics);
 
   await sendSlackMessage(slackClient, {
     channel: slackChannel.id,
@@ -131,9 +142,31 @@ const getTeamMetrics = async (digest: DigestWithRelations) => {
   };
 };
 
+const getDoraMetrics = async (digest: DigestWithRelations) => {
+  const { latest } = getChartFilters(digest);
+
+  const doraFilters: DoraMetricsFilters = {
+    workspaceId: digest.workspaceId,
+    dateRange: { from: latest.startDate, to: latest.endDate },
+    period: digest.frequency === Frequency.WEEKLY ? Period.DAILY : Period.WEEKLY,
+    teamIds: [digest.teamId],
+  };
+
+  const [deploymentFrequency, leadTime, changeFailureRate, meanTimeToRecover] =
+    await Promise.all([
+      getDeploymentFrequencyMetric(doraFilters),
+      getLeadTimeMetric(doraFilters),
+      getChangeFailureRateMetric(doraFilters),
+      getMeanTimeToRecoverMetric(doraFilters),
+    ]);
+
+  return { deploymentFrequency, leadTime, changeFailureRate, meanTimeToRecover };
+};
+
 const getDigestMessageBlocks = async (
   digest: DigestWithRelations,
-  metrics: Awaited<ReturnType<typeof getTeamMetrics>>
+  metrics: Awaited<ReturnType<typeof getTeamMetrics>>,
+  doraMetrics: Awaited<ReturnType<typeof getDoraMetrics>>
 ): Promise<AnyBlock[]> => {
   const { latest, previous } = getChartFilters(digest);
 
@@ -174,6 +207,71 @@ const getDigestMessageBlocks = async (
         type: "mrkdwn",
         text: "\n",
       },
+    },
+    {
+      type: "divider",
+    },
+    {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            {
+              type: "text",
+              text: "🚀 DORA Metrics",
+              style: { bold: true },
+            },
+          ],
+        },
+        {
+          type: "rich_text_list",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Deployments",
+                value: `${Number(doraMetrics.deploymentFrequency.currentAmount)} deploys`,
+                change: -doraMetrics.deploymentFrequency.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Lead Time",
+                value:
+                  formatMsDuration(
+                    Number(doraMetrics.leadTime.currentAmount),
+                    dateFormatter
+                  ) || "N/A",
+                change: doraMetrics.leadTime.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Failure Rate",
+                value: `${doraMetrics.changeFailureRate.currentAmount}%`,
+                change: doraMetrics.changeFailureRate.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "MTTR",
+                value:
+                  formatMsDuration(
+                    Number(doraMetrics.meanTimeToRecover.currentAmount),
+                    dateFormatter
+                  ) || "N/A",
+                change: doraMetrics.meanTimeToRecover.change,
+              }),
+            },
+          ],
+          style: "bullet",
+          indent: 1,
+        },
+      ],
     },
     {
       type: "divider",
