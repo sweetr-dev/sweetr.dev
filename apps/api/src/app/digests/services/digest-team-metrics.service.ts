@@ -327,7 +327,7 @@ const getDigestMessageBlocks = async (
               type: "rich_text_section",
               elements: getMetricLineElements({
                 label: "Failure Rate",
-                value: `${doraMetrics.changeFailureRate.currentAmount}%`,
+                value: `${Number(doraMetrics.changeFailureRate.currentAmount)}%`,
                 change: doraMetrics.changeFailureRate.change,
               }),
             },
