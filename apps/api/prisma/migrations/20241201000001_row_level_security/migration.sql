@@ -35,8 +35,8 @@ CREATE POLICY bypass_rls_policy ON "CodeReview" USING (current_setting('app.bypa
 
 -- Code Review Request
 ALTER TABLE "CodeReviewRequest" ENABLE ROW LEVEL SECURITY;
-CREATE POLICY tenant_isolation_policy ON "CodeReview" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
-CREATE POLICY bypass_rls_policy ON "CodeReview" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+CREATE POLICY tenant_isolation_policy ON "CodeReviewRequest" USING ("workspaceId" = current_setting('app.current_workspace_id', TRUE)::int);
+CREATE POLICY bypass_rls_policy ON "CodeReviewRequest" USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
 
 -- Team
 ALTER TABLE "Team" ENABLE ROW LEVEL SECURITY;
