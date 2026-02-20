@@ -4,10 +4,7 @@ import {
   Organization,
   Workspace,
 } from "@prisma/client";
-import {
-  Workspace as ApiWorkspace,
-  WorkspaceFeatureAdoption,
-} from "../../../../graphql-types";
+import { Workspace as ApiWorkspace } from "../../../../graphql-types";
 import {
   getWorkspaceAvatar,
   getWorkspaceHandle,
@@ -15,6 +12,8 @@ import {
   getWorkspaceUninstallGitUrl,
 } from "../../services/workspace.service";
 import { getWorkspaceSettings } from "../../services/workspace-settings.service";
+import { WorkspaceFeatureAdoption } from "../../services/workspace.types";
+import { captureException } from "../../../../lib/sentry";
 
 type WorkspaceWithRelations = Workspace & {
   gitProfile: GitProfile | null;
@@ -34,6 +33,19 @@ export const transformWorkspace = (
   | "settings"
   | "featureAdoption"
 > => {
+  const { data: featureAdoption, error } = WorkspaceFeatureAdoption.safeParse(
+    workspace.featureAdoption
+  );
+
+  if (error) {
+    captureException(error, {
+      extra: {
+        workspaceId: workspace.id,
+        featureAdoption: workspace.featureAdoption,
+      },
+    });
+  }
+
   return {
     // Base properties
     id: workspace.id,
@@ -42,6 +54,6 @@ export const transformWorkspace = (
     avatar: getWorkspaceAvatar(workspace),
     gitUninstallUrl: getWorkspaceUninstallGitUrl(workspace),
     settings: getWorkspaceSettings(workspace),
-    featureAdoption: workspace.featureAdoption as WorkspaceFeatureAdoption,
+    featureAdoption: featureAdoption ?? {},
   };
 };

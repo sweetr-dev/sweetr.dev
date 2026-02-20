@@ -57,6 +57,7 @@ export const AlertBanner = ({
               variant="filled"
               color={color}
               rightSection={<IconExternalLink stroke={1.5} size={16} />}
+              {...buttonProps}
             >
               {ctaText}
             </Button>
