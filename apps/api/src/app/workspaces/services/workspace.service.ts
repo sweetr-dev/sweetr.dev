@@ -5,8 +5,15 @@ import {
   Prisma,
   Workspace,
 } from "@prisma/client";
+import { assign } from "radash";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import {
+  UpdateWorkspaceFeaturesInput,
+  WorkspaceFeatureAdoption,
+} from "./workspace.types";
+import { logger } from "../../../lib/logger";
+import { captureException } from "../../../lib/sentry";
 
 type WorkspaceWithUserOrOrganization = Workspace & {
   gitProfile: GitProfile | null;
@@ -148,4 +155,48 @@ export const getWorkspaceUninstallGitUrl = (
   }
 
   return `https://github.com/settings/installations/${workspace.installation?.gitInstallationId}`;
+};
+
+export const updateWorkspaceFeatureAdoption = ({
+  workspaceId,
+  features,
+}: UpdateWorkspaceFeaturesInput): void => {
+  // Force it to run in the background - no await
+  (async () => {
+    const workspace = await findWorkspaceById(workspaceId);
+
+    if (!workspace) {
+      throw new ResourceNotFoundException("Workspace not found");
+    }
+
+    const updatedFeatures: WorkspaceFeatureAdoption = assign(
+      workspace.featureAdoption as WorkspaceFeatureAdoption,
+      features
+    );
+
+    await getPrisma(workspaceId).workspace.update({
+      where: { id: workspaceId },
+      data: { featureAdoption: updatedFeatures as Prisma.InputJsonValue },
+    });
+  })().catch((error) =>
+    logger.warn("Failed to update feature adoption", { error, workspaceId })
+  );
+};
+
+export const safeParseFeatureAdoption = (
+  featureAdoption: Prisma.JsonValue
+): WorkspaceFeatureAdoption => {
+  const { data, error } = WorkspaceFeatureAdoption.safeParse(featureAdoption);
+
+  if (error) {
+    captureException(error, {
+      extra: {
+        featureAdoption,
+      },
+    });
+
+    return {};
+  }
+
+  return data;
 };

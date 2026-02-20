@@ -13,13 +13,13 @@ import {
 } from "@sweetr/graphql-types/frontend/graphql";
 import { useWorkspace } from "../../../../../../../providers/workspace.provider";
 import { DigestBaseFields } from "../components/digest-base-fields";
-import { AlertEnableSlack } from "../../../../../../../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
 import {
   getBrowserTimezone,
   weekDays,
 } from "../../../../../../../providers/date.provider";
 import { DigestLoadingSkeleton } from "../components/digest-loading-skeleton";
+import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature";
 
 export const TeamWipDigestPage = () => {
   const teamId = useTeamId();
@@ -119,7 +119,7 @@ export const TeamWipDigestPage = () => {
 
             {!integration && (
               <Stack p="md">
-                <AlertEnableSlack />
+                <AlertEnableFeature feature="slack" />
               </Stack>
             )}
 

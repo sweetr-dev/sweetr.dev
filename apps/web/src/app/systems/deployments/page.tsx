@@ -29,10 +29,13 @@ import {
 } from "../../../providers/pagination.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { CardDeployment } from "./components/card-deployment";
+import { AlertEnableFeature } from "../../../components/alert-enable-feature";
+import { useFeatureAdoption } from "../../../providers/feature-adoption.provider";
 
 export const DeploymentsPage = () => {
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
+  const { triedDeployments } = useFeatureAdoption();
   const filters = useForm<{
     deployedAtFrom: string | null;
     deployedAtTo: string | null;
@@ -106,6 +109,10 @@ export const DeploymentsPage = () => {
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Deployments" }]} />
+
+      {!triedDeployments && (
+        <AlertEnableFeature feature="deployments" mb="md" />
+      )}
 
       <Group gap={5}>
         <FilterDate

@@ -7,7 +7,7 @@ import { BadgeOnOff } from "../../../../../components/badge-on-off";
 import { useAlerts } from "./use-alerts";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
 import { useAlertCards } from "./use-alert-cards";
-import { AlertEnableSlack } from "../../../../../components/alert-enable-slack";
+import { AlertEnableFeature } from "../../../../../components/alert-enable-feature";
 
 export const TeamAlertsPage = () => {
   const teamId = useTeamId();
@@ -27,7 +27,7 @@ export const TeamAlertsPage = () => {
         }
         content={
           <>
-            {!integration && <AlertEnableSlack mb="md" />}
+            {!integration && <AlertEnableFeature feature="slack" mb="md" />}
             <Stack>
               {availableAlerts.map((alert) => {
                 const Icon = alert.icon;

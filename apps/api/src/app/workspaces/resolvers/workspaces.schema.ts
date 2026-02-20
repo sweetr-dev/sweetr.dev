@@ -10,6 +10,13 @@ export default /* GraphQL */ `
 
     "A number between 0 and 100 representing the progress of the initial data synchronization with the git provider"
     initialSyncProgress: Int!
+
+    "Information about which features has been tried out by the workspace"
+    featureAdoption: WorkspaceFeatureAdoption!
+  }
+
+  type WorkspaceFeatureAdoption {
+    lastDeploymentCreatedAt: DateTime
   }
 
   type Query {

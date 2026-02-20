@@ -1273,6 +1273,8 @@ export type Workspace = {
   deployment?: Maybe<Deployment>;
   deployments: Array<Deployment>;
   environments: Array<Environment>;
+  /** Information about which features has been tried out by the workspace */
+  featureAdoption: WorkspaceFeatureAdoption;
   /** The git provider URL to uninstall the sweetr app */
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
@@ -1365,6 +1367,11 @@ export type WorkspaceTeamArgs = {
 
 export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
+};
+
+export type WorkspaceFeatureAdoption = {
+  __typename?: 'WorkspaceFeatureAdoption';
+  lastDeploymentCreatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type WorkspaceMetricInput = {
@@ -1614,6 +1621,7 @@ export type ResolversTypes = {
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
   Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
+  WorkspaceFeatureAdoption: ResolverTypeWrapper<DeepPartial<WorkspaceFeatureAdoption>>;
   WorkspaceMetricInput: ResolverTypeWrapper<DeepPartial<WorkspaceMetricInput>>;
   WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
   WorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsInput>>;
@@ -1732,6 +1740,7 @@ export type ResolversParentTypes = {
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
   Workspace: DeepPartial<Workspace>;
+  WorkspaceFeatureAdoption: DeepPartial<WorkspaceFeatureAdoption>;
   WorkspaceMetricInput: DeepPartial<WorkspaceMetricInput>;
   WorkspaceSettings: DeepPartial<WorkspaceSettings>;
   WorkspaceSettingsInput: DeepPartial<WorkspaceSettingsInput>;
@@ -2260,6 +2269,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   deployment?: Resolver<Maybe<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentArgs, 'deploymentId'>>;
   deployments?: Resolver<Array<ResolversTypes['Deployment']>, ParentType, ContextType, RequireFields<WorkspaceDeploymentsArgs, 'input'>>;
   environments?: Resolver<Array<ResolversTypes['Environment']>, ParentType, ContextType, RequireFields<WorkspaceEnvironmentsArgs, 'input'>>;
+  featureAdoption?: Resolver<ResolversTypes['WorkspaceFeatureAdoption'], ParentType, ContextType>;
   gitUninstallUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
@@ -2279,6 +2289,11 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   settings?: Resolver<ResolversTypes['WorkspaceSettings'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType, RequireFields<WorkspaceTeamArgs, 'teamId'>>;
   teams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType, Partial<WorkspaceTeamsArgs>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceFeatureAdoptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceFeatureAdoption'] = ResolversParentTypes['WorkspaceFeatureAdoption']> = {
+  lastDeploymentCreatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -2362,6 +2377,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Trial?: TrialResolvers<ContextType>;
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;
+  WorkspaceFeatureAdoption?: WorkspaceFeatureAdoptionResolvers<ContextType>;
   WorkspaceSettings?: WorkspaceSettingsResolvers<ContextType>;
   WorkspaceSettingsPullRequest?: WorkspaceSettingsPullRequestResolvers<ContextType>;
   WorkspaceSettingsPullRequestSize?: WorkspaceSettingsPullRequestSizeResolvers<ContextType>;

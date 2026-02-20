@@ -1,8 +1,6 @@
-import { Box, BoxProps, Button, Group, Text } from "@mantine/core";
-import { IconAlertHexagon } from "@tabler/icons-react";
-import classes from "./alert-trial.module.css";
-import { Link } from "react-router-dom";
+import { BoxProps } from "@mantine/core";
 import { useBilling, useTrial } from "../../providers/billing.provider";
+import { AlertBanner } from "../alert-banner";
 
 type AlertTrialProps = BoxProps;
 
@@ -18,31 +16,16 @@ export const AlertTrial = ({ ...props }: AlertTrialProps) => {
 
   const isAboutToExpire = daysLeft < 2;
 
+  const color = isAboutToExpire ? "red" : "violet";
+
   return (
-    <Box
-      p="md"
-      {...props}
-      className={isAboutToExpire ? classes["alert-warning"] : classes.alert}
-    >
-      <Group justify="space-between">
-        <Group gap="xs">
-          <IconAlertHexagon stroke={1.5} />
-          <Text fw={700} size="sm">
-            You have {daysLeft} {daysLeft === 1 ? "day" : "days"} left on your
-            trial.
-          </Text>
-        </Group>
-        <Link to="/settings/billing">
-          <Button
-            variant="filled"
-            size="xs"
-            autoContrast
-            color={isAboutToExpire ? "yellow.4" : "violet"}
-          >
-            Upgrade now
-          </Button>
-        </Link>
-      </Group>
-    </Box>
+    <AlertBanner
+      color={color}
+      text={`You have ${daysLeft} ${daysLeft === 1 ? "day" : "days"} left on your
+            trial.`}
+      ctaHref="/settings/billing"
+      ctaText="Upgrade now"
+      alertProps={props}
+    />
   );
 };

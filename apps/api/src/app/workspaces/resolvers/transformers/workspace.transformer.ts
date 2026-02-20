@@ -1,8 +1,8 @@
 import {
-  Workspace as DatabaseWorkspace,
   GitProfile,
   Installation,
   Organization,
+  Workspace,
 } from "@prisma/client";
 import { Workspace as ApiWorkspace } from "../../../../graphql-types";
 import {
@@ -10,10 +10,11 @@ import {
   getWorkspaceHandle,
   getWorkspaceName,
   getWorkspaceUninstallGitUrl,
+  safeParseFeatureAdoption,
 } from "../../services/workspace.service";
 import { getWorkspaceSettings } from "../../services/workspace-settings.service";
 
-type WorkspaceWithRelations = DatabaseWorkspace & {
+type WorkspaceWithRelations = Workspace & {
   gitProfile: GitProfile | null;
   organization: Organization | null;
   installation: Installation | null;
@@ -23,7 +24,13 @@ export const transformWorkspace = (
   workspace: WorkspaceWithRelations
 ): Pick<
   ApiWorkspace,
-  "id" | "name" | "handle" | "avatar" | "gitUninstallUrl" | "settings"
+  | "id"
+  | "name"
+  | "handle"
+  | "avatar"
+  | "gitUninstallUrl"
+  | "settings"
+  | "featureAdoption"
 > => {
   return {
     // Base properties
@@ -33,5 +40,6 @@ export const transformWorkspace = (
     avatar: getWorkspaceAvatar(workspace),
     gitUninstallUrl: getWorkspaceUninstallGitUrl(workspace),
     settings: getWorkspaceSettings(workspace),
+    featureAdoption: safeParseFeatureAdoption(workspace.featureAdoption),
   };
 };
