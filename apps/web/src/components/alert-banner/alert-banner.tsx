@@ -10,7 +10,7 @@ import {
 import { IconAlertHexagon, IconExternalLink } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-interface AlertBannerProps extends AlertProps {
+interface AlertBannerProps {
   text: string;
   ctaHref: string;
   ctaText: string;
@@ -49,6 +49,7 @@ export const AlertBanner = ({
           target="_blank"
           to={ctaHref}
           color={color}
+          rel="noopener noreferrer"
           rightSection={<IconExternalLink stroke={1.5} size={16} />}
           {...buttonProps}
         >

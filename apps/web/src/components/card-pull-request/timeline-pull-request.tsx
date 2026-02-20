@@ -25,6 +25,7 @@ import { useBadges } from "./use-badges";
 import { isNumber } from "radash";
 import { IconDeployment } from "../../providers/icon.provider";
 import { useFeatureAdoption } from "../../providers/feature-adoption.provider";
+import { Link } from "react-router-dom";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -264,7 +265,16 @@ export const TimelinePullRequest = ({
 
               {!triedDeployments && (
                 <>
-                  <Button color="violet" size="xs" variant="outline" mt={5}>
+                  <Button
+                    color="violet"
+                    size="xs"
+                    variant="outline"
+                    mt={5}
+                    component={Link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    to="https://docs.sweetr.dev/features/deployments"
+                  >
                     Setup Deployments
                   </Button>
                 </>
