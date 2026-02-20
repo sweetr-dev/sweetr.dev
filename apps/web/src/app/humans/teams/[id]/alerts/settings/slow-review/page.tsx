@@ -19,7 +19,7 @@ import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowReviewAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../../providers/form.provider";
 import { TriggerDescription } from "../components/trigger-description";
-import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature/alert-enable-feature";
+import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature";
 
 export const SlowReviewAlertPage = () => {
   const teamId = useTeamId();

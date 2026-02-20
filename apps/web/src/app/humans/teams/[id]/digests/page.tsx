@@ -6,7 +6,7 @@ import { useDigests } from "./use-digests";
 import { useTeamId } from "../use-team";
 import { LoadableContent } from "../../../../../components/loadable-content";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
-import { AlertEnableFeature } from "../../../../../components/alert-enable-feature/alert-enable-feature";
+import { AlertEnableFeature } from "../../../../../components/alert-enable-feature";
 
 export const TeamDigestsPage = () => {
   const teamId = useTeamId();

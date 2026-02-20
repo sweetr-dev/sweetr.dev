@@ -15,7 +15,7 @@ export const useFeatureAdoption = () => {
 
   return {
     triedDeployments:
-      featureAdoption.lastDeploymentCreatedAt &&
+      !!featureAdoption.lastDeploymentCreatedAt &&
       isAfter(
         parseISO(featureAdoption.lastDeploymentCreatedAt),
         thirtyDaysAgo(),

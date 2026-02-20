@@ -6,6 +6,7 @@ import {
   AlertProps,
   ButtonProps,
   MantineColor,
+  Anchor,
 } from "@mantine/core";
 import { IconAlertHexagon, IconExternalLink } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
@@ -27,6 +28,8 @@ export const AlertBanner = ({
   ctaText,
   color = "violet",
 }: AlertBannerProps) => {
+  const isExternalLink = ctaHref.startsWith("http");
+
   return (
     <Alert
       variant="light"
@@ -42,19 +45,34 @@ export const AlertBanner = ({
     >
       <Group justify="space-between">
         <Text>{text}</Text>
-        <Button
-          size="xs"
-          variant="filled"
-          component={Link}
-          target="_blank"
-          to={ctaHref}
-          color={color}
-          rel="noopener noreferrer"
-          rightSection={<IconExternalLink stroke={1.5} size={16} />}
-          {...buttonProps}
-        >
-          {ctaText}
-        </Button>
+        {isExternalLink ? (
+          <Anchor
+            target="_blank"
+            href={ctaHref}
+            rel="noopener noreferrer"
+            underline="never"
+          >
+            <Button
+              size="xs"
+              variant="filled"
+              color={color}
+              rightSection={<IconExternalLink stroke={1.5} size={16} />}
+            >
+              {ctaText}
+            </Button>
+          </Anchor>
+        ) : (
+          <Button
+            size="xs"
+            variant="filled"
+            component={Link}
+            to={ctaHref}
+            color={color}
+            {...buttonProps}
+          >
+            {ctaText}
+          </Button>
+        )}
       </Group>
     </Alert>
   );

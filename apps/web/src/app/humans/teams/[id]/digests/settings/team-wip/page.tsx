@@ -19,7 +19,7 @@ import {
   weekDays,
 } from "../../../../../../../providers/date.provider";
 import { DigestLoadingSkeleton } from "../components/digest-loading-skeleton";
-import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature/alert-enable-feature";
+import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature";
 
 export const TeamWipDigestPage = () => {
   const teamId = useTeamId();

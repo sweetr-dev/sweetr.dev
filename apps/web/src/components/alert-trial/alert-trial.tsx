@@ -16,7 +16,7 @@ export const AlertTrial = ({ ...props }: AlertTrialProps) => {
 
   const isAboutToExpire = daysLeft < 2;
 
-  const color = isAboutToExpire ? "yellow" : "violet";
+  const color = isAboutToExpire ? "red" : "violet";
 
   return (
     <AlertBanner

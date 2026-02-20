@@ -7,7 +7,7 @@ import { BadgeOnOff } from "../../../../../components/badge-on-off";
 import { useAlerts } from "./use-alerts";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
 import { useAlertCards } from "./use-alert-cards";
-import { AlertEnableFeature } from "../../../../../components/alert-enable-feature/alert-enable-feature";
+import { AlertEnableFeature } from "../../../../../components/alert-enable-feature";
 
 export const TeamAlertsPage = () => {
   const teamId = useTeamId();

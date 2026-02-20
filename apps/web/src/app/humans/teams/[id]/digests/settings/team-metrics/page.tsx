@@ -17,7 +17,7 @@ import { DigestBaseFields } from "../components/digest-base-fields";
 import { useTeamId } from "../../../use-team";
 import { getBrowserTimezone } from "../../../../../../../providers/date.provider";
 import { DigestLoadingSkeleton } from "../components/digest-loading-skeleton";
-import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature/alert-enable-feature";
+import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature";
 
 export const TeamMetricsDigestPage = () => {
   const teamId = useTeamId();

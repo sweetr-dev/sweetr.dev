@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Box,
   Button,
   Divider,
@@ -25,7 +26,6 @@ import { useBadges } from "./use-badges";
 import { isNumber } from "radash";
 import { IconDeployment } from "../../providers/icon.provider";
 import { useFeatureAdoption } from "../../providers/feature-adoption.provider";
-import { Link } from "react-router-dom";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -265,18 +265,16 @@ export const TimelinePullRequest = ({
 
               {!triedDeployments && (
                 <>
-                  <Button
-                    color="violet"
-                    size="xs"
-                    variant="outline"
-                    mt={5}
-                    component={Link}
+                  <Anchor
+                    underline="never"
                     target="_blank"
                     rel="noopener noreferrer"
-                    to="https://docs.sweetr.dev/features/deployments"
+                    href="https://docs.sweetr.dev/features/deployments"
                   >
-                    Setup Deployments
-                  </Button>
+                    <Button color="violet" size="xs" variant="outline" mt={5}>
+                      Setup Deployments
+                    </Button>
+                  </Anchor>
                 </>
               )}
             </Timeline.Item>
