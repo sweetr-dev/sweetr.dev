@@ -12,14 +12,14 @@ export const bullMQErrorHandler = (error: Error) => {
 export const workerFailedHandler = (job: Job, error: Error) => {
   logger.info(`🐂❌ BullMQ: ${job.name} - Erroed job #${job.id}`);
 
-  let extra = {};
+  let errorExtra = {};
 
   if (error instanceof BaseException) {
-    extra = error.extensions?.extra as Record<string, unknown>;
+    errorExtra = error.extensions?.extra as Record<string, unknown>;
   }
 
   captureException(error, {
-    extra: { jobId: job.id, jobName: job.name, jobData: job.data, ...extra },
+    extra: { jobId: job.id, jobName: job.name, jobData: job.data, errorExtra },
   });
 };
 
