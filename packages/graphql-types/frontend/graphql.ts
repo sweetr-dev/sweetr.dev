@@ -1270,6 +1270,8 @@ export type Workspace = {
   deployment?: Maybe<Deployment>;
   deployments: Array<Deployment>;
   environments: Array<Environment>;
+  /** Information about which features has been tried out by the workspace */
+  featureAdoption: WorkspaceFeatureAdoption;
   /** The git provider URL to uninstall the sweetr app */
   gitUninstallUrl: Scalars['String']['output'];
   handle: Scalars['String']['output'];
@@ -1362,6 +1364,11 @@ export type WorkspaceTeamArgs = {
 
 export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
+};
+
+export type WorkspaceFeatureAdoption = {
+  __typename?: 'WorkspaceFeatureAdoption';
+  lastDeploymentCreatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type WorkspaceMetricInput = {

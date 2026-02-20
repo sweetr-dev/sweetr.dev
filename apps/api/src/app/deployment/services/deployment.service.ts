@@ -10,6 +10,7 @@ import {
   UnarchiveDeploymentArgs,
   UpsertDeploymentInput,
 } from "./deployment.types";
+import { updateWorkspaceFeatureAdoption } from "../../workspaces/services/workspace.service";
 
 export async function findDeploymentById<
   TInclude extends Prisma.DeploymentInclude | undefined = undefined,
@@ -142,6 +143,13 @@ export const findLastProductionDeploymentByApplicationId = async ({
 };
 
 export const upsertDeployment = async (input: UpsertDeploymentInput) => {
+  updateWorkspaceFeatureAdoption({
+    workspaceId: input.workspaceId,
+    features: {
+      lastDeploymentCreatedAt: new Date().toISOString(),
+    },
+  });
+
   return getPrisma(input.workspaceId).deployment.upsert({
     where: {
       workspaceId_environmentId_applicationId_version_deployedAt: {
