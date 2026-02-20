@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Divider,
   Group,
   Text,
@@ -23,6 +24,7 @@ import { humanizeDuration, msToHour } from "../../providers/date.provider";
 import { useBadges } from "./use-badges";
 import { isNumber } from "radash";
 import { IconDeployment } from "../../providers/icon.provider";
+import { useFeatureAdoption } from "../../providers/feature-adoption.provider";
 
 interface TimeLinePullRequestProps {
   pullRequest: Pick<
@@ -34,6 +36,7 @@ interface TimeLinePullRequestProps {
 export const TimelinePullRequest = ({
   pullRequest,
 }: TimeLinePullRequestProps) => {
+  const { triedDeployments } = useFeatureAdoption();
   const successColor = "var(--mantine-color-green-4)";
   const errorColor = "var(--mantine-color-red-4)";
   const warningColor = "var(--mantine-color-yellow-4)";
@@ -237,21 +240,35 @@ export const TimelinePullRequest = ({
                   <IconDeployment
                     size={20}
                     stroke={1.5}
-                    color={getColor("deploy")}
+                    color={
+                      triedDeployments
+                        ? getColor("deploy")
+                        : "var(--mantine-color-violet-4)"
+                    }
                   />
                 </ThemeIcon>
               }
-              c={getColor("deploy")}
+              c={triedDeployments ? getColor("deploy") : "violet"}
             >
-              <Text size="xs" mt={5}>
-                {isDeployed && isNumber(timeToDeploy) && (
-                  <>in {humanizeDuration(timeToDeploy)}</>
-                )}
+              {triedDeployments && (
+                <Text size="xs" mt={5}>
+                  {isDeployed && isNumber(timeToDeploy) && (
+                    <>in {humanizeDuration(timeToDeploy)}</>
+                  )}
 
-                {!isDeployed && isNumber(timeToDeploy) && (
-                  <>pending for {humanizeDuration(timeToDeploy)}</>
-                )}
-              </Text>
+                  {!isDeployed && isNumber(timeToDeploy) && (
+                    <>pending for {humanizeDuration(timeToDeploy)}</>
+                  )}
+                </Text>
+              )}
+
+              {!triedDeployments && (
+                <>
+                  <Button color="violet" size="xs" variant="outline" mt={5}>
+                    Setup Deployments
+                  </Button>
+                </>
+              )}
             </Timeline.Item>
           )}
         </Timeline>

@@ -16,7 +16,7 @@ export const HomePage = () => {
   return (
     <PageContainer>
       <Breadcrumbs items={[{ label: "Home" }]} />
-      <AlertTrial mb={32} mt={-32} />
+      <AlertTrial mb={32} mt={-16} />
       {user && (
         <Title order={1} size="h3">
           {`Welcome, ${getFirstName(user.name)} 👋`}

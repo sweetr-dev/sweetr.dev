@@ -42,6 +42,9 @@ export const userWorkspacesQuery = (
               avatar
               email
             }
+            featureAdoption {
+              lastDeploymentCreatedAt
+            }
             billing {
               trial {
                 endAt

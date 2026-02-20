@@ -5,8 +5,8 @@ import { useDigestCards } from "./use-digest-cards";
 import { useDigests } from "./use-digests";
 import { useTeamId } from "../use-team";
 import { LoadableContent } from "../../../../../components/loadable-content";
-import { AlertEnableSlack } from "../../../../../components/alert-enable-slack";
 import { useMessagingIntegration } from "../../../../../providers/integration.provider";
+import { AlertEnableFeature } from "../../../../../components/alert-enable-feature/alert-enable-feature";
 
 export const TeamDigestsPage = () => {
   const teamId = useTeamId();
@@ -26,7 +26,7 @@ export const TeamDigestsPage = () => {
         }
         content={
           <>
-            {!integration && <AlertEnableSlack mb="md" />}
+            {!integration && <AlertEnableFeature feature="slack" mb="md" />}
             <SimpleGrid cols={{ base: 1, md: 2 }}>
               {availableDigests.map((digest) => (
                 <Anchor

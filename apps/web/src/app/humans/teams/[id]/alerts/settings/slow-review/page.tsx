@@ -11,7 +11,6 @@ import { useForm, zodResolver } from "@mantine/form";
 import { DrawerScrollable } from "../../../../../../../components/drawer-scrollable";
 import { LoadableContent } from "../../../../../../../components/loadable-content";
 import { useMessagingIntegration } from "../../../../../../../providers/integration.provider";
-import { AlertEnableSlack } from "../../../../../../../components/alert-enable-slack";
 import { useTeamId } from "../../../use-team";
 import { AlertLoadingSkeleton } from "../../components/alert-loading-skeleton";
 import { AlertBaseFields } from "../../components/alert-base-fields";
@@ -20,6 +19,7 @@ import { AlertType } from "@sweetr/graphql-types/frontend/graphql";
 import { FormSlowReviewAlert } from "../types";
 import { useFormAsyncData } from "../../../../../../../providers/form.provider";
 import { TriggerDescription } from "../components/trigger-description";
+import { AlertEnableFeature } from "../../../../../../../components/alert-enable-feature/alert-enable-feature";
 
 export const SlowReviewAlertPage = () => {
   const teamId = useTeamId();
@@ -98,7 +98,7 @@ export const SlowReviewAlertPage = () => {
 
             {!integration && (
               <Stack p="md">
-                <AlertEnableSlack />
+                <AlertEnableFeature feature="slack" />
               </Stack>
             )}
 

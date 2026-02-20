@@ -32,6 +32,8 @@ import {
 } from "../../../providers/pagination.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { CardIncident } from "./components/card-incident";
+import { AlertEnableFeature } from "../../../components/alert-enable-feature";
+import { useFeatureAdoption } from "../../../providers/feature-adoption.provider";
 
 export const IncidentsPage = () => {
   const { workspace } = useWorkspace();
@@ -52,6 +54,7 @@ export const IncidentsPage = () => {
     },
   });
   const navigate = useNavigate();
+  const { triedDeployments } = useFeatureAdoption();
 
   useHotkeys([
     [
@@ -141,6 +144,10 @@ export const IncidentsPage = () => {
           </Link>
         </Group>
       </HeaderActions>
+
+      {!triedDeployments && (
+        <AlertEnableFeature feature="deployments" mb="md" />
+      )}
 
       <Group gap={5}>
         <FilterDate

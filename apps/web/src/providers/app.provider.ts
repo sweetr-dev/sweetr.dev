@@ -9,7 +9,13 @@ import { devtools, persist } from "zustand/middleware";
 type PersonData = Pick<Person, "id" | "name" | "handle" | "avatar" | "email">;
 export type WorkspaceData = Pick<
   Workspace,
-  "id" | "name" | "avatar" | "handle" | "gitUninstallUrl" | "isActiveCustomer"
+  | "id"
+  | "name"
+  | "avatar"
+  | "handle"
+  | "gitUninstallUrl"
+  | "isActiveCustomer"
+  | "featureAdoption"
 > & { billing?: Partial<Billing> | null };
 
 interface AppStore {
