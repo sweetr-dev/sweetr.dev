@@ -11,7 +11,9 @@ export const bullMQErrorHandler = (error: Error) => {
 export const workerFailedHandler = (job: Job, error: Error) => {
   logger.info(`🐂❌ BullMQ: ${job.name} - Erroed job #${job.id}`);
 
-  captureException(error, { extra: { jobId: job.id, jobName: job.name } });
+  captureException(error, {
+    extra: { jobId: job.id, jobName: job.name, error },
+  });
 };
 
 export const workerStalledHandler = (jobId: string) => {
