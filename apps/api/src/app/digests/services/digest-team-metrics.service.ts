@@ -1,4 +1,4 @@
-import { AnyBlock, RichTextElement } from "@slack/web-api";
+import { ActionsBlockElement, AnyBlock, RichTextElement } from "@slack/web-api";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceSlackClient,
@@ -12,18 +12,43 @@ import {
   DigestMetricType,
   MetricLineElements,
 } from "./digest-team-metrics.types";
-import { DurationUnit, endOfDay, format, startOfDay, sub } from "date-fns";
-import { Frequency } from "@prisma/client";
+import {
+  DurationUnit,
+  endOfDay,
+  format,
+  isAfter,
+  startOfDay,
+  sub,
+} from "date-fns";
+import { Frequency, Workspace } from "@prisma/client";
 import * as averageMetricsService from "../../metrics/services/average-metrics.service";
 import { all, capitalize } from "radash";
 import { getPullRequestSize } from "../../github/services/github-pull-request-tracking.service";
 import { UTCDate } from "@date-fns/utc";
-import { formatMsDuration } from "../../../lib/date";
+import { formatMsDuration, thirtyDaysAgo } from "../../../lib/date";
 import { AverageMetricFilters } from "../../metrics/services/average-metrics.types";
 import { logger } from "../../../lib/logger";
+import { Period } from "../../../graphql-types";
+import {
+  getDeploymentFrequencyMetric,
+  getLeadTimeMetric,
+  getChangeFailureRateMetric,
+  getMeanTimeToRecoverMetric,
+} from "../../metrics/services/dora-metrics.service";
+import { DoraMetricsFilters } from "../../metrics/services/dora-metrics.types";
+import {
+  findWorkspaceById,
+  safeParseFeatureAdoption,
+} from "../../workspaces/services/workspace.service";
 
 export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
   logger.info("sendTeamMetricsDigest", { digest });
+
+  const workspace = await findWorkspaceById(digest.workspaceId);
+
+  if (!workspace) {
+    throw new ResourceNotFoundException("Workspace not found");
+  }
 
   const { slackClient } = await getWorkspaceSlackClient(digest.workspaceId);
 
@@ -36,8 +61,16 @@ export const sendTeamMetricsDigest = async (digest: DigestWithRelations) => {
     throw new ResourceNotFoundException("Slack channel not found");
   }
 
-  const metrics = await getTeamMetrics(digest);
-  const blocks = await getDigestMessageBlocks(digest, metrics);
+  const [metrics, doraMetrics] = await Promise.all([
+    getTeamMetrics(digest),
+    getDoraMetrics(digest),
+  ]);
+  const blocks = await getDigestMessageBlocks(
+    digest,
+    workspace,
+    metrics,
+    doraMetrics
+  );
 
   await sendSlackMessage(slackClient, {
     channel: slackChannel.id,
@@ -131,11 +164,48 @@ const getTeamMetrics = async (digest: DigestWithRelations) => {
   };
 };
 
+const getDoraMetrics = async (digest: DigestWithRelations) => {
+  const { latest } = getChartFilters(digest);
+
+  const doraFilters: DoraMetricsFilters = {
+    workspaceId: digest.workspaceId,
+    dateRange: { from: latest.startDate, to: latest.endDate },
+    period:
+      digest.frequency === Frequency.WEEKLY ? Period.DAILY : Period.WEEKLY,
+    teamIds: [digest.teamId],
+  };
+
+  const [deploymentFrequency, leadTime, changeFailureRate, meanTimeToRecover] =
+    await Promise.all([
+      getDeploymentFrequencyMetric(doraFilters),
+      getLeadTimeMetric(doraFilters),
+      getChangeFailureRateMetric(doraFilters),
+      getMeanTimeToRecoverMetric(doraFilters),
+    ]);
+
+  return {
+    deploymentFrequency,
+    leadTime,
+    changeFailureRate,
+    meanTimeToRecover,
+  };
+};
+
 const getDigestMessageBlocks = async (
   digest: DigestWithRelations,
-  metrics: Awaited<ReturnType<typeof getTeamMetrics>>
+  workspace: Workspace,
+  metrics: Awaited<ReturnType<typeof getTeamMetrics>>,
+  doraMetrics: Awaited<ReturnType<typeof getDoraMetrics>>
 ): Promise<AnyBlock[]> => {
   const { latest, previous } = getChartFilters(digest);
+
+  const featureAdoption = safeParseFeatureAdoption(workspace.featureAdoption);
+  const hasDeploymentIngestion =
+    !!featureAdoption.lastDeploymentCreatedAt &&
+    isAfter(
+      new UTCDate(featureAdoption.lastDeploymentCreatedAt),
+      thirtyDaysAgo()
+    );
 
   const dateFormatter: DurationUnit[] = [
     "years",
@@ -145,6 +215,45 @@ const getDigestMessageBlocks = async (
     "hours",
     "minutes",
   ];
+
+  const buttons: ActionsBlockElement[] = [
+    {
+      type: "button",
+      text: {
+        type: "plain_text",
+        text: "Explore PRs",
+      },
+      url: `${env.FRONTEND_URL}/humans/teams/${encodeId(digest.teamId)}/pull-requests?state=MERGED&completedAtFrom=${latest.startDate}&completedAtTo=${latest.endDate}`,
+    },
+    {
+      type: "button",
+      text: {
+        type: "plain_text",
+        text: "Team Metrics",
+      },
+      url: `${env.FRONTEND_URL}/humans/teams/${encodeId(digest.teamId)}/health-and-performance`,
+    },
+  ];
+
+  if (!hasDeploymentIngestion) {
+    buttons.push({
+      type: "button",
+      text: {
+        type: "plain_text",
+        text: "Setup Deployments",
+      },
+      url: `https://docs.sweetr.dev/features/deployments`,
+    });
+  } else {
+    buttons.push({
+      type: "button",
+      text: {
+        type: "plain_text",
+        text: "DORA Metrics",
+      },
+      url: `${env.FRONTEND_URL}/metrics-and-insights/`,
+    });
+  }
 
   return [
     {
@@ -162,7 +271,7 @@ const getDigestMessageBlocks = async (
           elements: [
             {
               type: "text",
-              text: `Avg of ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")} (vs ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")}) • ${metrics.prCount.latest.value} PRs from current period analyzed`,
+              text: `(UTC) Avg of ${format(new UTCDate(latest.startDate), "MMM dd")}—${format(new UTCDate(latest.endDate), "MMM dd")} (vs ${format(new UTCDate(previous.startDate), "MMM dd")}—${format(new UTCDate(previous.endDate), "MMM dd")}) • ${metrics.prCount.latest.value} merged PRs from current period analyzed`,
             },
           ],
         },
@@ -174,6 +283,71 @@ const getDigestMessageBlocks = async (
         type: "mrkdwn",
         text: "\n",
       },
+    },
+    {
+      type: "divider",
+    },
+    {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            {
+              type: "text",
+              text: "🚀 DORA Metrics",
+              style: { bold: true },
+            },
+          ],
+        },
+        {
+          type: "rich_text_list",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Deployments",
+                value: `${Number(doraMetrics.deploymentFrequency.currentAmount)} deploys`,
+                change: -doraMetrics.deploymentFrequency.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Lead Time",
+                value:
+                  formatMsDuration(
+                    Number(doraMetrics.leadTime.currentAmount),
+                    dateFormatter
+                  ) || "N/A",
+                change: doraMetrics.leadTime.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "Failure Rate",
+                value: `${Number(doraMetrics.changeFailureRate.currentAmount)}%`,
+                change: doraMetrics.changeFailureRate.change,
+              }),
+            },
+            {
+              type: "rich_text_section",
+              elements: getMetricLineElements({
+                label: "MTTR",
+                value:
+                  formatMsDuration(
+                    Number(doraMetrics.meanTimeToRecover.currentAmount),
+                    dateFormatter
+                  ) || "N/A",
+                change: doraMetrics.meanTimeToRecover.change,
+              }),
+            },
+          ],
+          style: "bullet",
+          indent: 1,
+        },
+      ],
     },
     {
       type: "divider",
@@ -259,16 +433,7 @@ const getDigestMessageBlocks = async (
     },
     {
       type: "actions",
-      elements: [
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Explore Metrics",
-          },
-          url: `${env.FRONTEND_URL}/humans/teams/${encodeId(digest.teamId)}/digests/wip`,
-        },
-      ],
+      elements: buttons,
     },
   ];
 };

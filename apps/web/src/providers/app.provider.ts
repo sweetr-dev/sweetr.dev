@@ -36,7 +36,9 @@ export const useAppStore = create<AppStore>()(
         setAvailableWorkspaces: (workspaces: WorkspaceData[]) =>
           set(() => ({ availableWorkspaces: workspaces })),
       }),
-      { name: "app-store", version: 1 },
+      {
+        name: "app-store",
+      },
     ),
   ),
 );
