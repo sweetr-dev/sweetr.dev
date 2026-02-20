@@ -13,6 +13,7 @@ import {
   WorkspaceFeatureAdoption,
 } from "./workspace.types";
 import { logger } from "../../../lib/logger";
+import { captureException } from "../../../lib/sentry";
 
 type WorkspaceWithUserOrOrganization = Workspace & {
   gitProfile: GitProfile | null;
@@ -180,4 +181,22 @@ export const updateWorkspaceFeatureAdoption = ({
   })().catch((error) =>
     logger.warn("Failed to update feature adoption", { error, workspaceId })
   );
+};
+
+export const safeParseFeatureAdoption = (
+  featureAdoption: Prisma.JsonValue
+): WorkspaceFeatureAdoption => {
+  const { data, error } = WorkspaceFeatureAdoption.safeParse(featureAdoption);
+
+  if (error) {
+    captureException(error, {
+      extra: {
+        featureAdoption,
+      },
+    });
+
+    return {};
+  }
+
+  return data;
 };

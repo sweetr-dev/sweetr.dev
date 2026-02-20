@@ -9,7 +9,7 @@ type AlertEnableFeatureProps = AlertProps & {
 
 const featureMap: Record<Feature, { text: string; href: string }> = {
   deployments: {
-    text: "Setup deployment ingestion to enable this feature.",
+    text: "Setup deployment ingestion to use this feature.",
     href: "https://docs.sweetr.dev/features/deployments",
   },
   slack: {
