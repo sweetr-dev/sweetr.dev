@@ -3,7 +3,7 @@ import {
   PullRequestOpenedEvent,
   PullRequestSynchronizeEvent,
 } from "@octokit/webhooks-types";
-import { PullRequestState } from "@prisma/client";
+import { PullRequest, PullRequestState } from "@prisma/client";
 import { Job } from "bullmq";
 import { addJob, JobPriority, SweetQueue } from "../../../bull-mq/queues";
 import { createWorker } from "../../../bull-mq/workers";
@@ -15,19 +15,17 @@ import {
 } from "../../sync-batch/services/sync-batch.service";
 import { syncPullRequest } from "../services/github-pull-request.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
+import { DataIntegrityException } from "../../errors/exceptions/data-integrity.exception";
+
+type JobData = (
+  | PullRequestSynchronizeEvent
+  | PullRequestOpenedEvent
+  | PullRequestClosedEvent
+) & { syncReviews?: boolean; syncBatchId?: number };
 
 export const syncPullRequestWorker = createWorker(
   SweetQueue.GITHUB_SYNC_PULL_REQUEST,
-  async (
-    job: Job<
-      (
-        | PullRequestSynchronizeEvent
-        | PullRequestOpenedEvent
-        | PullRequestClosedEvent
-      ) & { syncReviews?: boolean; syncBatchId?: number }
-    >,
-    token?: string
-  ) => {
+  async (job: Job<JobData>, token?: string) => {
     if (!job.data.installation?.id) {
       throw new InputValidationException(
         "Received Pull Request webhook without installation",
@@ -66,32 +64,54 @@ export const syncPullRequestWorker = createWorker(
     );
 
     if (pullRequest) {
-      if (job.data.syncReviews) {
-        logger.debug("syncPullRequest: Adding job to sync reviews", {
-          pullRequest,
-        });
-
-        await addJob(
-          SweetQueue.GITHUB_SYNC_CODE_REVIEW,
-          {
-            pull_request: { node_id: pullRequest.gitPullRequestId },
-            installation: { id: installationId },
-          },
-          { priority: JobPriority.LOW }
-        );
-      }
-
-      await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, job.data);
-
-      if (pullRequest.state === PullRequestState.MERGED) {
-        await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, job.data);
-        await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE, {
-          workspaceId: pullRequest.workspaceId,
-          pullRequestId: pullRequest.id,
-          installationId,
-        });
-      }
+      await handlePostSyncActions(job.data, pullRequest);
     }
   },
   { limiter: { max: 8, duration: 1000 } }
 );
+
+const handlePostSyncActions = async (
+  jobData: JobData,
+  pullRequest: PullRequest
+) => {
+  const installationId = jobData.installation?.id;
+  const syncBatchId = jobData.syncBatchId;
+
+  if (!installationId) {
+    throw new DataIntegrityException(
+      "handlePostSyncActions: Missing installation ID",
+      { extra: { jobData, pullRequest } }
+    );
+  }
+
+  if (jobData.syncReviews) {
+    logger.debug("syncPullRequest: Adding job to sync reviews", {
+      pullRequest,
+    });
+
+    await addJob(
+      SweetQueue.GITHUB_SYNC_CODE_REVIEW,
+      {
+        pull_request: { node_id: pullRequest.gitPullRequestId },
+        installation: { id: installationId },
+      },
+      { priority: JobPriority.LOW }
+    );
+  }
+
+  if (!syncBatchId) {
+    await addJob(SweetQueue.AUTOMATION_PR_SIZE_LABELER, jobData);
+  }
+
+  if (pullRequest.state === PullRequestState.MERGED) {
+    if (!syncBatchId) {
+      await addJob(SweetQueue.ALERT_MERGED_WITHOUT_APPROVAL, jobData);
+    }
+
+    await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_PULL_REQUEST_MERGE, {
+      workspaceId: pullRequest.workspaceId,
+      pullRequestId: pullRequest.id,
+      installationId,
+    });
+  }
+};
