@@ -9,7 +9,7 @@ datasource db {
   provider          = "postgres"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  relationMode      = "prisma"
+  relationMode      = "foreignKeys"
 }
 
 enum GitProvider {
@@ -442,7 +442,6 @@ model PullRequestTracking {
 
   @@unique([pullRequestId])
   @@index([workspaceId])
-  @@index([pullRequestId])
 }
 
 model CodeReview {
@@ -465,7 +464,6 @@ model CodeReview {
   @@unique([pullRequestId, authorId])
   @@index([workspaceId])
   @@index([authorId])
-  @@index([pullRequestId])
 }
 
 model CodeReviewRequest {
@@ -488,7 +486,6 @@ model CodeReviewRequest {
   @@unique([pullRequestId, reviewerId])
   @@index([workspaceId])
   @@index([reviewerId])
-  @@index([pullRequestId])
 }
 
 model Team {
@@ -512,7 +509,6 @@ model Team {
   Application Application[]
 
   @@unique([workspaceId, name])
-  @@index([workspaceId])
 }
 
 model TeamMember {
@@ -561,7 +557,6 @@ model Digest {
 
   @@unique([teamId, type])
   @@index([workspaceId])
-  @@index([teamId])
 }
 
 model Alert {
@@ -584,7 +579,6 @@ model Alert {
 
   @@unique([teamId, type])
   @@index([workspaceId])
-  @@index([teamId])
 }
 
 model AlertEvent {
@@ -620,7 +614,6 @@ model Automation {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([workspaceId, type])
-  @@index([workspaceId, type])
 }
 
 model Integration {
@@ -635,7 +628,6 @@ model Integration {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([workspaceId, app])
-  @@index([workspaceId, app])
 }
 
 model ApiKey {
@@ -655,7 +647,6 @@ model ApiKey {
   creator   GitProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([key])
   @@index([creatorId])
 }
 
@@ -676,7 +667,6 @@ model Environment {
   archivedAt DateTime?
 
   @@unique([workspaceId, name])
-  @@index([workspaceId])
 }
 
 model Application {
@@ -704,7 +694,6 @@ model Application {
   archivedAt DateTime?
 
   @@unique([workspaceId, name])
-  @@index([workspaceId])
   @@index([repositoryId])
   @@index([teamId])
 }
@@ -742,7 +731,6 @@ model Deployment {
   archivedAt DateTime?
 
   @@unique([workspaceId, environmentId, applicationId, version, deployedAt])
-  @@index([workspaceId])
   @@index([applicationId])
   @@index([environmentId])
   @@index([authorId])
@@ -777,7 +765,6 @@ model Incident {
 
   archivedAt DateTime?
 
-  @@index([workspaceId])
   @@index([causeDeploymentId])
   @@index([fixDeploymentId])
   @@index([teamId])
@@ -801,7 +788,6 @@ model DeploymentPullRequest {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([deploymentId, pullRequestId])
-  @@index([deploymentId])
   @@index([pullRequestId])
   @@index([workspaceId])
 }
