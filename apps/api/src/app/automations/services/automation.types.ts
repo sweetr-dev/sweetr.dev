@@ -74,18 +74,13 @@ export interface IncidentDetectionSettings {
     enabled?: boolean;
   };
   hotfix?: {
-    detectByTitle?: {
-      enabled?: boolean;
-      regex?: string;
-    };
-    detectByBranch?: {
-      enabled?: boolean;
-      regex?: string;
-    };
-    detectByLabel?: {
-      enabled?: boolean;
-      label?: string;
-    };
+    enabled?: boolean;
+    prTitleRegEx?: string;
+    branchRegEx?: string;
+    prLabelRegEx?: string;
+  };
+  rollback?: {
+    enabled?: boolean;
   };
 }
 
