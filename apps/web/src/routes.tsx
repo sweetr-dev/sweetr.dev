@@ -4,6 +4,7 @@ import { ErrorPage } from "./app/500";
 import { LoginPage } from "./app/auth/login/page";
 import { AutomationsPage } from "./app/automations/page";
 import { AutomationPrSizeLabelerPage } from "./app/automations/settings/pr-size-labeler/page";
+import { AutomationIncidentDetectionPage } from "./app/automations/settings/incident-detection/page";
 import { AutomationPrTitleCheckPage } from "./app/automations/settings/pr-title-check/page";
 import { GithubInstallPage } from "./app/github/install/page";
 import { OAuthGithubPage } from "./app/github/oauth/page";
@@ -393,6 +394,10 @@ export const router = createBrowserRouter([
               {
                 path: "/automations/pr-size-labeler",
                 element: <AutomationPrSizeLabelerPage />,
+              },
+              {
+                path: "/automations/incident-detection",
+                element: <AutomationIncidentDetectionPage />,
               },
             ],
           },

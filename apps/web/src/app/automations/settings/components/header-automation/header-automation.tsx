@@ -11,7 +11,9 @@ export const HeaderAutomation = ({ automation }: HeaderAutomationProps) => {
   return (
     <>
       <Stack p="md">
-        <ImageDemo title={automation.title} src={automation.demoUrl} />
+        {automation.demoUrl && (
+          <ImageDemo title={automation.title} src={automation.demoUrl} />
+        )}
 
         <Text>{automation.description}</Text>
         <SectionBenefits benefits={automation.benefits} />
