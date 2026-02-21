@@ -40,6 +40,7 @@ export interface CanRunAutomationArgs {
 export type AutomationTypeMap = {
   [AutomationType.PR_TITLE_CHECK]: AutomationPrTitleCheck;
   [AutomationType.PR_SIZE_LABELER]: AutomationPrSizeLabeler;
+  [AutomationType.INCIDENT_DETECTION]: AutomationIncidentDetection;
 };
 
 export interface AutomationPrTitleCheck extends Omit<Automation, "settings"> {
@@ -54,11 +55,38 @@ export interface AutomationPrSizeLabeler extends Omit<Automation, "settings"> {
 
 export type AutomationSettings =
   | AutomationPrTitleCheck
-  | AutomationPrSizeLabeler;
+  | AutomationPrSizeLabeler
+  | AutomationIncidentDetection;
 
 export interface PrTitleCheckSettings extends Prisma.JsonObject {
   regex?: string;
   regexExample?: string;
+}
+
+export interface AutomationIncidentDetection
+  extends Omit<Automation, "settings"> {
+  type: typeof AutomationType.INCIDENT_DETECTION;
+  settings: IncidentDetectionSettings;
+}
+
+export interface IncidentDetectionSettings {
+  revert?: {
+    enabled?: boolean;
+  };
+  hotfix?: {
+    detectByTitle?: {
+      enabled?: boolean;
+      regex?: string;
+    };
+    detectByBranch?: {
+      enabled?: boolean;
+      regex?: string;
+    };
+    detectByLabel?: {
+      enabled?: boolean;
+      label?: string;
+    };
+  };
 }
 
 export interface PrSizeLabelerSettings {

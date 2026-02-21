@@ -1,21 +1,21 @@
 import { fork } from "radash";
 
 const automationCards = {
-  PR_TITLE_CHECK: {
-    type: "PR_TITLE_CHECK",
+  INCIDENT_DETECTION: {
+    type: "INCIDENT_DETECTION",
     enabled: false,
     available: true,
-    title: "PR Title Requirements",
+    title: "Incident Detection",
     description:
-      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
+      "Automatically detect incidents from rollbacks, hotfixes and reverts.",
     shortDescription:
-      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
-    demoUrl: "/images/automations/pr-title-check-demo.webp",
-    docsUrl: "https://docs.sweetr.dev/features/automations/pr-title-check",
-    color: "red.1",
-    icon: "✍️",
+      "Automatically detect incidents from rollbacks, hotfixes and reverts.",
+    demoUrl: null,
+    docsUrl: "https://docs.sweetr.dev/features/automations/incident-detection",
+    color: "orange.1",
+    icon: "🚨",
     benefits: {
-      compliance: "Standardize Pull Request titles across the organization.",
+      failureRate: "Track production incidents automatically.",
     },
   },
   PR_SIZE_LABELER: {
@@ -29,11 +29,28 @@ const automationCards = {
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     demoUrl: "/images/automations/pr-size-labeler.webp",
     docsUrl: "https://docs.sweetr.dev/features/automations/pr-size-labeler",
-    color: "green.1",
+    color: "indigo.1",
     icon: "📏",
     benefits: {
       cycleTime: "Encourage faster reviews on smaller PRs.",
       failureRate: "Mitigate reviewer fatigue with smaller PRs.",
+    },
+  },
+  PR_TITLE_CHECK: {
+    type: "PR_TITLE_CHECK",
+    enabled: false,
+    available: true,
+    title: "PR Title Requirements",
+    description:
+      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
+    shortDescription:
+      "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
+    demoUrl: "/images/automations/pr-title-check-demo.webp",
+    docsUrl: "https://docs.sweetr.dev/features/automations/pr-title-check",
+    color: "lime.1",
+    icon: "✍️",
+    benefits: {
+      compliance: "Standardize Pull Request titles across the organization.",
     },
   },
   // TO-DO: Build UI to control these automations (they are team settings today)
@@ -97,7 +114,7 @@ const automationCards = {
       "Auto-generated release notes for every deployment posted in your Slack.",
     demoUrl: "/images/automations/pr-title-check-demo.webp",
     docsUrl: "https://docs.sweetr.dev/",
-    color: "green.1",
+    color: "teal.1",
     icon: "📝",
     benefits: {
       compliance:
