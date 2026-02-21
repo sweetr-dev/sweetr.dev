@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { validateRegEx } from "../../../../providers/validation.provider";
 
 export const FormIncidentDetection = z.object({
   enabled: z.boolean(),
@@ -8,9 +9,18 @@ export const FormIncidentDetection = z.object({
     }),
     hotfix: z.object({
       enabled: z.boolean(),
-      prTitleRegEx: z.string().optional(),
-      branchRegEx: z.string().optional(),
-      prLabelRegEx: z.string().optional(),
+      prTitleRegEx: z
+        .string()
+        .refine(validateRegEx, "Invalid regular expression")
+        .optional(),
+      branchRegEx: z
+        .string()
+        .refine(validateRegEx, "Invalid regular expression")
+        .optional(),
+      prLabelRegEx: z
+        .string()
+        .refine(validateRegEx, "Invalid regular expression")
+        .optional(),
     }),
     rollback: z.object({
       enabled: z.boolean(),
