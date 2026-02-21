@@ -1,48 +1,83 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { isObject } from "radash";
 
 const prisma = new PrismaClient();
 
-export const getBypassRlsPrisma = () =>
-  prisma.$extends({
-    query: {
-      $allModels: {
-        async $allOperations({ args, query }) {
-          const [, , result] = await prisma.$transaction([
-            prisma.$executeRaw`SELECT set_config('app.current_workspace_id', '0', TRUE)`,
-            prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-            query(args),
-          ]);
-          return result;
-        },
-      },
-    },
-  }) as PrismaClient;
+/**
+ * Creates a Prisma extension that injects RLS session variables into every
+ * operation via set_config. Handles standalone queries, interactive
+ * transactions, and batch transactions.
+ *
+ * Based on: https://gist.github.com/danielrose7/a0c6a98e7de5f63dffb86ec05d34dab9
+ * Related: https://github.com/prisma/prisma/issues/20678
+ */
+const createRlsExtension = (rlsSql: Prisma.Sql) =>
+  Prisma.defineExtension((client) =>
+    client.$extends({
+      client: {
+        $transaction: (async (
+          ...txnParams: Parameters<typeof client.$transaction>
+        ) => {
+          const [first, options] = txnParams;
 
-export const getPrisma = (workspaceId?: number) => {
-  if (workspaceId?.toString()) {
-    return prisma.$extends({
+          if (Array.isArray(first)) {
+            const [, ...results] = await client.$transaction(
+              [client.$executeRaw(rlsSql), ...first],
+              options
+            );
+            return results;
+          }
+
+          return client.$transaction(async (tx) => {
+            await tx.$executeRaw(rlsSql);
+            return (first as Function)(tx);
+          }, options);
+        }) as typeof client.$transaction,
+      },
       query: {
         $allModels: {
-          async $allOperations({ args, query }) {
-            const [, result] = await prisma.$transaction([
-              prisma.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId.toString()}, TRUE)`,
+          async $allOperations({ args, query, ...rest }) {
+            const existingTxn = (rest as any).__internalParams?.transaction;
+            if (existingTxn) return query(args);
+
+            const [, result] = await client.$transaction([
+              client.$executeRaw(rlsSql),
               query(args),
             ]);
             return result;
           },
         },
-        // Used in charts
-        async $queryRaw({ args, query }) {
-          const [, result] = await prisma.$transaction([
-            prisma.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId.toString()}, TRUE)`,
+        async $allOperations({ args, model, query, ...rest }) {
+          if (model) return query(args);
+
+          const existingTxn = (rest as any).__internalParams?.transaction;
+          if (existingTxn) return query(args);
+
+          const [, result] = await client.$transaction([
+            client.$executeRaw(rlsSql),
             query(args),
           ]);
           return result;
         },
       },
-    }) as PrismaClient;
+    })
+  );
+
+export const getBypassRlsPrisma = () =>
+  prisma.$extends(
+    createRlsExtension(
+      Prisma.sql`SELECT set_config('app.current_workspace_id', '0', TRUE), set_config('app.bypass_rls', 'on', TRUE)`
+    )
+  ) as unknown as PrismaClient;
+
+export const getPrisma = (workspaceId?: number) => {
+  if (workspaceId?.toString()) {
+    return prisma.$extends(
+      createRlsExtension(
+        Prisma.sql`SELECT set_config('app.current_workspace_id', ${workspaceId.toString()}, TRUE)`
+      )
+    ) as unknown as PrismaClient;
   }
 
   return prisma;

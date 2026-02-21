@@ -56,10 +56,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sweetr_test
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_user
     ports:
       - "5433:5432"
+    volumes:
+      - ./apps/api/init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
   dragonfly:
     image: "docker.dragonflydb.io/dragonflydb/dragonfly"
     ulimits:

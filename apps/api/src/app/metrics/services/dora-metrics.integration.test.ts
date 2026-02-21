@@ -24,6 +24,7 @@ import {
   getLeadTimeMetric,
   getMeanTimeToRecoverMetric,
 } from "./dora-metrics.service";
+import { getPrisma } from "../../../prisma";
 
 /**
  * DORA Metrics Integration Tests
@@ -125,7 +126,7 @@ describe("DORA Metrics", () => {
       );
 
       // Create PullRequestTracking with firstCommitAt
-      await ctx.prisma.pullRequestTracking.create({
+      await getPrisma(ctx.workspaceId).pullRequestTracking.create({
         data: {
           pullRequestId: pr.pullRequestId,
           workspaceId: ctx.workspaceId,
@@ -742,7 +743,7 @@ describe("DORA Metrics", () => {
       );
 
       // Archive deployment2
-      await ctx.prisma.deployment.update({
+      await getPrisma(ctx.workspaceId).deployment.update({
         where: { id: deployment2.deploymentId },
         data: { archivedAt: new Date() },
       });
@@ -1545,7 +1546,7 @@ describe("DORA Metrics", () => {
       }
 
       // Archive app2
-      await ctx.prisma.application.update({
+      await getPrisma(ctx.workspaceId).application.update({
         where: { id: app2.applicationId },
         data: { archivedAt: new Date() },
       });
@@ -2255,7 +2256,7 @@ describe("DORA Metrics", () => {
       }
 
       // Archive env2
-      await ctx.prisma.environment.update({
+      await getPrisma(ctx.workspaceId).environment.update({
         where: { id: env2.environmentId },
         data: { archivedAt: new Date() },
       });
@@ -2942,7 +2943,7 @@ describe("DORA Metrics", () => {
       }
 
       // Archive env2
-      await ctx.prisma.environment.update({
+      await getPrisma(ctx.workspaceId).environment.update({
         where: { id: env2.environmentId },
         data: { archivedAt: new Date() },
       });

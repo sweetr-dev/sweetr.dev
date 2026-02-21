@@ -1,5 +1,6 @@
-import { PrismaClient, GitProvider, PullRequestState, TeamMemberRole } from "@prisma/client";
+import { GitProvider, PullRequestState, TeamMemberRole } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { getPrisma } from "../../src/prisma";
 
 /**
  * Seed helpers: low-level, single-row insert functions.
@@ -9,7 +10,6 @@ import { randomUUID } from "crypto";
 
 export interface SeedWorkspace {
   workspaceId: number;
-  prisma: PrismaClient;
 }
 
 export interface SeedRepository {
@@ -42,17 +42,17 @@ export interface SeedTeam {
  */
 export async function seedGitProfile(
   ctx: SeedWorkspace,
-  options: {
+  input: {
     handle?: string;
     name?: string;
   } = {}
 ): Promise<SeedGitProfile> {
-  const gitProfile = await ctx.prisma.gitProfile.create({
+  const gitProfile = await getPrisma(ctx.workspaceId).gitProfile.create({
     data: {
       gitProvider: GitProvider.GITHUB,
       gitUserId: `user-${Date.now()}-${randomUUID()}`,
-      handle: options.handle ?? "test-user",
-      name: options.name ?? "Test User",
+      handle: input.handle ?? "test-user",
+      name: input.name ?? "Test User",
     },
   });
 
@@ -64,17 +64,17 @@ export async function seedGitProfile(
  */
 export async function seedRepository(
   ctx: SeedWorkspace,
-  options: {
+  input: {
     name?: string;
     fullName?: string;
   } = {}
 ): Promise<SeedRepository> {
-  const repository = await ctx.prisma.repository.create({
+  const repository = await getPrisma(ctx.workspaceId).repository.create({
     data: {
       gitProvider: GitProvider.GITHUB,
       gitRepositoryId: `repo-${Date.now()}-${randomUUID()}`,
-      name: options.name ?? "test-repo",
-      fullName: options.fullName ?? "test-org/test-repo",
+      name: input.name ?? "test-repo",
+      fullName: input.fullName ?? "test-org/test-repo",
       isPrivate: false,
       isFork: false,
       isMirror: false,
@@ -95,7 +95,7 @@ export async function seedRepository(
  */
 export async function seedTeam(
   ctx: SeedWorkspace,
-  options: {
+  input: {
     name?: string;
     description?: string;
     icon?: string;
@@ -103,15 +103,15 @@ export async function seedTeam(
     endColor?: string;
   } = {}
 ): Promise<SeedTeam> {
-  const team = await ctx.prisma.team.create({
+  const team = await getPrisma(ctx.workspaceId).team.create({
     data: {
       name:
-        options.name ??
+        input.name ??
         `team-${Date.now()}-${randomUUID().toString().substring(7)}`,
-      description: options.description,
-      icon: options.icon ?? "🚀",
-      startColor: options.startColor ?? "#000000",
-      endColor: options.endColor ?? "#000000",
+      description: input.description,
+      icon: input.icon ?? "🚀",
+      startColor: input.startColor ?? "#000000",
+      endColor: input.endColor ?? "#000000",
       workspaceId: ctx.workspaceId,
     },
   });
@@ -129,15 +129,15 @@ export async function seedTeamMember(
   ctx: SeedWorkspace,
   teamId: number,
   gitProfileId: number,
-  options: {
+  input: {
     role?: TeamMemberRole;
   } = {}
 ): Promise<{ teamMemberId: number }> {
-  const teamMember = await ctx.prisma.teamMember.create({
+  const teamMember = await getPrisma(ctx.workspaceId).teamMember.create({
     data: {
       teamId,
       gitProfileId,
-      role: options.role ?? TeamMemberRole.ENGINEER,
+      role: input.role ?? TeamMemberRole.ENGINEER,
       workspaceId: ctx.workspaceId,
     },
   });
@@ -151,16 +151,16 @@ export async function seedTeamMember(
 export async function seedApplication(
   ctx: SeedWorkspace,
   repositoryId: number,
-  options: {
+  input: {
     name?: string;
     teamId?: number;
   } = {}
 ): Promise<SeedApplication> {
-  const application = await ctx.prisma.application.create({
+  const application = await getPrisma(ctx.workspaceId).application.create({
     data: {
-      name: options.name ?? "test-app",
+      name: input.name ?? "test-app",
       repositoryId,
-      teamId: options.teamId,
+      teamId: input.teamId,
       deploymentSettings: {},
       workspaceId: ctx.workspaceId,
     },
@@ -178,17 +178,17 @@ export async function seedApplication(
  */
 export async function seedEnvironment(
   ctx: SeedWorkspace,
-  options: {
+  input: {
     name?: string;
     isProduction?: boolean;
   } = {}
 ): Promise<SeedEnvironment> {
-  const environment = await ctx.prisma.environment.create({
+  const environment = await getPrisma(ctx.workspaceId).environment.create({
     data: {
       name:
-        options.name ??
+        input.name ??
         `env-${Date.now()}-${randomUUID().toString().substring(7)}`,
-      isProduction: options.isProduction ?? true,
+      isProduction: input.isProduction ?? true,
       workspaceId: ctx.workspaceId,
     },
   });
@@ -206,7 +206,7 @@ export async function seedPullRequest(
   ctx: SeedWorkspace,
   repositoryId: number,
   authorId: number,
-  options: {
+  input: {
     number?: string;
     title?: string;
     state?: PullRequestState;
@@ -214,22 +214,22 @@ export async function seedPullRequest(
     createdAt?: Date;
   } = {}
 ): Promise<{ pullRequestId: number }> {
-  const pr = await ctx.prisma.pullRequest.create({
+  const pr = await getPrisma(ctx.workspaceId).pullRequest.create({
     data: {
       gitProvider: GitProvider.GITHUB,
       gitPullRequestId: `pr-${Date.now()}-${randomUUID()}`,
-      gitUrl: `https://github.com/test/repo/pull/${options.number ?? "1"}`,
-      title: options.title ?? "Test PR",
-      number: options.number ?? "1",
+      gitUrl: `https://github.com/test/repo/pull/${input.number ?? "1"}`,
+      title: input.title ?? "Test PR",
+      number: input.number ?? "1",
       files: [],
       commentCount: 0,
       changedFilesCount: 0,
       linesAddedCount: 0,
       linesDeletedCount: 0,
-      state: options.state ?? PullRequestState.MERGED,
-      mergedAt: options.mergedAt,
-      createdAt: options.createdAt ?? new Date("2024-01-01T00:00:00Z"),
-      updatedAt: options.createdAt ?? new Date("2024-01-01T00:00:00Z"),
+      state: input.state ?? PullRequestState.MERGED,
+      mergedAt: input.mergedAt,
+      createdAt: input.createdAt ?? new Date("2024-01-01T00:00:00Z"),
+      updatedAt: input.createdAt ?? new Date("2024-01-01T00:00:00Z"),
       repositoryId,
       authorId,
       workspaceId: ctx.workspaceId,
@@ -246,21 +246,21 @@ export async function seedDeployment(
   ctx: SeedWorkspace,
   applicationId: number,
   environmentId: number,
-  options: {
+  input: {
     version?: string;
     commitHash?: string;
     deployedAt: Date;
     authorId?: number;
   }
 ): Promise<{ deploymentId: number }> {
-  const deployment = await ctx.prisma.deployment.create({
+  const deployment = await getPrisma(ctx.workspaceId).deployment.create({
     data: {
       applicationId,
       environmentId,
-      version: options.version ?? "1.0.0",
-      commitHash: options.commitHash ?? `commit-${Date.now()}`,
-      deployedAt: options.deployedAt,
-      authorId: options.authorId,
+      version: input.version ?? "1.0.0",
+      commitHash: input.commitHash ?? `commit-${Date.now()}`,
+      deployedAt: input.deployedAt,
+      authorId: input.authorId,
       workspaceId: ctx.workspaceId,
     },
   });
@@ -276,7 +276,7 @@ export async function seedDeploymentPullRequest(
   deploymentId: number,
   pullRequestId: number
 ): Promise<void> {
-  await ctx.prisma.deploymentPullRequest.create({
+  await getPrisma(ctx.workspaceId).deploymentPullRequest.create({
     data: {
       deploymentId,
       pullRequestId,
@@ -291,18 +291,18 @@ export async function seedDeploymentPullRequest(
 export async function seedIncident(
   ctx: SeedWorkspace,
   causeDeploymentId: number,
-  options: {
+  input: {
     detectedAt: Date;
     resolvedAt?: Date;
     fixDeploymentId?: number;
   }
 ): Promise<{ incidentId: number }> {
-  const incident = await ctx.prisma.incident.create({
+  const incident = await getPrisma(ctx.workspaceId).incident.create({
     data: {
       causeDeploymentId,
-      fixDeploymentId: options.fixDeploymentId,
-      detectedAt: options.detectedAt,
-      resolvedAt: options.resolvedAt,
+      fixDeploymentId: input.fixDeploymentId,
+      detectedAt: input.detectedAt,
+      resolvedAt: input.resolvedAt,
       workspaceId: ctx.workspaceId,
     },
   });

@@ -1,8 +1,10 @@
 import { afterEach } from "vitest";
-import { getTestPrismaClient } from "./prisma-client";
+import { getSudoPrismaClient } from "./prisma-client";
 
 /**
  * Per-test setup: truncates all tables after each test for isolation.
+ *
+ * Uses the admin (superuser) client because app_user lacks TRUNCATE privilege.
  *
  * Why truncation over transactions?
  * - SQL-heavy metrics queries use window functions, CTEs, and complex joins
@@ -14,31 +16,23 @@ import { getTestPrismaClient } from "./prisma-client";
  * Trade-off: slightly slower than transactions, but correctness > speed
  * for a production metrics engine.
  */
-afterEach(
-  async () => {
-    const prisma = getTestPrismaClient();
+afterEach(async () => {
+  const sudoPrisma = getSudoPrismaClient();
 
-    // Get all table names from Prisma schema
-
-    const tables = await prisma.$queryRaw<{ tablename: string }[]>`
+  const tables = await sudoPrisma.$queryRaw<{ tablename: string }[]>`
       SELECT tablename
       FROM pg_tables
       WHERE schemaname = 'public'
         AND tablename NOT IN ('_prisma_migrations')
     `;
 
-    if (tables.length === 0) {
-      return;
-    }
+  if (tables.length === 0) {
+    return;
+  }
 
-    const tableNames = tables.map((t) => `"${t.tablename}"`).join(", ");
+  const tableNames = tables.map((t) => `"${t.tablename}"`).join(", ");
 
-    // Truncate all tables with CASCADE to handle foreign key constraints
-    // This is faster than DELETE and resets auto-increment counters
-    // Use RESTART IDENTITY to reset sequences
-    await prisma.$executeRawUnsafe(
-      `TRUNCATE TABLE ${tableNames} RESTART IDENTITY CASCADE`
-    );
-  },
-  30000 // 30 second timeout for truncation
-);
+  await sudoPrisma.$executeRawUnsafe(
+    `TRUNCATE TABLE ${tableNames} RESTART IDENTITY CASCADE`
+  );
+}, 30000);
