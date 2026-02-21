@@ -69,7 +69,7 @@ export const AutomationPrTitleCheckPage = () => {
           </Title>
         </Group>
       }
-      toolbar={automation.docsUrl && <ButtonDocs href={automation.docsUrl} />}
+      toolbar={automation?.docsUrl && <ButtonDocs href={automation.docsUrl} />}
       actions={
         <Button
           type="submit"
