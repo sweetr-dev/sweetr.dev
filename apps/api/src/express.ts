@@ -22,7 +22,8 @@ expressApp
       },
     })
   )
-  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }));
+  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }))
+  .set("trust proxy", 1);
 
 // Route handlers
 expressApp.use(githubRouter);
