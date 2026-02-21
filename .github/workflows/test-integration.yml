@@ -31,11 +31,26 @@ jobs:
           --health-retries 10
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5433/sweetr_test
+      SUPERUSER_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/sweetr_test
+      DATABASE_URL: postgresql://app_user:app_user@localhost:5433/sweetr_test
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Create app_user
+        run: |
+          PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d sweetr_test <<-EOSQL
+            CREATE USER app_user WITH PASSWORD 'app_user';
+            GRANT CONNECT ON DATABASE sweetr_test TO app_user;
+            GRANT USAGE ON SCHEMA public TO app_user;
+            REVOKE CREATE ON SCHEMA public FROM app_user;
+            REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;
+            GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app_user;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_user;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO app_user;
+          EOSQL
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -53,3 +68,4 @@ jobs:
         working-directory: apps/api
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
+          SUPERUSER_DATABASE_URL: ${{ env.SUPERUSER_DATABASE_URL }}
