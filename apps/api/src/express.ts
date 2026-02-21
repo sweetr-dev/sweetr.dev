@@ -9,6 +9,7 @@ import { slackRouter } from "./app/integrations/slack/slack.router";
 import cors from "cors";
 import { env } from "./env";
 import { deploymentsRouter } from "./app/deployment/deployments.router";
+import { healthRouter } from "./app/health/health.router";
 
 export const expressApp = express();
 
@@ -22,10 +23,10 @@ expressApp
       },
     })
   )
-  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }))
-  .set("trust proxy", 1);
+  .use(cors({ origin: env.FRONTEND_URL, credentials: true, methods: ["*"] }));
 
 // Route handlers
+expressApp.use(healthRouter);
 expressApp.use(githubRouter);
 expressApp.use(stripeRouter);
 expressApp.use(slackRouter);

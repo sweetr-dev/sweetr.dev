@@ -9,7 +9,7 @@ import { rateLimit } from "express-rate-limit";
 
 export const bullBoardRouter = Router();
 
-if (env.BULLBOARD_PATH) {
+if (env.BULLBOARD_PATH && env.BULLBOARD_USERNAME && env.BULLBOARD_PASSWORD) {
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath(env.BULLBOARD_PATH);
 
