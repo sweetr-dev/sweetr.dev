@@ -5,25 +5,30 @@ import { PrismaClient } from "@prisma/client";
 /**
  * Global test setup: validates environment and runs migrations once.
  * This runs before all tests and ensures the database is ready.
- * No domain data is created here - that's handled per-test.
+ *
+ * Migrations run as superuser (table owner). The app connects as app_user
+ * (subject to RLS) to match production behavior.
  */
 async function globalSetup() {
-  const databaseUrl = process.env.DATABASE_URL;
+  const superuserUrl = process.env.SUPERUSER_DATABASE_URL;
+  const appUserUrl = process.env.DATABASE_URL;
 
-  if (!databaseUrl) {
+  if (!superuserUrl) {
     throw new Error(
-      "DATABASE_URL environment variable is required for tests. " +
-        "Set it to a Postgres connection string."
+      "SUPERUSER_DATABASE_URL environment variable is required for tests. " +
+        "Set it to a Postgres superuser connection string."
     );
   }
 
-  // Validate DATABASE_URL format
-  if (!databaseUrl.startsWith("postgresql://")) {
-    throw new Error(`DATABASE_URL must be a PostgreSQL connection string`);
+  if (!appUserUrl) {
+    throw new Error(
+      "DATABASE_URL environment variable is required for tests. " +
+        "Set it to the app_user Postgres connection string."
+    );
   }
 
-  // Verify Postgres connectivity
-  const prisma = new PrismaClient();
+  // Verify Postgres connectivity with superuser
+  const prisma = new PrismaClient({ datasourceUrl: superuserUrl });
   try {
     await prisma.$connect();
     await prisma.$disconnect();
@@ -33,16 +38,28 @@ async function globalSetup() {
     );
   }
 
-  // Run migrations using prisma migrate deploy (never db push)
-  // This ensures the schema matches production exactly
+  // Verify app_user connectivity
+  const appPrisma = new PrismaClient({ datasourceUrl: appUserUrl });
   try {
-    // Run from apps/api directory where prisma/ is located
+    await appPrisma.$connect();
+    await appPrisma.$disconnect();
+  } catch (error) {
+    throw new Error(
+      `Failed to connect as app_user. Ensure the postgres-test container was ` +
+        `initialized with init-app-db.sh (you may need to recreate it: ` +
+        `docker compose down postgres-test && docker compose up -d postgres-test). ` +
+        `Error: ${error}`
+    );
+  }
+
+  // Run migrations as superuser (only table owner can run migrations)
+  try {
     const apiDir = join(__dirname, "..", "..");
     execSync("npm run prisma:migrate:production", {
       stdio: "inherit",
       env: {
         ...process.env,
-        DATABASE_URL: databaseUrl,
+        DATABASE_URL: superuserUrl,
       },
       cwd: apiDir,
     });

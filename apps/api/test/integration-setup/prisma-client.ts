@@ -1,30 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 
 /**
- * Single reusable Prisma client for tests.
- * Ensures connection reuse and safe cleanup.
- * No global mutable state leaks.
+ * Superuser Prisma client for test setup/teardown.
+ * Bypasses RLS — used for creating seed data and truncating tables.
  */
-let prismaClient: PrismaClient | null = null;
+let sudoPrismaClient: PrismaClient | null = null;
 
-export function getTestPrismaClient(): PrismaClient {
-  if (!prismaClient) {
-    prismaClient = new PrismaClient({
+export function getSudoPrismaClient(): PrismaClient {
+  if (!sudoPrismaClient) {
+    const url = process.env.SUPERUSER_DATABASE_URL;
+    if (!url) {
+      throw new Error(
+        "SUPERUSER_DATABASE_URL is required. " +
+          "Run tests via: npm run test:integration"
+      );
+    }
+    sudoPrismaClient = new PrismaClient({
+      datasourceUrl: url,
       log: process.env.DEBUG_PRISMA ? ["query", "error", "warn"] : ["error"],
     });
   }
-  return prismaClient;
+  return sudoPrismaClient;
 }
-
-/**
- * Cleanup function to disconnect Prisma client.
- * Called automatically by Vitest's global teardown if needed.
- */
-export async function closeTestPrismaClient(): Promise<void> {
-  if (prismaClient) {
-    await prismaClient.$disconnect();
-    prismaClient = null;
-  }
-}
-
-

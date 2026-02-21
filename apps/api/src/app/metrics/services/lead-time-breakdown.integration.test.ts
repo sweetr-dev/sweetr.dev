@@ -13,6 +13,7 @@ import {
 } from "../../../../test/seed";
 import { Period } from "../../../graphql-types";
 import { getLeadTimeBreakdown } from "./lead-time-breakdown.service";
+import { getPrisma } from "../../../prisma";
 
 describe("Lead Time Breakdown", () => {
   it("calculates breakdown metrics for a single PR", async () => {
@@ -45,7 +46,7 @@ describe("Lead Time Breakdown", () => {
       timeToDeploy: BigInt(18000000), // 5h (deploy duration)
     };
 
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: pr.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -103,7 +104,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: prevPr.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -136,7 +137,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: currPr.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -201,7 +202,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: pr1.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -223,7 +224,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: pr2.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -267,7 +268,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: pr1.pullRequestId,
         workspaceId: ctx.workspaceId,
@@ -291,7 +292,7 @@ describe("Lead Time Breakdown", () => {
       repository.repositoryId,
       gitProfile.gitProfileId
     );
-    await ctx.prisma.pullRequestTracking.create({
+    await getPrisma(ctx.workspaceId).pullRequestTracking.create({
       data: {
         pullRequestId: pr2.pullRequestId,
         workspaceId: ctx.workspaceId,
