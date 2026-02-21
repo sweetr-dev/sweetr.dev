@@ -29,7 +29,8 @@ expressApp
       credentials: true,
       methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     })
-  );
+  )
+  .set("trust proxy", 1);
 
 // Route handlers
 expressApp.use(healthRouter);
