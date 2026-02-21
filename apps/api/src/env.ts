@@ -35,7 +35,6 @@ export const env = envsafe({
   }),
   GITHUB_WEBHOOK_SECRET: str({
     desc: "The secret string used to sign GitHub webhooks",
-    default: "",
   }),
   GITHUB_APP_ID: str({ desc: "The application id" }),
   GITHUB_APP_PRIVATE_KEY: str({ desc: "The application private key" }),
@@ -69,7 +68,7 @@ export const env = envsafe({
     default: "",
   }),
   LOG_DRAIN: str({
-    desc: "The secret string used to sign GitHub webhooks",
+    desc: "The stream to log to",
     choices: ["logtail", "console"],
     default: "console",
   }),

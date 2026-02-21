@@ -73,6 +73,7 @@ jobs:
             -e GITHUB_APP_HANDLE=test \
             -e GITHUB_APP_ID=test \
             -e GITHUB_APP_PRIVATE_KEY=test \
+            -e GITHUB_WEBHOOK_SECRET=test \
             ${{ env.IMAGE }}:test
 
       - name: Wait for API to be ready
