@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { isObject } from "radash";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ["query"] });
 
 /**
  * Creates a Prisma extension that injects RLS session variables into every
