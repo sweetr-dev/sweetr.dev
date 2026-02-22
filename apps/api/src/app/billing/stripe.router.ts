@@ -10,6 +10,7 @@ import { captureException } from "../../lib/sentry";
 import { InputValidationException } from "../errors/exceptions/input-validation.exception";
 import { z } from "zod";
 import { decodeId } from "../../lib/hash-id";
+import { IntegrationException } from "../errors/exceptions/integration.exception";
 
 export const stripeRouter = Router();
 
@@ -17,11 +18,11 @@ stripeRouter.post(
   "/stripe/webhook",
   catchErrors(async (req, res) => {
     if (!env.STRIPE_API_KEY) {
-      throw new Error("STRIPE_API_KEY is not set");
+      throw new IntegrationException("STRIPE_API_KEY is not set");
     }
 
     if (!env.STRIPE_WEBHOOK_SECRET) {
-      throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+      throw new IntegrationException("STRIPE_WEBHOOK_SECRET is not set");
     }
 
     const signature = req.get("Stripe-Signature");
@@ -49,7 +50,7 @@ stripeRouter.post(
   urlencoded({ extended: true }),
   catchErrors(async (req, res) => {
     if (!env.STRIPE_API_KEY) {
-      throw new Error("STRIPE_API_KEY is not set");
+      throw new IntegrationException("STRIPE_API_KEY is not set");
     }
 
     const schema = z.object({
