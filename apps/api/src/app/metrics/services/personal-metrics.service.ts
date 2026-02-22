@@ -107,7 +107,6 @@ const getPullRequestSizeMetrics = async (
       "PullRequest"."authorId" = ${personId};
     `);
 
-  console.log("result", result, workspaceId, personId);
   const data = result.at(0);
 
   if (!data) {
