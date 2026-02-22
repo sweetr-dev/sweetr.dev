@@ -2,38 +2,76 @@ import { Stack, Title, Skeleton, Group, Text, Button } from "@mantine/core";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { AutomationType } from "@sweetr/graphql-types/frontend/graphql";
 import { useAutomationSettings } from "../use-automation";
-import { FormPrTitleCheckSettings } from "./components/form-pr-title-check-settings";
+import { FormIncidentDetectionSettings } from "./components/form-incident-detection-settings";
 import { useDrawerPage } from "../../../../providers/drawer-page.provider";
 import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { ButtonDocs } from "../../../../components/button-docs";
 import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler, useEffect, useMemo } from "react";
-import { FormPrTitleCheck } from "./types";
+import { FormIncidentDetection } from "./types";
 import { HeaderAutomation } from "../components/header-automation";
 
-export const AutomationPrTitleCheckPage = () => {
+const defaultValues: FormIncidentDetection = {
+  enabled: false,
+  settings: {
+    revert: {
+      enabled: true,
+    },
+    hotfix: {
+      enabled: true,
+      prTitleRegEx: "hotfix",
+      branchRegEx: "^hotfix",
+      prLabelRegEx: "hotfix",
+    },
+    rollback: {
+      enabled: true,
+    },
+  },
+};
+
+export const AutomationIncidentDetectionPage = () => {
   const { automation, automationSettings, query, mutation, mutate } =
-    useAutomationSettings(AutomationType.PR_TITLE_CHECK);
+    useAutomationSettings(AutomationType.INCIDENT_DETECTION);
 
   const drawerProps = useDrawerPage({
     closeUrl: `/automations`,
   });
 
-  const form = useForm<FormPrTitleCheck>({
-    validate: zodResolver(FormPrTitleCheck),
+  const form = useForm<FormIncidentDetection>({
+    validate: zodResolver(FormIncidentDetection),
   });
 
   useEffect(() => {
     const settings = automationSettings?.settings as
-      | FormPrTitleCheck["settings"]
+      | FormIncidentDetection["settings"]
       | undefined
       | null;
 
     form.setValues({
       enabled: automationSettings?.enabled || false,
       settings: {
-        regex: settings?.regex || "",
-        regexExample: settings?.regexExample || "",
+        revert: {
+          enabled:
+            settings?.revert?.enabled ?? defaultValues.settings.revert.enabled,
+        },
+        rollback: {
+          enabled:
+            settings?.rollback?.enabled ??
+            defaultValues.settings.rollback.enabled,
+        },
+        hotfix: {
+          enabled:
+            settings?.hotfix?.enabled ?? defaultValues.settings.hotfix.enabled,
+          prTitleRegEx:
+            settings?.hotfix?.prTitleRegEx ??
+            defaultValues.settings.hotfix.prTitleRegEx,
+          branchRegEx:
+            settings?.hotfix?.branchRegEx ??
+            defaultValues.settings.hotfix.branchRegEx,
+          prLabelRegEx:
+            settings?.hotfix?.prLabelRegEx ??
+            defaultValues.settings.hotfix.prLabelRegEx,
+        },
       },
     });
     form.resetDirty();
@@ -94,7 +132,7 @@ export const AutomationPrTitleCheckPage = () => {
         content={
           <>
             <HeaderAutomation automation={automation} />
-            <FormPrTitleCheckSettings form={form} />
+            <FormIncidentDetectionSettings form={form} />
           </>
         }
       />

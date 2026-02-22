@@ -45,28 +45,32 @@ export const CardAutomation = ({
         p="md"
         style={{ borderBottom: "1px solid #303030", flexGrow: 1 }}
       >
-        <Stack gap="md" h="100%">
-          <Group gap={5}>
-            {benefits &&
-              Object.entries(benefits).map(
-                ([key, value]) =>
-                  value && (
-                    <IconAutomationBenefit
-                      key={key}
-                      enabled={enabled}
-                      benefit={key as AutomationBenefit}
-                    />
-                  ),
-              )}
-          </Group>
-          <Box style={{ flexGrow: 1 }}>
-            <Title order={2} size="h4">
-              {title}
-            </Title>
-            <Text mt={5}>{description}</Text>
-          </Box>
+        <Stack gap="md" h="100%" mih={191} justify="space-between">
+          <Stack gap="md">
+            <Group gap={5}>
+              {benefits &&
+                Object.entries(benefits).map(
+                  ([key, value]) =>
+                    value && (
+                      <IconAutomationBenefit
+                        key={key}
+                        enabled={enabled}
+                        benefit={key as AutomationBenefit}
+                      />
+                    ),
+                )}
+            </Group>
+            <Box style={{ flexGrow: 1 }}>
+              <Title order={2} size="h4">
+                {title}
+              </Title>
+              <Text mt={5}>{description}</Text>
+            </Box>
+          </Stack>
 
-          <BadgeStoreStatus enabled={enabled} available={available} />
+          <Box>
+            <BadgeStoreStatus enabled={enabled} available={available} />
+          </Box>
         </Stack>
       </Card.Section>
     </Card>

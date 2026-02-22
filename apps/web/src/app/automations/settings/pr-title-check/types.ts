@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { validateRegEx } from "./components/form-pr-title-check-settings/regex.provider";
+import { validateRegEx } from "../../../../providers/validation.provider";
 import { stringCantBeEmpty } from "../../../../providers/zod-rules.provider";
 
 export const FormPrTitleCheck = z.object({

@@ -281,7 +281,7 @@ export const TimelinePullRequest = ({
           )}
         </Timeline>
       </Box>
-      {cycleTime && isMerged && (
+      {!!cycleTime && isMerged && (
         <>
           <Divider />
           <Box p="md">

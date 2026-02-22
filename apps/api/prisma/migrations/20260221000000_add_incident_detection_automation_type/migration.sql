@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AutomationType" ADD VALUE 'INCIDENT_DETECTION';
