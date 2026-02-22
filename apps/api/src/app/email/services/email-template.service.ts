@@ -11,6 +11,7 @@ export type EmailTemplateProps = {
 };
 
 export interface BuildEmailTemplate {
+  id: string;
   type: EmailTemplate;
   props: EmailTemplateProps[EmailTemplate];
 }
