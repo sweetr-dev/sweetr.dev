@@ -125,7 +125,7 @@ const getApprovalBadge = (
   const getVariant = (): Variant => {
     const timeToFirstApproval = pullRequest.tracking.timeToFirstApproval;
 
-    if (!timeToFirstApproval) return "warning";
+    if (!timeToFirstApproval) return "default";
 
     const hoursToFirstApproval = timeToFirstApproval / msToHour;
 
