@@ -26,11 +26,11 @@ const getCodeReviewMetrics = async (workspaceId: number, personId: number) => {
   >(Prisma.sql`
     SELECT
       COUNT(*) FILTER (
-        WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        WHERE "CodeReview"."createdAt" BETWEEN NOW() - INTERVAL '30 days' AND NOW() 
         AND "CodeReview"."workspaceId" = ${workspaceId}
       ) AS current,
       COUNT(*) FILTER (
-        WHERE "CodeReview"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        WHERE "CodeReview"."createdAt" BETWEEN NOW() - INTERVAL '60 days' AND NOW() - INTERVAL '30 days' 
         AND "CodeReview"."workspaceId" = ${workspaceId}
       ) AS previous
     FROM
@@ -78,19 +78,19 @@ const getPullRequestSizeMetrics = async (
   >(Prisma.sql`
     SELECT
       COUNT(*) FILTER (
-        WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        WHERE "PullRequest"."mergedAt" BETWEEN NOW() - INTERVAL '30 days' AND NOW() 
         AND "PullRequest"."workspaceId" = ${workspaceId}
       ) AS current,
       COUNT(*) FILTER (
-        WHERE "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        WHERE "PullRequest"."mergedAt" BETWEEN NOW() - INTERVAL '60 days' AND NOW() - INTERVAL '30 days' 
         AND "PullRequest"."workspaceId" = ${workspaceId}
       ) AS previous,
       COUNT(*) FILTER (
-        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '29 days' AND CURRENT_DATE 
+        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."mergedAt" BETWEEN NOW() - INTERVAL '30 days' AND NOW() 
         AND "PullRequest"."workspaceId" = ${workspaceId}
       ) AS current_small,
       COUNT(*) FILTER (
-        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."createdAt" BETWEEN CURRENT_DATE - INTERVAL '60 days' AND CURRENT_DATE - INTERVAL '30 days' 
+        WHERE "PullRequestTracking"."size" IN ('TINY', 'SMALL') AND "PullRequest"."mergedAt" BETWEEN NOW() - INTERVAL '60 days' AND NOW() - INTERVAL '30 days' 
         AND "PullRequest"."workspaceId" = ${workspaceId}
       ) AS previous_small
     FROM
@@ -107,6 +107,7 @@ const getPullRequestSizeMetrics = async (
       "PullRequest"."authorId" = ${personId};
     `);
 
+  console.log("result", result, workspaceId, personId);
   const data = result.at(0);
 
   if (!data) {
