@@ -3,13 +3,17 @@ import { env } from "../env";
 import { addBreadcrumb } from "@sentry/node";
 import { pick } from "radash";
 
-const logTailStream = pino.transport({
-  target: "@logtail/pino",
-  options: { sourceToken: env.LOGTAIL_TOKEN },
-});
+const logTailStream =
+  env.LOG_DRAIN === "logtail" && env.LOGTAIL_TOKEN
+    ? pino.transport({
+        target: "@logtail/pino",
+        options: { sourceToken: env.LOGTAIL_TOKEN },
+      })
+    : undefined;
+
 const consoleStream = pino.destination();
 
-const stream = env.LOG_DRAIN === "logtail" ? logTailStream : consoleStream;
+const stream = logTailStream || consoleStream;
 
 const pinoLogger = pino(
   {

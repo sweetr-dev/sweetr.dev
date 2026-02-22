@@ -4,13 +4,17 @@ import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { BaseException } from "../app/errors/exceptions/base.exception";
 import { env, isDev } from "../env";
 import { logger } from "./logger";
-import { isAppSelfHosted } from "./self-host";
 
 export const initSentry = () => {
+  if (!env.SENTRY_DSN) {
+    logger.info("Skipping Sentry initialization. No SENTRY_DSN provided.");
+    return;
+  }
+
   Sentry.init({
     dsn: env.SENTRY_DSN,
     environment: env.APP_ENV,
-    enabled: !isAppSelfHosted() && !isDev && !!env.SENTRY_DSN,
+    enabled: !isDev,
     beforeBreadcrumb(breadcrumb) {
       if (breadcrumb.category === "console") {
         return null;

@@ -116,6 +116,10 @@ export const getIntegration = async (workspaceId: number) => {
 };
 
 export const getInstallUrl = (): string => {
+  if (!config.slack.clientId) {
+    throw new IntegrationException("SLACK_CLIENT_ID is not set");
+  }
+
   const url = new URL("https://slack.com/oauth/v2/authorize");
 
   url.searchParams.append("client_id", config.slack.clientId);
