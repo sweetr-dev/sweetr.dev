@@ -1,6 +1,6 @@
 import { Box, Button, Skeleton } from "@mantine/core";
 import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useApplicationQuery } from "../../../../../api/applications.api";
 import { DrawerScrollable } from "../../../../../components/drawer-scrollable";
 import { LoadableContent } from "../../../../../components/loadable-content";

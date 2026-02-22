@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { IconProps } from "@tabler/icons-react";
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface CardChartProps extends PaperProps {
   label: string;

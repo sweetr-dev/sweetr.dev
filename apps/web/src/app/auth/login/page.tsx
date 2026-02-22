@@ -12,7 +12,7 @@ import { AuthProvider } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { useAuthProviderQuery } from "../../../api/auth.api";
 import { Logo } from "../../../components/logo";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams({

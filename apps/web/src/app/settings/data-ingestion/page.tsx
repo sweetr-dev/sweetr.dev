@@ -1,7 +1,7 @@
 import { Box, Title, Text } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
 export const DataIngestionPage = () => {
   return (

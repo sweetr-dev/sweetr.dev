@@ -5,7 +5,7 @@ import {
   IconArrowUpRight,
   IconProps,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import {
   DateTimeRange,
   formatLocaleDate,

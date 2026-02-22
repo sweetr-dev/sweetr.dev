@@ -1,5 +1,5 @@
 import { Badge, NavLink, Stack, Text, useMantineTheme } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { teamRoleColorMap } from "../../../../../../../providers/team-role.provider";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 

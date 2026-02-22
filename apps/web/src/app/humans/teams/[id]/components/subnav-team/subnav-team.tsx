@@ -9,7 +9,7 @@ import {
   IconTarget,
   IconUsers,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../../components/subnav";
 import { IconPullRequest } from "../../../../../../providers/icon.provider";

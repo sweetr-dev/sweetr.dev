@@ -15,6 +15,6 @@ export const loginToStripeMutation = createMutationResolver({
 
     const session = await createStripeCustomerPortalSession(input.workspaceId);
 
-    return session?.url;
+    return session?.url || null;
   },
 });

@@ -1,5 +1,5 @@
 import { SimpleGrid, Skeleton, Stack } from "@mantine/core";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { useTeamId } from "../use-team";
 import { LoadableContent } from "../../../../../components/loadable-content";
 import { CardSetting } from "../../../../../components/card-setting";

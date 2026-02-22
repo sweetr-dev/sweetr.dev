@@ -1,6 +1,6 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import { IconForms, IconServer } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { Subnav } from "../../../../components/subnav";
 import {
   IconApplication,

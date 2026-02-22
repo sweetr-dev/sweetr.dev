@@ -1,6 +1,6 @@
 import { Anchor, SimpleGrid, Skeleton } from "@mantine/core";
 import { CardIntegration } from "./components/card-integration";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router";
 import { LoadableContent } from "../../../components/loadable-content";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";

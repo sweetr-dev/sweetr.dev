@@ -3,15 +3,10 @@ import { defineConfig } from "vite";
 import { resolve } from "path";
 import { readFileSync } from "fs";
 import react from "@vitejs/plugin-react";
-import eslint from "vite-plugin-eslint";
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    eslint({
-      exclude: ["../../packages/**/*.ts"],
-    }),
     sentryVitePlugin({
       org: "sweetrdev",
       project: "web",

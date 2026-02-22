@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { AppShell } from "../components/app-shell";
 import { AppSpotlight } from "../components/app-spotlight";
 import { useAppStore } from "../providers/app.provider";

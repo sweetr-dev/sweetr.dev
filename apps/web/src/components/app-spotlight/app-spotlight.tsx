@@ -8,7 +8,7 @@ import { IconSearch, IconSettings } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useSpotlightQuery } from "../../api/spotlight.api";
 import { Loader } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useContextualActionsStore } from "../../providers/contextual-actions.provider";
 import { navItems } from "../../providers/nav.provider";
 import {

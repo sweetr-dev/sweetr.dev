@@ -1,6 +1,6 @@
 import { Divider, Title, NavLink, Group } from "@mantine/core";
 import { IconEyeCode, IconNotes } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { Person } from "@sweetr/graphql-types/frontend/graphql";
 import { Subnav } from "../../../../../components/subnav";
 import { IconPullRequest } from "../../../../../providers/icon.provider";

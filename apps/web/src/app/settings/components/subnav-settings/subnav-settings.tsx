@@ -6,7 +6,7 @@ import {
   IconUser,
   IconUserHexagon,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { Subnav } from "../../../../components/subnav";
 import { IconPullRequest } from "../../../../providers/icon.provider";

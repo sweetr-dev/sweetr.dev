@@ -7,7 +7,7 @@ import {
   Badge,
 } from "@mantine/core";
 import { FC, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAppStore } from "../../providers/app.provider";
 import { useScreenSize } from "../../providers/screen.provider";
 

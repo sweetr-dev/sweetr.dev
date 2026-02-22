@@ -3,7 +3,7 @@ import { render } from "@react-email/render";
 
 export { InitialSyncCompleteEmail } from "./emails/initial-sync-complete";
 
-export const renderEmailTemplate = <P extends {}>(
+export const renderEmailTemplate = async <P extends {}>(
   component: ComponentType<P>,
   props: P
 ) => {
@@ -11,6 +11,6 @@ export const renderEmailTemplate = <P extends {}>(
 
   return {
     react: element,
-    text: render(element, { plainText: true }),
+    text: await render(element, { plainText: true }),
   };
 };

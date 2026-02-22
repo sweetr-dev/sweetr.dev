@@ -1,5 +1,5 @@
 import { Anchor, Image, SimpleGrid, Skeleton } from "@mantine/core";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router";
 import { CardDigest } from "./components/card-digest";
 import { useDigestCards } from "./use-digest-cards";
 import { useDigests } from "./use-digests";

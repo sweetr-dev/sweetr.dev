@@ -14,7 +14,7 @@ import { Confetti } from "./components/confetti";
 import { IconBrandGithub, IconX } from "@tabler/icons-react";
 import { Logo } from "../../../components/logo";
 import { useGithubInstall } from "./use-github-install";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { showInfoNotification } from "../../../providers/notification.provider";
 
 const steps = [

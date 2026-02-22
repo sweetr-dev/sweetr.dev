@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
 import { Application } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox } from "@tabler/icons-react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router";
 import { useApplicationsInfiniteQuery } from "../../../api/applications.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";

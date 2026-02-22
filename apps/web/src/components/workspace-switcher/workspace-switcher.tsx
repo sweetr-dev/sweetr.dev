@@ -10,7 +10,7 @@ import { WorkspaceData, useAppStore } from "../../providers/app.provider";
 import { AccountSwitcherItem } from "./workspace-switcher-item";
 import { showInfoNotification } from "../../providers/notification.provider";
 import { cleanNotifications } from "@mantine/notifications";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface WorkspaceSwitcherProps extends ComboboxProps {
   workspaces: WorkspaceData[];

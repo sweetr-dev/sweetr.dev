@@ -1,6 +1,6 @@
 import { useForm, zodResolver } from "@mantine/form";
 import { FormEventHandler } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   showSuccessNotification,
   showErrorNotification,

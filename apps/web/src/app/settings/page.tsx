@@ -1,5 +1,5 @@
 import { Portal } from "@mantine/core";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { SubnavSettings } from "./components/subnav-settings";
 
 export const SettingsPage = () => {

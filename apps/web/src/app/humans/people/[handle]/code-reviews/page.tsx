@@ -6,7 +6,7 @@ import {
   useInfiniteLoading,
   useListGroupedByYearMonth,
 } from "../../../../../providers/pagination.provider";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { CodeReview } from "@sweetr/graphql-types/frontend/graphql";
 import { PageEmptyState } from "../../../../../components/page-empty-state";
 import { CardCodeReview } from "../../../../../components/card-code-review";

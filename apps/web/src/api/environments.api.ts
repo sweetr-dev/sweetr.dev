@@ -1,7 +1,6 @@
 import {
   DefaultError,
   InfiniteData,
-  Optional,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useMutation,
@@ -22,6 +21,7 @@ import {
   UnarchiveEnvironmentMutation,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { queryClient } from "./clients/query-client";
+import { Optional } from "utility-types";
 
 export const useEnvironmentOptionsQuery = (
   args: EnvironmentOptionsQueryVariables,

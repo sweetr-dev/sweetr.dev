@@ -2,7 +2,7 @@ import { Box, Title, Stack } from "@mantine/core";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
 import { CardSetting } from "../../../components/card-setting";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { IconRuler } from "@tabler/icons-react";
 
 export const PullRequestSettingsPage = () => {

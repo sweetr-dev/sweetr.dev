@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 export const useFilterSearchParameters = () => {
   const [searchParameters, setSearchParams] = useSearchParams();

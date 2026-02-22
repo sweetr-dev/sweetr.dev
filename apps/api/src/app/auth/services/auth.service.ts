@@ -5,7 +5,7 @@ import {
   WorkspaceMembership,
   InstallationTargetType,
 } from "@prisma/client";
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import { config } from "../../../config";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import * as github from "../providers/github/github.provider";
@@ -62,11 +62,9 @@ export const getGithubLoginUrl = (redirectTo?: string) => {
 };
 
 const signJwtToken = (payload: JWTPayload): Token => {
-  const expiresIn = config.auth.jwt.expiresIn;
-
   const accessToken = jwt.sign(payload, config.auth.jwt.secret, {
-    expiresIn,
-  });
+    expiresIn: config.auth.jwt.expiresIn,
+  } as SignOptions);
 
   return {
     accessToken,

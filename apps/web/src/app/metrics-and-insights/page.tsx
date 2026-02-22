@@ -10,7 +10,7 @@ import {
   IconServer,
 } from "@tabler/icons-react";
 import { endOfToday } from "date-fns";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { Breadcrumbs } from "../../components/breadcrumbs";
 import { FilterDate } from "../../components/filter-date";
 import { FilterMultiSelect } from "../../components/filter-multi-select";

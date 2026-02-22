@@ -90,5 +90,5 @@ export const take = (limit: number = 50) => {
 export const jsonObject = <T extends Record<string, any>>(
   value: string | object | JsonValue
 ): T => {
-  return isObject(value) ? value : JSON.parse(value as string);
+  return isObject(value) ? (value as T) : (JSON.parse(value as string) as T);
 };

@@ -14,7 +14,7 @@ import { UseFormReturnType } from "@mantine/form";
 import { colorPickerSwatches } from "../../../../../../providers/color.provider";
 import { capitalize } from "radash";
 import { FormPrSizeLabeler } from "../../types";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { IconExternalLink } from "@tabler/icons-react";
 
 interface FormPrSizeLabelerSettingsProps {
