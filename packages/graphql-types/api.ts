@@ -1433,7 +1433,7 @@ export type ResolverTypeWrapper<T> = Promise<T> | T;
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -1470,21 +1470,21 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+export type SubscriptionResolver<TResult, TKey extends string, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
-export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+export type TypeResolveFn<TTypes, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (
   parent: TParent,
   context: TContext,
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
@@ -1492,9 +1492,15 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping of union types */
-export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
-  ActivityEvent: ( DeepPartial<CodeReviewSubmittedEvent> ) | ( DeepPartial<PullRequestCreatedEvent> ) | ( DeepPartial<PullRequestMergedEvent> );
+export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  ActivityEvent:
+    | ( DeepPartial<CodeReviewSubmittedEvent> )
+    | ( DeepPartial<PullRequestCreatedEvent> )
+    | ( DeepPartial<PullRequestMergedEvent> )
+  ;
 };
 
 
@@ -1505,8 +1511,8 @@ export type ResolversTypes = {
   Alert: ResolverTypeWrapper<DeepPartial<Alert>>;
   AlertQueryInput: ResolverTypeWrapper<DeepPartial<AlertQueryInput>>;
   AlertType: ResolverTypeWrapper<DeepPartial<AlertType>>;
-  ApiKey: ResolverTypeWrapper<DeepPartial<ApiKey>>;
-  Application: ResolverTypeWrapper<DeepPartial<Application>>;
+  ApiKey: ResolverTypeWrapper<DeepPartial<Omit<ApiKey, 'creator'> & { creator: ResolversTypes['Person'] }>>;
+  Application: ResolverTypeWrapper<DeepPartial<Omit<Application, 'lastProductionDeployment' | 'team'> & { lastProductionDeployment?: Maybe<ResolversTypes['Deployment']>, team?: Maybe<ResolversTypes['Team']> }>>;
   ApplicationsQueryInput: ResolverTypeWrapper<DeepPartial<ApplicationsQueryInput>>;
   ArchiveApplicationInput: ResolverTypeWrapper<DeepPartial<ArchiveApplicationInput>>;
   ArchiveDeploymentInput: ResolverTypeWrapper<DeepPartial<ArchiveDeploymentInput>>;
@@ -1526,7 +1532,7 @@ export type ResolversTypes = {
   BreakdownStage: ResolverTypeWrapper<DeepPartial<BreakdownStage>>;
   ChangeFailureRateMetric: ResolverTypeWrapper<DeepPartial<ChangeFailureRateMetric>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
-  CodeReview: ResolverTypeWrapper<DeepPartial<CodeReview>>;
+  CodeReview: ResolverTypeWrapper<DeepPartial<Omit<CodeReview, 'author'> & { author: ResolversTypes['Person'] }>>;
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
@@ -1536,7 +1542,7 @@ export type ResolversTypes = {
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DateTimeRangeValue: ResolverTypeWrapper<DeepPartial<DateTimeRangeValue>>;
   DayOfTheWeek: ResolverTypeWrapper<DeepPartial<DayOfTheWeek>>;
-  Deployment: ResolverTypeWrapper<DeepPartial<Deployment>>;
+  Deployment: ResolverTypeWrapper<DeepPartial<Omit<Deployment, 'application' | 'author'> & { application: ResolversTypes['Application'], author?: Maybe<ResolversTypes['Person']> }>>;
   DeploymentFrequencyMetric: ResolverTypeWrapper<DeepPartial<DeploymentFrequencyMetric>>;
   DeploymentSettings: ResolverTypeWrapper<DeepPartial<DeploymentSettings>>;
   DeploymentSettingsInput: ResolverTypeWrapper<DeepPartial<DeploymentSettingsInput>>;
@@ -1552,7 +1558,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<DeepPartial<Scalars['Float']['output']>>;
   GraphChartLink: ResolverTypeWrapper<DeepPartial<GraphChartLink>>;
   HexColorCode: ResolverTypeWrapper<DeepPartial<Scalars['HexColorCode']['output']>>;
-  Incident: ResolverTypeWrapper<DeepPartial<Incident>>;
+  Incident: ResolverTypeWrapper<DeepPartial<Omit<Incident, 'causeDeployment' | 'fixDeployment' | 'leader' | 'team'> & { causeDeployment: ResolversTypes['Deployment'], fixDeployment?: Maybe<ResolversTypes['Deployment']>, leader?: Maybe<ResolversTypes['Person']>, team?: Maybe<ResolversTypes['Team']> }>>;
   IncidentsQueryInput: ResolverTypeWrapper<DeepPartial<IncidentsQueryInput>>;
   InstallIntegrationInput: ResolverTypeWrapper<DeepPartial<InstallIntegrationInput>>;
   Int: ResolverTypeWrapper<DeepPartial<Scalars['Int']['output']>>;
@@ -1566,16 +1572,16 @@ export type ResolversTypes = {
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
   MeanTimeToRecoverMetric: ResolverTypeWrapper<DeepPartial<MeanTimeToRecoverMetric>>;
   Metrics: ResolverTypeWrapper<DeepPartial<Metrics>>;
-  Mutation: ResolverTypeWrapper<{}>;
+  Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NumericChartData: ResolverTypeWrapper<DeepPartial<NumericChartData>>;
   NumericPersonalMetric: ResolverTypeWrapper<DeepPartial<NumericPersonalMetric>>;
   NumericSeriesChartData: ResolverTypeWrapper<DeepPartial<NumericSeriesChartData>>;
   PeopleQueryInput: ResolverTypeWrapper<DeepPartial<PeopleQueryInput>>;
   Period: ResolverTypeWrapper<DeepPartial<Period>>;
-  Person: ResolverTypeWrapper<DeepPartial<Person>>;
+  Person: ResolverTypeWrapper<DeepPartial<Omit<Person, 'teamMemberships' | 'teammates'> & { teamMemberships: Array<ResolversTypes['TeamMember']>, teammates: Array<ResolversTypes['TeamMember']> }>>;
   PersonalMetrics: ResolverTypeWrapper<DeepPartial<PersonalMetrics>>;
   PlanKeys: ResolverTypeWrapper<DeepPartial<PlanKeys>>;
-  PullRequest: ResolverTypeWrapper<DeepPartial<PullRequest>>;
+  PullRequest: ResolverTypeWrapper<DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversTypes['Person'] }>>;
   PullRequestCreatedEvent: ResolverTypeWrapper<DeepPartial<PullRequestCreatedEvent>>;
   PullRequestMergedEvent: ResolverTypeWrapper<DeepPartial<PullRequestMergedEvent>>;
   PullRequestOwnerType: ResolverTypeWrapper<DeepPartial<PullRequestOwnerType>>;
@@ -1586,7 +1592,7 @@ export type ResolversTypes = {
   PullRequestsInProgressResponse: ResolverTypeWrapper<DeepPartial<PullRequestsInProgressResponse>>;
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
-  Query: ResolverTypeWrapper<{}>;
+  Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   RegenerateApiKeyInput: ResolverTypeWrapper<DeepPartial<RegenerateApiKeyInput>>;
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
@@ -1594,11 +1600,11 @@ export type ResolversTypes = {
   ScheduleSyncBatchInput: ResolverTypeWrapper<DeepPartial<ScheduleSyncBatchInput>>;
   SendTestMessageInput: ResolverTypeWrapper<DeepPartial<SendTestMessageInput>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
-  Subscription: ResolverTypeWrapper<{}>;
+  Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   SweetID: ResolverTypeWrapper<DeepPartial<Scalars['SweetID']['output']>>;
   SyncBatch: ResolverTypeWrapper<DeepPartial<SyncBatch>>;
-  Team: ResolverTypeWrapper<DeepPartial<Team>>;
-  TeamMember: ResolverTypeWrapper<DeepPartial<TeamMember>>;
+  Team: ResolverTypeWrapper<DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversTypes['Alert']>, alerts: Array<ResolversTypes['Alert']>, members: Array<ResolversTypes['TeamMember']>, workLog: ResolversTypes['TeamWorkLogResponse'] }>>;
+  TeamMember: ResolverTypeWrapper<DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversTypes['Person'], team: ResolversTypes['Team'] }>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
   TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
@@ -1621,7 +1627,7 @@ export type ResolversTypes = {
   UpsertTeamInput: ResolverTypeWrapper<DeepPartial<UpsertTeamInput>>;
   UpsertTeamMemberInput: ResolverTypeWrapper<DeepPartial<UpsertTeamMemberInput>>;
   Void: ResolverTypeWrapper<DeepPartial<Scalars['Void']['output']>>;
-  Workspace: ResolverTypeWrapper<DeepPartial<Workspace>>;
+  Workspace: ResolverTypeWrapper<DeepPartial<Omit<Workspace, 'apiKey' | 'application' | 'applications' | 'deployment' | 'deployments' | 'incident' | 'incidents' | 'me' | 'people' | 'person' | 'team' | 'teams'> & { apiKey?: Maybe<ResolversTypes['ApiKey']>, application?: Maybe<ResolversTypes['Application']>, applications: Array<ResolversTypes['Application']>, deployment?: Maybe<ResolversTypes['Deployment']>, deployments: Array<ResolversTypes['Deployment']>, incident?: Maybe<ResolversTypes['Incident']>, incidents: Array<ResolversTypes['Incident']>, me?: Maybe<ResolversTypes['Person']>, people: Array<ResolversTypes['Person']>, person?: Maybe<ResolversTypes['Person']>, team?: Maybe<ResolversTypes['Team']>, teams: Array<ResolversTypes['Team']> }>>;
   WorkspaceFeatureAdoption: ResolverTypeWrapper<DeepPartial<WorkspaceFeatureAdoption>>;
   WorkspaceMetricInput: ResolverTypeWrapper<DeepPartial<WorkspaceMetricInput>>;
   WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
@@ -1637,8 +1643,8 @@ export type ResolversParentTypes = {
   ActivityEvent: DeepPartial<ResolversUnionTypes<ResolversParentTypes>['ActivityEvent']>;
   Alert: DeepPartial<Alert>;
   AlertQueryInput: DeepPartial<AlertQueryInput>;
-  ApiKey: DeepPartial<ApiKey>;
-  Application: DeepPartial<Application>;
+  ApiKey: DeepPartial<Omit<ApiKey, 'creator'> & { creator: ResolversParentTypes['Person'] }>;
+  Application: DeepPartial<Omit<Application, 'lastProductionDeployment' | 'team'> & { lastProductionDeployment?: Maybe<ResolversParentTypes['Deployment']>, team?: Maybe<ResolversParentTypes['Team']> }>;
   ApplicationsQueryInput: DeepPartial<ApplicationsQueryInput>;
   ArchiveApplicationInput: DeepPartial<ArchiveApplicationInput>;
   ArchiveDeploymentInput: DeepPartial<ArchiveDeploymentInput>;
@@ -1656,7 +1662,7 @@ export type ResolversParentTypes = {
   BreakdownStage: DeepPartial<BreakdownStage>;
   ChangeFailureRateMetric: DeepPartial<ChangeFailureRateMetric>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
-  CodeReview: DeepPartial<CodeReview>;
+  CodeReview: DeepPartial<Omit<CodeReview, 'author'> & { author: ResolversParentTypes['Person'] }>;
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
   CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
@@ -1664,7 +1670,7 @@ export type ResolversParentTypes = {
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
   DateTimeRangeValue: DeepPartial<DateTimeRangeValue>;
-  Deployment: DeepPartial<Deployment>;
+  Deployment: DeepPartial<Omit<Deployment, 'application' | 'author'> & { application: ResolversParentTypes['Application'], author?: Maybe<ResolversParentTypes['Person']> }>;
   DeploymentFrequencyMetric: DeepPartial<DeploymentFrequencyMetric>;
   DeploymentSettings: DeepPartial<DeploymentSettings>;
   DeploymentSettingsInput: DeepPartial<DeploymentSettingsInput>;
@@ -1677,7 +1683,7 @@ export type ResolversParentTypes = {
   Float: DeepPartial<Scalars['Float']['output']>;
   GraphChartLink: DeepPartial<GraphChartLink>;
   HexColorCode: DeepPartial<Scalars['HexColorCode']['output']>;
-  Incident: DeepPartial<Incident>;
+  Incident: DeepPartial<Omit<Incident, 'causeDeployment' | 'fixDeployment' | 'leader' | 'team'> & { causeDeployment: ResolversParentTypes['Deployment'], fixDeployment?: Maybe<ResolversParentTypes['Deployment']>, leader?: Maybe<ResolversParentTypes['Person']>, team?: Maybe<ResolversParentTypes['Team']> }>;
   IncidentsQueryInput: DeepPartial<IncidentsQueryInput>;
   InstallIntegrationInput: DeepPartial<InstallIntegrationInput>;
   Int: DeepPartial<Scalars['Int']['output']>;
@@ -1690,15 +1696,15 @@ export type ResolversParentTypes = {
   LoginWithGithubResponse: DeepPartial<LoginWithGithubResponse>;
   MeanTimeToRecoverMetric: DeepPartial<MeanTimeToRecoverMetric>;
   Metrics: DeepPartial<Metrics>;
-  Mutation: {};
+  Mutation: Record<PropertyKey, never>;
   NumericChartData: DeepPartial<NumericChartData>;
   NumericPersonalMetric: DeepPartial<NumericPersonalMetric>;
   NumericSeriesChartData: DeepPartial<NumericSeriesChartData>;
   PeopleQueryInput: DeepPartial<PeopleQueryInput>;
-  Person: DeepPartial<Person>;
+  Person: DeepPartial<Omit<Person, 'teamMemberships' | 'teammates'> & { teamMemberships: Array<ResolversParentTypes['TeamMember']>, teammates: Array<ResolversParentTypes['TeamMember']> }>;
   PersonalMetrics: DeepPartial<PersonalMetrics>;
   PlanKeys: DeepPartial<PlanKeys>;
-  PullRequest: DeepPartial<PullRequest>;
+  PullRequest: DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversParentTypes['Person'] }>;
   PullRequestCreatedEvent: DeepPartial<PullRequestCreatedEvent>;
   PullRequestMergedEvent: DeepPartial<PullRequestMergedEvent>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
@@ -1706,7 +1712,7 @@ export type ResolversParentTypes = {
   PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
-  Query: {};
+  Query: Record<PropertyKey, never>;
   RegenerateApiKeyInput: DeepPartial<RegenerateApiKeyInput>;
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
@@ -1714,11 +1720,11 @@ export type ResolversParentTypes = {
   ScheduleSyncBatchInput: DeepPartial<ScheduleSyncBatchInput>;
   SendTestMessageInput: DeepPartial<SendTestMessageInput>;
   String: DeepPartial<Scalars['String']['output']>;
-  Subscription: {};
+  Subscription: Record<PropertyKey, never>;
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   SyncBatch: DeepPartial<SyncBatch>;
-  Team: DeepPartial<Team>;
-  TeamMember: DeepPartial<TeamMember>;
+  Team: DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversParentTypes['Alert']>, alerts: Array<ResolversParentTypes['Alert']>, members: Array<ResolversParentTypes['TeamMember']>, workLog: ResolversParentTypes['TeamWorkLogResponse'] }>;
+  TeamMember: DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversParentTypes['Person'], team: ResolversParentTypes['Team'] }>;
   TeamMetricInput: DeepPartial<TeamMetricInput>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
@@ -1740,7 +1746,7 @@ export type ResolversParentTypes = {
   UpsertTeamInput: DeepPartial<UpsertTeamInput>;
   UpsertTeamMemberInput: DeepPartial<UpsertTeamMemberInput>;
   Void: DeepPartial<Scalars['Void']['output']>;
-  Workspace: DeepPartial<Workspace>;
+  Workspace: DeepPartial<Omit<Workspace, 'apiKey' | 'application' | 'applications' | 'deployment' | 'deployments' | 'incident' | 'incidents' | 'me' | 'people' | 'person' | 'team' | 'teams'> & { apiKey?: Maybe<ResolversParentTypes['ApiKey']>, application?: Maybe<ResolversParentTypes['Application']>, applications: Array<ResolversParentTypes['Application']>, deployment?: Maybe<ResolversParentTypes['Deployment']>, deployments: Array<ResolversParentTypes['Deployment']>, incident?: Maybe<ResolversParentTypes['Incident']>, incidents: Array<ResolversParentTypes['Incident']>, me?: Maybe<ResolversParentTypes['Person']>, people: Array<ResolversParentTypes['Person']>, person?: Maybe<ResolversParentTypes['Person']>, team?: Maybe<ResolversParentTypes['Team']>, teams: Array<ResolversParentTypes['Team']> }>;
   WorkspaceFeatureAdoption: DeepPartial<WorkspaceFeatureAdoption>;
   WorkspaceMetricInput: DeepPartial<WorkspaceMetricInput>;
   WorkspaceSettings: DeepPartial<WorkspaceSettings>;
@@ -1774,7 +1780,6 @@ export type AlertResolvers<ContextType = GraphQLContext, ParentType extends Reso
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AlertType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ApiKeyResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ApiKey'] = ResolversParentTypes['ApiKey']> = {
@@ -1783,7 +1788,6 @@ export type ApiKeyResolvers<ContextType = GraphQLContext, ParentType extends Res
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   lastUsedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ApplicationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Application'] = ResolversParentTypes['Application']> = {
@@ -1795,19 +1799,16 @@ export type ApplicationResolvers<ContextType = GraphQLContext, ParentType extend
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   repository?: Resolver<ResolversTypes['Repository'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AuthProviderResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AuthProviderResponse'] = ResolversParentTypes['AuthProviderResponse']> = {
   redirectUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AutomationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Automation'] = ResolversParentTypes['Automation']> = {
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   settings?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AutomationType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AutomationBenefitsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AutomationBenefits'] = ResolversParentTypes['AutomationBenefits']> = {
@@ -1816,7 +1817,6 @@ export type AutomationBenefitsResolvers<ContextType = GraphQLContext, ParentType
   failureRate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   security?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   techDebt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
@@ -1828,14 +1828,12 @@ export type BillingResolvers<ContextType = GraphQLContext, ParentType extends Re
   purchasablePlans?: Resolver<Maybe<ResolversTypes['PurchasablePlans']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType>;
   trial?: Resolver<Maybe<ResolversTypes['Trial']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type BreakdownStageResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['BreakdownStage'] = ResolversParentTypes['BreakdownStage']> = {
   change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChangeFailureRateMetric'] = ResolversParentTypes['ChangeFailureRateMetric']> = {
@@ -1846,14 +1844,12 @@ export type ChangeFailureRateMetricResolvers<ContextType = GraphQLContext, Paren
   data?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ChartNumericSeriesResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChartNumericSeries'] = ResolversParentTypes['ChartNumericSeries']> = {
   color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CodeReviewResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReview'] = ResolversParentTypes['CodeReview']> = {
@@ -1863,14 +1859,12 @@ export type CodeReviewResolvers<ContextType = GraphQLContext, ParentType extends
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   pullRequest?: Resolver<ResolversTypes['PullRequest'], ParentType, ContextType>;
   state?: Resolver<ResolversTypes['CodeReviewState'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CodeReviewDistributionChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewDistributionChartData'] = ResolversParentTypes['CodeReviewDistributionChartData']> = {
   entities?: Resolver<Array<ResolversTypes['CodeReviewDistributionEntity']>, ParentType, ContextType>;
   links?: Resolver<Array<ResolversTypes['GraphChartLink']>, ParentType, ContextType>;
   totalReviews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CodeReviewDistributionEntityResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewDistributionEntity'] = ResolversParentTypes['CodeReviewDistributionEntity']> = {
@@ -1879,7 +1873,6 @@ export type CodeReviewDistributionEntityResolvers<ContextType = GraphQLContext, 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   reviewCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   reviewSharePercentage?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CodeReviewSubmittedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewSubmittedEvent'] = ResolversParentTypes['CodeReviewSubmittedEvent']> = {
@@ -1895,7 +1888,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type DateTimeRangeValueResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DateTimeRangeValue'] = ResolversParentTypes['DateTimeRangeValue']> = {
   from?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   to?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Deployment'] = ResolversParentTypes['Deployment']> = {
@@ -1909,7 +1901,6 @@ export type DeploymentResolvers<ContextType = GraphQLContext, ParentType extends
   pullRequestCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   pullRequests?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentFrequencyMetric'] = ResolversParentTypes['DeploymentFrequencyMetric']> = {
@@ -1921,14 +1912,12 @@ export type DeploymentFrequencyMetricResolvers<ContextType = GraphQLContext, Par
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DeploymentSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeploymentSettings'] = ResolversParentTypes['DeploymentSettings']> = {
   subdirectory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   targetBranch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trigger?: Resolver<ResolversTypes['DeploymentSettingsTrigger'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DigestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Digest'] = ResolversParentTypes['Digest']> = {
@@ -1940,7 +1929,6 @@ export type DigestResolvers<ContextType = GraphQLContext, ParentType extends Res
   timeOfDay?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timezone?: Resolver<ResolversTypes['TimeZone'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DigestType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DoraMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DoraMetrics'] = ResolversParentTypes['DoraMetrics']> = {
@@ -1948,7 +1936,6 @@ export type DoraMetricsResolvers<ContextType = GraphQLContext, ParentType extend
   deploymentFrequency?: Resolver<ResolversTypes['DeploymentFrequencyMetric'], ParentType, ContextType, RequireFields<DoraMetricsDeploymentFrequencyArgs, 'input'>>;
   leadTime?: Resolver<ResolversTypes['LeadTimeMetric'], ParentType, ContextType, RequireFields<DoraMetricsLeadTimeArgs, 'input'>>;
   meanTimeToRecover?: Resolver<ResolversTypes['MeanTimeToRecoverMetric'], ParentType, ContextType, RequireFields<DoraMetricsMeanTimeToRecoverArgs, 'input'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Environment'] = ResolversParentTypes['Environment']> = {
@@ -1956,14 +1943,12 @@ export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extend
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   isProduction?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type GraphChartLinkResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GraphChartLink'] = ResolversParentTypes['GraphChartLink']> = {
   source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface HexColorCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['HexColorCode'], any> {
@@ -1980,7 +1965,6 @@ export type IncidentResolvers<ContextType = GraphQLContext, ParentType extends R
   postmortemUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   resolvedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = {
@@ -1989,7 +1973,6 @@ export type IntegrationResolvers<ContextType = GraphQLContext, ParentType extend
   installUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
@@ -2004,7 +1987,6 @@ export type LeadTimeBreakdownResolvers<ContextType = GraphQLContext, ParentType 
   timeToDeploy?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
   timeToFirstReview?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
   timeToMerge?: Resolver<ResolversTypes['BreakdownStage'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type LeadTimeMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeadTimeMetric'] = ResolversParentTypes['LeadTimeMetric']> = {
@@ -2016,13 +1998,11 @@ export type LeadTimeMetricResolvers<ContextType = GraphQLContext, ParentType ext
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type LoginWithGithubResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoginWithGithubResponse'] = ResolversParentTypes['LoginWithGithubResponse']> = {
   redirectTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MeanTimeToRecoverMetric'] = ResolversParentTypes['MeanTimeToRecoverMetric']> = {
@@ -2033,7 +2013,6 @@ export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, Paren
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Metrics'] = ResolversParentTypes['Metrics']> = {
@@ -2044,7 +2023,6 @@ export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends Re
   timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
   timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
   timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeToMergeArgs, 'input'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -2077,20 +2055,17 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
 export type NumericChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['NumericChartData'] = ResolversParentTypes['NumericChartData']> = {
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type NumericPersonalMetricResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['NumericPersonalMetric'] = ResolversParentTypes['NumericPersonalMetric']> = {
   change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   current?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   previous?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type NumericSeriesChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['NumericSeriesChartData'] = ResolversParentTypes['NumericSeriesChartData']> = {
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   series?: Resolver<Array<ResolversTypes['ChartNumericSeries']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PersonResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Person'] = ResolversParentTypes['Person']> = {
@@ -2103,19 +2078,16 @@ export type PersonResolvers<ContextType = GraphQLContext, ParentType extends Res
   personalMetrics?: Resolver<ResolversTypes['PersonalMetrics'], ParentType, ContextType>;
   teamMemberships?: Resolver<Array<ResolversTypes['TeamMember']>, ParentType, ContextType>;
   teammates?: Resolver<Array<ResolversTypes['TeamMember']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PersonalMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PersonalMetrics'] = ResolversParentTypes['PersonalMetrics']> = {
   codeReviewAmount?: Resolver<ResolversTypes['NumericPersonalMetric'], ParentType, ContextType>;
   pullRequestSize?: Resolver<ResolversTypes['NumericPersonalMetric'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PlanKeysResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PlanKeys'] = ResolversParentTypes['PlanKeys']> = {
   monthly?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   yearly?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PullRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequest'] = ResolversParentTypes['PullRequest']> = {
@@ -2133,7 +2105,6 @@ export type PullRequestResolvers<ContextType = GraphQLContext, ParentType extend
   state?: Resolver<ResolversTypes['PullRequestState'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tracking?: Resolver<ResolversTypes['PullRequestTracking'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestCreatedEvent'] = ResolversParentTypes['PullRequestCreatedEvent']> = {
@@ -2162,7 +2133,6 @@ export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentTyp
   timeToFirstApproval?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToFirstReview?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   timeToMerge?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PullRequestsInProgressResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestsInProgressResponse'] = ResolversParentTypes['PullRequestsInProgressResponse']> = {
@@ -2170,12 +2140,10 @@ export type PullRequestsInProgressResponseResolvers<ContextType = GraphQLContext
   drafted?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
   pendingMerge?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
   pendingReview?: Resolver<Array<ResolversTypes['PullRequest']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PurchasablePlansResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PurchasablePlans'] = ResolversParentTypes['PurchasablePlans']> = {
   cloud?: Resolver<ResolversTypes['PlanKeys'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -2189,7 +2157,6 @@ export type RepositoryResolvers<ContextType = GraphQLContext, ParentType extends
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -2206,7 +2173,6 @@ export type SyncBatchResolvers<ContextType = GraphQLContext, ParentType extends 
   progress?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   scheduledAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   sinceDaysAgo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TeamResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
@@ -2224,7 +2190,6 @@ export type TeamResolvers<ContextType = GraphQLContext, ParentType extends Resol
   pullRequestsInProgress?: Resolver<ResolversTypes['PullRequestsInProgressResponse'], ParentType, ContextType>;
   startColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   workLog?: Resolver<ResolversTypes['TeamWorkLogResponse'], ParentType, ContextType, RequireFields<TeamWorkLogArgs, 'input'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
@@ -2232,13 +2197,11 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TeamMemberRole'], ParentType, ContextType>;
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TeamWorkLogResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamWorkLogResponse'] = ResolversParentTypes['TeamWorkLogResponse']> = {
   columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
   data?: Resolver<Array<ResolversTypes['ActivityEvent']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface TimeZoneScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['TimeZone'], any> {
@@ -2247,12 +2210,10 @@ export interface TimeZoneScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type TokenResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TrialResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Trial'] = ResolversParentTypes['Trial']> = {
   endAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Void'], any> {
@@ -2290,22 +2251,18 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   settings?: Resolver<ResolversTypes['WorkspaceSettings'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType, RequireFields<WorkspaceTeamArgs, 'teamId'>>;
   teams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType, Partial<WorkspaceTeamsArgs>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type WorkspaceFeatureAdoptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceFeatureAdoption'] = ResolversParentTypes['WorkspaceFeatureAdoption']> = {
   lastDeploymentCreatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type WorkspaceSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettings'] = ResolversParentTypes['WorkspaceSettings']> = {
   pullRequest?: Resolver<ResolversTypes['WorkspaceSettingsPullRequest'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type WorkspaceSettingsPullRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequest'] = ResolversParentTypes['WorkspaceSettingsPullRequest']> = {
   size?: Resolver<ResolversTypes['WorkspaceSettingsPullRequestSize'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequestSize'] = ResolversParentTypes['WorkspaceSettingsPullRequestSize']> = {
@@ -2314,7 +2271,6 @@ export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLConte
   medium?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   tiny?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = GraphQLContext> = {
