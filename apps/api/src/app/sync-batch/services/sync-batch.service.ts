@@ -221,6 +221,7 @@ const sendSyncCompleteEmail = async (workspaceId: number) => {
       to: member.user.email,
       subject: "Sync complete.",
       template: {
+        id: "initial-sync-complete",
         type: emailTemplate,
         props: {
           username: member.name,
