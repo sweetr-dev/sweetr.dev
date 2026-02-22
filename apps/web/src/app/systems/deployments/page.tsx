@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox, IconCalendarFilled, IconServer } from "@tabler/icons-react";
 import { format, parseISO } from "date-fns";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { Fragment } from "react/jsx-runtime";
 import { useDeploymentsInfiniteQuery } from "../../../api/deployments.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";

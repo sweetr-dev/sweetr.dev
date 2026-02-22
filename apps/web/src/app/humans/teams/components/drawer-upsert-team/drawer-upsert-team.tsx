@@ -2,7 +2,7 @@ import { Button } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { Team } from "@sweetr/graphql-types/frontend/graphql";
 import { FC, FormEventHandler, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useUpsertTeamMutation } from "../../../../../api/teams.api";
 import { DrawerScrollable } from "../../../../../components/drawer-scrollable/drawer-scrollable";
 import {

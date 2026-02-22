@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { setAuthorizationHeader } from "../api/clients/graphql-client";
 import { ClientError } from "graphql-request";
 import { useAppStore } from "./app.provider";

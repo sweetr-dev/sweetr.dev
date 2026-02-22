@@ -5,7 +5,7 @@ import { LoadableContent } from "../../../../../components/loadable-content/load
 import { useTeamId } from "../use-team";
 import { useTeamPullRequestsInProgressQuery } from "../../../../../api/teams.api";
 import { TeamPullRequestsInProgressQuery } from "@sweetr/graphql-types/frontend/graphql";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Tip } from "../../../../../components/tip";
 
 type PullRequestGroup = Exclude<

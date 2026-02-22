@@ -20,7 +20,7 @@ import { useWorkspace } from "../../../providers/workspace.provider";
 import { PageContainer } from "../../../components/page-container";
 import { SettingsApiKey } from "./components/settings-api-key";
 import { CardSetting } from "../../../components/card-setting";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { useWorkspaceLastSyncBatchQuery } from "../../../api/sync-batch.api";
 import { formatLocaleDate } from "../../../providers/date.provider";
 import { parseISO } from "date-fns";

@@ -1,7 +1,7 @@
 import { Box, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { FilterSelect } from "../../../components/filter-select";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { ButtonUnderstand } from "../components/button-understand";

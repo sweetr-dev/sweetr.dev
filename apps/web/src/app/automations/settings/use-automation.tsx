@@ -12,7 +12,7 @@ import {
   showErrorNotification,
 } from "../../../providers/notification.provider";
 import { useAutomationCards } from "../use-automation-cards";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const useAutomationSettings = (type: AutomationType) => {
   const navigate = useNavigate();

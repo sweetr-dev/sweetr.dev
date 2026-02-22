@@ -2,7 +2,7 @@ import { ActionIcon, Menu } from "@mantine/core";
 import { Environment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconArchive, IconDotsVertical } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import {
   useArchiveEnvironment,
   useUnarchiveEnvironment,

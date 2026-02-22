@@ -9,7 +9,7 @@ import {
   Anchor,
 } from "@mantine/core";
 import { IconAlertHexagon, IconExternalLink } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface AlertBannerProps {
   text: string;

@@ -5,7 +5,7 @@ import {
   updateNotification,
 } from "@mantine/notifications";
 import { Anchor, Button, Group, Progress, Tooltip } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { IconCheck } from "@tabler/icons-react";
 import { useWorkspace } from "../../providers/workspace.provider";
 import { useWorkspaceSyncProgressQuery } from "../../api/workspaces.api";

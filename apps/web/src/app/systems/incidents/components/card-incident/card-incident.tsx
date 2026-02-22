@@ -16,7 +16,7 @@ import {
   IconQuestionMark,
 } from "@tabler/icons-react";
 import { differenceInMilliseconds, parseISO } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import {
   formatLocaleDate,

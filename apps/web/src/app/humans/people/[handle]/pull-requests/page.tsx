@@ -7,7 +7,7 @@ import {
   useInfiniteLoading,
   useListGroupedByYearMonth,
 } from "../../../../../providers/pagination.provider";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import {
   PullRequest,
   PullRequestOwnerType,

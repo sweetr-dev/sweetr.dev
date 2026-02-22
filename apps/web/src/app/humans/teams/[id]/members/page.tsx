@@ -1,6 +1,6 @@
 import { Box, SimpleGrid, Skeleton } from "@mantine/core";
 import { CardPerson } from "../../../../../components/card-person";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { useTeamQuery } from "../../../../../api/teams.api";
 import { PageEmptyState } from "../../../../../components/page-empty-state";
 import { TeamOutletContext } from "../types";

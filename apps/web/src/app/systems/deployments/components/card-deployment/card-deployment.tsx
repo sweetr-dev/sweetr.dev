@@ -12,7 +12,7 @@ import {
 import { Deployment } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCalendarFilled, IconQuestionMark } from "@tabler/icons-react";
 import { parseISO } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { AvatarUser } from "../../../../../components/avatar-user";
 import { formatLocaleDate } from "../../../../../providers/date.provider";
 import { formatDeploymentVersion } from "../../../../../providers/deployment.provider";

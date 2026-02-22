@@ -1,7 +1,7 @@
 import { Paper, Grid, Skeleton } from "@mantine/core";
 import { PaperTitle } from "../../../../../components/paper-title";
 import { usePersonQuery } from "../../../../../api/people.api";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { MenuTeams } from "./components/menu-teams";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.exception";

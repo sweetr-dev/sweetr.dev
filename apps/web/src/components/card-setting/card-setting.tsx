@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface CardSettingProps extends Omit<PaperProps, "left" | "right"> {
   left: React.ReactNode;

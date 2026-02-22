@@ -4,7 +4,7 @@ import { useHotkeys } from "@mantine/hooks";
 import { Incident } from "@sweetr/graphql-types/frontend/graphql";
 import { IconBox, IconCalendarFilled, IconServer } from "@tabler/icons-react";
 import { format, parseISO } from "date-fns";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router";
 import { Fragment } from "react/jsx-runtime";
 import { useIncidentsInfiniteQuery } from "../../../api/incidents.api";
 import { Breadcrumbs } from "../../../components/breadcrumbs";

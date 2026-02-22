@@ -1,7 +1,7 @@
 import { Flex, Paper, Progress, Stack } from "@mantine/core";
 import { useCallback } from "react";
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { useLoginWithGithubMutation } from "../../../api/auth.api";
 import { Logo } from "../../../components/logo";
 import { setAuth } from "../../../providers/auth.provider";

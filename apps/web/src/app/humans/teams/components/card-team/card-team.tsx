@@ -2,7 +2,7 @@ import { Anchor, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import type { FC } from "react";
 import { TeamMembers } from "./team-members";
 import classes from "./card-team.module.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface CardTeamProps {
   id: string;

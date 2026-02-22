@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { AppShell, AppShellSection, Box, Group, Stack } from "@mantine/core";
 import Logo from "../../assets/logo.svg";
 import { NavbarItem } from "./navbar-item";

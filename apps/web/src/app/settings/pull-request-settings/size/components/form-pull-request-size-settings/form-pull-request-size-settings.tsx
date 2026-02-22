@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { PullRequestSize } from "@sweetr/graphql-types/frontend/graphql";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { BadgePullRequestSize } from "../../../../../../components/badge-pull-request-size";
 import { PullRequestSizeSettings } from "./types";
 

@@ -1,6 +1,6 @@
 import { Title, Text, Button, Container, Group } from "@mantine/core";
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import classes from "./404.module.css";
 
 export const PageNotFound: FC = () => {

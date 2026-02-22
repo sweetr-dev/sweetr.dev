@@ -1,6 +1,6 @@
 import { UnstyledButton, Text, Stack } from "@mantine/core";
 import type { Icon } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import classes from "./navbar-item.module.css";
 
 export interface NavbarItemProps {

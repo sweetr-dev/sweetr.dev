@@ -1,5 +1,5 @@
 import { SimpleGrid } from "@mantine/core";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import {
   IconClock,
   IconEyeCheck,

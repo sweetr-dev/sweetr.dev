@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useDeploymentQuery } from "../../../../api/deployments.api";
 import { DrawerScrollable } from "../../../../components/drawer-scrollable";
 import { ResourceNotFound } from "../../../../exceptions/resource-not-found.exception";

@@ -11,7 +11,7 @@ import {
 } from "../../../../api/workspaces.api";
 import { showErrorNotification } from "../../../../providers/notification.provider";
 import { showSuccessNotification } from "../../../../providers/notification.provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { FormPullRequestSizeSettings } from "./components/form-pull-request-size-settings";
 

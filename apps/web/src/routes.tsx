@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router";
 import { PageNotFound } from "./app/404";
 import { ErrorPage } from "./app/500";
 import { LoginPage } from "./app/auth/login/page";

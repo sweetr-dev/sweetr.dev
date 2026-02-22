@@ -9,7 +9,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { PageTitle } from "../../../../components/page-title";
 import { usePersonQuery } from "../../../../api/people.api";

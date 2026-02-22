@@ -1,7 +1,7 @@
 import { Badge, Group, Paper, Stack, Text, Box, Anchor } from "@mantine/core";
 import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 import { teamRoleColorMap } from "../../providers/team-role.provider";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { AvatarUser } from "../avatar-user";
 
 interface CardTeamProps {

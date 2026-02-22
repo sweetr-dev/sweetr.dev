@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "react-router-dom";
+import { LoaderFunction, redirect } from "react-router";
 import { isAuthenticated } from "./auth.provider";
 import { useAppStore } from "./app.provider";
 import { showWarningNotification } from "./notification.provider";

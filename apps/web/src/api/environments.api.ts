@@ -52,7 +52,7 @@ export const useEnvironmentOptionsQuery = (
 
 export const useEnvironmentsInfiniteQuery = (
   args: EnvironmentsQueryVariables,
-  options?: Optional<
+  options: Optional<
     UseInfiniteQueryOptions<
       EnvironmentsQuery,
       DefaultError,

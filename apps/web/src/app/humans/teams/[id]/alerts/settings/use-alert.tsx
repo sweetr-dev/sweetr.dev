@@ -7,7 +7,7 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from "../../../../../../providers/notification.provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { getErrorMessage } from "../../../../../../providers/error-message.provider";
 import { useAlertCards } from "../use-alert-cards";
 import {

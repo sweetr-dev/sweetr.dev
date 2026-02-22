@@ -1,7 +1,7 @@
 import { useForm, zodResolver } from "@mantine/form";
 import { DeploymentSettingsTrigger } from "@sweetr/graphql-types/frontend/graphql";
 import { FormEventHandler } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useUpsertApplicationMutation } from "../../../../api/applications.api";
 import {
   showErrorNotification,

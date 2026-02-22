@@ -5,7 +5,7 @@ import { Box, Button, Skeleton } from "@mantine/core";
 import { useUpsertIncident } from "../use-upsert-incident";
 import { useIncidentQuery } from "../../../../../api/incidents.api";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { ResourceNotFound } from "../../../../../exceptions/resource-not-found.exception";
 import { LoadableContent } from "../../../../../components/loadable-content";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";

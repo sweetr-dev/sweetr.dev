@@ -15,7 +15,7 @@ import { IconCheck, IconCircleCheckFilled } from "@tabler/icons-react";
 import { ImageIntegrationLogo } from "../components/image-integration-logo";
 import { LoadableContent } from "../../../../components/loadable-content";
 import { ListScopes } from "../components/list-scopes";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useIntegrations } from "../../../../providers/integration.provider";
 import { formatDate } from "../../../../providers/date.provider";
 import { useConfirmationModal } from "../../../../providers/modal.provider";

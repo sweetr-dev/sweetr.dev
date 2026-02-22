@@ -5,7 +5,7 @@ import {
   showWarningNotification,
   useNotifications,
 } from "./notification.provider";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { Button } from "@mantine/core";
 import { useSupportChat } from "../components/navbar/use-support-chat";
 import { cleanNotifications } from "@mantine/notifications";
