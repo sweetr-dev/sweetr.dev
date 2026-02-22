@@ -10,6 +10,7 @@ import cors from "cors";
 import { env } from "./env";
 import { deploymentsRouter } from "./app/deployment/deployments.router";
 import { healthRouter } from "./app/health/health.router";
+import { isAppSelfHosted } from "./lib/self-host";
 
 export const expressApp = express();
 
@@ -35,10 +36,13 @@ expressApp
 // Route handlers
 expressApp.use(healthRouter);
 expressApp.use(githubRouter);
-expressApp.use(stripeRouter);
+
+if (!isAppSelfHosted()) {
+  expressApp.use(stripeRouter);
+}
+
 expressApp.use(slackRouter);
 expressApp.use(bullBoardRouter);
-
 // Customer-facing API
 expressApp.use(deploymentsRouter);
 expressApp.use(yoga); // Leave Yoga last

@@ -16,6 +16,14 @@ export const stripeRouter = Router();
 stripeRouter.post(
   "/stripe/webhook",
   catchErrors(async (req, res) => {
+    if (!env.STRIPE_API_KEY) {
+      throw new Error("STRIPE_API_KEY is not set");
+    }
+
+    if (!env.STRIPE_WEBHOOK_SECRET) {
+      throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+    }
+
     const signature = req.get("Stripe-Signature");
 
     try {
@@ -40,6 +48,10 @@ stripeRouter.post(
   "/stripe/checkout",
   urlencoded({ extended: true }),
   catchErrors(async (req, res) => {
+    if (!env.STRIPE_API_KEY) {
+      throw new Error("STRIPE_API_KEY is not set");
+    }
+
     const schema = z.object({
       key: z.string(),
       quantity: z.string(),
