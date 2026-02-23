@@ -37,6 +37,7 @@ export enum SweetQueue {
   // Automations
   AUTOMATION_PR_TITLE_CHECK = "{automation.pr_title_check}",
   AUTOMATION_PR_SIZE_LABELER = "{automation.pr_size_labeler}",
+  AUTOMATION_INCIDENT_DETECTION = "{automation.incident_detection}",
 
   // Alerts
   ALERT_MERGED_WITHOUT_APPROVAL = "{alert.merged_without_approval}",

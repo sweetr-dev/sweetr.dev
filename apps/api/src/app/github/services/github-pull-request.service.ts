@@ -124,6 +124,14 @@ const fetchPullRequest = async (
             closedAt
             mergedAt
             baseRefName
+            headRefName
+            body
+
+            labels(first: 100) {
+              nodes {
+                name
+              }
+            }
 
             createdAt
             updatedAt
@@ -287,8 +295,11 @@ const upsertPullRequest = async (
     gitPullRequestId: gitPrData.id,
     gitUrl: gitPrData.url,
     title: gitPrData.title,
+    sourceBranch: gitPrData.headRefName ?? "",
     targetBranch: gitPrData.baseRefName,
+    body: gitPrData.body ?? "",
     number: gitPrData.number.toString(),
+    labels: gitPrData.labels?.nodes?.map((l: { name: string }) => l.name) ?? [],
     commentCount: gitPrData.totalCommentsCount,
     changedFilesCount: gitPrData.changedFiles,
     linesAddedCount: gitPrData.additions,

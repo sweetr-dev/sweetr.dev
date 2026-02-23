@@ -369,8 +369,11 @@ model PullRequest {
 
   title        String
   number       String
+  sourceBranch String @default("")
   targetBranch String @default("main")
+  body         String @default("")
 
+  labels            Json @default("[]")
   files             Json @default("[]")
   commentCount      Int
   changedFilesCount Int
