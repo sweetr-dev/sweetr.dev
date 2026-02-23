@@ -1,0 +1,55 @@
+---
+title: Incident Detection
+description: Automatically detect incidents from deployments.
+icon: "circle-dot"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/incident-detection.png" />
+</Frame>
+
+## How it works
+
+Incident Detection automatically creates incidents when it detects problematic deployments. Configure which signals should trigger incident creation for your team.
+
+## Detection methods
+
+### Rollback detection
+
+Detects when a deployment reverts to a previously deployed version. Sweetr compares the commit history between deployments to identify rollbacks automatically.
+
+### Hotfix detection
+
+Detects incidents based on patterns in pull request titles, branch names, or labels. Configure regular expressions to match your team's conventions.
+
+| Pattern | Description |
+|---|---|
+| **PR title regex** | Match pull request titles (e.g., `hotfix`, `emergency`). |
+| **Branch regex** | Match branch names (e.g., `hotfix/*`). |
+| **PR label regex** | Match pull request labels. |
+
+### Revert detection
+
+Detects when a pull request is a revert of a previous change.
+
+## Benefits
+
+<Card horizontal title="Improves DORA metrics accuracy" icon="chart-line">
+  Automatically capture incidents that might otherwise go untracked, giving you accurate Change Failure Rate and MTTR data.
+</Card>
+<Card horizontal title="Reduces manual work" icon="bolt">
+  No need to manually create incidents for common patterns like rollbacks and hotfixes.
+</Card>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Incidents" icon="fire-burner" href="/platform/incidents" />
+  <Card title="DORA Metrics" icon="chart-line" href="/metrics-and-insights/dora" />
+</CardGroup>
+
+<CtaGetStarted />

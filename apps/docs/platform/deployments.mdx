@@ -1,0 +1,54 @@
+---
+title: Deployments
+description: Track every deployment across your applications and environments.
+icon: "rocket"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/deployments.png" />
+</Frame>
+
+## How it works
+
+Deployments track when a version of an application is deployed to an environment. Each deployment records the version, commit hash, environment, and linked pull requests.
+
+Sweetr automatically determines the **change type** for each deployment by comparing commits against the previous deployment:
+
+- **Forward** — A standard deployment with new changes.
+- **Rollback** — The deployment reverts to a previous version.
+- **No Change** — A redeployment of the same version.
+
+## Deployment triggers
+
+Deployments can be tracked through three different triggers:
+
+<Card title="API Webhook" icon="webhook" horizontal>
+  Send deployments via the [POST /v1/deployments](/api-reference/create-deployment) REST endpoint. Best for custom CI/CD pipelines.
+</Card>
+
+<Card title="Pull Request Merge" icon="code-merge" horizontal>
+  Automatically create a deployment when a pull request is merged to a target branch. Best for trunk-based development.
+</Card>
+
+<Card title="Git Deployment Events" icon="github" horizontal>
+  Track deployments from GitHub deployment events. Best for teams using GitHub Actions deployments.
+</Card>
+
+## Filtering
+
+Filter deployments by application, environment, and date range to find exactly what you need.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Applications" icon="cube" href="/platform/applications" />
+  <Card title="Incidents" icon="fire-burner" href="/platform/incidents" />
+  <Card title="DORA Metrics" icon="chart-line" href="/metrics-and-insights/dora" />
+  <Card title="API Reference" icon="code" href="/api-reference/create-deployment" />
+</CardGroup>
+
+<CtaGetStarted />

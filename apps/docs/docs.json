@@ -1,0 +1,143 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Sweetr Docs",
+  "logo": {
+    "dark": "/logo.svg",
+    "light": "/logo.svg"
+  },
+  "icons": {
+    "library": "tabler"
+  },
+  "favicon": "/logo.svg",
+  "colors": {
+    "primary": "#69db7c"
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": true
+  },
+  "background": {
+    "color": {
+      "dark": "#141517"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Login",
+        "href": "https://app.sweetr.dev/"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://github.com/apps/sweetr-dev/installations/new"
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Repository",
+          "icon": "github",
+          "href": "https://github.com/sweetr-dev/sweetr.dev"
+        },
+        {
+          "anchor": "Give Feedback",
+          "icon": "message-code",
+          "href": "https://sweetr.featurebase.app/"
+        }
+      ]
+    },
+
+    "tabs": [
+      {
+        "tab": "Sweetr",
+        "pages": [
+          {
+            "group": "Welcome",
+            "pages": [
+              "get-started/intro",
+              {
+                "group": "Get Started",
+                "icon": "sparkles",
+                "pages": ["get-started/cloud", "get-started/self-host"]
+              }
+            ]
+          },
+          {
+            "group": "Metrics & Insights",
+            "pages": [
+              "metrics-and-insights/dora",
+              {
+                "group": "Team Insights",
+                "icon": "chart-simple",
+                "pages": [
+                  "metrics-and-insights/team/intro",
+                  "metrics-and-insights/team/code-review-distribution",
+                  "metrics-and-insights/team/pr-size-distribution",
+                  "metrics-and-insights/team/cycle-time",
+                  "metrics-and-insights/team/time-to-first-review",
+                  "metrics-and-insights/team/time-to-approve",
+                  "metrics-and-insights/team/time-to-merge"
+                ]
+              },
+              "metrics-and-insights/work-log",
+              "metrics-and-insights/pull-requests",
+              "metrics-and-insights/wip",
+              "metrics-and-insights/code-reviews"
+            ]
+          },
+          {
+            "group": "Automations",
+            "pages": [
+              "automations/alerts",
+              "automations/digests",
+              "automations/incident-detection",
+              "automations/pr-size-labeler",
+              "automations/pr-title-check"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
+              "platform/applications",
+              "platform/deployments",
+              "platform/incidents",
+              "platform/teams",
+              "platform/people",
+              "platform/integrations"
+            ]
+          },
+          {
+            "group": "About Us",
+            "pages": [
+              "about/principles",
+              "about/open-source",
+              "about/data-privacy-and-security",
+              "about/roadmap"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "pages": [
+          {
+            "group": "Deployments",
+            "pages": ["api-reference/create-deployment"]
+          }
+        ]
+      }
+    ],
+    "groups": []
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/sweetr_dev",
+      "github": "https://github.com/sweetr-dev",
+      "linkedin": "https://www.linkedin.com/company/sweetr-dev"
+    }
+  }
+}
