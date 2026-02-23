@@ -26,7 +26,9 @@ export function errorHandler(
   }
 
   logger.error("Fastify error handler", error);
-  Error.captureStackTrace(error);
+
+  if (!error.stack) Error.captureStackTrace(error);
+
   captureException(error);
 
   return reply.code(500).send({

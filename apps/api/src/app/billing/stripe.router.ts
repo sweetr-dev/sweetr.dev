@@ -69,6 +69,6 @@ export const stripeRouter: FastifyPluginAsync = async (fastify) => {
       workspaceId: decodeId(workspaceId),
     });
 
-    return reply.code(303).redirect(session.url!);
+    return reply.redirect(session.url!, 303);
   });
 };

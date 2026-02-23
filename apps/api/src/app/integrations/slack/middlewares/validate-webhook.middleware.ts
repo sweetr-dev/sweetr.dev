@@ -14,9 +14,14 @@ export const validateWebhook = async (
   // Skip validation when in dev environment
   if (!isLive) return;
 
-  const signature = req.headers["x-slack-signature"] as string;
-  const timestamp = req.headers["x-slack-request-timestamp"] as string;
-  const time = Math.floor(new Date().getTime() / 1000);
+  const signature = (req.headers["x-slack-signature"] as string) || "";
+  const timestamp = (req.headers["x-slack-request-timestamp"] as string) || "";
+
+  if (!signature || !timestamp || Number.isNaN(Number(timestamp))) {
+    return reply.code(400).send("Missing or invalid Slack headers.");
+  }
+
+  const time = Math.floor(Date.now() / 1000);
 
   if (Math.abs(time - Number(timestamp)) > 300) {
     return reply.code(400).send("Slack request timestamp is too old.");

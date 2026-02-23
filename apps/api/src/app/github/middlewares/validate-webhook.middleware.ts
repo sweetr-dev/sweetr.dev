@@ -14,7 +14,7 @@ export const validateWebhook = async (
   }
 
   // Skip validation when in dev environment
-  if (!isLive && 0) return;
+  if (!isLive) return;
 
   const signature = (req.headers[signatureHeader] as string) || "";
   const calculatedSignature =

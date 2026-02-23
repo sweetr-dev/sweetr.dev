@@ -10,7 +10,6 @@ import { closeAllQueueWorkers } from "./bull-mq/workers";
 initSentry();
 
 const start = async () => {
-  console.log(resolve(__dirname, "../../../certs/tls.key"));
   const httpsOptions = env.USE_SELF_SIGNED_SSL
     ? {
         key: readFileSync(resolve(__dirname, "../../../certs/tls.key")),
