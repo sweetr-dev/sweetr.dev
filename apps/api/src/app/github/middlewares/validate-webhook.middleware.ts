@@ -1,23 +1,22 @@
 import * as crypto from "crypto";
-import { NextFunction, Request, Response } from "express";
+import { FastifyRequest, FastifyReply } from "fastify";
 import { env, isLive } from "../../../env";
 
-const signatureHeader = "X-Hub-Signature-256";
+const signatureHeader = "x-hub-signature-256";
 const hashAlgorithm = "sha256";
 
-export const validateWebhook = (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-): void => {
+export const validateWebhook = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
   if (!req.rawBody) {
-    return next("Request body empty");
+    return reply.code(400).send("Request body empty");
   }
 
   // Skip validation when in dev environment
-  if (!isLive && 0) return next();
+  if (!isLive && 0) return;
 
-  const signature = req.get(signatureHeader) || "";
+  const signature = (req.headers[signatureHeader] as string) || "";
   const calculatedSignature =
     `${hashAlgorithm}=` +
     crypto
@@ -32,8 +31,6 @@ export const validateWebhook = (
       Buffer.from(signature)
     )
   ) {
-    return next("GitHub webhook signature mismatch.");
+    return reply.code(401).send("GitHub webhook signature mismatch.");
   }
-
-  return next();
 };

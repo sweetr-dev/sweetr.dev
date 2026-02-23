@@ -1,16 +1,17 @@
-import { Router } from "express";
-import { ExpressAdapter } from "@bull-board/express";
+import { FastifyPluginAsync } from "fastify";
+import { FastifyAdapter } from "@bull-board/fastify";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { queues } from "./queues";
 import auth from "basic-auth";
 import { env } from "../env";
-import { rateLimit } from "express-rate-limit";
+import rateLimit from "@fastify/rate-limit";
 
-export const bullBoardRouter = Router();
+export const bullBoardRouter: FastifyPluginAsync = async (fastify) => {
+  if (!env.BULLBOARD_PATH || !env.BULLBOARD_USERNAME || !env.BULLBOARD_PASSWORD)
+    return;
 
-if (env.BULLBOARD_PATH && env.BULLBOARD_USERNAME && env.BULLBOARD_PASSWORD) {
-  const serverAdapter = new ExpressAdapter();
+  const serverAdapter = new FastifyAdapter();
   serverAdapter.setBasePath(env.BULLBOARD_PATH);
 
   createBullBoard({
@@ -18,29 +19,25 @@ if (env.BULLBOARD_PATH && env.BULLBOARD_USERNAME && env.BULLBOARD_PASSWORD) {
     serverAdapter: serverAdapter,
   });
 
-  bullBoardRouter
-    .use(
-      env.BULLBOARD_PATH,
-      rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 200,
-        message: "Too many requests, please try again later.",
-      })
-    )
-    .use(
-      env.BULLBOARD_PATH,
-      (req, res, next) => {
-        const user = auth(req);
-        const username = env.BULLBOARD_USERNAME;
-        const password = env.BULLBOARD_PASSWORD;
+  await fastify.register(rateLimit, {
+    max: 200,
+    timeWindow: "15 minutes",
+  });
 
-        if (!user || user.name !== username || user.pass !== password) {
-          res.set("WWW-Authenticate", 'Basic realm="BullBoard"');
-          return res.status(401).send("Authentication required.");
-        }
+  fastify.addHook("onRequest", async (request, reply) => {
+    if (!request.url.startsWith(env.BULLBOARD_PATH)) return;
 
-        next();
-      },
-      serverAdapter.getRouter()
-    );
-}
+    const user = auth(request.raw);
+    const username = env.BULLBOARD_USERNAME;
+    const password = env.BULLBOARD_PASSWORD;
+
+    if (!user || user.name !== username || user.pass !== password) {
+      reply.header("WWW-Authenticate", 'Basic realm="BullBoard"');
+      return reply.code(401).send("Authentication required.");
+    }
+  });
+
+  await fastify.register(serverAdapter.registerPlugin(), {
+    prefix: env.BULLBOARD_PATH,
+  });
+};

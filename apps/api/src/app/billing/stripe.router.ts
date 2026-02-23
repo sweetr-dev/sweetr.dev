@@ -1,5 +1,4 @@
-import { Router, urlencoded } from "express";
-import { catchErrors } from "../../lib/express-helpers";
+import { FastifyPluginAsync } from "fastify";
 import { getStripeClient } from "../../lib/stripe";
 import { env } from "../../env";
 import {
@@ -12,43 +11,40 @@ import { z } from "zod";
 import { decodeId } from "../../lib/hash-id";
 import { IntegrationException } from "../errors/exceptions/integration.exception";
 
-export const stripeRouter = Router();
+export const stripeRouter: FastifyPluginAsync = async (fastify) => {
+  fastify.post(
+    "/stripe/webhook",
+    { config: { rawBody: true } },
+    async (request, reply) => {
+      if (!env.STRIPE_API_KEY) {
+        throw new IntegrationException("STRIPE_API_KEY is not set");
+      }
 
-stripeRouter.post(
-  "/stripe/webhook",
-  catchErrors(async (req, res) => {
-    if (!env.STRIPE_API_KEY) {
-      throw new IntegrationException("STRIPE_API_KEY is not set");
+      if (!env.STRIPE_WEBHOOK_SECRET) {
+        throw new IntegrationException("STRIPE_WEBHOOK_SECRET is not set");
+      }
+
+      const signature = request.headers["stripe-signature"] as string;
+
+      try {
+        const event = getStripeClient().webhooks.constructEvent(
+          request.rawBody as string,
+          signature,
+          env.STRIPE_WEBHOOK_SECRET
+        );
+
+        await enqueueStripeWebhook(event);
+
+        return reply.send({ received: true });
+      } catch (error) {
+        captureException(error);
+
+        return reply.code(400).send("Webhook Error");
+      }
     }
+  );
 
-    if (!env.STRIPE_WEBHOOK_SECRET) {
-      throw new IntegrationException("STRIPE_WEBHOOK_SECRET is not set");
-    }
-
-    const signature = req.get("Stripe-Signature");
-
-    try {
-      const event = getStripeClient().webhooks.constructEvent(
-        req.rawBody,
-        signature,
-        env.STRIPE_WEBHOOK_SECRET
-      );
-
-      await enqueueStripeWebhook(event);
-
-      return res.status(200).send({ received: true });
-    } catch (error) {
-      captureException(error);
-
-      return res.status(400).send("Webhook Error");
-    }
-  })
-);
-
-stripeRouter.post(
-  "/stripe/checkout",
-  urlencoded({ extended: true }),
-  catchErrors(async (req, res) => {
+  fastify.post("/stripe/checkout", async (request, reply) => {
     if (!env.STRIPE_API_KEY) {
       throw new IntegrationException("STRIPE_API_KEY is not set");
     }
@@ -59,7 +55,7 @@ stripeRouter.post(
       workspaceId: z.string(),
     });
 
-    const parsed = schema.safeParse(req.body);
+    const parsed = schema.safeParse(request.body);
 
     if (!parsed.success) {
       throw new InputValidationException();
@@ -73,6 +69,6 @@ stripeRouter.post(
       workspaceId: decodeId(workspaceId),
     });
 
-    res.redirect(303, session.url);
-  })
-);
+    return reply.code(303).redirect(session.url!);
+  });
+};

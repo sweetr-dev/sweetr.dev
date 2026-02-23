@@ -49,4 +49,4 @@ export const setSentryUser = Sentry.setUser;
 export const addBreadcrumb = Sentry.addBreadcrumb;
 export type ExceptionSeverity = Sentry.SeverityLevel;
 
-export const setupExpressErrorHandler = Sentry.setupExpressErrorHandler;
+export const setupFastifyErrorHandler = Sentry.setupFastifyErrorHandler;
