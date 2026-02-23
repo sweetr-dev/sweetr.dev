@@ -26,20 +26,22 @@ export const bullBoardRouter: FastifyPluginAsync = async (fastify) => {
         timeWindow: "15 minutes",
       });
 
-      scope.addHook("onRequest", async (request, reply) => {
-        const user = auth(request.raw);
+      scope.register(async (inner) => {
+        inner.addHook("onRequest", async (request, reply) => {
+          const user = auth(request.raw);
 
-        if (
-          !user ||
-          user.name !== env.BULLBOARD_USERNAME ||
-          user.pass !== env.BULLBOARD_PASSWORD
-        ) {
-          reply.header("WWW-Authenticate", 'Basic realm="BullBoard"');
-          return reply.code(401).send("Authentication required.");
-        }
+          if (
+            !user ||
+            user.name !== env.BULLBOARD_USERNAME ||
+            user.pass !== env.BULLBOARD_PASSWORD
+          ) {
+            reply.header("WWW-Authenticate", 'Basic realm="BullBoard"');
+            return reply.code(401).send("Authentication required.");
+          }
+        });
+
+        await inner.register(serverAdapter.registerPlugin());
       });
-
-      await scope.register(serverAdapter.registerPlugin());
     },
     { prefix: env.BULLBOARD_PATH }
   );
