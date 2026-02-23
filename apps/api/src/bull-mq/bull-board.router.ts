@@ -21,16 +21,12 @@ export const bullBoardRouter: FastifyPluginAsync = async (fastify) => {
 
   fastify.register(
     async (scope) => {
-      await scope.register(rateLimit);
-
-      const applyRateLimit = scope.rateLimit({
+      await scope.register(rateLimit, {
         max: 200,
         timeWindow: "15 minutes",
       });
 
       scope.addHook("onRequest", async (request, reply) => {
-        await applyRateLimit.call(scope, request, reply);
-
         const user = auth(request.raw);
 
         if (
