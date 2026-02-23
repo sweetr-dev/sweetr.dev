@@ -1,16 +1,18 @@
-import { Router } from "express";
+import { FastifyPluginAsync } from "fastify";
 import { validateWebhook } from "./middlewares/validate-webhook.middleware";
 import { enqueueGithubWebhook } from "./services/github-webhook.service";
-import { catchErrors } from "../../lib/express-helpers";
 
-export const githubRouter = Router();
+export const githubRouter: FastifyPluginAsync = async (fastify) => {
+  fastify.post(
+    "/github/webhook",
+    { preHandler: validateWebhook, config: { rawBody: true } },
+    async (request, reply) => {
+      await enqueueGithubWebhook(
+        request.headers["x-github-event"] as string,
+        request.body as never
+      );
 
-githubRouter.post(
-  "/github/webhook",
-  validateWebhook,
-  catchErrors(async (req, res) => {
-    await enqueueGithubWebhook(req.get("X-GitHub-Event"), req.body);
-
-    return res.status(200).send();
-  })
-);
+      return reply.code(200).send();
+    }
+  );
+};

@@ -1,23 +1,21 @@
-import { Router } from "express";
-import { catchErrors } from "../../lib/express-helpers";
+import { FastifyPluginAsync } from "fastify";
 import { addJob, SweetQueue } from "../../bull-mq/queues";
 import { validateInputOrThrow } from "../validator.service";
 import { postDeploymentValidationSchema } from "./services/deployment.validation";
 import { logger } from "../../lib/logger";
 import { findApiKeyOrThrow } from "../api-keys/services/api-keys.service";
 
-export const deploymentsRouter = Router();
+export const deploymentsRouter: FastifyPluginAsync = async (fastify) => {
+  fastify.post("/v1/deployments", async (request, reply) => {
+    logger.debug("http.deployments.create", { body: request.body });
 
-deploymentsRouter.post(
-  "/v1/deployments",
-  catchErrors(async (req, res) => {
-    logger.debug("http.deployments.create", { body: req.body });
-
-    const apiKey = await findApiKeyOrThrow(req.headers.authorization as string);
+    const apiKey = await findApiKeyOrThrow(
+      request.headers.authorization as string
+    );
 
     const payload = await validateInputOrThrow(
       postDeploymentValidationSchema,
-      req.body
+      request.body as never
     );
 
     await addJob(SweetQueue.DEPLOYMENT_TRIGGERED_BY_API, {
@@ -28,6 +26,6 @@ deploymentsRouter.post(
       ...payload,
     });
 
-    return res.status(202).send();
-  })
-);
+    return reply.code(202).send();
+  });
+};

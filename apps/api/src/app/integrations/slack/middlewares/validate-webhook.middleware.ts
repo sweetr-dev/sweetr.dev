@@ -1,29 +1,33 @@
 import * as crypto from "crypto";
-import { NextFunction, Request, Response } from "express";
+import { FastifyRequest, FastifyReply } from "fastify";
 import { isLive } from "../../../../env";
 import { config } from "../../../../config";
 
-export const validateWebhook = (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-): void => {
+export const validateWebhook = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
   if (!req.rawBody) {
-    return next("Request is empty");
+    return reply.code(400).send("Request is empty");
   }
 
   // Skip validation when in dev environment
-  if (!isLive) return next();
+  if (!isLive) return;
 
-  const signature = req.headers["x-slack-signature"] as string;
-  const timestamp = req.headers["x-slack-request-timestamp"] as string;
-  const time = Math.floor(new Date().getTime() / 1000);
+  const signature = (req.headers["x-slack-signature"] as string) || "";
+  const timestamp = (req.headers["x-slack-request-timestamp"] as string) || "";
 
-  if (Math.abs(time - Number(timestamp)) > 300) {
-    return next(`Slack request timestamp is too old.`);
+  if (!signature || !timestamp || Number.isNaN(Number(timestamp))) {
+    return reply.code(400).send("Missing or invalid Slack headers.");
   }
 
-  const baseString = `v0:${timestamp}:${req.rawBody.toString("utf8")}`;
+  const time = Math.floor(Date.now() / 1000);
+
+  if (Math.abs(time - Number(timestamp)) > 300) {
+    return reply.code(400).send("Slack request timestamp is too old.");
+  }
+
+  const baseString = `v0:${timestamp}:${req.rawBody}`;
   const hmac = crypto.createHmac("sha256", config.slack.webhookSecret);
   const calculatedSignature = `v0=${hmac.update(baseString).digest("hex")}`;
 
@@ -33,8 +37,6 @@ export const validateWebhook = (
       Buffer.from(signature)
     )
   ) {
-    return next(`Slack webhook signature mismatch.`);
+    return reply.code(401).send("Slack webhook signature mismatch.");
   }
-
-  return next();
 };
