@@ -1,0 +1,30 @@
+---
+title: Authentication
+description: Authenticate requests to the Sweetr API using API keys.
+icon: "key"
+---
+
+All API requests must include a valid API key in the `Authorization` header using the Bearer scheme:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Generating API keys
+
+API keys are scoped to a workspace. To generate one:
+
+1. Open the Sweetr dashboard.
+2. Navigate to **Settings > Workspace**.
+3. Scroll down to the **API** section.
+4. Click **Regenerate** and copy the generated key.
+
+<Warning>
+  API keys are only displayed once at creation time. Store them securely — for
+  example, as a secret in your CI/CD provider.
+</Warning>
+
+## Security best practices
+
+- **Never commit API keys** to source control.
+- **Use CI/CD secrets** (e.g., GitHub Actions secrets, GitLab CI variables) to inject keys at runtime.

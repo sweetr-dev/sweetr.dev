@@ -1,0 +1,11 @@
+---
+title: Rate Limits
+description: Understand the rate limits applied to the Sweetr API.
+icon: "gauge"
+---
+
+All API endpoints are rate limited to **100 requests per minute**, scoped to your API key. Requests that exceed the limit receive a `429 Too Many Requests` response.
+
+## Handling rate limits
+
+If you hit a rate limit, wait before retrying. The recommended approach is exponential backoff — wait 1 second, then 2, then 4, and so on.

@@ -7,16 +7,6 @@ Track a new deployment for an application. If the application doesn't exist, it 
 
 The request is processed asynchronously. A `202 Accepted` response means the deployment has been queued for processing.
 
-## Authentication
-
-Include your API key in the `Authorization` header:
-
-```bash
-Authorization: Bearer YOUR_API_KEY
-```
-
-You can generate API keys from your workspace settings in the Sweetr dashboard.
-
 ## Body
 
 <ParamField body="repositoryFullName" type="string" required>

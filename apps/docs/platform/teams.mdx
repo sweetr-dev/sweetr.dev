@@ -1,7 +1,7 @@
 ---
 title: Teams
 description: A directory of your organization's teams.
-icon: "users-rectangle"
+icon: "circles"
 ---
 
 import { PrBadge } from "/snippets/pr-badge.mdx";
@@ -37,15 +37,23 @@ Each member can have a specific role within a team.
 - Leader
 - Manager
 
+## Archiving
+
+Teams that are no longer active can be archived. Archived teams are hidden from filters and excluded from metrics. You can unarchive them at any time.
+
 ## Explore
 
 <CardGroup cols={2}>
   <Card
     title="Team Pull Requests"
-    icon="code-pull-request"
-    href="/features/pull-requests"
+    icon="git-pull-request"
+    href="/metrics-and-insights/pull-requests"
   />
-  <Card title="Team Insights" icon="chart-simple" href="/features/team/intro" />
+  <Card
+    title="Team Insights"
+    icon="chart-arcs"
+    href="/metrics-and-insights/team/intro"
+  />
 </CardGroup>
 
 <CtaGetStarted />

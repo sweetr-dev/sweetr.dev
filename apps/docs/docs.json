@@ -72,7 +72,7 @@
               "metrics-and-insights/dora",
               {
                 "group": "Team Insights",
-                "icon": "chart-simple",
+                "icon": "chart-arcs",
                 "pages": [
                   "metrics-and-insights/team/intro",
                   "metrics-and-insights/team/code-review-distribution",
@@ -102,11 +102,12 @@
           {
             "group": "Platform",
             "pages": [
+              "platform/teams",
+              "platform/people",
               "platform/applications",
               "platform/deployments",
               "platform/incidents",
-              "platform/teams",
-              "platform/people",
+              "platform/environments",
               "platform/integrations"
             ]
           },
@@ -125,13 +126,29 @@
         "tab": "API Reference",
         "pages": [
           {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/rate-limit"
+            ]
+          },
+          {
             "group": "Deployments",
-            "pages": ["api-reference/create-deployment"]
+            "pages": ["api-reference/deployments/create-deployment"]
           }
         ]
       }
     ],
     "groups": []
+  },
+  "api": {
+    "mdx": {
+      "server": "https://api.sweetr.dev",
+      "auth": {
+        "method": "bearer"
+      }
+    }
   },
   "footer": {
     "socials": {

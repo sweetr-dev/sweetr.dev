@@ -1,7 +1,7 @@
 ---
 title: Incidents
 description: Track production incidents caused by deployments.
-icon: "fire-burner"
+icon: "flame"
 ---
 
 import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
@@ -18,36 +18,48 @@ Incidents represent production issues caused by a deployment. They track the ful
 
 ## Key fields
 
-| Field | Description |
-|---|---|
+| Field                | Description                                          |
+| -------------------- | ---------------------------------------------------- |
 | **Cause deployment** | The deployment that introduced the issue (required). |
-| **Fix deployment** | The deployment that resolved the issue. |
-| **Detected at** | When the incident was detected. |
-| **Resolved at** | When the incident was resolved. |
-| **Team** | The team responsible for the incident. |
-| **Leader** | The person leading incident response. |
-| **Postmortem URL** | Link to the postmortem document. |
+| **Fix deployment**   | The deployment that resolved the issue.              |
+| **Detected at**      | When the incident was detected.                      |
+| **Resolved at**      | When the incident was resolved.                      |
+| **Team**             | The team responsible for the incident.               |
+| **Leader**           | The person leading incident response.                |
+| **Postmortem URL**   | Link to the postmortem document.                     |
 
 ## Creating incidents
 
 Incidents can be created in two ways:
 
-- **Manually** — Create an incident from the UI, linking it to the deployment that caused it.
-- **Automatically** — Use the [Incident Detection](/automations/incident-detection) automation to detect incidents from rollbacks, hotfixes, and reverts.
+- **Manually**: Create an incident from the UI, linking it to the deployment that caused it.
+- **Automatically**: Use the [Incident Detection](/automations/incident-detection) automation to detect incidents from rollbacks, hotfixes, and reverts.
 
 ## Impact on metrics
 
 Incidents directly feed into two DORA metrics:
 
-- **Change Failure Rate** — The percentage of deployments that caused an incident.
-- **Mean Time to Recovery** — The average time between incident detection and resolution.
+- **Change Failure Rate**: The percentage of deployments that caused an incident.
+- **Mean Time to Recovery**: The average time between incident detection and resolution.
+
+## Archiving
+
+Incidents that are no longer relevant can be archived. Archived incidents are excluded from metrics. You can unarchive them at any time.
 
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Incident Detection" icon="circle-dot" href="/automations/incident-detection" />
+  <Card
+    title="Incident Detection"
+    icon="circle-dot"
+    href="/automations/incident-detection"
+  />
   <Card title="Deployments" icon="rocket" href="/platform/deployments" />
-  <Card title="DORA Metrics" icon="chart-line" href="/metrics-and-insights/dora" />
+  <Card
+    title="DORA Metrics"
+    icon="chart-line"
+    href="/metrics-and-insights/dora"
+  />
 </CardGroup>
 
 <CtaGetStarted />
