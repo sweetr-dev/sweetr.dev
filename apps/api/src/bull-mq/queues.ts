@@ -62,9 +62,12 @@ export enum JobPriority {
   HIGH = 1,
 }
 
-// Initialize Queues
-export const queues: Record<SweetQueue, Queue> = (() => {
-  const queues = {};
+let queuesRecord: Record<SweetQueue, Queue> | null = null;
+
+export function initQueues(): Record<SweetQueue, Queue> {
+  if (queuesRecord) return queuesRecord;
+
+  const record = {} as Record<string, Queue>;
 
   for (const queueName of Object.values(SweetQueue)) {
     const queue = new Queue(queueName, {
@@ -80,13 +83,21 @@ export const queues: Record<SweetQueue, Queue> = (() => {
 
     queue.on("error", bullMQErrorHandler);
 
-    queues[queueName] = queue;
+    record[queueName] = queue;
 
     logger.info(`🐂🧵 BullMQ: Queue ${queueName} initialized.`);
   }
 
-  return queues as Record<SweetQueue, Queue>;
-})();
+  queuesRecord = record as Record<SweetQueue, Queue>;
+  return queuesRecord;
+}
+
+export { queuesRecord as queues };
+
+function getQueue(queueName: SweetQueue): Queue {
+  const record = initQueues();
+  return record[queueName];
+}
 
 export const addJob = async <T>(
   queueName: SweetQueue,
@@ -95,7 +106,7 @@ export const addJob = async <T>(
 ) => {
   logger.info(`🐂✉️ BullMQ: Adding job to ${queueName}`);
 
-  const queue = queues[queueName];
+  const queue = getQueue(queueName);
 
   return queue.add(`${queue.name}-job`, data, options);
 };
@@ -108,7 +119,7 @@ export const addDelayedJob = async <T>(
 ) => {
   logger.info(`🐂📅 BullMQ: Adding delayed job to ${queueName}`);
 
-  const queue = queues[queueName];
+  const queue = getQueue(queueName);
 
   return queue.add(`${queue.name}-job`, data, {
     delay: date.getTime() - Date.now(),
@@ -123,7 +134,7 @@ export const addJobs = async <T>(
 ) => {
   logger.info(`🐂✉️ BullMQ: Adding ${data.length} job to ${queueName}`);
 
-  const queue = queues[queueName];
+  const queue = getQueue(queueName);
 
   return queue.addBulk(
     data.map((d) => ({ name: `${queue.name}-job`, data: d, opts: options }))

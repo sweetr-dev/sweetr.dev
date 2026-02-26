@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { FastifyAdapter } from "@bull-board/fastify";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-import { queues } from "./queues";
+import { initQueues } from "./queues";
 import auth from "basic-auth";
 import { env } from "../env";
 import rateLimit from "@fastify/rate-limit";
@@ -15,7 +15,7 @@ export const bullBoardRouter: FastifyPluginAsync = async (fastify) => {
   serverAdapter.setBasePath(env.BULLBOARD_PATH);
 
   createBullBoard({
-    queues: Object.values(queues).map((queue) => new BullMQAdapter(queue)),
+    queues: Object.values(initQueues()).map((queue) => new BullMQAdapter(queue)),
     serverAdapter: serverAdapter,
   });
 
