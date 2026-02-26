@@ -141,6 +141,11 @@ export const handleDeploymentPullRequestAutoLinking = async ({
       }
     );
 
+    await addJob(SweetQueue.AUTOMATION_INCIDENT_DETECTION, {
+      deploymentId,
+      workspaceId,
+    });
+
     return;
   }
 

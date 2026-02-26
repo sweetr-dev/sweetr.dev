@@ -127,7 +127,7 @@ const fetchPullRequest = async (
             headRefName
             body
 
-            labels(first: 100) {
+            labels(first: ${GITHUB_MAX_PAGE_LIMIT}) {
               nodes {
                 name
               }

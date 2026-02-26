@@ -8,6 +8,7 @@ import { findAutomationByType } from "../../automations/services/automation.serv
 import { isActiveCustomer } from "../../authorization.service";
 import { IncidentDetectionSettings } from "../../automations/services/automation.types";
 import { HandleIncidentDetectionAutomationArgs } from "./incident-detection.types";
+import { safeRegex } from "../../../lib/string";
 
 interface DetectionResult {
   causeDeploymentId: number;
@@ -61,14 +62,18 @@ export const handleIncidentDetectionAutomation = async ({
   if (!result) return;
 
   const existingIncident = await getPrisma(workspaceId).incident.findFirst({
-    where: { causeDeploymentId: result.causeDeploymentId, workspaceId },
+    where: {
+      causeDeploymentId: result.causeDeploymentId,
+      fixDeploymentId: result.fixDeploymentId,
+      workspaceId,
+    },
   });
 
   if (existingIncident) {
-    logger.info(
-      "handleDeploymentIncidentDetection: Incident already exists for cause deployment",
-      { causeDeploymentId: result.causeDeploymentId, existingIncident }
-    );
+    logger.info("handleDeploymentIncidentDetection: Incident already exists", {
+      causeDeploymentId: result.causeDeploymentId,
+      existingIncident,
+    });
     return;
   }
 
@@ -167,15 +172,26 @@ const detectRevert = async (
       },
       orderBy: { mergedAt: "desc" },
       include: {
-        deploymentEvents: true,
+        deploymentEvents: {
+          include: { deployment: true },
+        },
       },
     });
 
     if (!originalPr) continue;
 
-    const deploymentLink = originalPr.deploymentEvents.find(
-      (de) => de.deploymentId !== deployment.id
-    );
+    const deploymentLink = originalPr.deploymentEvents
+      .filter(
+        (de) =>
+          de.deployment.applicationId === deployment.applicationId &&
+          de.deployment.environmentId === deployment.environmentId &&
+          de.deploymentId !== deployment.id
+      )
+      .sort(
+        (a, b) =>
+          b.deployment.deployedAt.getTime() - a.deployment.deployedAt.getTime()
+      )
+      .at(0);
 
     if (!deploymentLink) continue;
 
@@ -209,20 +225,17 @@ const detectHotfix = async (
 
   const { prTitleRegEx, branchRegEx, prLabelRegEx } = settings.hotfix;
 
+  const compiledTitleRegex = prTitleRegEx ? safeRegex(prTitleRegEx) : null;
+  const compiledBranchRegex = branchRegEx ? safeRegex(branchRegEx) : null;
+  const compiledLabelRegex = prLabelRegEx ? safeRegex(prLabelRegEx) : null;
+
   const isHotfix = pullRequests.some((pr) => {
-    if (prTitleRegEx && new RegExp(prTitleRegEx, "i").test(pr.title)) {
-      return true;
-    }
+    if (compiledTitleRegex?.test(pr.title)) return true;
+    if (compiledBranchRegex?.test(pr.sourceBranch)) return true;
 
-    if (branchRegEx && new RegExp(branchRegEx, "i").test(pr.sourceBranch)) {
-      return true;
-    }
-
-    if (prLabelRegEx) {
+    if (compiledLabelRegex) {
       const labels = (pr.labels as string[]) ?? [];
-      if (labels.some((label) => new RegExp(prLabelRegEx, "i").test(label))) {
-        return true;
-      }
+      if (labels.some((label) => compiledLabelRegex.test(label))) return true;
     }
 
     return false;
