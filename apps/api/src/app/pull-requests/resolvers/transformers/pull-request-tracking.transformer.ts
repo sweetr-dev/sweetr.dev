@@ -53,6 +53,12 @@ export const transformPullRequestTracking = ({
     firstReviewAt: tracking.firstReviewAt?.toISOString(),
     timeToCode: tracking.timeToCode,
     firstDeployedAt: tracking.firstDeployedAt?.toISOString(),
+    timeToFirstReview: calculateTimeForEvent({
+      from: tracking.firstReadyAt || pullRequest.createdAt,
+      duration: tracking.timeToFirstReview,
+      pullRequest,
+      uselessAfterMerge: true,
+    }),
     timeToFirstApproval: calculateTimeForEvent({
       from:
         tracking.firstReviewAt ||
@@ -62,14 +68,12 @@ export const transformPullRequestTracking = ({
       pullRequest,
       uselessAfterMerge: true,
     }),
-    timeToFirstReview: calculateTimeForEvent({
-      from: tracking.firstReadyAt || pullRequest.createdAt,
-      duration: tracking.timeToFirstReview,
-      pullRequest,
-      uselessAfterMerge: true,
-    }),
     timeToMerge: calculateTimeForEvent({
-      from: tracking.firstReadyAt || pullRequest.createdAt,
+      from:
+        tracking.firstApprovalAt ||
+        tracking.firstReviewAt ||
+        tracking.firstReadyAt ||
+        pullRequest.createdAt,
       duration: tracking.timeToMerge,
       pullRequest,
       uselessAfterMerge: true,
