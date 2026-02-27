@@ -58,7 +58,7 @@ export const CardCloud = ({
           }
         >
           <List.Item>
-            ${pricePerContributor.toFixed(2)} per contributor
+            {pricePerContributor.toFixed(2)}$ per contributor
           </List.Item>
           <List.Item>Regular support</List.Item>
           <List.Item>1 year data retention</List.Item>
