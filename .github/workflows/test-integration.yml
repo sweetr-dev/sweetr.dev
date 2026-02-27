@@ -73,6 +73,7 @@ jobs:
           USE_SELF_SIGNED_SSL: false
           JWT_SECRET: test-secret
           REDIS_CONNECTION_STRING: redis://localhost:6379
+          FRONTEND_URL: http://localhost:5173
           BULLMQ_ENABLED: false
           GITHUB_CLIENT_SECRET: test
           GITHUB_CLIENT_ID: test
