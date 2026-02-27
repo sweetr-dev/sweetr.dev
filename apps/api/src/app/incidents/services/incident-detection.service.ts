@@ -9,6 +9,7 @@ import { isActiveCustomer } from "../../authorization.service";
 import { IncidentDetectionSettings } from "../../automations/services/automation.types";
 import { HandleIncidentDetectionAutomationArgs } from "./incident-detection.types";
 import { safeRegex } from "../../../lib/string";
+import { DataIntegrityException } from "../../errors/exceptions/data-integrity.exception";
 
 interface DetectionResult {
   causeDeploymentId: number;
@@ -60,6 +61,18 @@ export const handleIncidentDetectionAutomation = async ({
     (await detectHotfix(settings, pullRequests, deployment, workspaceId));
 
   if (!result) return;
+
+  if (result.causeDeploymentId === result.fixDeploymentId) {
+    throw new DataIntegrityException(
+      "handleDeploymentIncidentDetection: Cause and fix deployment IDs are the same",
+      {
+        extra: {
+          deploymentId,
+          result,
+        },
+      }
+    );
+  }
 
   const existingIncident = await getPrisma(workspaceId).incident.findFirst({
     where: {
