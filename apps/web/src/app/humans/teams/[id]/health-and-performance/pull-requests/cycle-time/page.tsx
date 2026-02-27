@@ -80,8 +80,7 @@ export const TeamPullRequestsCycleTimePage = () => {
 
                 filters.setFieldValue("from", from);
                 filters.setFieldValue("to", to);
-                searchParams.set("from", from);
-                searchParams.set("to", to);
+                searchParams.setMany({ from, to });
               }}
               value={[
                 parseNullableISO(filters.values.from) || null,

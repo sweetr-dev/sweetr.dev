@@ -57,7 +57,7 @@
     "got": "^11.8.3",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
-    "graphql-yoga": "^5.0.0",
+    "graphql-yoga": "^5.18.0",
     "hashids": "^2.3.0",
     "ioredis": "^5.9.3",
     "jsonwebtoken": "^9.0.2",

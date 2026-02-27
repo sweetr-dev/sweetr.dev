@@ -159,8 +159,7 @@ export const IncidentsPage = () => {
 
             filters.setFieldValue("detectedAtFrom", detectedAtFrom);
             filters.setFieldValue("detectedAtTo", detectedAtTo);
-            searchParams.set("detectedAtFrom", detectedAtFrom);
-            searchParams.set("detectedAtTo", detectedAtTo);
+            searchParams.setMany({ detectedAtFrom, detectedAtTo });
           }}
           value={[
             parseNullableISO(filters.values.detectedAtFrom) || null,

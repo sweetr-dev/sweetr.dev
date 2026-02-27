@@ -128,8 +128,7 @@ export const usePullRequestList = ({
 
     filters.setFieldValue("createdAtFrom", createdAtFrom);
     filters.setFieldValue("createdAtTo", createdAtTo);
-    searchParams.set("createdAtFrom", createdAtFrom);
-    searchParams.set("createdAtTo", createdAtTo);
+    searchParams.setMany({ createdAtFrom, createdAtTo });
   };
 
   const handleCompletedAtChange = (dates: [Date | null, Date | null]) => {
@@ -138,15 +137,20 @@ export const usePullRequestList = ({
 
     filters.setFieldValue("completedAtFrom", completedAtFrom);
     filters.setFieldValue("completedAtTo", completedAtTo);
-    searchParams.set("completedAtFrom", completedAtFrom);
-    searchParams.set("completedAtTo", completedAtTo);
 
     if (completedAtFrom) {
       const selectedCompletedStates = filters.values.states.filter((state) =>
         completedStates.includes(state as PullRequestState),
       );
 
-      handleStateChange(selectedCompletedStates);
+      filters.setFieldValue("states", selectedCompletedStates as PullRequestState[]);
+      searchParams.setMany({
+        completedAtFrom,
+        completedAtTo,
+        state: selectedCompletedStates,
+      });
+    } else {
+      searchParams.setMany({ completedAtFrom, completedAtTo });
     }
   };
 

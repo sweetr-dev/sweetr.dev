@@ -124,8 +124,7 @@ export const DeploymentsPage = () => {
 
             filters.setFieldValue("deployedAtFrom", deployedAtFrom);
             filters.setFieldValue("deployedAtTo", deployedAtTo);
-            searchParams.set("deployedAtFrom", deployedAtFrom);
-            searchParams.set("deployedAtTo", deployedAtTo);
+            searchParams.setMany({ deployedAtFrom, deployedAtTo });
           }}
           value={[
             parseNullableISO(filters.values.deployedAtFrom) || null,
