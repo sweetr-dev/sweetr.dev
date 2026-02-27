@@ -84,6 +84,10 @@ export const env = envsafe({
   REDIS_CONNECTION_STRING: str({
     desc: "The connection string to the Redis server. Used for BullMQ.",
   }),
+  BULLMQ_ENABLED: bool({
+    desc: "Whether BullMQ is enabled",
+    default: true,
+  }),
   BULLBOARD_PATH: str({
     desc: "The API path to open BullBoard",
     devDefault: "/bullboard",

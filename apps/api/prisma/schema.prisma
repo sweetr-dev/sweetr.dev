@@ -769,6 +769,7 @@ model Incident {
 
   archivedAt DateTime?
 
+  @@unique([workspaceId, causeDeploymentId])
   @@index([causeDeploymentId])
   @@index([fixDeploymentId])
   @@index([teamId])

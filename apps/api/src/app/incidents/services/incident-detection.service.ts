@@ -126,7 +126,7 @@ const detectRollback = async (
       workspaceId,
       applicationId: deployment.applicationId,
       environmentId: deployment.environmentId,
-      deployedAt: { gt: rolledBackTo.deployedAt },
+      deployedAt: { gt: rolledBackTo.deployedAt, lt: deployment.deployedAt },
       id: { not: deployment.id },
       archivedAt: null,
     },

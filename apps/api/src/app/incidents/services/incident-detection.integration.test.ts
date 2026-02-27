@@ -684,6 +684,101 @@ describe("Incident Detection", () => {
       expect(incidents).toHaveLength(0);
     });
 
+    it("does not pick a deployment after the rollback as the cause", async () => {
+      const { ctx, application, environment } = await setupBaseContext();
+
+      await seedAutomation(ctx, {
+        type: AutomationType.INCIDENT_DETECTION,
+        enabled: true,
+        settings: { rollback: { enabled: true } },
+      });
+
+      // T1: v1.0.0 deployed
+      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
+        deployedAt: new Date("2024-01-10T10:00:00Z"),
+        version: "1.0.0",
+      });
+
+      // T2: v1.0.0 deployed again (rollback with no bad deploy in between)
+      const rollbackDeployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        { deployedAt: new Date("2024-01-10T14:00:00Z"), version: "1.0.0" }
+      );
+
+      // T3: v2.0.0 deployed later (already in DB, e.g. out-of-order ingestion)
+      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
+        deployedAt: new Date("2024-01-10T16:00:00Z"),
+        version: "2.0.0",
+      });
+
+      await handleIncidentDetectionAutomation({
+        workspaceId: ctx.workspaceId,
+        deploymentId: rollbackDeployment.deploymentId,
+      });
+
+      const incidents = await getPrisma(ctx.workspaceId).incident.findMany({
+        where: { workspaceId: ctx.workspaceId },
+      });
+
+      expect(incidents).toHaveLength(0);
+    });
+
+    it("does not blame a future deployment when the real cause was archived", async () => {
+      const { ctx, application, environment } = await setupBaseContext();
+
+      await seedAutomation(ctx, {
+        type: AutomationType.INCIDENT_DETECTION,
+        enabled: true,
+        settings: { rollback: { enabled: true } },
+      });
+
+      // T1: v1.0.0 deployed (stable)
+      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
+        deployedAt: new Date("2024-01-10T10:00:00Z"),
+        version: "1.0.0",
+      });
+
+      // T2: v1.1.0 deployed (bad deploy, later archived)
+      const archivedBadDeploy = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        { deployedAt: new Date("2024-01-10T12:00:00Z"), version: "1.1.0" }
+      );
+
+      await getPrisma(ctx.workspaceId).deployment.update({
+        where: { id: archivedBadDeploy.deploymentId },
+        data: { archivedAt: new Date() },
+      });
+
+      // T3: v1.0.0 deployed again (rollback)
+      const rollbackDeployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        { deployedAt: new Date("2024-01-10T14:00:00Z"), version: "1.0.0" }
+      );
+
+      // T4: v2.0.0 deployed later (already in DB)
+      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
+        deployedAt: new Date("2024-01-10T16:00:00Z"),
+        version: "2.0.0",
+      });
+
+      await handleIncidentDetectionAutomation({
+        workspaceId: ctx.workspaceId,
+        deploymentId: rollbackDeployment.deploymentId,
+      });
+
+      const incidents = await getPrisma(ctx.workspaceId).incident.findMany({
+        where: { workspaceId: ctx.workspaceId },
+      });
+
+      expect(incidents).toHaveLength(0);
+    });
+
     it("does not detect rollback across different environments", async () => {
       const { ctx, application } = await setupBaseContext();
       const staging = await seedEnvironment(ctx, { name: "staging" });

@@ -1,10 +1,16 @@
+import RE2 from "re2";
 import { logger } from "./logger";
 
-export const safeRegex = (pattern: string): RegExp | null => {
+export const safeRegex = (pattern: string): RE2 | null => {
   try {
-    return new RegExp(pattern, "i");
+    if (pattern.length > 255) {
+      logger.warn("safeRegex: Pattern is too long, skipping", { pattern });
+      return null;
+    }
+
+    return new RE2(pattern);
   } catch {
-    logger.warn("safeRegex: Invalid regex pattern, skipping", { pattern });
+    logger.info("safeRegex: Invalid regex pattern, skipping", { pattern });
     return null;
   }
 };
