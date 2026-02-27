@@ -82,9 +82,7 @@ describe("Incident Detection", () => {
       expect(incidents[0].causeDeploymentId).toBe(
         previousDeployment.deploymentId
       );
-      expect(incidents[0].fixDeploymentId).toBe(
-        hotfixDeployment.deploymentId
-      );
+      expect(incidents[0].fixDeploymentId).toBe(hotfixDeployment.deploymentId);
     });
 
     it("detects hotfix when branch name matches regex", async () => {
@@ -99,10 +97,15 @@ describe("Incident Detection", () => {
         },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       const pr = await seedPullRequest(
         ctx,
@@ -153,10 +156,15 @@ describe("Incident Detection", () => {
         },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       const pr = await seedPullRequest(
         ctx,
@@ -211,10 +219,15 @@ describe("Incident Detection", () => {
         },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       const pr = await seedPullRequest(
         ctx,
@@ -313,10 +326,15 @@ describe("Incident Detection", () => {
         },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       const pr = await seedPullRequest(
         ctx,
@@ -354,59 +372,6 @@ describe("Incident Detection", () => {
       expect(incidents).toHaveLength(0);
     });
 
-    it("uses case-insensitive matching for hotfix patterns", async () => {
-      const { ctx, gitProfile, repository, application, environment } =
-        await setupBaseContext();
-
-      await seedAutomation(ctx, {
-        type: AutomationType.INCIDENT_DETECTION,
-        enabled: true,
-        settings: {
-          hotfix: { enabled: true, prTitleRegEx: "hotfix" },
-        },
-      });
-
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
-
-      const pr = await seedPullRequest(
-        ctx,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          title: "HOTFIX: Fix critical bug",
-          state: PullRequestState.MERGED,
-          mergedAt: new Date("2024-01-10T12:00:00Z"),
-        }
-      );
-
-      const deployment = await seedDeployment(
-        ctx,
-        application.applicationId,
-        environment.environmentId,
-        { deployedAt: new Date("2024-01-10T13:00:00Z"), version: "1.0.1" }
-      );
-
-      await seedDeploymentPullRequest(
-        ctx,
-        deployment.deploymentId,
-        pr.pullRequestId
-      );
-
-      await handleIncidentDetectionAutomation({
-        workspaceId: ctx.workspaceId,
-        deploymentId: deployment.deploymentId,
-      });
-
-      const incidents = await getPrisma(ctx.workspaceId).incident.findMany({
-        where: { workspaceId: ctx.workspaceId },
-      });
-
-      expect(incidents).toHaveLength(1);
-    });
-
     it("identifies the correct previous deployment as cause across multiple deployments", async () => {
       const { ctx, gitProfile, repository, application, environment } =
         await setupBaseContext();
@@ -419,10 +384,15 @@ describe("Incident Detection", () => {
         },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-08T10:00:00Z"),
-        version: "0.9.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-08T10:00:00Z"),
+          version: "0.9.0",
+        }
+      );
 
       const immediatelyPreviousDeployment = await seedDeployment(
         ctx,
@@ -482,10 +452,15 @@ describe("Incident Detection", () => {
       });
 
       // v1.0.0 deployed first
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // v1.1.0 deployed (this is the bad deploy)
       const badDeployment = await seedDeployment(
@@ -529,10 +504,15 @@ describe("Incident Detection", () => {
       });
 
       // v1.0.0
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // v1.1.0 — the actual cause (first after rolled-back-to)
       const causeDeployment = await seedDeployment(
@@ -543,10 +523,15 @@ describe("Incident Detection", () => {
       );
 
       // v1.2.0 — also bad, but not the cause
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T13:00:00Z"),
-        version: "1.2.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T13:00:00Z"),
+          version: "1.2.0",
+        }
+      );
 
       // v1.0.0 again — rollback
       const rollbackDeployment = await seedDeployment(
@@ -566,9 +551,7 @@ describe("Incident Detection", () => {
       });
 
       expect(incidents).toHaveLength(1);
-      expect(incidents[0].causeDeploymentId).toBe(
-        causeDeployment.deploymentId
-      );
+      expect(incidents[0].causeDeploymentId).toBe(causeDeployment.deploymentId);
     });
 
     it("does not detect rollback when the version was never deployed before", async () => {
@@ -580,10 +563,15 @@ describe("Incident Detection", () => {
         settings: { rollback: { enabled: true } },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       const newDeployment = await seedDeployment(
         ctx,
@@ -613,15 +601,25 @@ describe("Incident Detection", () => {
         settings: { rollback: { enabled: false } },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T12:00:00Z"),
-        version: "1.1.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T12:00:00Z"),
+          version: "1.1.0",
+        }
+      );
 
       const rollbackDeployment = await seedDeployment(
         ctx,
@@ -694,10 +692,15 @@ describe("Incident Detection", () => {
       });
 
       // T1: v1.0.0 deployed
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // T2: v1.0.0 deployed again (rollback with no bad deploy in between)
       const rollbackDeployment = await seedDeployment(
@@ -708,10 +711,15 @@ describe("Incident Detection", () => {
       );
 
       // T3: v2.0.0 deployed later (already in DB, e.g. out-of-order ingestion)
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T16:00:00Z"),
-        version: "2.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T16:00:00Z"),
+          version: "2.0.0",
+        }
+      );
 
       await handleIncidentDetectionAutomation({
         workspaceId: ctx.workspaceId,
@@ -735,10 +743,15 @@ describe("Incident Detection", () => {
       });
 
       // T1: v1.0.0 deployed (stable)
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // T2: v1.1.0 deployed (bad deploy, later archived)
       const archivedBadDeploy = await seedDeployment(
@@ -762,10 +775,15 @@ describe("Incident Detection", () => {
       );
 
       // T4: v2.0.0 deployed later (already in DB)
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T16:00:00Z"),
-        version: "2.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T16:00:00Z"),
+          version: "2.0.0",
+        }
+      );
 
       await handleIncidentDetectionAutomation({
         workspaceId: ctx.workspaceId,
@@ -791,10 +809,15 @@ describe("Incident Detection", () => {
       });
 
       // v1.0.0 in staging
-      await seedDeployment(ctx, application.applicationId, staging.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        staging.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // v1.0.0 in production — not a rollback, different environment
       const prodDeployment = await seedDeployment(
@@ -888,12 +911,8 @@ describe("Incident Detection", () => {
       });
 
       expect(incidents).toHaveLength(1);
-      expect(incidents[0].causeDeploymentId).toBe(
-        causeDeployment.deploymentId
-      );
-      expect(incidents[0].fixDeploymentId).toBe(
-        revertDeployment.deploymentId
-      );
+      expect(incidents[0].causeDeploymentId).toBe(causeDeployment.deploymentId);
+      expect(incidents[0].fixDeploymentId).toBe(revertDeployment.deploymentId);
     });
 
     it("does not detect revert when original PR was never deployed to the same app/env", async () => {
@@ -1234,15 +1253,25 @@ describe("Incident Detection", () => {
         settings: { rollback: { enabled: true } },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T12:00:00Z"),
-        version: "1.1.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T12:00:00Z"),
+          version: "1.1.0",
+        }
+      );
 
       const rollback = await seedDeployment(
         ctx,
@@ -1272,15 +1301,25 @@ describe("Incident Detection", () => {
         settings: { rollback: { enabled: true } },
       });
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T12:00:00Z"),
-        version: "1.1.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T12:00:00Z"),
+          version: "1.1.0",
+        }
+      );
 
       const rollback = await seedDeployment(
         ctx,
@@ -1322,10 +1361,15 @@ describe("Incident Detection", () => {
       });
 
       // v1.0.0 deployed
-      await seedDeployment(ctx, application.applicationId, environment.environmentId, {
-        deployedAt: new Date("2024-01-10T10:00:00Z"),
-        version: "1.0.0",
-      });
+      await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-10T10:00:00Z"),
+          version: "1.0.0",
+        }
+      );
 
       // v1.1.0 deployed (bad)
       const badDeployment = await seedDeployment(

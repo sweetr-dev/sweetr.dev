@@ -30,6 +30,17 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
+      dragonfly:
+        image: docker.dragonflydb.io/dragonflydb/dragonfly
+        ports:
+          - 6379:6379
+        options: >-
+          --ulimit memlock=-1
+          --health-cmd "redis-cli ping | grep -q PONG"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 10
+
     env:
       SUPERUSER_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/sweetr_test
       DATABASE_URL: postgresql://app_user:app_user@localhost:5433/sweetr_test
@@ -72,9 +83,9 @@ jobs:
           SUPERUSER_DATABASE_URL: ${{ env.SUPERUSER_DATABASE_URL }}
           USE_SELF_SIGNED_SSL: false
           JWT_SECRET: test-secret
+          BULLMQ_ENABLED: false
           REDIS_CONNECTION_STRING: redis://localhost:6379
           FRONTEND_URL: http://localhost:5173
-          BULLMQ_ENABLED: false
           GITHUB_CLIENT_SECRET: test
           GITHUB_CLIENT_ID: test
           GITHUB_APP_HANDLE: test
