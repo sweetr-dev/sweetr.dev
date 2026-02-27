@@ -43,6 +43,26 @@ export const useFilterSearchParameters = () => {
         { replace: true },
       );
     },
+    setMany: (entries: Record<string, string[] | string | null>) => {
+      setSearchParams(
+        (parameters) => {
+          for (const [key, value] of Object.entries(entries)) {
+            parameters.delete(key);
+
+            if (Array.isArray(value)) {
+              for (const v of value) {
+                parameters.append(key, v);
+              }
+            } else if (value) {
+              parameters.set(key, value);
+            }
+          }
+
+          return parameters;
+        },
+        { replace: true },
+      );
+    },
     hasAny: searchParameters.entries().toArray().length > 0,
   };
 };
