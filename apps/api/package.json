@@ -20,7 +20,7 @@
     "prisma:migrate:new": "prisma migrate dev --create-only --name",
     "prisma:migrate:production": "prisma migrate deploy",
     "test:unit": "vitest run --project unit",
-    "test:integration": "cross-env NODE_ENV=test DATABASE_URL=postgresql://app_user:app_user@localhost:5433/sweetr_test SUPERUSER_DATABASE_URL=postgresql://postgres:postgres@localhost:5433/sweetr_test vitest run --project integration"
+    "test:integration": "cross-env LOG_LEVEL=warn NODE_ENV=production DATABASE_URL=postgresql://app_user:app_user@localhost:5433/sweetr_test SUPERUSER_DATABASE_URL=postgresql://postgres:postgres@localhost:5433/sweetr_test vitest run --project integration"
   },
   "prisma": {
     "seed": "tsx prisma/seed/run-seeder.ts"
@@ -65,6 +65,7 @@
     "octokit": "^3.2.2",
     "pino": "^9.13.1",
     "radash": "^11.0.0",
+    "re2": "^1.23.3",
     "resend": "^6.0.0",
     "semver": "^7.5.4",
     "stripe": "^16.6.0",
