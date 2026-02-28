@@ -4,6 +4,8 @@ export default /* GraphQL */ `
     handle: String!
     name: String!
     avatar: String
+    bio: String
+    location: String
     email: String
   }
 

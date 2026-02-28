@@ -16,6 +16,8 @@ import { logger } from "../../../lib/logger";
 import { getInstallationOctoKit, octokit } from "../../../lib/octokit";
 import { addDays, endOfDay } from "date-fns";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { upsertGitProfile } from "../../gitProfile/services/git-profile.service";
+import { gitHubUserToGitProfileData } from "./github-user.service";
 
 export const syncGitHubInstallation = async (
   gitInstallation: GitHubInstallation,
@@ -26,7 +28,9 @@ export const syncGitHubInstallation = async (
     gitUser,
   });
 
-  const gitProfile = await upsertGitProfile(gitUser);
+  const gitProfile = await upsertGitProfile(
+    gitHubUserToGitProfileData({ avatarUrl: gitUser.avatar_url, ...gitUser })
+  );
   const workspace = await upsertWorkspace(gitInstallation, gitProfile);
   const installation = await upsertInstallation(gitInstallation, workspace.id);
 
@@ -153,28 +157,6 @@ const upsertWorkspace = async (
       gitProfile: true,
     },
   });
-};
-
-const upsertGitProfile = async (gitUser: GitHubUser): Promise<GitProfile> => {
-  const gitUserId = gitUser.node_id.toString();
-
-  const data = {
-    gitUserId,
-    gitProvider: GitProvider.GITHUB,
-    handle: gitUser.login,
-    name: gitUser.name || gitUser.login,
-    avatar: gitUser.avatar_url,
-  };
-
-  const gitProfile = await getPrisma().gitProfile.upsert({
-    where: {
-      gitProvider_gitUserId: { gitUserId, gitProvider: GitProvider.GITHUB },
-    },
-    create: data,
-    update: data,
-  });
-
-  return gitProfile;
 };
 
 const connectUserToWorkspace = async (

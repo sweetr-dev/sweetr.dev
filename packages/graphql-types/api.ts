@@ -820,10 +820,12 @@ export enum Period {
 export type Person = {
   __typename?: 'Person';
   avatar?: Maybe<Scalars['String']['output']>;
+  bio?: Maybe<Scalars['String']['output']>;
   codeReviews: Array<CodeReview>;
   email?: Maybe<Scalars['String']['output']>;
   handle: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
+  location?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   personalMetrics: PersonalMetrics;
   teamMemberships: Array<TeamMember>;
@@ -2070,10 +2072,12 @@ export type NumericSeriesChartDataResolvers<ContextType = GraphQLContext, Parent
 
 export type PersonResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Person'] = ResolversParentTypes['Person']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   codeReviews?: Resolver<Array<ResolversTypes['CodeReview']>, ParentType, ContextType, Partial<PersonCodeReviewsArgs>>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   personalMetrics?: Resolver<ResolversTypes['PersonalMetrics'], ParentType, ContextType>;
   teamMemberships?: Resolver<Array<ResolversTypes['TeamMember']>, ParentType, ContextType>;
