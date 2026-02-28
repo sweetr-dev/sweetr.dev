@@ -1,6 +1,6 @@
 import { GitProvider } from "@prisma/client";
 
-export interface UpsertGitProfileArgs {
+export interface UpsertGitProfileInput {
   gitProvider: GitProvider;
   gitUserId: string;
   handle: string;

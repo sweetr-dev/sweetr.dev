@@ -29,7 +29,11 @@ export const syncGitHubInstallation = async (
   });
 
   const gitProfile = await upsertGitProfile(
-    gitHubUserToGitProfileData({ avatarUrl: gitUser.avatar_url, ...gitUser })
+    gitHubUserToGitProfileData({
+      nodeId: gitUser.node_id,
+      avatarUrl: gitUser.avatar_url,
+      ...gitUser,
+    })
   );
   const workspace = await upsertWorkspace(gitInstallation, gitProfile);
   const installation = await upsertInstallation(gitInstallation, workspace.id);

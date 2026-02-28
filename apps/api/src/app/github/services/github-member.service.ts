@@ -13,7 +13,7 @@ import { gitHubUserToGitProfileData } from "./github-user.service";
 import { GitHubUser } from "./github-user.types";
 
 type GitOrganizationMember = {
-  id: number;
+  id: string;
   login: string;
   role: string;
   name?: string;
@@ -43,8 +43,8 @@ export const syncOrganizationMembers = async (
   );
 
   const membersData: MemberData[] = gitHubMembers.map((member) => ({
+    nodeId: member.id,
     ...member,
-    role: member.role,
   }));
 
   const workspaceGitProfiles = await upsertGitProfiles(
@@ -77,8 +77,7 @@ const fetchGitHubOrganizationMembers = async (
   gitInstallationId: number,
   organizationName: string
 ): Promise<GitOrganizationMember[]> => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const members: any[] = [];
   let hasNextPage = true;

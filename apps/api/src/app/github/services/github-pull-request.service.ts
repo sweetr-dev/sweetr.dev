@@ -78,7 +78,10 @@ export const syncPullRequest = async ({
   }
 
   const gitProfile = await upsertGitProfile(
-    gitHubUserToGitProfileData(gitPrData.author)
+    gitHubUserToGitProfileData({
+      nodeId: gitPrData.author.id,
+      ...gitPrData.author,
+    })
   );
   const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(

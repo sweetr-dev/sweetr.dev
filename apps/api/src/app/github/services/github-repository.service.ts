@@ -55,8 +55,7 @@ export const syncGitHubRepositories = async (
 const fetchGitHubRepositories = async (
   gitInstallationId: number
 ): Promise<RepositoryData[]> => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const repositories: any[] = [];
   let hasNextPage = true;

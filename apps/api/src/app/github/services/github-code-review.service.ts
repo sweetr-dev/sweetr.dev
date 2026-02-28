@@ -128,15 +128,15 @@ const fetchPullRequestReviews = async (
   const gitProfiles = new Map<string, GitProfile>();
 
   const getGitProfileId = async (author: GitHubUser) => {
-    if (gitProfiles.has(author.id.toString())) {
-      return gitProfiles.get(author.id.toString())!.id;
+    if (gitProfiles.has(author.nodeId)) {
+      return gitProfiles.get(author.nodeId)!.id;
     }
 
     const gitProfile = await upsertGitProfile(
       gitHubUserToGitProfileData(author)
     );
 
-    gitProfiles.set(author.id.toString(), gitProfile);
+    gitProfiles.set(author.nodeId, gitProfile);
 
     return gitProfile.id;
   };
@@ -341,7 +341,7 @@ const getReviewRequests = (nodes: any[]): ReviewRequestData[] => {
         createdAt: new Date(node.createdAt),
         deletedAt: null,
         author: {
-          id: reviewerId,
+          nodeId: reviewerId,
           login: node.requestedReviewer.login,
           name: node.requestedReviewer.name,
           avatarUrl: node.requestedReviewer.avatarUrl,
@@ -363,7 +363,7 @@ const getReviewRequests = (nodes: any[]): ReviewRequestData[] => {
         if (reviewRequest) {
           reviewRequest.deletedAt = new Date(node.createdAt);
           reviewRequest.author = {
-            id: reviewerId,
+            nodeId: reviewerId,
             login: node.requestedReviewer.login,
             name: node.requestedReviewer.name,
             avatarUrl: node.requestedReviewer.avatarUrl,

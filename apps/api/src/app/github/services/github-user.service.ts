@@ -6,7 +6,7 @@ export const gitHubUserToGitProfileData = (
 ): Omit<GitProfile, "id" | "createdAt" | "updatedAt" | "userId"> => {
   return {
     gitProvider: GitProvider.GITHUB,
-    gitUserId: gitHubUser.id.toString(),
+    gitUserId: gitHubUser.nodeId,
     handle: gitHubUser.login,
     name: gitHubUser.name || gitHubUser.login,
     avatar: gitHubUser.avatarUrl || null,

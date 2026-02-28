@@ -1,8 +1,9 @@
-import { GitProfile, Prisma } from "@prisma/client";
+import { GitProfile } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
+import { UpsertGitProfileInput } from "./git-profile.types";
 
 export const upsertGitProfile = async (
-  args: Prisma.GitProfileCreateInput
+  args: UpsertGitProfileInput
 ): Promise<GitProfile> => {
   const { gitProvider, gitUserId, handle, name, avatar, bio, location } = args;
 

@@ -109,8 +109,7 @@ const fetchGitHubOrganizationTeams = async (
   gitInstallationId: number,
   organizationName: string
 ): Promise<GitOrganizationTeam[]> => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const teams: any[] = [];
   let hasNextPage = true;
@@ -193,8 +192,7 @@ const fetchGitHubTeamMembers = async (
   teamSlug: string,
   startCursor: string | null
 ): Promise<GitTeamMember[]> => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const members: any[] = [];
   let hasNextPage = true;
