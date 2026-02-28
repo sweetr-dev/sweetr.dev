@@ -3,23 +3,21 @@ import { getPrisma } from "../../../prisma";
 import { UpsertGitProfileInput } from "./git-profile.types";
 
 export const upsertGitProfile = async (
-  args: UpsertGitProfileInput
+  input: UpsertGitProfileInput
 ): Promise<GitProfile> => {
-  const { gitProvider, gitUserId, handle, name, avatar, bio, location } = args;
-
   const data = {
-    gitProvider,
-    gitUserId,
-    handle,
-    name,
-    avatar: avatar ?? null,
-    bio: bio ?? null,
-    location: location ?? null,
+    ...input,
+    avatar: input.avatar ?? undefined,
+    bio: input.bio ?? undefined,
+    location: input.location ?? undefined,
   };
 
   return getPrisma().gitProfile.upsert({
     where: {
-      gitProvider_gitUserId: { gitUserId, gitProvider },
+      gitProvider_gitUserId: {
+        gitUserId: input.gitUserId,
+        gitProvider: input.gitProvider,
+      },
     },
     create: data,
     update: data,
