@@ -32,6 +32,8 @@ export const syncGitHubInstallation = async (
     gitHubUserToGitProfileData({
       nodeId: gitUser.node_id,
       avatarUrl: gitUser.avatar_url,
+      bio: undefined,
+      location: undefined,
       ...gitUser,
     })
   );

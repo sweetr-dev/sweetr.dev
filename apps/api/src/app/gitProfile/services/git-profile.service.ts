@@ -8,8 +8,6 @@ export const upsertGitProfile = async (
   const data = {
     ...input,
     avatar: input.avatar ?? undefined,
-    bio: input.bio ?? undefined,
-    location: input.location ?? undefined,
   };
 
   return getPrisma().gitProfile.upsert({
