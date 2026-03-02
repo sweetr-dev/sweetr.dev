@@ -78,7 +78,7 @@ const getLoginState = (redirectTo: string = "/") => {
 export const createOrSyncProfile = async (
   githubUser: Pick<
     GithubUser,
-    "node_id" | "login" | "name" | "email" | "avatar_url"
+    "node_id" | "login" | "name" | "email" | "avatar_url" | "bio" | "location"
   >
 ): Promise<
   GitProfile & {
@@ -86,7 +86,7 @@ export const createOrSyncProfile = async (
     workspaceMemberships: WorkspaceMembership[];
   }
 > => {
-  const { login, name, email, avatar_url, node_id } = githubUser;
+  const { login, name, email, avatar_url, node_id, bio, location } = githubUser;
 
   const handle = login;
 
@@ -101,6 +101,8 @@ export const createOrSyncProfile = async (
       handle,
       name: name || handle,
       avatar: avatar_url,
+      bio: bio || null,
+      location: location || null,
       user: {
         upsert: {
           update: {
@@ -120,6 +122,8 @@ export const createOrSyncProfile = async (
       name: name || handle,
       gitUserId: node_id,
       handle,
+      bio: bio || null,
+      location: location || null,
       user: {
         create: {
           slug: createUserSlug(GitProvider.GITHUB, handle),

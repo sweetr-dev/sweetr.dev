@@ -1,4 +1,4 @@
-import { GitProfile, GitProvider } from "@prisma/client";
+import { GitProfile } from "@prisma/client";
 import {
   GITHUB_MAX_PAGE_LIMIT,
   getInstallationGraphQLOctoKit,
@@ -6,8 +6,11 @@ import {
 import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
+import { upsertGitProfile } from "../../gitProfile/services/git-profile.service";
 import { logger } from "../../../lib/logger";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
+import { gitHubUserToGitProfileData } from "./github-user.service";
+import { GitHubUser } from "./github-user.types";
 
 type GitOrganizationMember = {
   id: string;
@@ -15,12 +18,11 @@ type GitOrganizationMember = {
   role: string;
   name?: string;
   avatarUrl?: string;
+  bio?: string;
+  location?: string;
 };
 
-type MemberData = Omit<
-  GitProfile,
-  "id" | "userId" | "createdAt" | "updatedAt"
-> & {
+type MemberData = GitHubUser & {
   role: string;
 };
 
@@ -41,12 +43,8 @@ export const syncOrganizationMembers = async (
   );
 
   const membersData: MemberData[] = gitHubMembers.map((member) => ({
-    gitProvider: GitProvider.GITHUB,
-    gitUserId: member.id,
-    handle: member.login,
-    name: member.name || member.login,
-    avatar: member.avatarUrl || null,
-    role: member.role,
+    nodeId: member.id,
+    ...member,
   }));
 
   const workspaceGitProfiles = await upsertGitProfiles(
@@ -79,8 +77,7 @@ const fetchGitHubOrganizationMembers = async (
   gitInstallationId: number,
   organizationName: string
 ): Promise<GitOrganizationMember[]> => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const members: any[] = [];
   let hasNextPage = true;
@@ -101,6 +98,8 @@ const fetchGitHubOrganizationMembers = async (
                   login
                   name
                   avatarUrl
+                  bio
+                  location
                 }
                 edges {
                   role
@@ -150,16 +149,9 @@ const upsertGitProfiles = async (
   return parallel(10, membersData, async (memberData) => {
     const { role, ...member } = memberData;
 
-    const gitProfile = await getPrisma().gitProfile.upsert({
-      where: {
-        gitProvider_gitUserId: {
-          gitProvider: GitProvider.GITHUB,
-          gitUserId: member.gitUserId,
-        },
-      },
-      create: member,
-      update: member,
-    });
+    const gitProfile = await upsertGitProfile(
+      gitHubUserToGitProfileData(member)
+    );
 
     await getPrisma(workspaceId).workspaceMembership.upsert({
       where: {

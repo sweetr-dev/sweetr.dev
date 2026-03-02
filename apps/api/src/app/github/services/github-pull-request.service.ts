@@ -28,13 +28,9 @@ import {
   getTimeToMerge,
 } from "./github-pull-request-tracking.service";
 import { captureException } from "../../../lib/sentry";
+import { upsertGitProfile } from "../../gitProfile/services/git-profile.service";
+import { gitHubUserToGitProfileData } from "./github-user.service";
 
-interface Author {
-  id: string;
-  login: string;
-  name: string;
-  avatarUrl: string;
-}
 type RepositoryData = Omit<
   Repository,
   "id" | "workspaceId" | "createdAt" | "updatedAt"
@@ -81,7 +77,12 @@ export const syncPullRequest = async ({
     return null;
   }
 
-  const gitProfile = await upsertGitProfile(gitPrData.author);
+  const gitProfile = await upsertGitProfile(
+    gitHubUserToGitProfileData({
+      nodeId: gitPrData.author.id,
+      ...gitPrData.author,
+    })
+  );
   const repository = await upsertRepository(workspace.id, gitPrData.repository);
   const pullRequest = await upsertPullRequest(
     workspace,
@@ -142,6 +143,8 @@ const fetchPullRequest = async (
                 login
                 name
                 avatarUrl
+                bio
+                location
               }
             }
 
@@ -457,29 +460,6 @@ const getFirstCommit = async (
 
     return undefined;
   }
-};
-
-const upsertGitProfile = async (author: Author) => {
-  return getPrisma().gitProfile.upsert({
-    where: {
-      gitProvider_gitUserId: {
-        gitProvider: GitProvider.GITHUB,
-        gitUserId: author.id,
-      },
-    },
-    update: {
-      handle: author.login,
-      name: author.name ? author.name : author.login,
-      avatar: author.avatarUrl,
-    },
-    create: {
-      gitProvider: GitProvider.GITHUB,
-      gitUserId: author.id,
-      handle: author.login,
-      name: author.name ? author.name : author.login,
-      avatar: author.avatarUrl,
-    },
-  });
 };
 
 const upsertRepository = async (workspaceId, gitRepositoryData: any) => {

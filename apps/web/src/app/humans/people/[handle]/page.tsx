@@ -2,7 +2,6 @@ import {
   Anchor,
   Box,
   Grid,
-  Group,
   Portal,
   Skeleton,
   Stack,
@@ -11,7 +10,6 @@ import {
 } from "@mantine/core";
 import { Outlet, useParams } from "react-router";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
-import { PageTitle } from "../../../../components/page-title";
 import { usePersonQuery } from "../../../../api/people.api";
 import { useWorkspace } from "../../../../providers/workspace.provider";
 import { PageContainer } from "../../../../components/page-container";
@@ -49,30 +47,31 @@ export const PersonPage = () => {
         <SubnavPerson person={person} />
       </Portal>
 
-      <PageTitle
-        title={
-          <Group mb="xs">
-            <AvatarUser
-              src={person.avatar}
-              radius="50%"
-              size={80}
-              name={person.name}
-            />
+      <Stack mb="xs" align="center">
+        <AvatarUser
+          src={person.avatar}
+          size={250}
+          name={person.name}
+          radius="50%"
+          styles={{
+            root: {
+              border: "10px solid var(--mantine-color-gray-3)",
+            },
+          }}
+        />
 
-            <Stack gap={2}>
-              <Title order={3}>{person.name}</Title>
+        <Stack gap={2}>
+          <Title order={3}>{person.name}</Title>
 
-              <Anchor
-                c="dimmed"
-                href={`https://github.com/${person.handle}`}
-                target="_blank"
-              >
-                <Text size="sm">@{person.handle}</Text>
-              </Anchor>
-            </Stack>
-          </Group>
-        }
-      />
+          <Anchor
+            c="dimmed"
+            href={`https://github.com/${person.handle}`}
+            target="_blank"
+          >
+            <Text size="sm">@{person.handle}</Text>
+          </Anchor>
+        </Stack>
+      </Stack>
 
       <Box mt="md">
         <Outlet context={{ personId: person.id }} />

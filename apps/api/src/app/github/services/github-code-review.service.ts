@@ -24,13 +24,9 @@ import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-
 import { SweetQueue, addJob } from "../../../bull-mq/queues";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import { parseISO } from "date-fns";
-
-interface Author {
-  id: string;
-  login: string;
-  name: string;
-  avatarUrl: string;
-}
+import { upsertGitProfile } from "../../gitProfile/services/git-profile.service";
+import { GitHubUser } from "./github-user.types";
+import { gitHubUserToGitProfileData } from "./github-user.service";
 
 interface ReviewData {
   gitProfileId: number;
@@ -46,7 +42,7 @@ type ReviewDataWithId = ReviewData & {
 interface ReviewRequestData {
   createdAt: Date;
   deletedAt: Date | null;
-  author: Author;
+  author: GitHubUser;
 }
 
 export const syncCodeReviews = async (
@@ -131,13 +127,16 @@ const fetchPullRequestReviews = async (
   const reviewEvents: ReviewDataWithId[] = [];
   const gitProfiles = new Map<string, GitProfile>();
 
-  const getGitProfileId = async (author: Author) => {
-    if (gitProfiles.has(author.id)) {
-      return gitProfiles.get(author.id)!.id;
+  const getGitProfileId = async (author: GitHubUser) => {
+    if (gitProfiles.has(author.nodeId)) {
+      return gitProfiles.get(author.nodeId)!.id;
     }
 
-    const gitProfile = await upsertGitProfile(author);
-    gitProfiles.set(author.id, gitProfile);
+    const gitProfile = await upsertGitProfile(
+      gitHubUserToGitProfileData(author)
+    );
+
+    gitProfiles.set(author.nodeId, gitProfile);
 
     return gitProfile.id;
   };
@@ -154,6 +153,8 @@ const fetchPullRequestReviews = async (
             login
             name
             avatarUrl
+            bio
+            location
           }
         }
       }
@@ -166,6 +167,8 @@ const fetchPullRequestReviews = async (
             login
             name
             avatarUrl
+            bio
+            location
           }
         }
       }
@@ -201,6 +204,8 @@ const fetchPullRequestReviews = async (
                     login
                     name
                     avatarUrl
+                    bio
+                    location
                   }
                 }
                 comments {
@@ -336,10 +341,12 @@ const getReviewRequests = (nodes: any[]): ReviewRequestData[] => {
         createdAt: new Date(node.createdAt),
         deletedAt: null,
         author: {
-          id: reviewerId,
+          nodeId: reviewerId,
           login: node.requestedReviewer.login,
           name: node.requestedReviewer.name,
           avatarUrl: node.requestedReviewer.avatarUrl,
+          bio: node.requestedReviewer.bio,
+          location: node.requestedReviewer.location,
         },
       });
     }
@@ -356,10 +363,12 @@ const getReviewRequests = (nodes: any[]): ReviewRequestData[] => {
         if (reviewRequest) {
           reviewRequest.deletedAt = new Date(node.createdAt);
           reviewRequest.author = {
-            id: reviewerId,
+            nodeId: reviewerId,
             login: node.requestedReviewer.login,
             name: node.requestedReviewer.name,
             avatarUrl: node.requestedReviewer.avatarUrl,
+            bio: node.requestedReviewer.bio,
+            location: node.requestedReviewer.location,
           };
         }
       }
@@ -376,7 +385,9 @@ const upsertCodeReviewRequests = async (
   logger.debug("upsertCodeReviewRequests", { pullRequest, reviewRequests });
 
   return parallel(10, reviewRequests, async (reviewRequest) => {
-    const gitProfile = await upsertGitProfile(reviewRequest.author);
+    const gitProfile = await upsertGitProfile(
+      gitHubUserToGitProfileData(reviewRequest.author)
+    );
 
     const data = {
       workspaceId: pullRequest.workspaceId,
@@ -477,25 +488,6 @@ const updatePullRequestTracking = async (
       timeToMerge,
       timeToFirstReview,
       timeToFirstApproval,
-    },
-  });
-};
-
-const upsertGitProfile = async (author: Author) => {
-  return getPrisma().gitProfile.upsert({
-    where: {
-      gitProvider_gitUserId: {
-        gitProvider: GitProvider.GITHUB,
-        gitUserId: author.id,
-      },
-    },
-    update: {},
-    create: {
-      gitProvider: GitProvider.GITHUB,
-      gitUserId: author.id,
-      handle: author.login,
-      name: author.name ? author.name : author.login,
-      avatar: author.avatarUrl,
     },
   });
 };

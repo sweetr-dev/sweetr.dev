@@ -113,6 +113,8 @@ model GitProfile {
   handle               String
   name                 String
   avatar               String?
+  bio                  String?
+  location             String?
   workspaceMemberships WorkspaceMembership[]
 
   user   User? @relation(fields: [userId], references: [id])

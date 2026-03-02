@@ -54,14 +54,14 @@ export const FormUpsertTeam = ({ form }: FormUpsertTeamProps) => {
         <Title order={5}>Details</Title>
         <FocusTrap>
           <TextInput
-            placeholder="Super squad"
+            placeholder="Team Avengers"
             label="Team name"
             withAsterisk
             {...form.getInputProps("name")}
           />
         </FocusTrap>
         <TextInput
-          placeholder="We use our super powers to create awesome products"
+          placeholder="Think of a cool one"
           label="Description"
           maxLength={150}
           {...form.getInputProps("description")}

@@ -33,7 +33,7 @@
   },
   "overrides": {
     "ioredis": "5.9.3",
-    "minimatch": "10.2.1"
+    "minimatch": "10.2.4"
   },
   "engines": {
     "node": ">=22.12.0"
