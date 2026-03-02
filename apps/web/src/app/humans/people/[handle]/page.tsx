@@ -1,7 +1,6 @@
 import {
   Anchor,
   Box,
-  Grid,
   Portal,
   Skeleton,
   Stack,
@@ -82,19 +81,10 @@ export const PersonPage = () => {
 
 const PageSkeleton = (): JSX.Element => (
   <PageContainer>
-    <Grid>
-      <Grid.Col span={{ base: 12, md: 3 }}>
-        <Skeleton height={20} />
-      </Grid.Col>
-      <Grid.Col span={{ base: 12, md: 9 }}></Grid.Col>
-      <Grid.Col span={{ base: 12, md: 6 }}>
-        <Skeleton height={20} />
-      </Grid.Col>
-    </Grid>
-    <Grid mt={26}>
-      <Grid.Col span={{ base: 12, md: 6 }}>
-        <Skeleton height={300} />
-      </Grid.Col>
-    </Grid>
+    <Stack align="center">
+      <Skeleton height={250} width={250} radius="50%" />
+      <Skeleton mt="md" height={60} />
+      <Skeleton height={60} />
+    </Stack>
   </PageContainer>
 );
