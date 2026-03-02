@@ -1,0 +1,42 @@
+---
+title: Introduction
+description: Integrate your CI/CD pipeline with Sweetr using the REST API.
+icon: "article"
+---
+
+The Sweetr API lets you programmatically send data to Sweetr from your CI/CD pipelines and external tools.
+
+## Base URL
+
+All API requests are made to:
+
+```
+https://api.sweetr.dev
+```
+
+## Available endpoints
+
+<CardGroup cols={1}>
+  <Card
+    title="POST /v1/deployments"
+    icon="rocket"
+    href="/api-reference/deployments/create-deployment"
+  >
+    Track a new deployment for an application.
+  </Card>
+</CardGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card
+    title="Authentication"
+    icon="key"
+    href="/api-reference/authentication"
+  />
+  <Card
+    title="Rate Limits"
+    icon="gauge"
+    href="/api-reference/rate-limit"
+  />
+</CardGroup>

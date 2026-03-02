@@ -1,0 +1,53 @@
+---
+title: Applications
+description: Manage deployable units within your repositories.
+icon: "cube"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/applications.png" />
+</Frame>
+
+## How it works
+
+Applications represent deployable units within your repositories. They connect a repository to its deployments and environments, making it possible to track deployment history and DORA metrics per application.
+
+Applications support **monorepo setups** — a single repository can have multiple applications, each mapped to a subdirectory.
+
+## Creating applications
+
+Applications can be created in two ways:
+
+- **Manually**: Create an application from the UI and configure its deployment settings.
+- **Automatically**: When a deployment is sent via the API, Sweetr auto-creates the application if it doesn't exist.
+
+## Deployment settings
+
+Each application has configurable deployment settings that control how deployments are tracked:
+
+| Setting           | Description                                                         |
+| ----------------- | ------------------------------------------------------------------- |
+| **Trigger**       | How deployments are created: API Webhook or PR Merge.               |
+| **Target branch** | For merge-based triggers, the branch that represents production.    |
+| **Subdirectory**  | For monorepos, the path within the repository for this application. |
+
+## Archiving
+
+Applications that are no longer in use can be archived. Archived applications are hidden from filters and excluded from metrics. You can unarchive them at any time.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Deployments" icon="rocket" href="/platform/deployments" />
+  <Card
+    title="DORA Metrics"
+    icon="chart-line"
+    href="/metrics-and-insights/dora"
+  />
+</CardGroup>
+
+<CtaGetStarted />

@@ -1,0 +1,47 @@
+---
+title: Environments
+description: Organize deployments by environment to track metrics across your deployment targets.
+icon: "server"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## How it works
+
+Environments represent deployment targets like `production`, `staging`, or `qa`. Deployments are always associated with an environment, and metrics can be filtered by environment.
+
+A default **production** environment is created for every workspace. Additional environments are created automatically when a deployment is sent via the [API](/api-reference/deployments/create-deployment) with an environment name that doesn't exist yet.
+
+<Note>
+  Environments named `production` or `prod` (case-insensitive) are automatically
+  marked as production environments.
+</Note>
+
+## Production flag
+
+Each environment has an `isProduction` flag. This matters because DORA metrics default to production environments only — non-production deployments are excluded unless you explicitly filter for them.
+
+## When to use multiple environments
+
+For most teams, the default `production` environment is all you need. Multiple environments are useful when:
+
+- **You want to measure metrics for non-production environments** — for example, tracking deployment frequency to staging.
+- **You have multiple production environments** — for example, regional deployments (`production-us`, `production-eu`).
+
+## Archiving
+
+Environments that are no longer in use can be archived. Archived environments are hidden from filters and excluded from metrics. You can unarchive them at any time.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Deployments" icon="rocket" href="/platform/deployments" />
+  <Card title="Applications" icon="cube" href="/platform/applications" />
+  <Card
+    title="DORA Metrics"
+    icon="chart-line"
+    href="/metrics-and-insights/dora"
+  />
+</CardGroup>
+
+<CtaGetStarted />
