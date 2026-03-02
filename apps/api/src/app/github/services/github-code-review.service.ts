@@ -263,7 +263,10 @@ const fetchPullRequestReviews = async (
       // Ignore unknown authors
       if (!review.author?.id || !review.author?.login) continue;
 
-      const gitProfileId = await getGitProfileId(review.author);
+      const gitProfileId = await getGitProfileId({
+        nodeId: review.author.id,
+        ...review.author,
+      });
 
       const bodyComment = review.body ? 1 : 0;
 
