@@ -81,8 +81,7 @@ const fetchGitHubPullRequests = async (
   gitInstallationId: number,
   sinceDaysAgo: number | null
 ) => {
-  const fireGraphQLRequest =
-    await getInstallationGraphQLOctoKit(gitInstallationId);
+  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
 
   const pullRequests: any[] = [];
   let hasNextPage = true;

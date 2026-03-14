@@ -58,12 +58,14 @@ describe("groupSerialReviews", () => {
     type,
     eventAt,
     pullRequest: {
+      sourceBranch: "feat/test",
       targetBranch: "main",
       mergeCommitSha: null,
       gitProvider: "GITHUB",
       gitPullRequestId: "1",
       gitUrl: "https://github.com/test/test/pull/1",
       title: "Test PR",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       number: "1",
       files: [],
       commentCount: 0,
@@ -78,6 +80,7 @@ describe("groupSerialReviews", () => {
       authorId: John,
       repositoryId: 1,
       workspaceId: 1,
+      labels: [],
       ...pullRequest,
     },
   });

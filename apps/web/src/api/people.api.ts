@@ -89,6 +89,8 @@ export const usePersonQuery = (
                 name
                 handle
                 avatar
+                bio
+                location
                 teamMemberships {
                   id
                   role

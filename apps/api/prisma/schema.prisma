@@ -113,6 +113,8 @@ model GitProfile {
   handle               String
   name                 String
   avatar               String?
+  bio                  String?
+  location             String?
   workspaceMemberships WorkspaceMembership[]
 
   user   User? @relation(fields: [userId], references: [id])
@@ -369,8 +371,11 @@ model PullRequest {
 
   title        String
   number       String
+  sourceBranch String @default("")
   targetBranch String @default("main")
+  body         String @default("")
 
+  labels            Json @default("[]")
   files             Json @default("[]")
   commentCount      Int
   changedFilesCount Int

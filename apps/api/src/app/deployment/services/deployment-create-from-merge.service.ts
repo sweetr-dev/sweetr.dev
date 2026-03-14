@@ -9,6 +9,7 @@ import {
 } from "./deployment-pr-linking.service";
 import { CreateDeploymentFromPullRequestMergeArgs } from "./deployment-create-from-merge.types";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
+import { addJob, SweetQueue } from "../../../bull-mq/queues";
 
 export const createDeploymentFromPullRequestMerge = async ({
   application,
@@ -76,6 +77,11 @@ export const createDeploymentFromPullRequestMerge = async ({
   await updatePullRequestDeploymentTracking({
     pullRequest,
     deployment,
+    workspaceId,
+  });
+
+  await addJob(SweetQueue.AUTOMATION_INCIDENT_DETECTION, {
+    deploymentId: deployment.id,
     workspaceId,
   });
 

@@ -65,11 +65,21 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   app.route({
     url: yoga.graphqlEndpoint,
     method: ["GET", "POST", "OPTIONS"],
-    handler: (req, reply) =>
-      yoga.handleNodeRequestAndResponse(req, reply, {
+    handler: async (req, reply) => {
+      const response = await yoga.handleNodeRequestAndResponse(req, reply, {
         req,
         reply,
-      } as never),
+      } as never);
+
+      response.headers.forEach((value, key) => {
+        reply.header(key, value);
+      });
+
+      reply.status(response.status);
+      reply.send(response.body);
+
+      return reply;
+    },
   });
 
   setupFastifyErrorHandler(app);

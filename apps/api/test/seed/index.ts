@@ -1,4 +1,10 @@
-import { GitProvider, PullRequestState, TeamMemberRole } from "@prisma/client";
+import {
+  AutomationType,
+  GitProvider,
+  Prisma,
+  PullRequestState,
+  TeamMemberRole,
+} from "@prisma/client";
 import { randomUUID } from "crypto";
 import { getPrisma } from "../../src/prisma";
 
@@ -212,6 +218,9 @@ export async function seedPullRequest(
     state?: PullRequestState;
     mergedAt?: Date;
     createdAt?: Date;
+    sourceBranch?: string;
+    targetBranch?: string;
+    labels?: string[];
   } = {}
 ): Promise<{ pullRequestId: number }> {
   const pr = await getPrisma(ctx.workspaceId).pullRequest.create({
@@ -221,6 +230,9 @@ export async function seedPullRequest(
       gitUrl: `https://github.com/test/repo/pull/${input.number ?? "1"}`,
       title: input.title ?? "Test PR",
       number: input.number ?? "1",
+      sourceBranch: input.sourceBranch ?? "",
+      targetBranch: input.targetBranch ?? "main",
+      labels: input.labels ?? [],
       files: [],
       commentCount: 0,
       changedFilesCount: 0,
@@ -308,4 +320,27 @@ export async function seedIncident(
   });
 
   return { incidentId: incident.id };
+}
+
+/**
+ * Creates an Automation for a workspace.
+ */
+export async function seedAutomation(
+  ctx: SeedWorkspace,
+  input: {
+    type: AutomationType;
+    enabled?: boolean;
+    settings?: object;
+  }
+): Promise<{ automationId: number }> {
+  const automation = await getPrisma(ctx.workspaceId).automation.create({
+    data: {
+      type: input.type,
+      enabled: input.enabled ?? true,
+      settings: (input.settings ?? {}) as Prisma.InputJsonValue,
+      workspaceId: ctx.workspaceId,
+    },
+  });
+
+  return { automationId: automation.id };
 }

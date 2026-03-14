@@ -10,6 +10,8 @@ export const transformPerson = (
     name: person.name,
     avatar: person.avatar,
     email: person.user?.email,
+    bio: person.bio,
+    location: person.location,
     teamMemberships: [],
     codeReviews: [],
     teammates: [],

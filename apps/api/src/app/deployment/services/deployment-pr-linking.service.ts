@@ -25,6 +25,7 @@ import { getTimeToDeploy } from "../../github/services/github-pull-request-track
 import { DataIntegrityException } from "../../errors/exceptions/data-integrity.exception";
 import { isBefore } from "date-fns";
 import { captureException } from "../../../lib/sentry";
+import { addJob, SweetQueue } from "../../../bull-mq/queues";
 
 export const handleDeploymentPullRequestAutoLinking = async ({
   workspaceId,
@@ -140,6 +141,11 @@ export const handleDeploymentPullRequestAutoLinking = async ({
       }
     );
 
+    await addJob(SweetQueue.AUTOMATION_INCIDENT_DETECTION, {
+      deploymentId,
+      workspaceId,
+    });
+
     return;
   }
 
@@ -156,6 +162,11 @@ export const handleDeploymentPullRequestAutoLinking = async ({
     workspaceId: workspaceId,
     deploymentId: deploymentId,
     pullRequestIds: filteredPullRequests.map((pr) => pr.id),
+  });
+
+  await addJob(SweetQueue.AUTOMATION_INCIDENT_DETECTION, {
+    deploymentId,
+    workspaceId,
   });
 
   await Promise.all(
