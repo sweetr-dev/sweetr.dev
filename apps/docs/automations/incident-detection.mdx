@@ -20,9 +20,10 @@ Detects when a deployment reverts to a previously deployed version. Sweetr compa
 | **Fix deployment**   | The rollback deployment itself.                                 |
 | **Detected at**      | The time of the rollback deployment.                            |
 
-For example, given deployments `A → B → C → D`, if you roll back to `B`:
+For example, given deployment versions `A → B → C → D -> B²`:
 
 - **Cause deployment**: `C` (the first deployment after `B`, where the problem was introduced)
+- **Fix deployment**: `B²` (the rollback deployment itself)
 
 ### Hotfix detection
 
@@ -31,7 +32,7 @@ Detects incidents based on patterns in pull request titles, branch names, or lab
 | Pattern            | Description                                              |
 | ------------------ | -------------------------------------------------------- |
 | **PR title regex** | Match pull request titles (e.g., `hotfix`, `emergency`). |
-| **Branch regex**   | Match branch names (e.g., `hotfix/*`).                   |
+| **Branch regex**   | Match branch names (e.g., `^hotfix/.+`).                 |
 | **PR label regex** | Match pull request labels.                               |
 
 | Incident field       | Value                                                    |

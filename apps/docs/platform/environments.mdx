@@ -32,7 +32,7 @@ Each environment has an `isProduction` flag. This matters because DORA metrics d
 For most teams, the default `production` environment is all you need. Multiple environments are useful when:
 
 - **You want to measure metrics for non-production environments**, for example, tracking deployment frequency to staging.
-- **You have multiple production environments**, for example, regional deployments (`production-us`, `production-eu`).
+- **You have multiple production environments**, for example, regional deployments (`production-us`, `production-eu`). Since only exact names `production` or `prod` are auto-detected, you must explicitly set the production flag for regional environment names.
 
 ## Archiving
 

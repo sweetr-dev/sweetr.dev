@@ -11,7 +11,7 @@ Apply Sweetr's brand voice, terminology, and positioning when writing any copy.
 
 Read the full brand kit before writing:
 
-- **[BRAND_KIT.md](references/BRAND_KIT.md)** — Complete brand identity, positioning, differentiators, voice guidelines, messaging framework, terminology, and do's/don'ts.
+- **[BRAND_KIT.md](references/BRAND_KIT.md)**: Complete brand identity, positioning, differentiators, voice guidelines, messaging framework, terminology, and do's/don'ts.
 
 ## Workflow
 

@@ -10,19 +10,23 @@ The request is processed asynchronously. A `202 Accepted` response means the dep
 ## Body
 
 <ParamField body="repositoryFullName" type="string" required>
-  Full name of the GitHub repository (e.g., `owner/repo-name`). Max 255 characters.
+  Full name of the GitHub repository (e.g., `owner/repo-name`). Max 255
+  characters.
 </ParamField>
 
 <ParamField body="environment" type="string" required>
-  Target environment name (e.g., `production`, `staging`). Created automatically if it doesn't exist. Max 255 characters.
+  Target environment name (e.g., `production`, `staging`). Created automatically
+  if it doesn't exist. Max 255 characters.
 </ParamField>
 
 <ParamField body="app" type="string" required>
-  Application name. Created automatically if it doesn't exist. Max 255 characters.
+  Application name. Created automatically if it doesn't exist. Max 255
+  characters.
 </ParamField>
 
 <ParamField body="version" type="string" required>
-  Version identifier for this deployment (e.g., `v1.2.3`, `build-456`). Max 70 characters.
+  Version identifier for this deployment (e.g., `v1.2.3`, `build-456`). Max 70
+  characters.
 </ParamField>
 
 <ParamField body="commitHash" type="string" required>
@@ -38,11 +42,13 @@ The request is processed asynchronously. A `202 Accepted` response means the dep
 </ParamField>
 
 <ParamField body="deployedAt" type="string">
-  ISO 8601 datetime of when the deployment occurred. Defaults to the current time if not provided.
+  ISO 8601 datetime of when the deployment occurred. Defaults to the current
+  time if not provided.
 </ParamField>
 
 <ParamField body="monorepoPath" type="string">
-  Subdirectory path within the repository for monorepo setups. Max 255 characters.
+  Subdirectory path within the repository for monorepo setups. Max 255
+  characters.
 </ParamField>
 
 ## Response
@@ -53,11 +59,11 @@ The request is processed asynchronously. A `202 Accepted` response means the dep
 
 ## Error codes
 
-| Status | Description |
-| ------ | ----------- |
-| `400`  | Validation failed. Check the request body for missing or invalid fields. |
-| `401`  | Invalid or missing API key. |
-| `429`  | Rate limit exceeded. See [Rate Limits](/api-reference/rate-limit). |
+| Status | Description                                                              |
+| ------ | ------------------------------------------------------------------------ |
+| `422`  | Validation failed. Check the request body for missing or invalid fields. |
+| `401`  | Invalid or missing API key.                                              |
+| `429`  | Rate limit exceeded. See [Rate Limits](/api-reference/rate-limit).       |
 
 <RequestExample>
 ```bash cURL
@@ -89,4 +95,5 @@ curl -X POST https://api.sweetr.dev/v1/deployments \
         "commitHash": "${{ github.sha }}"
       }'
 ```
+
 </RequestExample>

@@ -3,14 +3,17 @@ import { addJob, SweetQueue } from "../../bull-mq/queues";
 import { validateInputOrThrow } from "../validator.service";
 import { postDeploymentValidationSchema } from "./services/deployment.validation";
 import { logger } from "../../lib/logger";
-import { findApiKeyOrThrow } from "../api-keys/services/api-keys.service";
+import {
+  findApiKeyOrThrow,
+  getBearerToken,
+} from "../api-keys/services/api-keys.service";
 
 export const deploymentsRouter: FastifyPluginAsync = async (fastify) => {
   fastify.post("/v1/deployments", async (request, reply) => {
     logger.debug("http.deployments.create", { body: request.body });
 
     const apiKey = await findApiKeyOrThrow(
-      request.headers.authorization as string
+      getBearerToken(request.headers.authorization)
     );
 
     const payload = await validateInputOrThrow(

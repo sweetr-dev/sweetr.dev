@@ -14,6 +14,7 @@ import { env } from "./env";
 import { deploymentsRouter } from "./app/deployment/deployments.router";
 import { healthRouter } from "./app/health/health.router";
 import { isAppSelfHosted } from "./lib/self-host";
+import { getBearerToken } from "./app/api-keys/services/api-keys.service";
 
 export async function buildApp(opts: FastifyServerOptions = {}) {
   const app = Fastify(opts);
@@ -53,7 +54,8 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
     await scope.register(rateLimit, {
       max: 100,
       timeWindow: "1 minute",
-      keyGenerator: (request) => request.headers.authorization || request.ip,
+      keyGenerator: (request) =>
+        getBearerToken(request.headers.authorization) || request.ip,
     });
 
     await scope.register(deploymentsRouter);
