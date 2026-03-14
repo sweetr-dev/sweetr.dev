@@ -1,0 +1,41 @@
+---
+title: PR Title Requirements
+description: Enforce PR title standards across your organization.
+icon: "heading"
+---
+
+## Demo
+
+<Frame>
+  <img src="/images/automations/pr-title-check.webp" />
+</Frame>
+
+## How it works
+
+Enable this automation in **Automations > PR Title Check** by defining a regular expression to validate Pull Request titles across your organization. When a PR is opened or updated, Sweetr posts a commit status check (`[Sweetr] PR Title Check`) with a **success** or **error** state.
+
+By default the check is non-blocking. To make it required, add <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging" target="_blank" rel="noreferrer">branch protection rules</a> in your repository that require the `[Sweetr] PR Title Check` status to pass before merging.
+
+## Benefits
+
+<Card horizontal title="Improves compliance" icon="gavel">
+  Standardize Pull Request titles across the organization.
+</Card>
+
+## Popular Patterns
+
+<CodeGroup>
+
+```js [KEY-100] Foo
+^\[([A-Za-z]+-\d+)\]\s+.+$
+```
+
+```js feat: Foo
+^(feat|fix|chore|refactor|docs|test):\s+.+$
+```
+
+```js [KEY-100] feat: Foo
+^\[([A-Za-z]+-\d+)\]\s+(feat|fix|chore|refactor|docs|test):\s+.+$
+```
+
+</CodeGroup>

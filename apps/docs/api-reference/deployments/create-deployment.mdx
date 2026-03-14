@@ -1,0 +1,99 @@
+---
+title: Create Deployment
+api: "POST /v1/deployments"
+---
+
+Track a new deployment for an application. If the application doesn't exist, it will be created automatically.
+
+The request is processed asynchronously. A `202 Accepted` response means the deployment has been queued for processing.
+
+## Body
+
+<ParamField body="repositoryFullName" type="string" required>
+  Full name of the GitHub repository (e.g., `owner/repo-name`). Max 255
+  characters.
+</ParamField>
+
+<ParamField body="environment" type="string" required>
+  Target environment name (e.g., `production`, `staging`). Created automatically
+  if it doesn't exist. Max 255 characters.
+</ParamField>
+
+<ParamField body="app" type="string" required>
+  Application name. Created automatically if it doesn't exist. Max 255
+  characters.
+</ParamField>
+
+<ParamField body="version" type="string" required>
+  Version identifier for this deployment (e.g., `v1.2.3`, `build-456`). Max 70
+  characters.
+</ParamField>
+
+<ParamField body="commitHash" type="string" required>
+  The full Git commit SHA being deployed. Max 70 characters.
+</ParamField>
+
+<ParamField body="description" type="string">
+  A short description of the deployment. Max 255 characters.
+</ParamField>
+
+<ParamField body="author" type="string">
+  The person who triggered the deployment. Max 255 characters.
+</ParamField>
+
+<ParamField body="deployedAt" type="string">
+  ISO 8601 datetime of when the deployment occurred. Defaults to the current
+  time if not provided.
+</ParamField>
+
+<ParamField body="monorepoPath" type="string">
+  Subdirectory path within the repository for monorepo setups. Max 255
+  characters.
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="number">
+  `202`: The deployment has been accepted and queued for processing.
+</ResponseField>
+
+## Error codes
+
+| Status | Description                                                              |
+| ------ | ------------------------------------------------------------------------ |
+| `422`  | Validation failed. Check the request body for missing or invalid fields. |
+| `401`  | Invalid or missing API key.                                              |
+| `429`  | Rate limit exceeded. See [Rate Limits](/api-reference/rate-limit).       |
+
+<RequestExample>
+```bash cURL
+curl -X POST https://api.sweetr.dev/v1/deployments \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repositoryFullName": "acme/backend",
+    "environment": "production",
+    "app": "backend-api",
+    "version": "v1.4.2",
+    "commitHash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    "description": "Release v1.4.2",
+    "author": "jane-doe"
+  }'
+```
+
+```bash GitHub Actions
+- name: Track deployment
+  run: |
+    curl -X POST https://api.sweetr.dev/v1/deployments \
+      -H "Authorization: Bearer ${{ secrets.SWEETR_API_KEY }}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "repositoryFullName": "${{ github.repository }}",
+        "environment": "production",
+        "app": "my-app",
+        "version": "${{ github.sha }}",
+        "commitHash": "${{ github.sha }}"
+      }'
+```
+
+</RequestExample>

@@ -41,6 +41,9 @@ export const regenerateApiKey = async (
   return key;
 };
 
+export const getBearerToken = (header: string | undefined): string =>
+  (header ?? "").trim().replace(/^bearer\s+/i, "");
+
 export const findApiKeyOrThrow = async (key: string) => {
   if (!key) {
     throw new AuthorizationException("Invalid API key");

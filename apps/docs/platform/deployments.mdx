@@ -1,0 +1,105 @@
+---
+title: Deployments
+description: Track every deployment across your applications and environments.
+icon: "rocket"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/deployments.png" />
+</Frame>
+
+## How it works
+
+Deployments track when a version of an application is deployed to an environment. Each deployment records the version, commit hash, environment, and linked pull requests.
+
+Filter deployments by application, environment, and date range to find exactly what you need.
+
+## Change type
+
+Sweetr automatically determines the **change type** for each deployment by comparing commits against the previous deployment:
+
+- **Forward**: A standard deployment with new changes.
+- **Rollback**: The deployment reverts to a previous version.
+- **No Change**: A redeployment of the same version.
+
+## Deployment triggers
+
+Deployments can be tracked through two different triggers:
+
+<Card title="API Webhook" icon="webhook" horizontal>
+  Send deployments via the [POST
+  /v1/deployments](/api-reference/deployments/create-deployment) REST endpoint.
+  Best for custom CI/CD pipelines.
+</Card>
+
+<Card title="Pull Request Merge" icon="git-merge" horizontal>
+  Automatically create a deployment when a pull request is merged to a target
+  branch. Best for trunk-based development.
+</Card>
+
+### Linking Pull Requests
+
+Each deployment is automatically linked to the pull requests it contains. The linking strategy depends on the deployment trigger.
+
+#### API Webhook
+
+When a deployment is received via the API, Sweetr compares the deployment's commit hash against the previous deployment's commit hash using GitHub's [compare API](https://docs.github.com/en/rest/commits/commits#compare-two-commits). All merged pull requests whose merge commit falls within that range are linked to the deployment.
+
+For monorepo applications with a configured subdirectory, only pull requests that modified files within that subdirectory are linked.
+
+<Note>
+  The first deployment for an application/environment pair is marked as a
+  **baseline** and has no linked pull requests, since there is no previous
+  deployment to compare against.
+</Note>
+
+#### Pull Request Merge
+
+When a deployment is triggered by a pull request merge, the linked pull request is always the one that was merged. No commit comparison is needed.
+
+## Data quality
+
+The deployment trigger you choose affects the accuracy of your [DORA metrics](/metrics-and-insights/dora), specifically **Change Lead Time** and **Deployment Frequency**.
+
+<CardGroup cols={2}>
+  <Card title="API Webhook" icon="webhook">
+    Records the **actual deployment time** as reported by your CI/CD pipeline.
+    This provides the most accurate time-to-deploy calculations since it
+    captures the real moment your code reaches production.
+  </Card>
+
+  <Card title="Pull Request Merge" icon="git-merge">
+    Uses the **merge time** as the deployment time. This is an approximation,
+    since the actual deployment typically happens after the merge — once your
+    CI/CD pipeline finishes building, testing, and deploying.
+  </Card>
+</CardGroup>
+
+For the most accurate metrics, prefer using the API Webhook trigger so that Sweetr captures when your code was actually deployed, not just when it was merged.
+
+## Archiving
+
+Deployments that are no longer relevant can be archived. Archived deployments are excluded from metrics. You can unarchive them at any time.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Applications" icon="cube" href="/platform/applications" />
+  <Card title="Incidents" icon="flame" href="/platform/incidents" />
+  <Card
+    title="DORA Metrics"
+    icon="chart-line"
+    href="/metrics-and-insights/dora"
+  />
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/deployments/create-deployment"
+  />
+</CardGroup>
+
+<CtaGetStarted />

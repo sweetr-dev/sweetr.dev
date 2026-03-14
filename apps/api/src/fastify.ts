@@ -1,5 +1,6 @@
 import Fastify, { FastifyServerOptions } from "fastify";
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import rawBody from "fastify-raw-body";
 import formbody from "@fastify/formbody";
 import { yoga } from "./yoga";
@@ -13,6 +14,7 @@ import { env } from "./env";
 import { deploymentsRouter } from "./app/deployment/deployments.router";
 import { healthRouter } from "./app/health/health.router";
 import { isAppSelfHosted } from "./lib/self-host";
+import { getBearerToken } from "./app/api-keys/services/api-keys.service";
 
 export async function buildApp(opts: FastifyServerOptions = {}) {
   const app = Fastify(opts);
@@ -37,17 +39,29 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
     done(null)
   );
 
+  // Integration APIs
   await app.register(healthRouter);
   await app.register(githubRouter);
+  await app.register(slackRouter);
+  await app.register(bullBoardRouter);
 
   if (!isAppSelfHosted()) {
     await app.register(stripeRouter);
   }
 
-  await app.register(slackRouter);
-  await app.register(bullBoardRouter);
-  await app.register(deploymentsRouter);
+  // User-facing APIs. All routes registered inside this scope are rate limited.
+  await app.register(async (scope) => {
+    await scope.register(rateLimit, {
+      max: 100,
+      timeWindow: "1 minute",
+      keyGenerator: (request) =>
+        getBearerToken(request.headers.authorization) || request.ip,
+    });
 
+    await scope.register(deploymentsRouter);
+  });
+
+  // GraphQL
   app.route({
     url: yoga.graphqlEndpoint,
     method: ["GET", "POST", "OPTIONS"],

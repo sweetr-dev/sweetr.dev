@@ -1,0 +1,73 @@
+---
+title: Incident Detection
+description: Automatically create incident records from rollbacks, hotfixes and reverts.
+icon: "circle-dot"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## How it works
+
+Incident Detection automatically creates incidents when it detects problematic deployments. Incident Detection is enabled and pre-configured by default for every workspace. You can disable or customize the detection rules as needed.
+
+### Rollback detection
+
+Detects when a deployment reverts to a previously deployed version. Sweetr compares the commit history between deployments to identify rollbacks automatically.
+
+| Incident field       | Value                                                           |
+| -------------------- | --------------------------------------------------------------- |
+| **Cause deployment** | The first deployment after the version that was rolled back to. |
+| **Fix deployment**   | The rollback deployment itself.                                 |
+| **Detected at**      | The time of the rollback deployment.                            |
+
+For example, given deployment versions `A → B → C → D -> B²`:
+
+- **Cause deployment**: `C` (the first deployment after `B`, where the problem was introduced)
+- **Fix deployment**: `B²` (the rollback deployment itself)
+
+### Hotfix detection
+
+Detects incidents based on patterns in pull request titles, branch names, or labels. Configure regular expressions to match your team's conventions.
+
+| Pattern            | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| **PR title regex** | Match pull request titles (e.g., `hotfix`, `emergency`). |
+| **Branch regex**   | Match branch names (e.g., `^hotfix/.+`).                 |
+| **PR label regex** | Match pull request labels.                               |
+
+| Incident field       | Value                                                    |
+| -------------------- | -------------------------------------------------------- |
+| **Cause deployment** | The deployment immediately before the hotfix deployment. |
+| **Fix deployment**   | The deployment containing the hotfix pull request.       |
+| **Detected at**      | The time of the hotfix deployment.                       |
+
+### Revert detection
+
+Detects when a pull request is a revert of a previous change.
+
+| Incident field       | Value                                                                   |
+| -------------------- | ----------------------------------------------------------------------- |
+| **Cause deployment** | The deployment that contained the original (now-reverted) pull request. |
+| **Fix deployment**   | The deployment containing the revert pull request.                      |
+| **Detected at**      | The time of the revert deployment.                                      |
+
+## Benefits
+
+<Card horizontal title="Improves data accuracy" icon="database">
+  More accurate failure rate on your DORA metrics. Remove manual work from
+  incident reporting.
+</Card>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card
+    title="DORA Metrics"
+    icon="chart-line"
+    href="/metrics-and-insights/dora"
+  />
+  <Card title="Incidents" icon="flame" href="/platform/incidents" />
+  <Card title="Deployments" icon="rocket" href="/platform/deployments" />
+</CardGroup>
+
+<CtaGetStarted />
