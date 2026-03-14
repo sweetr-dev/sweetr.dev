@@ -33,11 +33,11 @@ The time from first commit to production deployment. Lower lead time means faste
 
 - **Calculation:** Time from first commit to deployment, averaged across all deployments.
 - **Breakdown:**
-  - **Coding time** — First commit to pull request creation.
-  - **Time to first review** — PR creation to first review.
-  - **Time to approve** — First review to approval.
-  - **Time to merge** — Approval to merge.
-  - **Time to deploy** — Merge to deployment.
+  - **Coding time**: First commit to pull request creation.
+  - **Time to first review**: PR creation to first review.
+  - **Time to approve**: First review to approval.
+  - **Time to merge**: Approval to merge.
+  - **Time to deploy**: Merge to deployment.
 
 ### Change Failure Rate
 
@@ -52,6 +52,10 @@ The average time to recover from an incident. Lower MTTR indicates faster incide
 
 - **Calculation:** Average of `resolved at - detected at` across all resolved incidents.
 - **Requires:** [Incidents](/platform/incidents) with detection and resolution timestamps.
+
+## Benchmarks
+
+The DORA research program publishes annual benchmarks that categorize teams into Elite, High, Medium, and Low performers. Use these to assess where your team stands and set realistic goals. See the <a href="https://dora.dev/guides/dora-metrics-four-keys/" target="_blank" rel="nofollow">official DORA guides</a> for the latest thresholds.
 
 ## Prerequisites
 

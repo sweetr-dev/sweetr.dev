@@ -1,6 +1,6 @@
 ---
 title: Alerts
-description: Real time alerts for Pull Requests needing attention.
+description: Real-time alerts for Pull Requests needing attention.
 icon: "bell"
 ---
 
@@ -23,18 +23,22 @@ Alerts are team scoped, and must be enabled individually for each team. Each
 alert can be toggled on or off individually, and their Slack channels can be
 customized independently.
 
+## Enabling alerts
+
+Navigate to **Teams > [Your Team] > Alerts** to configure alerts. Each alert type can be toggled on or off, and you can set a specific Slack channel per alert.
+
 ## Alert Types
 
 <Card title="Slow review" icon="code" horizontal>
   Alert when an open Pull Request has been waiting for review for too long. You
-  can setup the minimum idle time to trigger the alert.
+  can configure the minimum idle time (1 to 168 hours) to trigger the alert.
   <br />
   <p>`Improves cycle time` `Improves time to approval`</p>
 </Card>
 
 <Card title="Slow merge" icon="git-merge" horizontal>
   Alert when an approved Pull Request has been waiting for merge for too long.
-  You can setup the minimum idle time to trigger the alert.
+  You can configure the minimum idle time (1 to 168 hours) to trigger the alert.
   <br />
   <p>`Improves cycle time` `Improves time to merge`</p>
 </Card>
@@ -46,7 +50,7 @@ customized independently.
 </Card>
 
 <Card title="(Coming Soon) Hot Pull Request" icon="flame" horizontal>
-  Alert when a Pull Request has lot of comments or back-and-forth.
+  Alert when a Pull Request has a lot of comments or back-and-forth.
 </Card>
 
 <Card

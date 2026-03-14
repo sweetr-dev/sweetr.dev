@@ -22,7 +22,7 @@ This chart can help you measure and answer questions like:
 
 ## What good looks like
 
-Ideally, most small Pull Requests should be reviewed within hours of its creation. Team members should prioritize moving together as a team over their own individual work.
+Ideally, most small Pull Requests should be reviewed within hours of their creation. Team members should prioritize moving together as a team over their own individual work.
 
 ## How to improve
 
@@ -33,5 +33,12 @@ There are some strategies that can help your team's time to first review.
 - Automate the process as much as you can.
 - Make it clear to the team that reviewing code is a priority.
 - Simplify your reviewer assigning process.
+
+## How this metric is calculated
+
+- **Start ("ready"):** The earliest available timestamp, in priority order: (1) first reviewer requested date, (2) date the PR was marked ready for review (draft PRs are not considered ready), or (3) PR creation date. Only timestamps before the review are considered.
+- **End:** The first non-author, non-bot review submission date.
+- **Aggregation:** Average (mean) across all reviewed PRs in the selected period.
+- **Business time:** Weekends are excluded. Full weekdays are counted.
 
 <CtaGetStarted />

@@ -48,8 +48,16 @@ The request is processed asynchronously. A `202 Accepted` response means the dep
 ## Response
 
 <ResponseField name="status" type="number">
-  `202` — The deployment has been accepted and queued for processing.
+  `202`: The deployment has been accepted and queued for processing.
 </ResponseField>
+
+## Error codes
+
+| Status | Description |
+| ------ | ----------- |
+| `400`  | Validation failed. Check the request body for missing or invalid fields. |
+| `401`  | Invalid or missing API key. |
+| `429`  | Rate limit exceeded. See [Rate Limits](/api-reference/rate-limit). |
 
 <RequestExample>
 ```bash cURL

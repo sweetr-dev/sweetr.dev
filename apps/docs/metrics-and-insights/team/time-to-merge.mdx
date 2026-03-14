@@ -21,7 +21,7 @@ This chart can help you measure and answer questions like:
 
 ## What good looks like
 
-Ideally, most small Pull Requests should be merged within an hour of it being approved. Teams should prioritize finishing work over starting new things.
+Ideally, most small Pull Requests should be merged within an hour of being approved. Teams should prioritize finishing work over starting new things.
 
 ## How to improve
 
@@ -30,5 +30,12 @@ There are some strategies that can help your team's time to merge.
 - Visit this data during retrospectives and discuss options with the team.
 - Keep CI/CD process fast and painless.
 - Prioritize finishing open work vs starting new things.
+
+## How this metric is calculated
+
+- **Start:** The first approval date. If the PR was never approved, falls back to the "ready" date or PR creation date.
+- **End:** The PR merge date.
+- **Aggregation:** Average (mean) across all merged PRs in the selected period.
+- **Business time:** Weekends are excluded. Full weekdays are counted.
 
 <CtaGetStarted />

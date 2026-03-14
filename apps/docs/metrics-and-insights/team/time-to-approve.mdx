@@ -22,7 +22,7 @@ This chart can help you measure and answer questions like:
 
 ## What good looks like
 
-Ideally, most Pull Requests should be approved within hours of its creation, but it can vary significantly depending on the context, such as the complexity of the project and the size of the Pull Request.
+Ideally, most Pull Requests should be approved within hours of their creation, but it can vary significantly depending on the context, such as the complexity of the project and the size of the Pull Request.
 
 ## How to improve
 
@@ -53,5 +53,12 @@ data should **not** be used.
 - **Do not** obsess over improving this metric.
 
 Strive for a good balance of code quality vs speed instead.
+
+## How this metric is calculated
+
+- **Start ("ready"):** The earliest available timestamp, in priority order: (1) first reviewer requested date, (2) date the PR was marked ready for review, or (3) PR creation date.
+- **End:** The first approval date.
+- **Aggregation:** Average (mean) across all approved PRs in the selected period.
+- **Business time:** Weekends are excluded. Full weekdays are counted.
 
 <CtaGetStarted />

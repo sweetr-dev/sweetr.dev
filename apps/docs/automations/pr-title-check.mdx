@@ -12,7 +12,9 @@ icon: "heading"
 
 ## How it works
 
-Define a regular expression to validate Pull Request title across your organization. You can make it blocking by adding <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging" target="_blank" rel="noreferrer">branch protection rules</a> in your repository.
+Enable this automation in **Automations > PR Title Check** by defining a regular expression to validate Pull Request titles across your organization. When a PR is opened or updated, Sweetr posts a commit status check (`[Sweetr] PR Title Check`) with a **success** or **error** state.
+
+By default the check is non-blocking. To make it required, add <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging" target="_blank" rel="noreferrer">branch protection rules</a> in your repository that require the `[Sweetr] PR Title Check` status to pass before merging.
 
 ## Benefits
 
