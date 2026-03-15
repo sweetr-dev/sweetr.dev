@@ -1,5 +1,5 @@
 import { Workspace, Subscription } from "@prisma/client";
-import { redisConnection } from "../bull-mq/redis-connection";
+import { getRedisConnection } from "../bull-mq/redis-connection";
 import { getRandomString } from "../lib/crypto";
 import { isAppSelfHosted } from "../lib/self-host";
 import { getPrisma } from "../prisma";
@@ -31,7 +31,7 @@ export const isActiveCustomer = (
 };
 
 export const preventCSRFAttack = async (nonce: string) => {
-  const keyValue = await redisConnection.get(`oauth:state:${nonce}`);
+  const keyValue = await getRedisConnection().get(`oauth:state:${nonce}`);
 
   if (!keyValue) {
     throw new BusinessRuleException("Could not validate state", {
@@ -39,13 +39,13 @@ export const preventCSRFAttack = async (nonce: string) => {
     });
   }
 
-  redisConnection.del(`oauth:state:${nonce}`);
+  getRedisConnection().del(`oauth:state:${nonce}`);
 };
 
 export const getTemporaryNonce = () => {
   const nonce = getRandomString(16);
 
-  redisConnection.setex(`oauth:state:${nonce}`, 60 * 5, nonce);
+  getRedisConnection().setex(`oauth:state:${nonce}`, 60 * 5, nonce);
 
   return nonce;
 };

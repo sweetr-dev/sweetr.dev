@@ -1,5 +1,5 @@
 import { BulkJobOptions, JobsOptions, Queue } from "bullmq";
-import { redisConnection } from "./redis-connection";
+import { getRedisConnection } from "./redis-connection";
 import { logger } from "../lib/logger";
 import { bullMQErrorHandler } from "./error-handler";
 
@@ -71,7 +71,7 @@ export function initQueues(): Record<SweetQueue, Queue> {
 
   for (const queueName of Object.values(SweetQueue)) {
     const queue = new Queue(queueName, {
-      connection: redisConnection,
+      connection: getRedisConnection(),
       defaultJobOptions: {
         attempts: 3,
         backoff: {

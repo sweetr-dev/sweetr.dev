@@ -1,6 +1,6 @@
 import { DelayedError, Job } from "bullmq";
 import { logger } from "../../../lib/logger";
-import { redisConnection } from "../../../bull-mq/redis-connection";
+import { getRedisConnection } from "../../../bull-mq/redis-connection";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { addSeconds, getTime, isPast, fromUnixTime } from "date-fns";
 
@@ -95,7 +95,7 @@ export const withDelayedRetryOnRateLimit = async <T>(
 export const getGitInstallationRateLimitEpochInMs = async (
   installationId: number
 ) => {
-  const rateLimitResetString = await redisConnection.get(
+  const rateLimitResetString = await getRedisConnection().get(
     `github:rate-limit-reset:${installationId}`
   );
 
@@ -114,7 +114,7 @@ export const setGitInstallationRateLimitEpochInMs = async (
   installationId: number,
   rateLimitResetAtInMs: number
 ) => {
-  await redisConnection.set(
+  await getRedisConnection().set(
     `github:rate-limit-reset:${installationId}`,
     rateLimitResetAtInMs,
     // Set key to expire

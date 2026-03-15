@@ -1,6 +1,6 @@
 import { InitialSyncCompleteEmail } from "@sweetr/email-templates";
 import { addJob, SweetQueue } from "../../../bull-mq/queues";
-import { redisConnection } from "../../../bull-mq/redis-connection";
+import { getRedisConnection } from "../../../bull-mq/redis-connection";
 import { env, isProduction } from "../../../env";
 import { EmailOptions, EmailPayload, getEmailClient } from "../../../lib/email";
 import { logger } from "../../../lib/logger";
@@ -54,9 +54,9 @@ export const sendEmail = async (
 };
 
 export const markEmailAsSent = (key: string, expireInSeconds: number) => {
-  return redisConnection.setex(key, expireInSeconds, 1);
+  return getRedisConnection().setex(key, expireInSeconds, 1);
 };
 
 export const hasSentEmail = (key: string) => {
-  return redisConnection.exists(key);
+  return getRedisConnection().exists(key);
 };

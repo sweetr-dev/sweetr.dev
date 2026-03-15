@@ -1,5 +1,5 @@
 import { Processor, Worker, WorkerOptions } from "bullmq";
-import { redisConnection } from "./redis-connection";
+import { getRedisConnection } from "./redis-connection";
 import { SweetQueue } from "./queues";
 import {
   bullMQErrorHandler,
@@ -23,7 +23,7 @@ export const createWorker = (
       return processor(job, token);
     },
     {
-      connection: redisConnection,
+      connection: getRedisConnection(),
       removeOnComplete: { age: 1 },
       removeOnFail: {
         age: 7 * 24 * 3600, // keep up to 7 days

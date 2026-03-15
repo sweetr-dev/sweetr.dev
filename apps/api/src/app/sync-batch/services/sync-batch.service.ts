@@ -12,7 +12,7 @@ import {
 } from "../../email/services/send-email.service";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { findWorkspaceUsers } from "../../workspaces/services/workspace.service";
-import { redisConnection } from "../../../bull-mq/redis-connection";
+import { getRedisConnection } from "../../../bull-mq/redis-connection";
 import { UnknownException } from "../../errors/exceptions/unknown.exception";
 
 export const DEFAULT_SYNC_BATCH_SINCE_DAYS_AGO = 365; // TO-DO: Should be a workspace setting
@@ -45,7 +45,7 @@ export const setSyncBatchProgress = async (syncBatchId: number) => {
   const key = `sync-batch:${syncBatchId}:sync`;
   const sevenDaysInSeconds = 60 * 60 * 24 * 7;
 
-  await redisConnection
+  await getRedisConnection()
     .multi()
     .hset(key, { waiting: 0, done: 0 })
     .expire(key, sevenDaysInSeconds)
@@ -59,12 +59,12 @@ export const incrementSyncBatchProgress = async (
 ) => {
   const key = `sync-batch:${syncBatchId}:sync`;
 
-  await redisConnection.hincrby(key, field, amount);
+  await getRedisConnection().hincrby(key, field, amount);
 };
 
 export const getSyncBatchProgress = async (syncBatchId: number) => {
   try {
-    const progress = await redisConnection.hgetall(
+    const progress = await getRedisConnection().hgetall(
       `sync-batch:${syncBatchId}:sync`
     );
 

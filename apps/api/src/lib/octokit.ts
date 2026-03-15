@@ -2,7 +2,7 @@ import { createAppAuth, StrategyOptions } from "@octokit/auth-app";
 import { Octokit } from "octokit";
 import { graphql } from "@octokit/graphql";
 import { config } from "../config";
-import { redisConnection } from "../bull-mq/redis-connection";
+import { getRedisConnection } from "../bull-mq/redis-connection";
 
 export const octokit = new Octokit();
 
@@ -19,11 +19,11 @@ export const getAppOctoKit = () =>
 
 const redisCaching: StrategyOptions["cache"] = {
   async get(key: string) {
-    const cachedValue = await redisConnection.get(`github:token:${key}`);
+    const cachedValue = await getRedisConnection().get(`github:token:${key}`);
     return cachedValue || "";
   },
   set(key: string, value: string) {
-    redisConnection.setex(`github:token:${key}`, 3600, value);
+    getRedisConnection().setex(`github:token:${key}`, 3600, value);
   },
 };
 
