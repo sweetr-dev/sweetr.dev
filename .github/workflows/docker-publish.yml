@@ -33,6 +33,9 @@ jobs:
           --health-retries 5
       dragonfly:
         image: docker.dragonflydb.io/dragonflydb/dragonfly
+        env:
+          DFLY_cluster_mode: emulated
+          DFLY_lock_on_hashtags: "true"
         ports:
           - 6379:6379
         options: >-
