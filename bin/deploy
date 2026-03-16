@@ -88,8 +88,11 @@ collect_domain() {
   info "Domain Configuration"
   echo "Enter the domain where Sweetr will be accessible."
   echo "Make sure DNS is pointing to this server."
+  echo "For local testing, use 'localhost'."
   echo ""
   prompt DOMAIN "Domain (e.g., sweetr.example.com)"
+  echo ""
+  prompt WEB_PORT "Web port" "3000"
 }
 
 collect_github_app() {
@@ -170,20 +173,18 @@ collect_slack_app() {
 generate_files() {
   info "Generating configuration files..."
 
-  local JWT_SECRET DB_PASSWORD POSTGRES_PASSWORD
+  local JWT_SECRET DB_PASSWORD
 
   if [ -f sweetr/.env ]; then
     JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
     DB_PASSWORD=$(grep '^DB_PASSWORD=' sweetr/.env | cut -d= -f2-)
-    POSTGRES_PASSWORD=$(grep '^POSTGRES_PASSWORD=' sweetr/.env | cut -d= -f2-)
-    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ] && [ -n "$POSTGRES_PASSWORD" ]; then
+    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
       info "Reusing existing secrets from sweetr/.env"
     fi
   fi
 
   JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
   DB_PASSWORD="${DB_PASSWORD:-$(openssl rand -hex 16)}"
-  POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$(openssl rand -hex 16)}"
 
   mkdir -p sweetr && cd sweetr
 
@@ -194,11 +195,9 @@ DOMAIN=${DOMAIN}
 
 # Database
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+POSTGRES_PASSWORD=${DB_PASSWORD}
 POSTGRES_DB=sweetr
-DB_USERNAME=sweetr_app
-DB_PASSWORD=${DB_PASSWORD}
-DATABASE_URL=postgres://sweetr_app:${DB_PASSWORD}@postgres:5432/sweetr
+DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/sweetr
 
 # API
 PORT=8000
@@ -220,27 +219,11 @@ SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
 SLACK_WEBHOOK_SECRET=${SLACK_WEBHOOK_SECRET}
 
 # Web
+WEB_PORT=${WEB_PORT}
 API_ENDPOINT=https://${DOMAIN}/api
 AUTH_COOKIE_DOMAIN=${DOMAIN}
 GITHUB_APP=${GITHUB_APP_HANDLE}
 ENVEOF
-
-  cat > init-app-db.sh <<'DBEOF'
-#!/bin/bash
-set -e
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
-    GRANT CONNECT ON DATABASE $POSTGRES_DB TO $DB_USERNAME;
-    GRANT USAGE ON SCHEMA public TO $DB_USERNAME;
-    REVOKE CREATE ON SCHEMA public FROM $DB_USERNAME;
-    REVOKE CREATE ON SCHEMA public FROM PUBLIC;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $DB_USERNAME;
-    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $DB_USERNAME;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $DB_USERNAME;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO $DB_USERNAME;
-EOSQL
-DBEOF
-  chmod +x init-app-db.sh
 
   cat > docker-compose.yml <<'COMPOSEEOF'
 services:
@@ -274,7 +257,7 @@ services:
       - SENTRY_DSN=${SENTRY_DSN:-}
       - APP_ENV=${APP_ENV:-production}
     ports:
-      - "127.0.0.1:3000:80"
+      - "127.0.0.1:${WEB_PORT:-3000}:80"
     restart: unless-stopped
     networks:
       - sweetr
@@ -287,7 +270,6 @@ services:
     env_file: .env
     volumes:
       - sweetr-db:/var/lib/postgresql/data
-      - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
     restart: unless-stopped
     networks:
       - sweetr
@@ -351,7 +333,7 @@ start_stack() {
       echo ""
       echo "  Note: You'll need a reverse proxy (e.g., Caddy, Nginx, Traefik)"
       echo "  to handle TLS and route traffic to the API (localhost:8000) and"
-      echo "  Web (localhost:3000) containers."
+      echo "  Web (localhost:${WEB_PORT}) containers."
       echo ""
       return 0
     fi
