@@ -2,6 +2,8 @@
 title: Self-host
 ---
 
+import { GitHubAppButton } from "/snippets/github-app-button.mdx";
+
 When you choose to self-host, the responsibility for updates, maintenance, and
 merging future enhancements rests entirely with you.
 
@@ -59,11 +61,9 @@ If you prefer to set things up manually, follow the steps below.
   <Step title="Create a GitHub Application">
     You'll need to <a href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app">create a GitHub application</a>.
 
-    You can use our pre-filled link to speed this up. Replace `YOUR_DOMAIN` with your actual domain:
+    Use our pre-filled link to speed this up — replace `YOUR_DOMAIN` with your actual domain after opening it.
 
-    ```
-    https://github.com/settings/apps/new?name=sweetr&url=https://YOUR_DOMAIN&webhook_active=true&webhook_url=https://YOUR_DOMAIN/api/github/callback&callback_urls[]=https://YOUR_DOMAIN/github/callback&request_oauth_on_install=true&public=false&metadata=read&pull_requests=write&statuses=write&members=read&emails=read&events[]=installation_target&events[]=organization&events[]=public&events[]=pull_request&events[]=pull_request_review&events[]=repository
-    ```
+    <GitHubAppButton />
 
     After opening the link, you must also:
 
@@ -81,7 +81,7 @@ If you prefer to set things up manually, follow the steps below.
           - Check "Request user authorization (OAuth) during installation"
           - Webhook
             - Check "Active"
-            - Webhook URL: `https://your-domain.com/api/github/callback`
+            - Webhook URL: `https://your-domain.com/api/github/webhook`
             - Generate and set a Webhook Secret
           - SSL verification
             - Check "Enable SSL verification"
@@ -305,7 +305,9 @@ You'll need a reverse proxy to handle TLS and route traffic. Here's an example w
 
 ```
 your-domain.com {
-    handle /api/* {
+    @api path /api /api/*
+    handle @api {
+        uri strip_prefix /api
         reverse_proxy localhost:8000
     }
     handle {

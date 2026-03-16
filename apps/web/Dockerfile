@@ -22,8 +22,7 @@ RUN apk add --no-cache jq
 WORKDIR /app
 COPY --from=installer /app/apps/web/dist /usr/share/nginx/html
 COPY ./apps/web/nginx.conf /etc/nginx/conf.d/default.conf
-COPY ./apps/web/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+COPY ./apps/web/docker-entrypoint.sh /docker-entrypoint.d/00-env-config.sh
+RUN chmod +x /docker-entrypoint.d/00-env-config.sh
 
 EXPOSE 80
-ENTRYPOINT ["/docker-entrypoint.sh"]

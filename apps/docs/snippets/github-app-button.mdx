@@ -1,0 +1,25 @@
+export const GitHubAppButton = () => (
+  <a
+    href="https://github.com/settings/apps/new?name=sweetr&url=https://YOUR_DOMAIN&webhook_active=true&webhook_url=https://YOUR_DOMAIN/api/github/webhook&callback_urls[]=https://YOUR_DOMAIN/github/callback&request_oauth_on_install=true&public=false&metadata=read&pull_requests=write&statuses=write&members=read&emails=read&events[]=installation_target&events[]=organization&events[]=public&events[]=pull_request&events[]=pull_request_review&events[]=repository"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="not-prose"
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "10px 20px",
+      background: "#69db7c",
+      color: "#000",
+      borderRadius: 6,
+      fontSize: 14,
+      fontWeight: 600,
+      textDecoration: "none",
+      marginTop: 8,
+      marginBottom: 8,
+    }}
+  >
+    <Icon icon="brand-github" size={18} color="#000" />
+    Create GitHub App
+  </a>
+);

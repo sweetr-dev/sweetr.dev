@@ -101,7 +101,7 @@ collect_github_app() {
   GITHUB_URL+="?name=sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
   GITHUB_URL+="&url=https://${DOMAIN}"
   GITHUB_URL+="&webhook_active=true"
-  GITHUB_URL+="&webhook_url=https://${DOMAIN}/api/github/callback"
+  GITHUB_URL+="&webhook_url=https://${DOMAIN}/api/github/webhook"
   GITHUB_URL+="&callback_urls[]=https://${DOMAIN}/github/callback"
   GITHUB_URL+="&request_oauth_on_install=true"
   GITHUB_URL+="&public=false"

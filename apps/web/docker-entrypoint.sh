@@ -10,4 +10,3 @@ window.__SWEETR_ENV__ = {
   APP_ENV: $(json_val "${APP_ENV:-production}"),
 };
 EOF
-exec nginx -g 'daemon off;'
