@@ -1,4 +1,4 @@
-FROM node:20-bullseye AS base
+FROM node:24-bookworm-slim AS base
 
 FROM base AS builder
 WORKDIR /app
@@ -8,13 +8,14 @@ RUN npx turbo prune api --docker
 
 FROM base AS installer
 WORKDIR /app
+RUN apt-get update && apt-get install -y build-essential python3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/out/json/ .
 RUN npm install
 COPY --from=builder /app/out/full/ .
 RUN npm run build
 
-FROM base AS runner
+FROM node:24-bookworm-slim AS runner
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 apiuser
