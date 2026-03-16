@@ -128,7 +128,7 @@ jobs:
       - name: Wait for Web to be ready
         run: |
           for i in $(seq 1 15); do
-            if curl -sf http://localhost:8080 > /dev/null 2>&1; then
+            if curl -sf http://localhost:8080/env-config.js > /dev/null 2>&1; then
               echo "Web is healthy"
               exit 0
             fi

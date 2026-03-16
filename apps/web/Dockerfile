@@ -18,6 +18,7 @@ COPY --from=builder /app/out/full/ .
 RUN npm run build
 
 FROM nginx:alpine
+RUN apk add --no-cache jq
 WORKDIR /app
 COPY --from=installer /app/apps/web/dist /usr/share/nginx/html
 COPY ./apps/web/nginx.conf /etc/nginx/conf.d/default.conf

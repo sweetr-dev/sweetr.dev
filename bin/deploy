@@ -14,14 +14,14 @@ prompt() {
   local var_name="$1" prompt_text="$2" default="$3"
   if [ -n "$default" ]; then
     read -rp "$prompt_text [$default]: " value
-    eval "$var_name=\"${value:-$default}\""
+    printf -v "$var_name" '%s' "${value:-$default}"
   else
     read -rp "$prompt_text: " value
     while [ -z "$value" ]; do
       echo "  This field is required."
       read -rp "$prompt_text: " value
     done
-    eval "$var_name=\"$value\""
+    printf -v "$var_name" '%s' "$value"
   fi
 }
 
@@ -34,7 +34,7 @@ prompt_secret() {
     read -rsp "$prompt_text: " value
     echo
   done
-  eval "$var_name=\"$value\""
+  printf -v "$var_name" '%s' "$value"
 }
 
 prompt_multiline() {
@@ -45,7 +45,7 @@ prompt_multiline() {
     [ -z "$line" ] && break
     content="${content}${line}\n"
   done
-  eval "$var_name=\"$content\""
+  printf -v "$var_name" '%s' "$content"
 }
 
 # --- System checks ---
@@ -163,11 +163,18 @@ collect_slack_app() {
 generate_files() {
   info "Generating configuration files..."
 
-  local JWT_SECRET
-  JWT_SECRET=$(openssl rand -hex 32)
+  local JWT_SECRET DB_PASSWORD
 
-  local DB_PASSWORD
-  DB_PASSWORD=$(openssl rand -hex 16)
+  if [ -f sweetr/.env ]; then
+    JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
+    DB_PASSWORD=$(grep '^DB_PASSWORD=' sweetr/.env | cut -d= -f2-)
+    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
+      info "Reusing existing secrets from sweetr/.env"
+    fi
+  fi
+
+  JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
+  DB_PASSWORD="${DB_PASSWORD:-$(openssl rand -hex 16)}"
 
   mkdir -p sweetr && cd sweetr
 
@@ -238,7 +245,7 @@ services:
       - APP_MODE=self-hosted
       - USE_SELF_SIGNED_SSL=false
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     restart: unless-stopped
     networks:
       - sweetr
@@ -251,9 +258,14 @@ services:
   web:
     image: sweetr/web:${SWEETR_TAG:-latest}
     container_name: sweetr-web
-    env_file: .env
+    environment:
+      - API_ENDPOINT=${API_ENDPOINT}
+      - AUTH_COOKIE_DOMAIN=${AUTH_COOKIE_DOMAIN}
+      - GITHUB_APP=${GITHUB_APP}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - APP_ENV=${APP_ENV:-production}
     ports:
-      - "80:80"
+      - "127.0.0.1:3000:80"
     restart: unless-stopped
     networks:
       - sweetr
@@ -267,8 +279,6 @@ services:
     volumes:
       - sweetr-db:/var/lib/postgresql/data
       - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
-    ports:
-      - "5432:5432"
     restart: unless-stopped
     networks:
       - sweetr
@@ -331,8 +341,8 @@ start_stack() {
       echo "  To upgrade:       docker compose pull && docker compose up -d"
       echo ""
       echo "  Note: You'll need a reverse proxy (e.g., Caddy, Nginx, Traefik)"
-      echo "  to handle TLS and route traffic to the API (port 8000) and"
-      echo "  Web (port 80) containers."
+      echo "  to handle TLS and route traffic to the API (localhost:8000) and"
+      echo "  Web (localhost:3000) containers."
       echo ""
       return 0
     fi

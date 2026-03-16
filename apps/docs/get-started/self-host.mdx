@@ -46,7 +46,7 @@ The script will:
 To install a specific version, set the `SWEETR_TAG` environment variable:
 
 ```bash
-SWEETR_TAG=1.2.0 curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/1.2.0/bin/deploy | SWEETR_TAG=1.2.0 bash
 ```
 
 ## Manual Setup
@@ -155,7 +155,7 @@ If you prefer to set things up manually, follow the steps below.
           - APP_MODE=self-hosted
           - USE_SELF_SIGNED_SSL=false
         ports:
-          - "8000:8000"
+          - "127.0.0.1:8000:8000"
         restart: unless-stopped
         networks:
           - sweetr
@@ -168,9 +168,14 @@ If you prefer to set things up manually, follow the steps below.
       web:
         image: sweetr/web:latest
         container_name: sweetr-web
-        env_file: .env
+        environment:
+          - API_ENDPOINT=${API_ENDPOINT}
+          - AUTH_COOKIE_DOMAIN=${AUTH_COOKIE_DOMAIN}
+          - GITHUB_APP=${GITHUB_APP}
+          - SENTRY_DSN=${SENTRY_DSN:-}
+          - APP_ENV=${APP_ENV:-production}
         ports:
-          - "80:80"
+          - "127.0.0.1:3000:80"
         restart: unless-stopped
         networks:
           - sweetr
@@ -184,8 +189,6 @@ If you prefer to set things up manually, follow the steps below.
         volumes:
           - sweetr-db:/var/lib/postgresql/data
           - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
-        ports:
-          - "5432:5432"
         restart: unless-stopped
         networks:
           - sweetr
@@ -297,7 +300,7 @@ If you prefer to set things up manually, follow the steps below.
 
 ### Reverse Proxy
 
-The Docker setup exposes the API on port 8000 and the web app on port 80.
+The Docker setup binds the API to `127.0.0.1:8000` and the web app to `127.0.0.1:3000`.
 You'll need a reverse proxy to handle TLS and route traffic. Here's an example with Caddy:
 
 ```
@@ -306,7 +309,7 @@ your-domain.com {
         reverse_proxy localhost:8000
     }
     handle {
-        reverse_proxy localhost:80
+        reverse_proxy localhost:3000
     }
 }
 ```
@@ -452,9 +455,9 @@ docker compose exec postgres psql -U postgres -d sweetr
 
 ### Port conflicts
 
-If ports 80, 5432, or 6379 are already in use, either stop the conflicting service or change the port mappings in `docker-compose.yml`:
+If ports 8000 or 3000 are already in use, either stop the conflicting service or change the port mappings in `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "3080:80" # Map to a different host port
+  - "127.0.0.1:3080:80" # Map to a different host port
 ```
