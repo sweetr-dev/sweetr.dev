@@ -10,161 +10,451 @@ merging future enhancements rests entirely with you.
   you have hard requirements to manage your own infrastructure.
 </Tip>
 
-## Requirements
+## Minimum System Requirements
 
-- NodeJS 20
-- Postgres
-- Redis
-- GitHub App
-- Slack App
+| Resource | Minimum | Recommended |
+| -------- | ------- | ----------- |
+| CPU      | 2 vCPU  | 4 vCPU      |
+| RAM      | 2 GB    | 4 GB        |
+| Disk     | 20 GB   | 40 GB       |
 
-## Prepare the environment
+**Software requirements:**
+
+- Docker 24+ and Docker Compose v2+
+- A domain with DNS A record pointing to your server
+- Ports 80 and 443 open (for web traffic and TLS)
+
+## Quick Start
+
+The fastest way to get Sweetr running is with our deploy script. It will guide you through
+the setup, including creating a GitHub App with the correct permissions.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+```
+
+The script will:
+
+1. Check that Docker and Docker Compose are installed
+2. Ask for your domain
+3. Generate a pre-filled URL to create a GitHub App with all required permissions
+4. Collect your GitHub App credentials
+5. Optionally configure Slack integration
+6. Generate `docker-compose.yml` and `.env` files
+7. Start the stack
+
+To install a specific version, set the `SWEETR_TAG` environment variable:
+
+```bash
+SWEETR_TAG=1.2.0 curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+```
+
+## Manual Setup
+
+If you prefer to set things up manually, follow the steps below.
+
+### Prerequisites
 
 <Steps>
   <Step title="Create a GitHub Application">
-    Firstly, you'll need to <a href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app">create a GitHub application</a>.  
-    
-    Setup your GitHub app following the instructions below:
-    <Tabs>
+    You'll need to <a href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app">create a GitHub application</a>.
+
+    You can use our pre-filled link to speed this up. Replace `YOUR_DOMAIN` with your actual domain:
+
+    ```
+    https://github.com/settings/apps/new?name=sweetr&url=https://YOUR_DOMAIN&webhook_active=true&webhook_url=https://YOUR_DOMAIN/api/github/callback&callback_urls[]=https://YOUR_DOMAIN/github/callback&request_oauth_on_install=true&public=false&metadata=read&pull_requests=write&statuses=write&members=read&emails=read&events[]=installation_target&events[]=organization&events[]=public&events[]=pull_request&events[]=pull_request_review&events[]=repository
+    ```
+
+    After opening the link, you must also:
+
+    - Uncheck **"Expire user authorization tokens"**
+    - Generate and set a **Webhook Secret**
+    - Submit the form, then **generate a Client Secret**
+    - **Generate a Private Key** (this downloads a `.pem` file)
+
+    <Accordion title="Manual setup (without pre-filled link)">
+      <Tabs>
         <Tab title="General">
-            - Generate a Client Secret
-            - Callback Url: https://your-web-app.com/github/callback
-            - Uncheck "Expire user authorization tokens"
-            - Check "Request user authorization (OAuth) during installation"
-            - Webhook
-                - Check "Active"
-                - Webhook Url: https://your-api.com/github/callback
-            - SSL verification
-                - Check "Enable SSL verification"
-            - Generate a Private Key
+          - Generate a Client Secret
+          - Callback URL: `https://your-domain.com/github/callback`
+          - Uncheck "Expire user authorization tokens"
+          - Check "Request user authorization (OAuth) during installation"
+          - Webhook
+            - Check "Active"
+            - Webhook URL: `https://your-domain.com/api/github/callback`
+            - Generate and set a Webhook Secret
+          - SSL verification
+            - Check "Enable SSL verification"
+          - Generate a Private Key
         </Tab>
         <Tab title="Permissions & events">
-            #### Repository permissions
-            - Metadata: Read-only
-            - Pull requests: Read and Write
-            - Commit Statuses: Read and Write
-            - Organization permissions
-                - Members: Read-only
-            #### Account permissions
-                - Email addresses: Read-only
-            #### Subscribe to events
-                - Installation target
-                - Organization
-                - Public
-                - Pull request
-                - Pull request review
-                - Repository
-        </Tab>
-    </Tabs>
-  </Step>
-  <Step title="Create a Slack App">
-    Create a Slack app on https://api.slack.com/apps/new, and add the settings below:
-      <Tabs>
-          <Tab title="OAuth & Permissions">
-              - Create a Redirect URL: https://your-web-app.com/settings/integrations/slack
-              - Add the following Bot Token Scopes:
-                - app_mentions:read
-                - channels:join
-                - channels:read
-                - chat:write
-                - groups:read
-                - im:read
-                - im:write
-                - mpim:read
-                - reactions:read
-                - users.profile:read
-                - users:read
-                - users:read.email
-          </Tab>
-          <Tab title="Event Subscriptions">
-            - Set "Enable Events" to ON
-            - Change the "Request URL" to https://your-api.com/slack/webhook
-          </Tab>
-      </Tabs>
-  </Step>
-  <Step title="Host API">
-    Setup hosting for the API application. You may use our <a href="https://hub.docker.com/r/sweetr/sweetr">Docker image</a>, or run it on your own infrastructure.
+          #### Repository permissions
+          - Metadata: Read-only
+          - Pull requests: Read and Write
+          - Commit Statuses: Read and Write
 
-    #### Update the .env file
-    Make it production-ready.
+          #### Organization permissions
+          - Members: Read-only
+
+          #### Account permissions
+          - Email addresses: Read-only
+
+          #### Subscribe to events
+          - Installation target
+          - Organization
+          - Public
+          - Pull request
+          - Pull request review
+          - Repository
+        </Tab>
+      </Tabs>
+    </Accordion>
+
+  </Step>
+
+  <Step title="Create a Slack App (Optional)">
+    Create a Slack app at https://api.slack.com/apps/new:
+
+    <Tabs>
+      <Tab title="OAuth & Permissions">
+        - Create a Redirect URL: `https://your-domain.com/settings/integrations/slack`
+        - Add the following Bot Token Scopes:
+          - `app_mentions:read`
+          - `channels:join`
+          - `channels:read`
+          - `chat:write`
+          - `groups:read`
+          - `im:read`
+          - `im:write`
+          - `mpim:read`
+          - `reactions:read`
+          - `users.profile:read`
+          - `users:read`
+          - `users:read.email`
+      </Tab>
+      <Tab title="Event Subscriptions">
+        - Set "Enable Events" to ON
+        - Change the "Request URL" to `https://your-domain.com/api/slack/webhook`
+      </Tab>
+    </Tabs>
+
+  </Step>
+
+  <Step title="Create docker-compose.yml">
+    Create a `docker-compose.yml` file:
+
+    ```yaml
+    services:
+      api:
+        image: sweetr/api:latest
+        container_name: sweetr-api
+        env_file: .env
+        environment:
+          - NODE_ENV=production
+          - APP_ENV=production
+          - APP_MODE=self-hosted
+          - USE_SELF_SIGNED_SSL=false
+        ports:
+          - "8000:8000"
+        restart: unless-stopped
+        networks:
+          - sweetr
+        depends_on:
+          postgres:
+            condition: service_healthy
+          dragonfly:
+            condition: service_healthy
+
+      web:
+        image: sweetr/web:latest
+        container_name: sweetr-web
+        env_file: .env
+        ports:
+          - "80:80"
+        restart: unless-stopped
+        networks:
+          - sweetr
+        depends_on:
+          - api
+
+      postgres:
+        image: postgres:16
+        container_name: sweetr-postgres
+        env_file: .env
+        volumes:
+          - sweetr-db:/var/lib/postgresql/data
+          - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
+        ports:
+          - "5432:5432"
+        restart: unless-stopped
+        networks:
+          - sweetr
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U postgres"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+
+      dragonfly:
+        image: docker.dragonflydb.io/dragonflydb/dragonfly
+        container_name: sweetr-dragonfly
+        command: ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=2"]
+        ulimits:
+          memlock: -1
+        volumes:
+          - sweetr-dragonfly:/data
+        restart: unless-stopped
+        networks:
+          - sweetr
+        healthcheck:
+          test: ["CMD-SHELL", "redis-cli ping"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+
+    volumes:
+      sweetr-db:
+      sweetr-dragonfly:
+
+    networks:
+      sweetr:
+        driver: bridge
     ```
-    # App
-    NODE_ENV=production
-    APP_ENV=production
+
+  </Step>
+
+  <Step title="Create the database init script">
+    Create `init-app-db.sh` in the same directory:
+
+    ```bash
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
+        GRANT CONNECT ON DATABASE $POSTGRES_DB TO $DB_USERNAME;
+        GRANT USAGE ON SCHEMA public TO $DB_USERNAME;
+        REVOKE CREATE ON SCHEMA public FROM $DB_USERNAME;
+        REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+        GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $DB_USERNAME;
+        GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $DB_USERNAME;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $DB_USERNAME;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO $DB_USERNAME;
+    EOSQL
+    ```
+
+    Make it executable: `chmod +x init-app-db.sh`
+
+  </Step>
+
+  <Step title="Configure environment variables">
+    Create a `.env` file. See the [Environment Variables Reference](#environment-variables-reference) below for all available options.
+
+    ```bash
+    # Database
+    POSTGRES_USER=postgres
+    POSTGRES_PASSWORD=<generate-a-secure-password>
+    POSTGRES_DB=sweetr
+    DB_USERNAME=sweetr_app
+    DB_PASSWORD=<generate-a-secure-password>
+    DATABASE_URL=postgres://sweetr_app:<DB_PASSWORD>@postgres:5432/sweetr
+
+    # API
     PORT=8000
-    FRONTEND_URL= # Update to the URL of your web app
-    USE_SELF_SIGNED_SSL=false
-    JWT_SECRET= # Add a random sequence of characters
-    ```
-    Set your database credentials.
-    ```
-    # Prisma
-    DB_DATABASE=sweetr
-    DB_HOST=localhost
-    DB_USERNAME=sweetr
-    DB_PASSWORD=sweetr
-    DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}/${DB_DATABASE}?sslaccept=strict"
-    ```
-    Set your Redis credentials.
-    ```
-    # Redis (BullMQ)
-    REDIS_CONNECTION_STRING="redis://default@127.0.0.1:6379"
-    ```
-    Set your GitHub App credentials.
-    ```
+    FRONTEND_URL=https://your-domain.com
+    JWT_SECRET=<generate-a-secure-random-string>
+    REDIS_CONNECTION_STRING=redis://dragonfly:6379
+
     # GitHub App
-    GITHUB_CLIENT_SECRET=
-    GITHUB_CLIENT_ID=
-    GITHUB_OAUTH_REDIRECT_PATH=/github/callback
-    GITHUB_APP_ID=
-    GITHUB_APP_HANDLE=
-    GITHUB_APP_PRIVATE_KEY=
-    ```
-    Set your Slack App credentials.
-    ```
-    # Slack
+    GITHUB_APP_ID=<your-app-id>
+    GITHUB_CLIENT_ID=<your-client-id>
+    GITHUB_CLIENT_SECRET=<your-client-secret>
+    GITHUB_APP_HANDLE=<your-app-slug>
+    GITHUB_APP_PRIVATE_KEY=<your-private-key>
+    GITHUB_WEBHOOK_SECRET=<your-webhook-secret>
+
+    # Web
+    API_ENDPOINT=https://your-domain.com/api
+    AUTH_COOKIE_DOMAIN=your-domain.com
+    GITHUB_APP=<your-app-slug>
+
+    # Slack (optional)
     SLACK_CLIENT_ID=
     SLACK_CLIENT_SECRET=
     SLACK_WEBHOOK_SECRET=
     ```
 
   </Step>
-  <Step title="Host Web App">
-    Lastly, you'll need to host the frontend, the web application.
 
-    Update the .env file:
+  <Step title="Start the stack">
+    ```bash
+    docker compose up -d
     ```
-    VITE_GRAPHQL_API=https://your-api.com
-    VITE_AUTH_COOKIE_DOMAIN=your-web-app.com
-    VITE_GITHUB_APP=your-github-app-slug
-    ```
+
+    The API container will automatically run database migrations on startup.
 
   </Step>
 </Steps>
 
-## API
+### Reverse Proxy
 
-- Use `npm` to install dependencies.
-- Run `npm run build` to build the application.
-- Run `npm run start` to start the application.
-
-### Database migrations
-
-Our API uses Prisma to communicate with the database.
-
-Run `npx prisma migrate deploy` to run migrations.
-
-### Monitoring
-
-We currently support LogTail and Sentry for monitoring.
-
-Update .env to enable:
+The Docker setup exposes the API on port 8000 and the web app on port 80.
+You'll need a reverse proxy to handle TLS and route traffic. Here's an example with Caddy:
 
 ```
-# Sentry
-SENTRY_DSN=
+your-domain.com {
+    handle /api/* {
+        reverse_proxy localhost:8000
+    }
+    handle {
+        reverse_proxy localhost:80
+    }
+}
+```
 
-# LogTail
+## Environment Variables Reference
+
+### API (`sweetr/api`)
+
+| Variable                                          | Required | Default            | Description                                |
+| ------------------------------------------------- | -------- | ------------------ | ------------------------------------------ |
+| `DATABASE_URL`                                    | Yes      | —                  | PostgreSQL connection string               |
+| `REDIS_CONNECTION_STRING`                         | Yes      | —                  | Redis/Dragonfly connection string          |
+| `JWT_SECRET`                                      | Yes      | —                  | Secret for signing JWT tokens              |
+| `FRONTEND_URL`                                    | Yes      | —                  | URL of the web application                 |
+| `PORT`                                            | No       | `3000`             | API server port                            |
+| `GITHUB_APP_ID`                                   | Yes      | —                  | GitHub App ID                              |
+| `GITHUB_CLIENT_ID`                                | Yes      | —                  | GitHub OAuth Client ID                     |
+| `GITHUB_CLIENT_SECRET`                            | Yes      | —                  | GitHub OAuth Client Secret                 |
+| `GITHUB_APP_HANDLE`                               | Yes      | —                  | GitHub App slug (from the app URL)         |
+| `GITHUB_APP_PRIVATE_KEY`                          | Yes      | —                  | GitHub App private key (PEM format)        |
+| `GITHUB_WEBHOOK_SECRET`                           | Yes      | —                  | Secret for verifying GitHub webhooks       |
+| `GITHUB_OAUTH_REDIRECT_PATH`                      | No       | `/github/callback` | OAuth redirect path                        |
+| `APP_MODE`                                        | No       | `self-hosted`      | `self-hosted` or `saas`                    |
+| `NODE_ENV`                                        | No       | `production`       | `development` or `production`              |
+| `APP_ENV`                                         | No       | `production`       | `development`, `staging`, or `production`  |
+| `LOG_LEVEL`                                       | No       | `info`             | `debug`, `info`, `warn`, or `error`        |
+| `USE_SELF_SIGNED_SSL`                             | No       | `false`            | Use self-signed SSL certificates           |
+| `BULLMQ_ENABLED`                                  | No       | `true`             | Enable background job processing           |
+| `SLACK_CLIENT_ID`                                 | No       | `""`               | Slack Client ID                            |
+| `SLACK_CLIENT_SECRET`                             | No       | `""`               | Slack Client Secret                        |
+| `SLACK_WEBHOOK_SECRET`                            | No       | `""`               | Slack webhook verification secret          |
+| `STRIPE_API_KEY`                                  | No       | `""`               | Stripe API key (cloud billing only)        |
+| `STRIPE_WEBHOOK_SECRET`                           | No       | `""`               | Stripe webhook secret (cloud billing only) |
+| `SENTRY_DSN`                                      | No       | `""`               | Sentry DSN for error tracking              |
+| `LOG_DRAIN`                                       | No       | `console`          | `console` or `logtail`                     |
+| `LOGTAIL_TOKEN`                                   | No       | `""`               | LogTail source token                       |
+| `EMAIL_ENABLED`                                   | No       | `false`            | Enable transactional emails                |
+| `RESEND_API_KEY`                                  | No       | `""`               | Resend API key for emails                  |
+| `BULLBOARD_PATH`                                  | No       | `""`               | URL path to access BullBoard dashboard     |
+| `BULLBOARD_USERNAME`                              | No       | `""`               | BullBoard login username                   |
+| `BULLBOARD_PASSWORD`                              | No       | `""`               | BullBoard login password                   |
+| `CRON_GITHUB_RETRY_FAILED_WEBHOOKS_EVERY_MINUTES` | No       | `30`               | Retry interval for failed webhooks         |
+
+### Web (`sweetr/web`)
+
+| Variable             | Required | Default      | Description                                                  |
+| -------------------- | -------- | ------------ | ------------------------------------------------------------ |
+| `API_ENDPOINT`       | Yes      | —            | Full URL to the API (e.g., `https://sweetr.example.com/api`) |
+| `AUTH_COOKIE_DOMAIN` | Yes      | —            | Domain for auth cookies (e.g., `example.com`)                |
+| `GITHUB_APP`         | Yes      | —            | GitHub App slug (same as `GITHUB_APP_HANDLE`)                |
+| `SENTRY_DSN`         | No       | `""`         | Sentry DSN for frontend error tracking                       |
+| `APP_ENV`            | No       | `production` | Environment name for Sentry                                  |
+
+## Upgrading
+
+To upgrade to a new version:
+
+```bash
+cd sweetr
+docker compose pull
+docker compose up -d
+```
+
+Database migrations run automatically on API container startup.
+
+To pin a specific version instead of `latest`, edit the image tags in `docker-compose.yml`:
+
+```yaml
+services:
+  api:
+    image: sweetr/api:1.2.0
+  web:
+    image: sweetr/web:1.2.0
+```
+
+## Monitoring (Optional)
+
+### Sentry
+
+Add to your API `.env`:
+
+```bash
+SENTRY_DSN=https://your-sentry-dsn
+```
+
+For frontend error tracking, also add to your `.env`:
+
+```bash
+SENTRY_DSN=https://your-frontend-sentry-dsn
+```
+
+The web container reads this as the `SENTRY_DSN` environment variable.
+
+### LogTail
+
+```bash
 LOG_DRAIN=logtail
-LOGTAIL_TOKEN=
+LOGTAIL_TOKEN=your-logtail-token
+```
+
+### BullBoard (Job Queue Dashboard)
+
+To enable the BullBoard dashboard for monitoring background jobs:
+
+```bash
+BULLBOARD_PATH=/bullboard
+BULLBOARD_USERNAME=admin
+BULLBOARD_PASSWORD=<secure-password>
+```
+
+Access it at `https://your-domain.com/api/bullboard`.
+
+## Troubleshooting
+
+### API fails to start
+
+Check the container logs:
+
+```bash
+docker compose logs api
+```
+
+Common causes:
+
+- **Database connection failed**: Ensure Postgres is healthy with `docker compose ps`. The API waits for migrations to run on startup.
+- **Missing environment variables**: The API will log which required variables are missing.
+- **Redis connection failed**: Ensure Dragonfly is healthy. Check that `REDIS_CONNECTION_STRING` uses the Docker service name (e.g., `redis://dragonfly:6379`).
+
+### Web app shows blank page
+
+Check the browser console for errors. Common causes:
+
+- **`API_ENDPOINT` is wrong**: Make sure it's the full URL reachable from the browser (not an internal Docker hostname).
+- **CORS errors**: Ensure `FRONTEND_URL` on the API matches the URL you're accessing the web app from.
+
+### Database migration errors
+
+If migrations fail on startup, check the API logs. You may need to connect to Postgres directly:
+
+```bash
+docker compose exec postgres psql -U postgres -d sweetr
+```
+
+### Port conflicts
+
+If ports 80, 5432, or 6379 are already in use, either stop the conflicting service or change the port mappings in `docker-compose.yml`:
+
+```yaml
+ports:
+  - "3080:80" # Map to a different host port
 ```

@@ -1,0 +1,365 @@
+#!/usr/bin/env bash
+set -e
+
+export SWEETR_TAG="${SWEETR_TAG:-latest}"
+
+# --- Helper functions ---
+
+info() { echo -e "\033[1;34m==>\033[0m $1"; }
+success() { echo -e "\033[1;32m==>\033[0m $1"; }
+warn() { echo -e "\033[1;33m==>\033[0m $1"; }
+error() { echo -e "\033[1;31m==>\033[0m $1"; exit 1; }
+
+prompt() {
+  local var_name="$1" prompt_text="$2" default="$3"
+  if [ -n "$default" ]; then
+    read -rp "$prompt_text [$default]: " value
+    eval "$var_name=\"${value:-$default}\""
+  else
+    read -rp "$prompt_text: " value
+    while [ -z "$value" ]; do
+      echo "  This field is required."
+      read -rp "$prompt_text: " value
+    done
+    eval "$var_name=\"$value\""
+  fi
+}
+
+prompt_secret() {
+  local var_name="$1" prompt_text="$2"
+  read -rsp "$prompt_text: " value
+  echo
+  while [ -z "$value" ]; do
+    echo "  This field is required."
+    read -rsp "$prompt_text: " value
+    echo
+  done
+  eval "$var_name=\"$value\""
+}
+
+prompt_multiline() {
+  local var_name="$1" prompt_text="$2"
+  echo "$prompt_text (paste the content, then press Enter on an empty line to finish):"
+  local content=""
+  while IFS= read -r line; do
+    [ -z "$line" ] && break
+    content="${content}${line}\n"
+  done
+  eval "$var_name=\"$content\""
+}
+
+# --- System checks ---
+
+check_requirements() {
+  info "Checking system requirements..."
+
+  if ! command -v docker &> /dev/null; then
+    error "Docker is not installed. Please install Docker first: https://docs.docker.com/engine/install/"
+  fi
+
+  if ! docker compose version &> /dev/null; then
+    error "Docker Compose v2 is not installed. Please install it: https://docs.docker.com/compose/install/"
+  fi
+
+  local mem_kb
+  mem_kb=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}' || echo "0")
+  local mem_gb=$((mem_kb / 1024 / 1024))
+
+  if [ "$mem_gb" -lt 2 ]; then
+    warn "This system has ${mem_gb}GB RAM. Sweetr requires at least 2GB (4GB recommended)."
+    read -rp "Continue anyway? (y/N): " confirm
+    [ "$confirm" != "y" ] && [ "$confirm" != "Y" ] && exit 1
+  fi
+
+  success "System requirements met."
+}
+
+# --- Collect configuration ---
+
+collect_domain() {
+  echo ""
+  info "Domain Configuration"
+  echo "Enter the domain where Sweetr will be accessible."
+  echo "Make sure DNS is pointing to this server."
+  echo ""
+  prompt DOMAIN "Domain (e.g., sweetr.example.com)"
+}
+
+collect_github_app() {
+  echo ""
+  info "GitHub App Setup"
+  echo ""
+  echo "Sweetr needs a GitHub App to function. We'll generate a link that"
+  echo "pre-fills all the required permissions and settings for you."
+  echo ""
+
+  local WEBHOOK_SECRET
+  WEBHOOK_SECRET=$(openssl rand -hex 32)
+  export GITHUB_WEBHOOK_SECRET="$WEBHOOK_SECRET"
+
+  local GITHUB_URL="https://github.com/settings/apps/new"
+  GITHUB_URL+="?name=sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
+  GITHUB_URL+="&url=https://${DOMAIN}"
+  GITHUB_URL+="&webhook_active=true"
+  GITHUB_URL+="&webhook_url=https://${DOMAIN}/api/github/callback"
+  GITHUB_URL+="&callback_urls[]=https://${DOMAIN}/github/callback"
+  GITHUB_URL+="&request_oauth_on_install=true"
+  GITHUB_URL+="&public=false"
+  GITHUB_URL+="&metadata=read"
+  GITHUB_URL+="&pull_requests=write"
+  GITHUB_URL+="&statuses=write"
+  GITHUB_URL+="&members=read"
+  GITHUB_URL+="&emails=read"
+  GITHUB_URL+="&events[]=installation_target"
+  GITHUB_URL+="&events[]=organization"
+  GITHUB_URL+="&events[]=public"
+  GITHUB_URL+="&events[]=pull_request"
+  GITHUB_URL+="&events[]=pull_request_review"
+  GITHUB_URL+="&events[]=repository"
+
+  echo "1. Open this URL to create your GitHub App:"
+  echo ""
+  echo "   $GITHUB_URL"
+  echo ""
+  echo "2. Before submitting, you MUST:"
+  echo "   - Paste this webhook secret: $WEBHOOK_SECRET"
+  echo "   - Uncheck 'Expire user authorization tokens'"
+  echo ""
+  echo "3. After creating the app:"
+  echo "   - Generate a Client Secret"
+  echo "   - Generate a Private Key (downloads a .pem file)"
+  echo ""
+  read -rp "Press Enter when you've completed the steps above..."
+  echo ""
+
+  prompt GITHUB_APP_ID "GitHub App ID"
+  prompt GITHUB_CLIENT_ID "GitHub Client ID"
+  prompt_secret GITHUB_CLIENT_SECRET "GitHub Client Secret"
+  prompt GITHUB_APP_HANDLE "GitHub App Handle (slug from the URL)"
+  prompt_multiline GITHUB_APP_PRIVATE_KEY "GitHub App Private Key"
+}
+
+collect_slack_app() {
+  echo ""
+  read -rp "Would you like to configure Slack integration? (y/N): " setup_slack
+  if [ "$setup_slack" = "y" ] || [ "$setup_slack" = "Y" ]; then
+    echo ""
+    info "Slack App Setup"
+    echo "Create a Slack app at https://api.slack.com/apps/new"
+    echo "See https://sweetr.dev/get-started/self-host for detailed instructions."
+    echo ""
+    prompt SLACK_CLIENT_ID "Slack Client ID"
+    prompt_secret SLACK_CLIENT_SECRET "Slack Client Secret"
+    prompt_secret SLACK_WEBHOOK_SECRET "Slack Webhook Secret"
+  else
+    SLACK_CLIENT_ID=""
+    SLACK_CLIENT_SECRET=""
+    SLACK_WEBHOOK_SECRET=""
+  fi
+}
+
+# --- Generate files ---
+
+generate_files() {
+  info "Generating configuration files..."
+
+  local JWT_SECRET
+  JWT_SECRET=$(openssl rand -hex 32)
+
+  local DB_PASSWORD
+  DB_PASSWORD=$(openssl rand -hex 16)
+
+  mkdir -p sweetr && cd sweetr
+
+  cat > .env <<ENVEOF
+# Auto-generated by Sweetr deploy script
+SWEETR_TAG=${SWEETR_TAG}
+DOMAIN=${DOMAIN}
+
+# Database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=${DB_PASSWORD}
+POSTGRES_DB=sweetr
+DB_USERNAME=sweetr_app
+DB_PASSWORD=${DB_PASSWORD}
+DATABASE_URL=postgres://sweetr_app:${DB_PASSWORD}@postgres:5432/sweetr
+
+# API
+PORT=8000
+FRONTEND_URL=https://${DOMAIN}
+JWT_SECRET=${JWT_SECRET}
+REDIS_CONNECTION_STRING=redis://dragonfly:6379
+
+# GitHub App
+GITHUB_APP_ID=${GITHUB_APP_ID}
+GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+GITHUB_APP_HANDLE=${GITHUB_APP_HANDLE}
+GITHUB_APP_PRIVATE_KEY="${GITHUB_APP_PRIVATE_KEY}"
+GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+
+# Slack (optional)
+SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
+SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
+SLACK_WEBHOOK_SECRET=${SLACK_WEBHOOK_SECRET}
+
+# Web
+API_ENDPOINT=https://${DOMAIN}/api
+AUTH_COOKIE_DOMAIN=${DOMAIN}
+GITHUB_APP=${GITHUB_APP_HANDLE}
+ENVEOF
+
+  cat > init-app-db.sh <<'DBEOF'
+#!/bin/bash
+set -e
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
+    GRANT CONNECT ON DATABASE $POSTGRES_DB TO $DB_USERNAME;
+    GRANT USAGE ON SCHEMA public TO $DB_USERNAME;
+    REVOKE CREATE ON SCHEMA public FROM $DB_USERNAME;
+    REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $DB_USERNAME;
+    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $DB_USERNAME;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $DB_USERNAME;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO $DB_USERNAME;
+EOSQL
+DBEOF
+  chmod +x init-app-db.sh
+
+  cat > docker-compose.yml <<'COMPOSEEOF'
+services:
+  api:
+    image: sweetr/api:${SWEETR_TAG:-latest}
+    container_name: sweetr-api
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - APP_ENV=production
+      - APP_MODE=self-hosted
+      - USE_SELF_SIGNED_SSL=false
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - sweetr
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dragonfly:
+        condition: service_healthy
+
+  web:
+    image: sweetr/web:${SWEETR_TAG:-latest}
+    container_name: sweetr-web
+    env_file: .env
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - sweetr
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:16
+    container_name: sweetr-postgres
+    env_file: .env
+    volumes:
+      - sweetr-db:/var/lib/postgresql/data
+      - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - sweetr
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    container_name: sweetr-dragonfly
+    command: ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=2"]
+    ulimits:
+      memlock: -1
+    volumes:
+      - sweetr-dragonfly:/data
+    restart: unless-stopped
+    networks:
+      - sweetr
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sweetr-db:
+  sweetr-dragonfly:
+
+networks:
+  sweetr:
+    driver: bridge
+COMPOSEEOF
+
+  success "Configuration files generated in ./sweetr/"
+}
+
+# --- Start the stack ---
+
+start_stack() {
+  info "Starting Sweetr..."
+  docker compose pull
+  docker compose up -d
+
+  echo ""
+  info "Waiting for API to be ready (this may take a minute for migrations)..."
+
+  for i in $(seq 1 60); do
+    if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+      echo ""
+      success "Sweetr is up and running!"
+      echo ""
+      echo "  Web:  https://${DOMAIN}"
+      echo "  API:  https://${DOMAIN}/api"
+      echo ""
+      echo "  To view logs:     docker compose logs -f"
+      echo "  To stop:          docker compose stop"
+      echo "  To start:         docker compose start"
+      echo "  To upgrade:       docker compose pull && docker compose up -d"
+      echo ""
+      echo "  Note: You'll need a reverse proxy (e.g., Caddy, Nginx, Traefik)"
+      echo "  to handle TLS and route traffic to the API (port 8000) and"
+      echo "  Web (port 80) containers."
+      echo ""
+      return 0
+    fi
+    printf "  Waiting... (attempt %d/60)\r" "$i"
+    sleep 5
+  done
+
+  echo ""
+  warn "API did not become healthy within 5 minutes."
+  echo "  Check logs with: docker compose logs api"
+  exit 1
+}
+
+# --- Main ---
+
+main() {
+  echo ""
+  echo "Welcome to the Sweetr self-hosted installer"
+  echo "https://sweetr.dev"
+  echo ""
+
+  check_requirements
+  collect_domain
+  collect_github_app
+  collect_slack_app
+  generate_files
+  start_stack
+}
+
+main
