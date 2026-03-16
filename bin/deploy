@@ -170,18 +170,20 @@ collect_slack_app() {
 generate_files() {
   info "Generating configuration files..."
 
-  local JWT_SECRET DB_PASSWORD
+  local JWT_SECRET DB_PASSWORD POSTGRES_PASSWORD
 
   if [ -f sweetr/.env ]; then
     JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
     DB_PASSWORD=$(grep '^DB_PASSWORD=' sweetr/.env | cut -d= -f2-)
-    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
+    POSTGRES_PASSWORD=$(grep '^POSTGRES_PASSWORD=' sweetr/.env | cut -d= -f2-)
+    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ] && [ -n "$POSTGRES_PASSWORD" ]; then
       info "Reusing existing secrets from sweetr/.env"
     fi
   fi
 
   JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
   DB_PASSWORD="${DB_PASSWORD:-$(openssl rand -hex 16)}"
+  POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$(openssl rand -hex 16)}"
 
   mkdir -p sweetr && cd sweetr
 
@@ -192,7 +194,7 @@ DOMAIN=${DOMAIN}
 
 # Database
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=${DB_PASSWORD}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 POSTGRES_DB=sweetr
 DB_USERNAME=sweetr_app
 DB_PASSWORD=${DB_PASSWORD}

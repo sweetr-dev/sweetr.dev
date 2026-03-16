@@ -23,4 +23,4 @@ USER apiuser
 
 COPY --from=installer /app .
 
-CMD npm run prisma:migrate:production --workspace api && npm run start
+CMD sh -c 'if [ -n "$POSTGRES_USER" ] && [ -n "$POSTGRES_PASSWORD" ]; then DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_URL#*@}" npm run prisma:migrate:production --workspace api; fi && npm run start'
