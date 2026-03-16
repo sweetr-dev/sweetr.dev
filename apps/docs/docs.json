@@ -123,6 +123,15 @@
         ]
       },
       {
+        "tab": "Changelog",
+        "pages": [
+          {
+            "group": "Changelog",
+            "pages": ["changelog/march-2026"]
+          }
+        ]
+      },
+      {
         "tab": "API Reference",
         "pages": [
           {
