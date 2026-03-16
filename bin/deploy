@@ -13,13 +13,13 @@ error() { echo -e "\033[1;31m==>\033[0m $1"; exit 1; }
 prompt() {
   local var_name="$1" prompt_text="$2" default="$3"
   if [ -n "$default" ]; then
-    read -rp "$prompt_text [$default]: " value
+    read -rp "$prompt_text [$default]: " value < /dev/tty
     printf -v "$var_name" '%s' "${value:-$default}"
   else
-    read -rp "$prompt_text: " value
+    read -rp "$prompt_text: " value < /dev/tty
     while [ -z "$value" ]; do
       echo "  This field is required."
-      read -rp "$prompt_text: " value
+      read -rp "$prompt_text: " value < /dev/tty
     done
     printf -v "$var_name" '%s' "$value"
   fi
@@ -27,11 +27,11 @@ prompt() {
 
 prompt_secret() {
   local var_name="$1" prompt_text="$2"
-  read -rsp "$prompt_text: " value
+  read -rsp "$prompt_text: " value < /dev/tty
   echo
   while [ -z "$value" ]; do
     echo "  This field is required."
-    read -rsp "$prompt_text: " value
+    read -rsp "$prompt_text: " value < /dev/tty
     echo
   done
   printf -v "$var_name" '%s' "$value"
@@ -41,7 +41,7 @@ prompt_multiline() {
   local var_name="$1" prompt_text="$2"
   echo "$prompt_text (paste the content, then press Enter on an empty line to finish):"
   local content=""
-  while IFS= read -r line; do
+  while IFS= read -r line < /dev/tty; do
     [ -z "$line" ] && break
     content="${content}${line}\n"
   done
@@ -61,13 +61,20 @@ check_requirements() {
     error "Docker Compose v2 is not installed. Please install it: https://docs.docker.com/compose/install/"
   fi
 
-  local mem_kb
-  mem_kb=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}' || echo "0")
-  local mem_gb=$((mem_kb / 1024 / 1024))
+  local mem_gb=0
+  if [ -f /proc/meminfo ]; then
+    local mem_kb
+    mem_kb=$(awk '/MemTotal/{print $2}' /proc/meminfo)
+    mem_gb=$((mem_kb / 1024 / 1024))
+  elif command -v sysctl &> /dev/null; then
+    local mem_bytes
+    mem_bytes=$(sysctl -n hw.memsize 2>/dev/null || echo "0")
+    mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
+  fi
 
   if [ "$mem_gb" -lt 2 ]; then
     warn "This system has ${mem_gb}GB RAM. Sweetr requires at least 2GB (4GB recommended)."
-    read -rp "Continue anyway? (y/N): " confirm
+    read -rp "Continue anyway? (y/N): " confirm < /dev/tty
     [ "$confirm" != "y" ] && [ "$confirm" != "Y" ] && exit 1
   fi
 
@@ -129,7 +136,7 @@ collect_github_app() {
   echo "   - Generate a Client Secret"
   echo "   - Generate a Private Key (downloads a .pem file)"
   echo ""
-  read -rp "Press Enter when you've completed the steps above..."
+  read -rp "Press Enter when you've completed the steps above..." < /dev/tty
   echo ""
 
   prompt GITHUB_APP_ID "GitHub App ID"
@@ -141,7 +148,7 @@ collect_github_app() {
 
 collect_slack_app() {
   echo ""
-  read -rp "Would you like to configure Slack integration? (y/N): " setup_slack
+  read -rp "Would you like to configure Slack integration? (y/N): " setup_slack < /dev/tty
   if [ "$setup_slack" = "y" ] || [ "$setup_slack" = "Y" ]; then
     echo ""
     info "Slack App Setup"
