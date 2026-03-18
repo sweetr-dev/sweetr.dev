@@ -91,8 +91,21 @@ collect_domain() {
   echo "For local testing, use 'localhost'."
   echo ""
   prompt DOMAIN "Domain (e.g., sweetr.example.com)"
-  echo ""
-  prompt WEB_PORT "Web port" "3000"
+
+  if [ "$DOMAIN" = "localhost" ]; then
+    URL_SCHEME="http"
+    echo ""
+    prompt HTTP_PORT "HTTP port" "80"
+  else
+    URL_SCHEME="https"
+    HTTP_PORT="80"
+  fi
+
+  if [ "$HTTP_PORT" != "80" ]; then
+    PORT_SUFFIX=":${HTTP_PORT}"
+  else
+    PORT_SUFFIX=""
+  fi
 }
 
 collect_github_app() {
@@ -109,10 +122,10 @@ collect_github_app() {
 
   local GITHUB_URL="https://github.com/settings/apps/new"
   GITHUB_URL+="?name=sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
-  GITHUB_URL+="&url=https://${DOMAIN}"
+  GITHUB_URL+="&url=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}"
   GITHUB_URL+="&webhook_active=true"
-  GITHUB_URL+="&webhook_url=https://${DOMAIN}/api/github/webhook"
-  GITHUB_URL+="&callback_urls[]=https://${DOMAIN}/github/callback"
+  GITHUB_URL+="&webhook_url=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/api/github/webhook"
+  GITHUB_URL+="&callback_urls[]=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/github/callback"
   GITHUB_URL+="&request_oauth_on_install=true"
   GITHUB_URL+="&public=false"
   GITHUB_URL+="&metadata=read"
@@ -177,7 +190,7 @@ generate_files() {
 
   if [ -f sweetr/.env ]; then
     JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
-    DB_PASSWORD=$(grep '^DB_PASSWORD=' sweetr/.env | cut -d= -f2-)
+    DB_PASSWORD=$(grep '^POSTGRES_PASSWORD=' sweetr/.env | cut -d= -f2-)
     if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
       info "Reusing existing secrets from sweetr/.env"
     fi
@@ -201,7 +214,7 @@ DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/sweetr
 
 # API
 PORT=8000
-FRONTEND_URL=https://${DOMAIN}
+FRONTEND_URL=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}
 JWT_SECRET=${JWT_SECRET}
 REDIS_CONNECTION_STRING=redis://dragonfly:6379
 
@@ -219,16 +232,61 @@ SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
 SLACK_WEBHOOK_SECRET=${SLACK_WEBHOOK_SECRET}
 
 # Web
-WEB_PORT=${WEB_PORT}
-API_ENDPOINT=https://${DOMAIN}/api
+API_ENDPOINT=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/api
 AUTH_COOKIE_DOMAIN=${DOMAIN}
 GITHUB_APP=${GITHUB_APP_HANDLE}
 ENVEOF
 
-  cat > docker-compose.yml <<'COMPOSEEOF'
+  if [ "$DOMAIN" = "localhost" ]; then
+    cat > Caddyfile <<CADDYEOF
+:${HTTP_PORT} {
+    @api path /api /api/*
+    handle @api {
+        uri strip_prefix /api
+        reverse_proxy api:8000
+    }
+    handle {
+        reverse_proxy web:80
+    }
+}
+CADDYEOF
+  else
+    cat > Caddyfile <<CADDYEOF
+${DOMAIN} {
+    @api path /api /api/*
+    handle @api {
+        uri strip_prefix /api
+        reverse_proxy api:8000
+    }
+    handle {
+        reverse_proxy web:80
+    }
+}
+CADDYEOF
+  fi
+
+  cat > docker-compose.yml <<COMPOSEEOF
 services:
+  caddy:
+    image: caddy:2
+    container_name: sweetr-caddy
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - sweetr-caddy-data:/data
+      - sweetr-caddy-config:/config
+    restart: unless-stopped
+    networks:
+      - sweetr
+    depends_on:
+      - api
+      - web
+
   api:
-    image: sweetr/api:${SWEETR_TAG:-latest}
+    image: sweetr/api:\${SWEETR_TAG:-latest}
     container_name: sweetr-api
     env_file: .env
     environment:
@@ -236,8 +294,6 @@ services:
       - APP_ENV=production
       - APP_MODE=self-hosted
       - USE_SELF_SIGNED_SSL=false
-    ports:
-      - "127.0.0.1:8000:8000"
     restart: unless-stopped
     networks:
       - sweetr
@@ -248,16 +304,14 @@ services:
         condition: service_healthy
 
   web:
-    image: sweetr/web:${SWEETR_TAG:-latest}
+    image: sweetr/web:\${SWEETR_TAG:-latest}
     container_name: sweetr-web
     environment:
-      - API_ENDPOINT=${API_ENDPOINT}
-      - AUTH_COOKIE_DOMAIN=${AUTH_COOKIE_DOMAIN}
-      - GITHUB_APP=${GITHUB_APP}
-      - SENTRY_DSN=${SENTRY_DSN:-}
-      - APP_ENV=${APP_ENV:-production}
-    ports:
-      - "127.0.0.1:${WEB_PORT:-3000}:80"
+      - API_ENDPOINT=\${API_ENDPOINT}
+      - AUTH_COOKIE_DOMAIN=\${AUTH_COOKIE_DOMAIN}
+      - GITHUB_APP=\${GITHUB_APP}
+      - SENTRY_DSN=\${SENTRY_DSN:-}
+      - APP_ENV=\${APP_ENV:-production}
     restart: unless-stopped
     networks:
       - sweetr
@@ -299,6 +353,8 @@ services:
 volumes:
   sweetr-db:
   sweetr-dragonfly:
+  sweetr-caddy-data:
+  sweetr-caddy-config:
 
 networks:
   sweetr:
@@ -319,21 +375,16 @@ start_stack() {
   info "Waiting for API to be ready (this may take a minute for migrations)..."
 
   for i in $(seq 1 60); do
-    if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+    if curl -sf http://localhost/api/health > /dev/null 2>&1; then
       echo ""
       success "Sweetr is up and running!"
       echo ""
-      echo "  Web:  https://${DOMAIN}"
-      echo "  API:  https://${DOMAIN}/api"
+      echo "  URL:  ${URL_SCHEME}://${DOMAIN}"
       echo ""
       echo "  To view logs:     docker compose logs -f"
       echo "  To stop:          docker compose stop"
       echo "  To start:         docker compose start"
       echo "  To upgrade:       docker compose pull && docker compose up -d"
-      echo ""
-      echo "  Note: You'll need a reverse proxy (e.g., Caddy, Nginx, Traefik)"
-      echo "  to handle TLS and route traffic to the API (localhost:8000) and"
-      echo "  Web (localhost:${WEB_PORT}) containers."
       echo ""
       return 0
     fi

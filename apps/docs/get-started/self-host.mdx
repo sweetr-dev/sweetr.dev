@@ -140,11 +140,50 @@ If you prefer to set things up manually, follow the steps below.
 
   </Step>
 
+  <Step title="Create a Caddyfile">
+    Create a `Caddyfile` for the reverse proxy. Caddy automatically provisions and renews
+    HTTPS certificates via Let's Encrypt.
+
+    ```
+    your-domain.com {
+        @api path /api /api/*
+        handle @api {
+            uri strip_prefix /api
+            reverse_proxy api:8000
+        }
+        handle {
+            reverse_proxy web:80
+        }
+    }
+    ```
+
+    For local testing, replace `your-domain.com` with `:80` to serve plain HTTP.
+
+  </Step>
+
   <Step title="Create docker-compose.yml">
     Create a `docker-compose.yml` file:
 
     ```yaml
     services:
+      caddy:
+        image: caddy:2
+        container_name: sweetr-caddy
+        ports:
+          - "80:80"
+          - "443:443"
+          - "443:443/udp"
+        volumes:
+          - ./Caddyfile:/etc/caddy/Caddyfile:ro
+          - sweetr-caddy-data:/data
+          - sweetr-caddy-config:/config
+        restart: unless-stopped
+        networks:
+          - sweetr
+        depends_on:
+          - api
+          - web
+
       api:
         image: sweetr/api:latest
         container_name: sweetr-api
@@ -154,8 +193,6 @@ If you prefer to set things up manually, follow the steps below.
           - APP_ENV=production
           - APP_MODE=self-hosted
           - USE_SELF_SIGNED_SSL=false
-        ports:
-          - "127.0.0.1:8000:8000"
         restart: unless-stopped
         networks:
           - sweetr
@@ -174,8 +211,6 @@ If you prefer to set things up manually, follow the steps below.
           - GITHUB_APP=${GITHUB_APP}
           - SENTRY_DSN=${SENTRY_DSN:-}
           - APP_ENV=${APP_ENV:-production}
-        ports:
-          - "127.0.0.1:3000:80"
         restart: unless-stopped
         networks:
           - sweetr
@@ -188,7 +223,6 @@ If you prefer to set things up manually, follow the steps below.
         env_file: .env
         volumes:
           - sweetr-db:/var/lib/postgresql/data
-          - ./init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
         restart: unless-stopped
         networks:
           - sweetr
@@ -218,34 +252,13 @@ If you prefer to set things up manually, follow the steps below.
     volumes:
       sweetr-db:
       sweetr-dragonfly:
+      sweetr-caddy-data:
+      sweetr-caddy-config:
 
     networks:
       sweetr:
         driver: bridge
     ```
-
-  </Step>
-
-  <Step title="Create the database init script">
-    Create `init-app-db.sh` in the same directory:
-
-    ```bash
-    #!/bin/bash
-    set -e
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-        CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
-        GRANT CONNECT ON DATABASE $POSTGRES_DB TO $DB_USERNAME;
-        GRANT USAGE ON SCHEMA public TO $DB_USERNAME;
-        REVOKE CREATE ON SCHEMA public FROM $DB_USERNAME;
-        REVOKE CREATE ON SCHEMA public FROM PUBLIC;
-        GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $DB_USERNAME;
-        GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $DB_USERNAME;
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $DB_USERNAME;
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO $DB_USERNAME;
-    EOSQL
-    ```
-
-    Make it executable: `chmod +x init-app-db.sh`
 
   </Step>
 
@@ -257,9 +270,7 @@ If you prefer to set things up manually, follow the steps below.
     POSTGRES_USER=postgres
     POSTGRES_PASSWORD=<generate-a-secure-password>
     POSTGRES_DB=sweetr
-    DB_USERNAME=sweetr_app
-    DB_PASSWORD=<generate-a-secure-password>
-    DATABASE_URL=postgres://sweetr_app:<DB_PASSWORD>@postgres:5432/sweetr
+    DATABASE_URL=postgres://postgres:<POSTGRES_PASSWORD>@postgres:5432/sweetr
 
     # API
     PORT=8000
@@ -297,24 +308,6 @@ If you prefer to set things up manually, follow the steps below.
 
   </Step>
 </Steps>
-
-### Reverse Proxy
-
-The Docker setup binds the API to `127.0.0.1:8000` and the web app to `127.0.0.1:3000`.
-You'll need a reverse proxy to handle TLS and route traffic. Here's an example with Caddy:
-
-```
-your-domain.com {
-    @api path /api /api/*
-    handle @api {
-        uri strip_prefix /api
-        reverse_proxy localhost:8000
-    }
-    handle {
-        reverse_proxy localhost:3000
-    }
-}
-```
 
 ## Environment Variables Reference
 
@@ -457,9 +450,12 @@ docker compose exec postgres psql -U postgres -d sweetr
 
 ### Port conflicts
 
-If ports 8000 or 3000 are already in use, either stop the conflicting service or change the port mappings in `docker-compose.yml`:
+If port 80 or 443 is already in use, either stop the conflicting service or change the Caddy port mappings in `docker-compose.yml`:
 
 ```yaml
-ports:
-  - "127.0.0.1:3080:80" # Map to a different host port
+caddy:
+  ports:
+    - "8080:8080"  # Change host port
 ```
+
+Then update your `Caddyfile` to match (e.g., `:8080 {`) and adjust `FRONTEND_URL` and `API_ENDPOINT` in `.env` accordingly.
