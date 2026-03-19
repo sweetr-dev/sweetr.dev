@@ -378,6 +378,12 @@ services:
     restart: unless-stopped
     networks:
       - sweetr
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
     depends_on:
       postgres:
         condition: service_healthy
@@ -460,7 +466,7 @@ start_stack() {
 
   local -a spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
   for i in $(seq 1 60); do
-    if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+    if [ "$(docker inspect --format='{{.State.Health.Status}}' sweetr-api 2>/dev/null)" = "healthy" ]; then
       echo ""
       echo ""
       echo -e "  ${GREEN}${BOLD}┌──────────────────────────────────────────────┐${RESET}"
