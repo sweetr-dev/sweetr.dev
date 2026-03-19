@@ -460,7 +460,7 @@ start_stack() {
 
   local -a spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
   for i in $(seq 1 60); do
-    if curl -sf -H "Host: ${DOMAIN}" http://localhost/api/health > /dev/null 2>&1; then
+    if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
       echo ""
       echo ""
       echo -e "  ${GREEN}${BOLD}┌──────────────────────────────────────────────┐${RESET}"
@@ -505,6 +505,12 @@ main() {
   echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
 
   check_requirements
+
+  if [ -f sweetr/.env ]; then
+    GITHUB_WEBHOOK_SECRET=$(grep '^GITHUB_WEBHOOK_SECRET=' sweetr/.env | cut -d= -f2-)
+    export GITHUB_WEBHOOK_SECRET
+  fi
+
   collect_deploy_mode
   collect_domain
   collect_github_app

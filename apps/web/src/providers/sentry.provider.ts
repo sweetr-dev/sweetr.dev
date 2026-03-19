@@ -21,7 +21,8 @@ export const initSentry = () => {
       "localhost",
       /^https:\/\/api\.sweetr\.local/,
       /^https:\/\/api\.sweetr\.dev/,
-    ],
+      getEnv("API_ENDPOINT"),
+    ].filter(Boolean),
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
   });
