@@ -289,7 +289,8 @@ If you prefer to set things up manually, follow the steps below.
     GITHUB_CLIENT_ID=<your-client-id>
     GITHUB_CLIENT_SECRET=<your-client-secret>
     GITHUB_APP_HANDLE=<your-app-slug>
-    GITHUB_APP_PRIVATE_KEY=<your-private-key>
+    # Private key: replace newlines with \n and wrap in double quotes
+    GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIE...\n-----END RSA PRIVATE KEY-----\n"
     GITHUB_WEBHOOK_SECRET=<your-webhook-secret>
 
     # Web

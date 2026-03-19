@@ -189,9 +189,10 @@ collect_github_app() {
   hint "pre-fills all the required permissions and settings for you."
   echo ""
 
-  local WEBHOOK_SECRET
-  WEBHOOK_SECRET=$(openssl rand -hex 32)
-  export GITHUB_WEBHOOK_SECRET="$WEBHOOK_SECRET"
+  if [ -z "${GITHUB_WEBHOOK_SECRET:-}" ]; then
+    GITHUB_WEBHOOK_SECRET=$(openssl rand -hex 32)
+  fi
+  export GITHUB_WEBHOOK_SECRET
 
   local app_name
   if [ "$DEPLOY_MODE" = "production" ]; then
@@ -224,7 +225,7 @@ collect_github_app() {
   echo -e "         ${CYAN}${GITHUB_URL}${RESET}"
   echo ""
   echo -e "  ${WHITE}${BOLD}Step 2${RESET}  Before submitting, you ${BOLD}MUST${RESET}:"
-  echo -e "         ${PINK}▪${RESET} Paste this webhook secret: ${GREEN}${WEBHOOK_SECRET}${RESET}"
+  echo -e "         ${PINK}▪${RESET} Paste this webhook secret: ${GREEN}${GITHUB_WEBHOOK_SECRET}${RESET}"
   echo -e "         ${PINK}▪${RESET} Uncheck ${BOLD}'Expire user authorization tokens'${RESET}"
   echo ""
   echo -e "  ${WHITE}${BOLD}Step 3${RESET}  After creating the app:"
@@ -270,6 +271,7 @@ generate_files() {
   if [ -f sweetr/.env ]; then
     JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
     DB_PASSWORD=$(grep '^POSTGRES_PASSWORD=' sweetr/.env | cut -d= -f2-)
+    GITHUB_WEBHOOK_SECRET="${GITHUB_WEBHOOK_SECRET:-$(grep '^GITHUB_WEBHOOK_SECRET=' sweetr/.env | cut -d= -f2-)}"
     if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
       info "Reusing existing secrets from sweetr/.env"
     fi
@@ -458,7 +460,7 @@ start_stack() {
 
   local -a spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
   for i in $(seq 1 60); do
-    if curl -sf http://localhost/api/health > /dev/null 2>&1; then
+    if curl -sf -H "Host: ${DOMAIN}" http://localhost/api/health > /dev/null 2>&1; then
       echo ""
       echo ""
       echo -e "  ${GREEN}${BOLD}┌──────────────────────────────────────────────┐${RESET}"
