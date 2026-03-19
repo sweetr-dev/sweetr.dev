@@ -12,6 +12,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { SubscriptionPeriod } from "./types";
 import { useState } from "react";
+import { getEnv } from "../../../../../env";
 
 interface CardCloudProps {
   period: SubscriptionPeriod;
@@ -67,7 +68,7 @@ export const CardCloud = ({
 
         <form
           method="POST"
-          action={`${import.meta.env.VITE_GRAPHQL_API}/stripe/checkout`}
+          action={`${getEnv("API_ENDPOINT")}/stripe/checkout`}
           onSubmit={() => setIsSubscribing(true)}
         >
           <input type="hidden" name="quantity" value={contributors} />

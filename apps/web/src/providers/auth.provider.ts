@@ -4,6 +4,7 @@ import { setAuthorizationHeader } from "../api/clients/graphql-client";
 import { ClientError } from "graphql-request";
 import { useAppStore } from "./app.provider";
 import { ResourceNotFound } from "../exceptions/resource-not-found.exception";
+import { getEnv } from "../env";
 
 export const useAuthenticatedUser = () => {
   const { authenticatedUser } = useAppStore();
@@ -24,7 +25,7 @@ export const getAuthorizationHeader = (): string | undefined =>
 
 export const setAuth = (accessToken: string): void => {
   Cookies.set("Authorization", accessToken, {
-    domain: import.meta.env.VITE_AUTH_COOKIE_DOMAIN,
+    domain: getEnv("AUTH_COOKIE_DOMAIN"),
     secure: true,
   });
 
@@ -33,7 +34,7 @@ export const setAuth = (accessToken: string): void => {
 
 export const logout = (): void => {
   Cookies.remove("Authorization", {
-    domain: import.meta.env.VITE_AUTH_COOKIE_DOMAIN,
+    domain: getEnv("AUTH_COOKIE_DOMAIN"),
     secure: true,
   });
 };

@@ -2,10 +2,9 @@ import { LoaderFunction, redirect } from "react-router";
 import { isAuthenticated } from "./auth.provider";
 import { useAppStore } from "./app.provider";
 import { showWarningNotification } from "./notification.provider";
+import { getEnv } from "../env";
 
-export const installGithubAppUrl = `https://github.com/apps/${
-  import.meta.env.VITE_GITHUB_APP
-}/installations/new`;
+export const installGithubAppUrl = `https://github.com/apps/${getEnv("GITHUB_APP")}/installations/new`;
 
 export const handleOAuthRedirect: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);

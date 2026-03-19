@@ -1,16 +1,17 @@
 import * as Sentry from "@sentry/react";
 import { useWorkspace } from "./workspace.provider";
 import { useAuthenticatedUser } from "./auth.provider";
+import { getEnv } from "../env";
 
 export const initSentry = () => {
-  const dsn = import.meta.env.VITE_SENTRY_DSN;
+  const dsn = getEnv("SENTRY_DSN");
 
   if (!dsn) return;
 
   Sentry.init({
     dsn,
-    environment: import.meta.env.VITE_ENV,
-    enabled: import.meta.env.VITE_ENV !== "development",
+    environment: getEnv("APP_ENV"),
+    enabled: getEnv("APP_ENV") !== "development",
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration(),
@@ -20,7 +21,8 @@ export const initSentry = () => {
       "localhost",
       /^https:\/\/api\.sweetr\.local/,
       /^https:\/\/api\.sweetr\.dev/,
-    ],
+      getEnv("API_ENDPOINT"),
+    ].filter(Boolean),
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
   });

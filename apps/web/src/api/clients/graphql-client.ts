@@ -3,9 +3,10 @@ import { GraphQLClient } from "graphql-request";
 import { ErrorCode } from "@sweetr/graphql-types/shared";
 import { showErrorNotification } from "../../providers/notification.provider";
 import { logout } from "../../providers/auth.provider";
+import { getEnv } from "../../env";
 
 export const graphQLClient = new GraphQLClient(
-  import.meta.env.VITE_GRAPHQL_API,
+  getEnv("API_ENDPOINT"),
   {
     responseMiddleware: (response) => {
       if (response instanceof Error) {

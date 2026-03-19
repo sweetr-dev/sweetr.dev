@@ -1,4 +1,4 @@
-FROM node:20-bullseye AS base
+FROM node:24-bookworm-slim AS base
 
 FROM base AS builder
 WORKDIR /app
@@ -18,9 +18,11 @@ COPY --from=builder /app/out/full/ .
 RUN npm run build
 
 FROM nginx:alpine
+RUN apk add --no-cache jq
 WORKDIR /app
 COPY --from=installer /app/apps/web/dist /usr/share/nginx/html
 COPY ./apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./apps/web/docker-entrypoint.sh /docker-entrypoint.d/00-env-config.sh
+RUN chmod +x /docker-entrypoint.d/00-env-config.sh
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]

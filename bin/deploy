@@ -1,0 +1,528 @@
+#!/usr/bin/env bash
+set -e
+
+export SWEETR_TAG="${SWEETR_TAG:-latest}"
+
+# --- Colors & Styles ---
+
+BOLD="\033[1m"
+DIM="\033[2m"
+RESET="\033[0m"
+RED="\033[38;5;196m"
+GREEN="\033[38;5;114m"
+YELLOW="\033[38;5;221m"
+BLUE="\033[38;5;75m"
+CYAN="\033[38;5;117m"
+MAGENTA="\033[38;5;183m"
+WHITE="\033[38;5;255m"
+GRAY="\033[38;5;243m"
+PINK="\033[38;5;211m"
+
+# --- Helper functions ---
+
+info()    { echo -e "  ${BLUE}${BOLD}▸${RESET} $1"; }
+success() { echo -e "  ${GREEN}${BOLD}✓${RESET} $1"; }
+warn()    { echo -e "  ${YELLOW}${BOLD}⚠${RESET} ${YELLOW}$1${RESET}"; }
+error()   { echo -e "  ${RED}${BOLD}✗${RESET} ${RED}$1${RESET}"; exit 1; }
+
+section_header() {
+  local title="$1"
+  local icon="$2"
+  echo ""
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+  echo -e "  ${CYAN}${BOLD}${icon}  ${title}${RESET}"
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+  echo ""
+}
+
+hint() { echo -e "  ${DIM}$1${RESET}"; }
+
+prompt() {
+  local var_name="$1" prompt_text="$2" default="$3"
+  if [ -n "$default" ]; then
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET} ${DIM}[${default}]${RESET}: ")" value < /dev/tty
+    printf -v "$var_name" '%s' "${value:-$default}"
+  else
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
+    while [ -z "$value" ]; do
+      echo -e "    ${RED}This field is required.${RESET}"
+      read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
+    done
+    printf -v "$var_name" '%s' "$value"
+  fi
+}
+
+prompt_secret() {
+  local var_name="$1" prompt_text="$2"
+  read -rsp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
+  echo
+  while [ -z "$value" ]; do
+    echo -e "    ${RED}This field is required.${RESET}"
+    read -rsp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
+    echo
+  done
+  printf -v "$var_name" '%s' "$value"
+}
+
+prompt_multiline() {
+  local var_name="$1" prompt_text="$2"
+  echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}"
+  hint "  Paste the content, then press Enter on an empty line to finish."
+  local content=""
+  while IFS= read -r line < /dev/tty; do
+    [ -z "$line" ] && break
+    content="${content}${line}\n"
+  done
+  printf -v "$var_name" '%s' "$content"
+}
+
+# --- System checks ---
+
+check_requirements() {
+  section_header "System Requirements" "⚙"
+
+  info "Checking Docker..."
+  if ! command -v docker &> /dev/null; then
+    error "Docker is not installed. Install it: ${BOLD}https://docs.docker.com/engine/install/${RESET}"
+  fi
+  success "Docker found"
+
+  info "Checking Docker Compose..."
+  if ! docker compose version &> /dev/null; then
+    error "Docker Compose v2 is not installed. Install it: ${BOLD}https://docs.docker.com/compose/install/${RESET}"
+  fi
+  success "Docker Compose found"
+
+  local mem_gb=0
+  if [ -f /proc/meminfo ]; then
+    local mem_kb
+    mem_kb=$(awk '/MemTotal/{print $2}' /proc/meminfo)
+    mem_gb=$((mem_kb / 1024 / 1024))
+  elif command -v sysctl &> /dev/null; then
+    local mem_bytes
+    mem_bytes=$(sysctl -n hw.memsize 2>/dev/null || echo "0")
+    mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
+  fi
+
+  if [ "$mem_gb" -lt 2 ]; then
+    warn "This system has ${mem_gb}GB RAM. Sweetr requires at least 2GB (4GB recommended)."
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} Continue anyway? ${DIM}(y/N)${RESET}: ")" confirm < /dev/tty
+    [ "$confirm" != "y" ] && [ "$confirm" != "Y" ] && exit 1
+  fi
+
+  success "All checks passed"
+}
+
+# --- Collect configuration ---
+
+collect_deploy_mode() {
+  section_header "Deployment Mode" "🖥"
+
+  echo -e "  ${WHITE}${BOLD}1${RESET}  Production ${DIM}— server with a public domain${RESET}"
+  echo -e "  ${WHITE}${BOLD}2${RESET}  Local ${DIM}— using a tunnel (ngrok, cloudflared)${RESET}"
+  echo ""
+
+  while true; do
+    prompt DEPLOY_MODE "Select mode (1 or 2)"
+    if [ "$DEPLOY_MODE" = "1" ] || [ "$DEPLOY_MODE" = "2" ]; then
+      break
+    fi
+    echo -e "    ${RED}Please enter 1 or 2.${RESET}"
+  done
+
+  if [ "$DEPLOY_MODE" = "1" ]; then
+    DEPLOY_MODE="production"
+  else
+    DEPLOY_MODE="local"
+  fi
+
+  echo ""
+  prompt GITHUB_ORG "GitHub organization handle (e.g., my-org)"
+}
+
+collect_domain() {
+  section_header "Domain Configuration" "🌐"
+
+  if [ "$DEPLOY_MODE" = "production" ]; then
+    hint "Enter the public domain where Sweetr will be accessible."
+    hint "Make sure DNS is pointing to this server."
+  else
+    hint "Start a tunnel pointing to port 80, then enter the public URL it provides."
+    echo ""
+    echo -e "    ${PINK}▪${RESET} ${BOLD}Cloudflare Tunnel${RESET} ${DIM}(recommended, free)${RESET}"
+    echo -e "      ${CYAN}cloudflared tunnel --url http://localhost:80${RESET}"
+    echo ""
+    echo -e "    ${PINK}▪${RESET} ${BOLD}ngrok${RESET}"
+    echo -e "      ${CYAN}ngrok http 80${RESET}"
+  fi
+  echo ""
+
+  while true; do
+    if [ "$DEPLOY_MODE" = "production" ]; then
+      prompt DOMAIN "Domain (e.g., sweetr.example.com)"
+    else
+      prompt DOMAIN "Tunnel URL (e.g., abc123.ngrok-free.app)"
+    fi
+
+    DOMAIN="${DOMAIN#https://}"
+    DOMAIN="${DOMAIN#http://}"
+    DOMAIN="${DOMAIN%/}"
+
+    if [ "$DOMAIN" = "localhost" ] || [ "$DOMAIN" = "127.0.0.1" ]; then
+      echo ""
+      warn "A public URL is required — GitHub cannot deliver webhooks to ${BOLD}${DOMAIN}${RESET}${YELLOW}."
+      hint "Use a tunnel to expose your local machine and enter that URL instead."
+      echo ""
+      continue
+    fi
+
+    break
+  done
+
+  URL_SCHEME="https"
+}
+
+collect_github_app() {
+  section_header "GitHub App Setup" "🔑"
+
+  hint "Sweetr needs a GitHub App to function. We'll generate a link that"
+  hint "pre-fills all the required permissions and settings for you."
+  echo ""
+
+  if [ -z "${GITHUB_WEBHOOK_SECRET:-}" ]; then
+    GITHUB_WEBHOOK_SECRET=$(openssl rand -hex 32)
+  fi
+  export GITHUB_WEBHOOK_SECRET
+
+  local app_name
+  if [ "$DEPLOY_MODE" = "production" ]; then
+    app_name="sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
+  else
+    app_name="sweetr-localhost"
+  fi
+
+  local GITHUB_URL="https://github.com/organizations/${GITHUB_ORG}/settings/apps/new"
+  GITHUB_URL+="?name=${app_name}"
+  GITHUB_URL+="&url=${URL_SCHEME}://${DOMAIN}"
+  GITHUB_URL+="&webhook_active=true"
+  GITHUB_URL+="&webhook_url=${URL_SCHEME}://${DOMAIN}/api/github/webhook"
+  GITHUB_URL+="&callback_urls%5B%5D=${URL_SCHEME}://${DOMAIN}/github/callback"
+  GITHUB_URL+="&request_oauth_on_install=true"
+  GITHUB_URL+="&metadata=read"
+  GITHUB_URL+="&pull_requests=write"
+  GITHUB_URL+="&statuses=write"
+  GITHUB_URL+="&members=read"
+  GITHUB_URL+="&emails=read"
+  GITHUB_URL+="&events%5B%5D=installation_target"
+  GITHUB_URL+="&events%5B%5D=organization"
+  GITHUB_URL+="&events%5B%5D=public"
+  GITHUB_URL+="&events%5B%5D=pull_request"
+  GITHUB_URL+="&events%5B%5D=pull_request_review"
+  GITHUB_URL+="&events%5B%5D=repository"
+
+  echo -e "  ${WHITE}${BOLD}Step 1${RESET}  Open this URL to create your GitHub App:"
+  echo ""
+  echo -e "         ${CYAN}${GITHUB_URL}${RESET}"
+  echo ""
+  echo -e "  ${WHITE}${BOLD}Step 2${RESET}  Before submitting, you ${BOLD}MUST${RESET}:"
+  echo -e "         ${PINK}▪${RESET} Paste this webhook secret: ${GREEN}${GITHUB_WEBHOOK_SECRET}${RESET}"
+  echo -e "         ${PINK}▪${RESET} Uncheck ${BOLD}'Expire user authorization tokens'${RESET}"
+  echo ""
+  echo -e "  ${WHITE}${BOLD}Step 3${RESET}  After creating the app:"
+  echo -e "         ${PINK}▪${RESET} Generate a Client Secret"
+  echo -e "         ${PINK}▪${RESET} Generate a Private Key ${DIM}(downloads a .pem file)${RESET}"
+  echo ""
+  read -rp "$(echo -e "  ${GRAY}Press Enter when you've completed the steps above...${RESET}")" _ < /dev/tty
+  echo ""
+
+  prompt GITHUB_APP_ID "GitHub App ID"
+  prompt GITHUB_CLIENT_ID "GitHub Client ID"
+  prompt_secret GITHUB_CLIENT_SECRET "GitHub Client Secret"
+  prompt GITHUB_APP_HANDLE "GitHub App Handle (slug from the URL)"
+  prompt_multiline GITHUB_APP_PRIVATE_KEY "GitHub App Private Key"
+}
+
+collect_slack_app() {
+  section_header "Slack Integration" "💬"
+
+  read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}Would you like to configure Slack integration?${RESET} ${DIM}(y/N)${RESET}: ")" setup_slack < /dev/tty
+  if [ "$setup_slack" = "y" ] || [ "$setup_slack" = "Y" ]; then
+    echo ""
+    hint "Create a Slack app at ${CYAN}https://api.slack.com/apps/new${RESET}"
+    hint "Docs: ${CYAN}https://sweetr.dev/get-started/self-host${RESET}"
+    echo ""
+    prompt SLACK_CLIENT_ID "Slack Client ID"
+    prompt_secret SLACK_CLIENT_SECRET "Slack Client Secret"
+    prompt_secret SLACK_WEBHOOK_SECRET "Slack Webhook Secret"
+  else
+    SLACK_CLIENT_ID=""
+    SLACK_CLIENT_SECRET=""
+    SLACK_WEBHOOK_SECRET=""
+  fi
+}
+
+# --- Generate files ---
+
+generate_files() {
+  section_header "Generating Configuration" "📦"
+
+  local JWT_SECRET DB_PASSWORD
+
+  if [ -f sweetr/.env ]; then
+    JWT_SECRET=$(grep '^JWT_SECRET=' sweetr/.env | cut -d= -f2-)
+    DB_PASSWORD=$(grep '^POSTGRES_PASSWORD=' sweetr/.env | cut -d= -f2-)
+    GITHUB_WEBHOOK_SECRET="${GITHUB_WEBHOOK_SECRET:-$(grep '^GITHUB_WEBHOOK_SECRET=' sweetr/.env | cut -d= -f2-)}"
+    if [ -n "$JWT_SECRET" ] && [ -n "$DB_PASSWORD" ]; then
+      info "Reusing existing secrets from sweetr/.env"
+    fi
+  fi
+
+  JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
+  DB_PASSWORD="${DB_PASSWORD:-$(openssl rand -hex 16)}"
+
+  mkdir -p sweetr && cd sweetr
+
+  cat > .env <<ENVEOF
+# Auto-generated by Sweetr deploy script
+SWEETR_TAG=${SWEETR_TAG}
+DOMAIN=${DOMAIN}
+
+# Database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=${DB_PASSWORD}
+POSTGRES_DB=sweetr
+DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/sweetr
+
+# API
+PORT=8000
+FRONTEND_URL=${URL_SCHEME}://${DOMAIN}
+JWT_SECRET=${JWT_SECRET}
+REDIS_CONNECTION_STRING=redis://dragonfly:6379
+
+# GitHub App
+GITHUB_APP_ID=${GITHUB_APP_ID}
+GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+GITHUB_APP_HANDLE=${GITHUB_APP_HANDLE}
+GITHUB_APP_PRIVATE_KEY="${GITHUB_APP_PRIVATE_KEY}"
+GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+
+# Slack (optional)
+SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
+SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
+SLACK_WEBHOOK_SECRET=${SLACK_WEBHOOK_SECRET}
+
+# Web
+API_ENDPOINT=${URL_SCHEME}://${DOMAIN}/api
+AUTH_COOKIE_DOMAIN=${DOMAIN}
+GITHUB_APP=${GITHUB_APP_HANDLE}
+ENVEOF
+
+  if [ "$DEPLOY_MODE" = "production" ]; then
+    cat > Caddyfile <<CADDYEOF
+${DOMAIN} {
+    @api path /api /api/*
+    handle @api {
+        uri strip_prefix /api
+        reverse_proxy api:8000
+    }
+    handle {
+        reverse_proxy web:80
+    }
+}
+CADDYEOF
+  else
+    cat > Caddyfile <<CADDYEOF
+:80 {
+    @api path /api /api/*
+    handle @api {
+        uri strip_prefix /api
+        reverse_proxy api:8000
+    }
+    handle {
+        reverse_proxy web:80
+    }
+}
+CADDYEOF
+  fi
+
+  cat > docker-compose.yml <<COMPOSEEOF
+services:
+  caddy:
+    image: caddy:2
+    container_name: sweetr-caddy
+    ports:
+      - "80:80"$(if [ "$DEPLOY_MODE" = "production" ]; then echo '
+      - "443:443"
+      - "443:443/udp"'; fi)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - sweetr-caddy-data:/data
+      - sweetr-caddy-config:/config
+    restart: unless-stopped
+    networks:
+      - sweetr
+    depends_on:
+      - api
+      - web
+
+  api:
+    image: sweetr/api:\${SWEETR_TAG:-latest}
+    container_name: sweetr-api
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - APP_ENV=production
+      - APP_MODE=self-hosted
+      - USE_SELF_SIGNED_SSL=false
+    restart: unless-stopped
+    networks:
+      - sweetr
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dragonfly:
+        condition: service_healthy
+
+  web:
+    image: sweetr/web:\${SWEETR_TAG:-latest}
+    container_name: sweetr-web
+    environment:
+      - API_ENDPOINT=\${API_ENDPOINT}
+      - AUTH_COOKIE_DOMAIN=\${AUTH_COOKIE_DOMAIN}
+      - GITHUB_APP=\${GITHUB_APP}
+      - SENTRY_DSN=\${SENTRY_DSN:-}
+      - APP_ENV=\${APP_ENV:-production}
+    restart: unless-stopped
+    networks:
+      - sweetr
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:16
+    container_name: sweetr-postgres
+    env_file: .env
+    volumes:
+      - sweetr-db:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - sweetr
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    container_name: sweetr-dragonfly
+    command: ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=2"]
+    ulimits:
+      memlock: -1
+    volumes:
+      - sweetr-dragonfly:/data
+    restart: unless-stopped
+    networks:
+      - sweetr
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sweetr-db:
+  sweetr-dragonfly:
+  sweetr-caddy-data:
+  sweetr-caddy-config:
+
+networks:
+  sweetr:
+    driver: bridge
+COMPOSEEOF
+
+  success "Configuration files generated in ${BOLD}./sweetr/${RESET}"
+}
+
+# --- Start the stack ---
+
+start_stack() {
+  section_header "Launching Services" "🚀"
+
+  info "Pulling Docker images..."
+  docker compose pull
+  info "Starting containers..."
+  docker compose up -d
+
+  echo ""
+  info "Waiting for API to be ready ${DIM}(this may take a minute for migrations)${RESET}"
+
+  local -a spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+  for i in $(seq 1 60); do
+    if [ "$(docker inspect --format='{{.State.Health.Status}}' sweetr-api 2>/dev/null)" = "healthy" ]; then
+      echo ""
+      echo ""
+      echo -e "  ${GREEN}${BOLD}┌──────────────────────────────────────────────┐${RESET}"
+      echo -e "  ${GREEN}${BOLD}│                                              │${RESET}"
+      echo -e "  ${GREEN}${BOLD}│       ✓  Sweetr is up and running!           │${RESET}"
+      echo -e "  ${GREEN}${BOLD}│                                              │${RESET}"
+      echo -e "  ${GREEN}${BOLD}└──────────────────────────────────────────────┘${RESET}"
+      echo ""
+      echo -e "  ${WHITE}${BOLD}URL${RESET}          ${CYAN}${URL_SCHEME}://${DOMAIN}${RESET}"
+      echo ""
+      echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+      echo -e "  ${DIM}View logs${RESET}    docker compose logs -f"
+      echo -e "  ${DIM}Stop${RESET}         docker compose stop"
+      echo -e "  ${DIM}Start${RESET}        docker compose start"
+      echo -e "  ${DIM}Upgrade${RESET}      docker compose pull && docker compose up -d"
+      echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+      echo ""
+      return 0
+    fi
+    local idx=$(( (i - 1) % ${#spin[@]} ))
+    printf "  ${CYAN}%s${RESET} Waiting... ${DIM}(%d/60)${RESET}\r" "${spin[$idx]}" "$i"
+    sleep 5
+  done
+
+  echo ""
+  warn "API did not become healthy within 5 minutes."
+  echo -e "  Check logs with: ${BOLD}docker compose logs api${RESET}"
+  exit 1
+}
+
+# --- Main ---
+
+main() {
+  echo ""
+  echo -e "${GREEN}"
+  echo '   ___                _        '
+  echo '  / __|_ __ _____ ___| |_ _ _  '
+  echo '  \__ \ V  V / -_) -_)  _| `_| '
+  echo '  |___/\_/\_/\___\___|\__|_|   '
+  echo -e "${RESET}"
+  echo -e "  ${DIM}Self-Hosted Installer${RESET}            ${GRAY}sweetr.dev${RESET}"
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+
+  check_requirements
+
+  if [ -f sweetr/.env ]; then
+    GITHUB_WEBHOOK_SECRET=$(grep '^GITHUB_WEBHOOK_SECRET=' sweetr/.env | cut -d= -f2-)
+    export GITHUB_WEBHOOK_SECRET
+  fi
+
+  collect_deploy_mode
+  collect_domain
+  collect_github_app
+  collect_slack_app
+  generate_files
+  start_stack
+}
+
+main
