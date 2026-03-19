@@ -38,7 +38,7 @@ curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/depl
 The script will:
 
 1. Check that Docker and Docker Compose are installed
-2. Ask for your domain
+2. Ask for your domain and GitHub organization handle
 3. Generate a pre-filled URL to create a GitHub App with all required permissions
 4. Collect your GitHub App credentials
 5. Optionally configure Slack integration
@@ -71,6 +71,10 @@ If you prefer to set things up manually, follow the steps below.
     - Generate and set a **Webhook Secret**
     - Submit the form, then **generate a Client Secret**
     - **Generate a Private Key** (this downloads a `.pem` file)
+
+    <Tip>
+      Create the app under your **organization** account (not your personal account) so it can be installed on the organization directly. Use `https://github.com/organizations/YOUR_ORG/settings/apps/new` as the base URL.
+    </Tip>
 
     <Accordion title="Manual setup (without pre-filled link)">
       <Tabs>
@@ -157,7 +161,9 @@ If you prefer to set things up manually, follow the steps below.
     }
     ```
 
-    For local testing, replace `your-domain.com` with `:80` to serve plain HTTP.
+    <Note>
+      A public domain is required — GitHub cannot deliver webhooks to `localhost`. For local development, use a tunnel like [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) or [ngrok](https://ngrok.com/) and use the tunnel URL as your domain.
+    </Note>
 
   </Step>
 
@@ -455,7 +461,7 @@ If port 80 or 443 is already in use, either stop the conflicting service or chan
 ```yaml
 caddy:
   ports:
-    - "8080:8080"  # Change host port
+    - "8080:8080" # Change host port
 ```
 
 Then update your `Caddyfile` to match (e.g., `:8080 {`) and adjust `FRONTEND_URL` and `API_ENDPOINT` in `.env` accordingly.

@@ -3,23 +3,50 @@ set -e
 
 export SWEETR_TAG="${SWEETR_TAG:-latest}"
 
+# --- Colors & Styles ---
+
+BOLD="\033[1m"
+DIM="\033[2m"
+RESET="\033[0m"
+RED="\033[38;5;196m"
+GREEN="\033[38;5;114m"
+YELLOW="\033[38;5;221m"
+BLUE="\033[38;5;75m"
+CYAN="\033[38;5;117m"
+MAGENTA="\033[38;5;183m"
+WHITE="\033[38;5;255m"
+GRAY="\033[38;5;243m"
+PINK="\033[38;5;211m"
+
 # --- Helper functions ---
 
-info() { echo -e "\033[1;34m==>\033[0m $1"; }
-success() { echo -e "\033[1;32m==>\033[0m $1"; }
-warn() { echo -e "\033[1;33m==>\033[0m $1"; }
-error() { echo -e "\033[1;31m==>\033[0m $1"; exit 1; }
+info()    { echo -e "  ${BLUE}${BOLD}▸${RESET} $1"; }
+success() { echo -e "  ${GREEN}${BOLD}✓${RESET} $1"; }
+warn()    { echo -e "  ${YELLOW}${BOLD}⚠${RESET} ${YELLOW}$1${RESET}"; }
+error()   { echo -e "  ${RED}${BOLD}✗${RESET} ${RED}$1${RESET}"; exit 1; }
+
+section_header() {
+  local title="$1"
+  local icon="$2"
+  echo ""
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+  echo -e "  ${CYAN}${BOLD}${icon}  ${title}${RESET}"
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+  echo ""
+}
+
+hint() { echo -e "  ${DIM}$1${RESET}"; }
 
 prompt() {
   local var_name="$1" prompt_text="$2" default="$3"
   if [ -n "$default" ]; then
-    read -rp "$prompt_text [$default]: " value < /dev/tty
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET} ${DIM}[${default}]${RESET}: ")" value < /dev/tty
     printf -v "$var_name" '%s' "${value:-$default}"
   else
-    read -rp "$prompt_text: " value < /dev/tty
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
     while [ -z "$value" ]; do
-      echo "  This field is required."
-      read -rp "$prompt_text: " value < /dev/tty
+      echo -e "    ${RED}This field is required.${RESET}"
+      read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
     done
     printf -v "$var_name" '%s' "$value"
   fi
@@ -27,11 +54,11 @@ prompt() {
 
 prompt_secret() {
   local var_name="$1" prompt_text="$2"
-  read -rsp "$prompt_text: " value < /dev/tty
+  read -rsp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
   echo
   while [ -z "$value" ]; do
-    echo "  This field is required."
-    read -rsp "$prompt_text: " value < /dev/tty
+    echo -e "    ${RED}This field is required.${RESET}"
+    read -rsp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}: ")" value < /dev/tty
     echo
   done
   printf -v "$var_name" '%s' "$value"
@@ -39,7 +66,8 @@ prompt_secret() {
 
 prompt_multiline() {
   local var_name="$1" prompt_text="$2"
-  echo "$prompt_text (paste the content, then press Enter on an empty line to finish):"
+  echo -e "  ${MAGENTA}?${RESET} ${WHITE}${prompt_text}${RESET}"
+  hint "  Paste the content, then press Enter on an empty line to finish."
   local content=""
   while IFS= read -r line < /dev/tty; do
     [ -z "$line" ] && break
@@ -51,15 +79,19 @@ prompt_multiline() {
 # --- System checks ---
 
 check_requirements() {
-  info "Checking system requirements..."
+  section_header "System Requirements" "⚙"
 
+  info "Checking Docker..."
   if ! command -v docker &> /dev/null; then
-    error "Docker is not installed. Please install Docker first: https://docs.docker.com/engine/install/"
+    error "Docker is not installed. Install it: ${BOLD}https://docs.docker.com/engine/install/${RESET}"
   fi
+  success "Docker found"
 
+  info "Checking Docker Compose..."
   if ! docker compose version &> /dev/null; then
-    error "Docker Compose v2 is not installed. Please install it: https://docs.docker.com/compose/install/"
+    error "Docker Compose v2 is not installed. Install it: ${BOLD}https://docs.docker.com/compose/install/${RESET}"
   fi
+  success "Docker Compose found"
 
   local mem_gb=0
   if [ -f /proc/meminfo ]; then
@@ -74,85 +106,132 @@ check_requirements() {
 
   if [ "$mem_gb" -lt 2 ]; then
     warn "This system has ${mem_gb}GB RAM. Sweetr requires at least 2GB (4GB recommended)."
-    read -rp "Continue anyway? (y/N): " confirm < /dev/tty
+    read -rp "$(echo -e "  ${MAGENTA}?${RESET} Continue anyway? ${DIM}(y/N)${RESET}: ")" confirm < /dev/tty
     [ "$confirm" != "y" ] && [ "$confirm" != "Y" ] && exit 1
   fi
 
-  success "System requirements met."
+  success "All checks passed"
 }
 
 # --- Collect configuration ---
 
+collect_deploy_mode() {
+  section_header "Deployment Mode" "🖥"
+
+  echo -e "  ${WHITE}${BOLD}1${RESET}  Production ${DIM}— server with a public domain${RESET}"
+  echo -e "  ${WHITE}${BOLD}2${RESET}  Local ${DIM}— using a tunnel (ngrok, cloudflared)${RESET}"
+  echo ""
+
+  while true; do
+    prompt DEPLOY_MODE "Select mode (1 or 2)"
+    if [ "$DEPLOY_MODE" = "1" ] || [ "$DEPLOY_MODE" = "2" ]; then
+      break
+    fi
+    echo -e "    ${RED}Please enter 1 or 2.${RESET}"
+  done
+
+  if [ "$DEPLOY_MODE" = "1" ]; then
+    DEPLOY_MODE="production"
+  else
+    DEPLOY_MODE="local"
+  fi
+
+  echo ""
+  prompt GITHUB_ORG "GitHub organization handle (e.g., my-org)"
+}
+
 collect_domain() {
-  echo ""
-  info "Domain Configuration"
-  echo "Enter the domain where Sweetr will be accessible."
-  echo "Make sure DNS is pointing to this server."
-  echo "For local testing, use 'localhost'."
-  echo ""
-  prompt DOMAIN "Domain (e.g., sweetr.example.com)"
+  section_header "Domain Configuration" "🌐"
 
-  if [ "$DOMAIN" = "localhost" ]; then
-    URL_SCHEME="http"
+  if [ "$DEPLOY_MODE" = "production" ]; then
+    hint "Enter the public domain where Sweetr will be accessible."
+    hint "Make sure DNS is pointing to this server."
+  else
+    hint "Start a tunnel pointing to port 80, then enter the public URL it provides."
     echo ""
-    prompt HTTP_PORT "HTTP port" "80"
-  else
-    URL_SCHEME="https"
-    HTTP_PORT="80"
+    echo -e "    ${PINK}▪${RESET} ${BOLD}Cloudflare Tunnel${RESET} ${DIM}(recommended, free)${RESET}"
+    echo -e "      ${CYAN}cloudflared tunnel --url http://localhost:80${RESET}"
+    echo ""
+    echo -e "    ${PINK}▪${RESET} ${BOLD}ngrok${RESET}"
+    echo -e "      ${CYAN}ngrok http 80${RESET}"
   fi
+  echo ""
 
-  if [ "$HTTP_PORT" != "80" ]; then
-    PORT_SUFFIX=":${HTTP_PORT}"
-  else
-    PORT_SUFFIX=""
-  fi
+  while true; do
+    if [ "$DEPLOY_MODE" = "production" ]; then
+      prompt DOMAIN "Domain (e.g., sweetr.example.com)"
+    else
+      prompt DOMAIN "Tunnel URL (e.g., abc123.ngrok-free.app)"
+    fi
+
+    DOMAIN="${DOMAIN#https://}"
+    DOMAIN="${DOMAIN#http://}"
+    DOMAIN="${DOMAIN%/}"
+
+    if [ "$DOMAIN" = "localhost" ] || [ "$DOMAIN" = "127.0.0.1" ]; then
+      echo ""
+      warn "A public URL is required — GitHub cannot deliver webhooks to ${BOLD}${DOMAIN}${RESET}${YELLOW}."
+      hint "Use a tunnel to expose your local machine and enter that URL instead."
+      echo ""
+      continue
+    fi
+
+    break
+  done
+
+  URL_SCHEME="https"
 }
 
 collect_github_app() {
-  echo ""
-  info "GitHub App Setup"
-  echo ""
-  echo "Sweetr needs a GitHub App to function. We'll generate a link that"
-  echo "pre-fills all the required permissions and settings for you."
+  section_header "GitHub App Setup" "🔑"
+
+  hint "Sweetr needs a GitHub App to function. We'll generate a link that"
+  hint "pre-fills all the required permissions and settings for you."
   echo ""
 
   local WEBHOOK_SECRET
   WEBHOOK_SECRET=$(openssl rand -hex 32)
   export GITHUB_WEBHOOK_SECRET="$WEBHOOK_SECRET"
 
-  local GITHUB_URL="https://github.com/settings/apps/new"
-  GITHUB_URL+="?name=sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
-  GITHUB_URL+="&url=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}"
+  local app_name
+  if [ "$DEPLOY_MODE" = "production" ]; then
+    app_name="sweetr-${DOMAIN//[^a-zA-Z0-9]/-}"
+  else
+    app_name="sweetr-localhost"
+  fi
+
+  local GITHUB_URL="https://github.com/organizations/${GITHUB_ORG}/settings/apps/new"
+  GITHUB_URL+="?name=${app_name}"
+  GITHUB_URL+="&url=${URL_SCHEME}://${DOMAIN}"
   GITHUB_URL+="&webhook_active=true"
-  GITHUB_URL+="&webhook_url=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/api/github/webhook"
-  GITHUB_URL+="&callback_urls[]=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/github/callback"
+  GITHUB_URL+="&webhook_url=${URL_SCHEME}://${DOMAIN}/api/github/webhook"
+  GITHUB_URL+="&callback_urls%5B%5D=${URL_SCHEME}://${DOMAIN}/github/callback"
   GITHUB_URL+="&request_oauth_on_install=true"
-  GITHUB_URL+="&public=false"
   GITHUB_URL+="&metadata=read"
   GITHUB_URL+="&pull_requests=write"
   GITHUB_URL+="&statuses=write"
   GITHUB_URL+="&members=read"
   GITHUB_URL+="&emails=read"
-  GITHUB_URL+="&events[]=installation_target"
-  GITHUB_URL+="&events[]=organization"
-  GITHUB_URL+="&events[]=public"
-  GITHUB_URL+="&events[]=pull_request"
-  GITHUB_URL+="&events[]=pull_request_review"
-  GITHUB_URL+="&events[]=repository"
+  GITHUB_URL+="&events%5B%5D=installation_target"
+  GITHUB_URL+="&events%5B%5D=organization"
+  GITHUB_URL+="&events%5B%5D=public"
+  GITHUB_URL+="&events%5B%5D=pull_request"
+  GITHUB_URL+="&events%5B%5D=pull_request_review"
+  GITHUB_URL+="&events%5B%5D=repository"
 
-  echo "1. Open this URL to create your GitHub App:"
+  echo -e "  ${WHITE}${BOLD}Step 1${RESET}  Open this URL to create your GitHub App:"
   echo ""
-  echo "   $GITHUB_URL"
+  echo -e "         ${CYAN}${GITHUB_URL}${RESET}"
   echo ""
-  echo "2. Before submitting, you MUST:"
-  echo "   - Paste this webhook secret: $WEBHOOK_SECRET"
-  echo "   - Uncheck 'Expire user authorization tokens'"
+  echo -e "  ${WHITE}${BOLD}Step 2${RESET}  Before submitting, you ${BOLD}MUST${RESET}:"
+  echo -e "         ${PINK}▪${RESET} Paste this webhook secret: ${GREEN}${WEBHOOK_SECRET}${RESET}"
+  echo -e "         ${PINK}▪${RESET} Uncheck ${BOLD}'Expire user authorization tokens'${RESET}"
   echo ""
-  echo "3. After creating the app:"
-  echo "   - Generate a Client Secret"
-  echo "   - Generate a Private Key (downloads a .pem file)"
+  echo -e "  ${WHITE}${BOLD}Step 3${RESET}  After creating the app:"
+  echo -e "         ${PINK}▪${RESET} Generate a Client Secret"
+  echo -e "         ${PINK}▪${RESET} Generate a Private Key ${DIM}(downloads a .pem file)${RESET}"
   echo ""
-  read -rp "Press Enter when you've completed the steps above..." < /dev/tty
+  read -rp "$(echo -e "  ${GRAY}Press Enter when you've completed the steps above...${RESET}")" _ < /dev/tty
   echo ""
 
   prompt GITHUB_APP_ID "GitHub App ID"
@@ -163,13 +242,13 @@ collect_github_app() {
 }
 
 collect_slack_app() {
-  echo ""
-  read -rp "Would you like to configure Slack integration? (y/N): " setup_slack < /dev/tty
+  section_header "Slack Integration" "💬"
+
+  read -rp "$(echo -e "  ${MAGENTA}?${RESET} ${WHITE}Would you like to configure Slack integration?${RESET} ${DIM}(y/N)${RESET}: ")" setup_slack < /dev/tty
   if [ "$setup_slack" = "y" ] || [ "$setup_slack" = "Y" ]; then
     echo ""
-    info "Slack App Setup"
-    echo "Create a Slack app at https://api.slack.com/apps/new"
-    echo "See https://sweetr.dev/get-started/self-host for detailed instructions."
+    hint "Create a Slack app at ${CYAN}https://api.slack.com/apps/new${RESET}"
+    hint "Docs: ${CYAN}https://sweetr.dev/get-started/self-host${RESET}"
     echo ""
     prompt SLACK_CLIENT_ID "Slack Client ID"
     prompt_secret SLACK_CLIENT_SECRET "Slack Client Secret"
@@ -184,7 +263,7 @@ collect_slack_app() {
 # --- Generate files ---
 
 generate_files() {
-  info "Generating configuration files..."
+  section_header "Generating Configuration" "📦"
 
   local JWT_SECRET DB_PASSWORD
 
@@ -214,7 +293,7 @@ DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/sweetr
 
 # API
 PORT=8000
-FRONTEND_URL=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}
+FRONTEND_URL=${URL_SCHEME}://${DOMAIN}
 JWT_SECRET=${JWT_SECRET}
 REDIS_CONNECTION_STRING=redis://dragonfly:6379
 
@@ -232,14 +311,14 @@ SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
 SLACK_WEBHOOK_SECRET=${SLACK_WEBHOOK_SECRET}
 
 # Web
-API_ENDPOINT=${URL_SCHEME}://${DOMAIN}${PORT_SUFFIX}/api
+API_ENDPOINT=${URL_SCHEME}://${DOMAIN}/api
 AUTH_COOKIE_DOMAIN=${DOMAIN}
 GITHUB_APP=${GITHUB_APP_HANDLE}
 ENVEOF
 
-  if [ "$DOMAIN" = "localhost" ]; then
+  if [ "$DEPLOY_MODE" = "production" ]; then
     cat > Caddyfile <<CADDYEOF
-:${HTTP_PORT} {
+${DOMAIN} {
     @api path /api /api/*
     handle @api {
         uri strip_prefix /api
@@ -252,7 +331,7 @@ ENVEOF
 CADDYEOF
   else
     cat > Caddyfile <<CADDYEOF
-${DOMAIN} {
+:80 {
     @api path /api /api/*
     handle @api {
         uri strip_prefix /api
@@ -271,9 +350,9 @@ services:
     image: caddy:2
     container_name: sweetr-caddy
     ports:
-      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "80:80"$(if [ "$DEPLOY_MODE" = "production" ]; then echo '
       - "443:443"
-      - "443:443/udp"
+      - "443:443/udp"'; fi)
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - sweetr-caddy-data:/data
@@ -361,40 +440,52 @@ networks:
     driver: bridge
 COMPOSEEOF
 
-  success "Configuration files generated in ./sweetr/"
+  success "Configuration files generated in ${BOLD}./sweetr/${RESET}"
 }
 
 # --- Start the stack ---
 
 start_stack() {
-  info "Starting Sweetr..."
+  section_header "Launching Services" "🚀"
+
+  info "Pulling Docker images..."
   docker compose pull
+  info "Starting containers..."
   docker compose up -d
 
   echo ""
-  info "Waiting for API to be ready (this may take a minute for migrations)..."
+  info "Waiting for API to be ready ${DIM}(this may take a minute for migrations)${RESET}"
 
+  local -a spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
   for i in $(seq 1 60); do
     if curl -sf http://localhost/api/health > /dev/null 2>&1; then
       echo ""
-      success "Sweetr is up and running!"
       echo ""
-      echo "  URL:  ${URL_SCHEME}://${DOMAIN}"
+      echo -e "  ${GREEN}${BOLD}┌──────────────────────────────────────────────┐${RESET}"
+      echo -e "  ${GREEN}${BOLD}│                                              │${RESET}"
+      echo -e "  ${GREEN}${BOLD}│       ✓  Sweetr is up and running!           │${RESET}"
+      echo -e "  ${GREEN}${BOLD}│                                              │${RESET}"
+      echo -e "  ${GREEN}${BOLD}└──────────────────────────────────────────────┘${RESET}"
       echo ""
-      echo "  To view logs:     docker compose logs -f"
-      echo "  To stop:          docker compose stop"
-      echo "  To start:         docker compose start"
-      echo "  To upgrade:       docker compose pull && docker compose up -d"
+      echo -e "  ${WHITE}${BOLD}URL${RESET}          ${CYAN}${URL_SCHEME}://${DOMAIN}${RESET}"
+      echo ""
+      echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
+      echo -e "  ${DIM}View logs${RESET}    docker compose logs -f"
+      echo -e "  ${DIM}Stop${RESET}         docker compose stop"
+      echo -e "  ${DIM}Start${RESET}        docker compose start"
+      echo -e "  ${DIM}Upgrade${RESET}      docker compose pull && docker compose up -d"
+      echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
       echo ""
       return 0
     fi
-    printf "  Waiting... (attempt %d/60)\r" "$i"
+    local idx=$(( (i - 1) % ${#spin[@]} ))
+    printf "  ${CYAN}%s${RESET} Waiting... ${DIM}(%d/60)${RESET}\r" "${spin[$idx]}" "$i"
     sleep 5
   done
 
   echo ""
   warn "API did not become healthy within 5 minutes."
-  echo "  Check logs with: docker compose logs api"
+  echo -e "  Check logs with: ${BOLD}docker compose logs api${RESET}"
   exit 1
 }
 
@@ -402,11 +493,17 @@ start_stack() {
 
 main() {
   echo ""
-  echo "Welcome to the Sweetr self-hosted installer"
-  echo "https://sweetr.dev"
-  echo ""
+  echo -e "${GREEN}"
+  echo '   ___                _        '
+  echo '  / __|_ __ _____ ___| |_ _ _  '
+  echo '  \__ \ V  V / -_) -_)  _| `_| '
+  echo '  |___/\_/\_/\___\___|\__|_|   '
+  echo -e "${RESET}"
+  echo -e "  ${DIM}Self-Hosted Installer${RESET}            ${GRAY}sweetr.dev${RESET}"
+  echo -e "  ${GRAY}────────────────────────────────────────────────${RESET}"
 
   check_requirements
+  collect_deploy_mode
   collect_domain
   collect_github_app
   collect_slack_app
