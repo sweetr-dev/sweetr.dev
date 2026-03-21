@@ -61,7 +61,7 @@ export const TeamPullRequestsCycleTimePage = () => {
         {...drawerProps}
         title="Cycle time"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/cycle-time" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/cycle-time" />
         }
       >
         <Box p="md">

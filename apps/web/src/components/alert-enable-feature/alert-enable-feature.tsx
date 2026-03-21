@@ -10,7 +10,7 @@ type AlertEnableFeatureProps = AlertProps & {
 const featureMap: Record<Feature, { text: string; href: string }> = {
   deployments: {
     text: "Setup deployment ingestion to use this feature.",
-    href: "https://docs.sweetr.dev/features/deployments",
+    href: "https://docs.sweetr.dev/platform/deployments#setting-up-deployments-for-dora-metrics",
   },
   slack: {
     text: "Setup integration with Slack to enable this feature.",

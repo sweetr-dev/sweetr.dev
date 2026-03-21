@@ -49,7 +49,7 @@ export const FormPrTitleCheckSettings = ({
               fz="sm"
               ml="auto"
               target="_blank"
-              href="https://docs.sweetr.dev/features/automations/pr-title-check#popular-patterns"
+              href="https://docs.sweetr.dev/automations/pr-title-check#popular-patterns"
               rel="noreferrer"
               w="fit-content"
             >

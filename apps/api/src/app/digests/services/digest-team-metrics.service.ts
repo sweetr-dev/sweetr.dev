@@ -242,7 +242,7 @@ const getDigestMessageBlocks = async (
         type: "plain_text",
         text: "Setup Deployments",
       },
-      url: `https://docs.sweetr.dev/features/deployments`,
+      url: `https://docs.sweetr.dev/platform/deployments`,
     });
   } else {
     buttons.push({

@@ -22,16 +22,16 @@
 Spot work that needs attention; unblock your team; gather data for retros, 1:1s and performance reviews.
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/pull-requests" target="_blank">Work Log</a></th>
-    <th><a href="https://docs.sweetr.dev/features/code-reviews" target="_blank">WIP</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/work-log" target="_blank">Work Log</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/wip" target="_blank">WIP</a></th>
   </tr>
   <tr>
     <th><kbd><img width="100%" alt="Work Log" src="https://github.com/user-attachments/assets/675e66e7-ca99-412e-9987-e7c2c20df404"></kbd></th>
     <th><kbd><img width="100%" alt="WIP PRs" src="https://github.com/user-attachments/assets/fe1417ca-d80c-4e0c-838c-8dd5d91737ff"></kbd></th>
   </tr>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/pull-requests" target="_blank">Pull Requests</a></th>
-    <th><a href="https://docs.sweetr.dev/features/code-reviews" target="_blank">Code Reviews</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/pull-requests" target="_blank">Pull Requests</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/code-reviews" target="_blank">Code Reviews</a></th>
   </tr>
   <tr>
     <th><kbd><img width="100%" alt="Pull Requests" src="https://github.com/user-attachments/assets/ed91ec67-c945-47b7-acb2-27d365bb9a96"></kbd></th>
@@ -47,8 +47,8 @@ Keep your team on the loop; unblock work; speed up reviews and releases.
 
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/digests" target="_blank">Digests</a></th>
-    <th><a href="https://docs.sweetr.dev/features/alerts" target="_blank">Pull Request Alerts</a></th>
+    <th><a href="https://docs.sweetr.dev/automations/digests" target="_blank">Digests</a></th>
+    <th><a href="https://docs.sweetr.dev/automations/alerts" target="_blank">Pull Request Alerts</a></th>
   </tr>
   <tr>
     <td><kbd><img width="100%" alt="Digests" src="https://github.com/user-attachments/assets/d92d06f0-055f-4086-ab53-3089d3bd3b83"></kbd></td>
@@ -64,12 +64,12 @@ Find bottlenecks; understand the team's flow and impact of process changes; impr
 
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/features/team/cycle-time" target="_blank">PR Cycle Time</a></th>
-    <th><a href="https://docs.sweetr.dev/features/team/pr-size-distribution" target="_blank">PR Size</a></th>
-    <th><a href="https://docs.sweetr.dev/features/team/code-review-distribution" target="_blank">Code Review Distribution</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/cycle-time" target="_blank">PR Cycle Time</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/pr-size-distribution" target="_blank">PR Size</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/code-review-distribution" target="_blank">Code Review Distribution</a></th>
   </tr>
   <tr>
-    <td><kbd><img width="100%" alt="PR Cycle Time" src="https://github.com/user-attachments/assets/579808e3-6998-4c73-8360-0893b96464e2"></kbd></td>
+    <td><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/2c93e328-ba38-46bc-b411-f8400cb5d75a"></kbd></td>
     <td><kbd><img width="100%" alt="PR Size" src="https://github.com/user-attachments/assets/dc2f6635-7c66-46ca-9b02-d6eecc176323"></kbd></td>
     <td><kbd><img width="100%" alt="Code Review Distribution" src="https://github.com/user-attachments/assets/07cd033b-7255-4e3d-99af-1a9ef7398e84"></kbd></td>
   </tr>
@@ -83,8 +83,8 @@ Improve Developer Experience with automations.
 
 <table>
   <tr>
-    <th><a href="http://localhost:3000/features/automations/pr-size-labeler" target="_blank">PR Size Labeler</a></th>
-    <th><a href="http://localhost:3000/features/automations/pr-title-check" target="_blank">PR Title Check</a></th>
+    <th><a href="https://docs.sweetr.dev/automations/pr-size-labeler" target="_blank">PR Size Labeler</a></th>
+    <th><a href="https://docs.sweetr.dev/automations/pr-title-check" target="_blank">PR Title Check</a></th>
   </tr>
   <tr>
     <td><kbd><img width="100%" alt="PR Size Labeler" src="https://github.com/user-attachments/assets/1b5f646d-6b9c-4f3f-b992-aa5ed4495dbf"></kbd></td>

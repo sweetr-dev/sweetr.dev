@@ -87,7 +87,7 @@ export const EnvironmentsPage = () => {
                   Environments are automatically created for you when you deploy
                   an application.
                   <ButtonDocs
-                    href="https://docs.sweetr.dev/features/environments"
+                    href="https://docs.sweetr.dev/platform/environments"
                     variant="light"
                   />
                 </Stack>

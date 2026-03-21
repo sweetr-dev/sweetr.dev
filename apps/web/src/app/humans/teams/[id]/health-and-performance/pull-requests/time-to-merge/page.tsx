@@ -64,7 +64,7 @@ export const TeamPullRequestsTimeToMergePage = () => {
         {...drawerProps}
         title="Time to merge"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/time-to-merge" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/time-to-merge" />
         }
       >
         <Box p="md">
