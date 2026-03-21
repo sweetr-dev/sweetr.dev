@@ -64,14 +64,14 @@ Find bottlenecks; understand the team's flow and impact of process changes; impr
 
 <table>
   <tr>
-    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/cycle-time" target="_blank">PR Cycle Time</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/dora" target="_blank">DORA Metrics</a></th>
     <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/pr-size-distribution" target="_blank">PR Size</a></th>
     <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/code-review-distribution" target="_blank">Code Review Distribution</a></th>
   </tr>
   <tr>
     <td><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/2c93e328-ba38-46bc-b411-f8400cb5d75a"></kbd></td>
-    <td><kbd><img width="100%" alt="PR Size" src="https://github.com/user-attachments/assets/dc2f6635-7c66-46ca-9b02-d6eecc176323"></kbd></td>
-    <td><kbd><img width="100%" alt="Code Review Distribution" src="https://github.com/user-attachments/assets/07cd033b-7255-4e3d-99af-1a9ef7398e84"></kbd></td>
+    <td><kbd><img width="100%" alt="PR Size" src="https://github.com/user-attachments/assets/9a8678c6-358c-4528-81c3-ff886861aa75"></kbd></td>
+    <td><kbd><img width="100%" alt="Code Review Distribution" src="https://github.com/user-attachments/assets/ef9f847e-fc13-4ba1-9d31-30e462cedaf6"></kbd></td>
   </tr>
 </table>
 
