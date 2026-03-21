@@ -61,7 +61,7 @@ export const TeamCodeReviewsTimeToApprovePage = () => {
         {...drawerProps}
         title="Time to approve"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/time-to-approve" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/time-to-approve" />
         }
       >
         <Box p="md">

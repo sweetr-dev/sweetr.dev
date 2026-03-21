@@ -59,7 +59,7 @@ export const TeamCodeReviewsTimeToFirstReviewPage = () => {
         {...drawerProps}
         title="Time to first review"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/time-to-first-review" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/time-to-first-review" />
         }
       >
         <Box p="md">

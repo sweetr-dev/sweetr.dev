@@ -67,7 +67,7 @@ export const TeamCodeReviewDistributionPage = () => {
         {...drawerProps}
         title="Code review distribution"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/code-review-distribution" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/code-review-distribution" />
         }
       >
         <Box p="md">

@@ -18,6 +18,52 @@ Deployments track when a version of an application is deployed to an environment
 
 Filter deployments by application, environment, and date range to find exactly what you need.
 
+## Setting up deployments for DORA Metrics
+
+To get accurate [DORA metrics](/metrics-and-insights/dora), you need to track deployments in Sweetr.
+
+<Steps>
+  <Step title="Create an application">
+    Deployments belong to [Applications](/platform/applications). Create at least one application for each deployable unit in your repositories.
+
+    You can create applications manually from the UI, or let Sweetr auto-create them when you send your first deployment via the API.
+
+    <Tip>
+      If you have a monorepo, create a separate application for each service and configure its **subdirectory** so pull requests are correctly linked to the right application.
+    </Tip>
+
+  </Step>
+  <Step title="Choose a deployment trigger">
+    Each application needs a deployment trigger so Sweetr knows when a deployment happens. Pick the one that fits your workflow:
+
+    <CardGroup cols={2}>
+      <Card title="API Webhook" icon="webhook">
+        Call the [POST /v1/deployments](/api-reference/deployments/create-deployment) endpoint from your CI/CD pipeline (e.g., GitHub Actions, GitLab CI, Jenkins) whenever a deployment completes. **Recommended** for the most accurate metrics, since it captures the real deployment time.
+      </Card>
+
+      <Card title="Pull Request Merge" icon="git-merge">
+        Automatically create a deployment when a pull request is merged to a target branch. Simpler to set up, but uses the merge time as an approximation of deployment time.
+      </Card>
+    </CardGroup>
+
+    Configure the trigger in your application's **Deployment settings**. For merge-based triggers, set the **target branch** to the branch that represents production (e.g., `main`).
+
+  </Step>
+  <Step title="Send your first deployment">
+    Trigger a deployment by calling the API or merging a pull request to your target branch. Sweetr will record it and start building your DORA metrics.
+  </Step>
+  <Step title="Backfill historical data">
+    Want DORA metrics from day one? Start with the **Pull Request Merge** trigger, then go to **Settings → Workspace** and click **Resync all historical data**. Sweetr will create deployments for every previously merged PR to your target branch, giving you historical metrics right away.
+
+    Once you have your baseline, you can switch to the **API Webhook** trigger for more accurate deployment times going forward.
+
+    <Tip>
+      This is a great way to get visibility into your team's delivery history without waiting for new deployments to come in.
+    </Tip>
+
+  </Step>
+</Steps>
+
 ## Change type
 
 Sweetr automatically determines the **change type** for each deployment by comparing commits against the previous deployment:
@@ -25,21 +71,6 @@ Sweetr automatically determines the **change type** for each deployment by compa
 - **Forward**: A standard deployment with new changes.
 - **Rollback**: The deployment reverts to a previous version.
 - **No Change**: A redeployment of the same version.
-
-## Deployment triggers
-
-Deployments can be tracked through two different triggers:
-
-<Card title="API Webhook" icon="webhook" horizontal>
-  Send deployments via the [POST
-  /v1/deployments](/api-reference/deployments/create-deployment) REST endpoint.
-  Best for custom CI/CD pipelines.
-</Card>
-
-<Card title="Pull Request Merge" icon="git-merge" horizontal>
-  Automatically create a deployment when a pull request is merged to a target
-  branch. Best for trunk-based development.
-</Card>
 
 ### Linking Pull Requests
 
@@ -74,7 +105,7 @@ The deployment trigger you choose affects the accuracy of your [DORA metrics](/m
 
   <Card title="Pull Request Merge" icon="git-merge">
     Uses the **merge time** as the deployment time. This is an approximation,
-    since the actual deployment typically happens after the merge — once your
+    since the actual deployment typically happens after the merge, once your
     CI/CD pipeline finishes building, testing, and deploying.
   </Card>
 </CardGroup>

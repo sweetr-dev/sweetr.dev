@@ -15,7 +15,7 @@ export const InputDeploymentTrigger = ({
     <>
       <Group justify="space-between" align="center" wrap="nowrap">
         <Input.Label>Deployment Ingestion</Input.Label>
-        <ButtonDocs href="https://docs.sweetr.dev/features/deployments" />
+        <ButtonDocs href="https://docs.sweetr.dev/platform/deployments" />
       </Group>
       <Radio.Group {...form.getInputProps("deploymentSettings.trigger")}>
         <Group wrap="nowrap">

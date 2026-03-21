@@ -66,7 +66,7 @@ export const TeamPullRequestsSizeDistribution = () => {
         {...drawerProps}
         title="Pull Request size distribution"
         toolbar={
-          <ButtonDocs href="http://docs.sweetr.dev/features/team/pr-size-distribution" />
+          <ButtonDocs href="https://docs.sweetr.dev/metrics-and-insights/team/pr-size-distribution" />
         }
       >
         <Box p="md">

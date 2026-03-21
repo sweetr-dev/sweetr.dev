@@ -269,7 +269,7 @@ export const TimelinePullRequest = ({
                     underline="never"
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://docs.sweetr.dev/features/deployments"
+                    href="https://docs.sweetr.dev/platform/deployments#setting-up-deployments-for-dora-metrics"
                   >
                     <Button color="violet" size="xs" variant="outline" mt={5}>
                       Setup Deployments

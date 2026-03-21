@@ -11,7 +11,7 @@ const automationCards = {
     shortDescription:
       "Automatically detect incidents from rollbacks, hotfixes and reverts.",
     demoUrl: null,
-    docsUrl: "https://docs.sweetr.dev/features/automations/incident-detection",
+    docsUrl: "https://docs.sweetr.dev/automations/incident-detection",
     color: "orange.1",
     icon: "🚨",
     benefits: {
@@ -28,7 +28,7 @@ const automationCards = {
     description:
       "Automatically label a Pull Request with its size. Increase awareness on creating small PRs.",
     demoUrl: "/images/automations/pr-size-labeler.webp",
-    docsUrl: "https://docs.sweetr.dev/features/automations/pr-size-labeler",
+    docsUrl: "https://docs.sweetr.dev/automations/pr-size-labeler",
     color: "indigo.1",
     icon: "📏",
     benefits: {
@@ -46,7 +46,7 @@ const automationCards = {
     shortDescription:
       "Enforce standards on Pull Request titles. Ticket code, specific prefix, or something else? You pick it.",
     demoUrl: "/images/automations/pr-title-check-demo.webp",
-    docsUrl: "https://docs.sweetr.dev/features/automations/pr-title-check",
+    docsUrl: "https://docs.sweetr.dev/automations/pr-title-check",
     color: "lime.1",
     icon: "✍️",
     benefits: {
