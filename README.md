@@ -4,7 +4,7 @@
   </a>
 <h3 align="center">sweetr.dev</h3>
 <p align="center">
-  <i>Optimize delivery, enhance developer experience, and foster team growth with the sweetest Developer Intelligence Platform.</i>
+  <i>Insights and automations your dev team will actually trust. Free to <a href="https://docs.sweetr.dev/get-started/self-host" target="blank">self-host</a>.</i>
 </p>
 
 <p align="center">
