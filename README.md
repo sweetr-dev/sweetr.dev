@@ -63,11 +63,11 @@ Keep your team on the loop; unblock work; speed up reviews and releases.
 Find bottlenecks; understand the team's flow and impact of process changes; improve continuously.
 
 <table>
-  <tr>
+  <tr colspan="2">
     <th><a href="https://docs.sweetr.dev/metrics-and-insights/dora" target="_blank">DORA Metrics</a></th>
   </tr>
   <tr>
-    <td><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/2c93e328-ba38-46bc-b411-f8400cb5d75a"></kbd></td>
+    <td colspan="2"><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/2c93e328-ba38-46bc-b411-f8400cb5d75a"></kbd></td>
   </tr>
   <tr>
     <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/pr-size-distribution" target="_blank">PR Size</a></th>
