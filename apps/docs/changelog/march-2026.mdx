@@ -3,6 +3,22 @@ title: March 2026
 description: What's new in Sweetr this month.
 ---
 
+<Update label="2026-03-23" description="Week of March 23" tags={["Feature", "Update"]}>
+  ## Self-hosting
+
+  You can now deploy Sweetr on your own infrastructure. Run a single command to get started — it handles Docker setup, TLS certificates, and database configuration for you.
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+  ```
+
+  Official Docker images are published to Docker Hub for both the API and web frontend. See the [self-hosting guide](/get-started/self-host) for full setup instructions, environment variable reference, and troubleshooting.
+
+  ## Step-by-step DORA deployment setup
+
+  The [Deployments](/platform/deployments#setting-up-deployments-for-dora-metrics) page now includes a step-by-step guide for configuring deployment tracking. It walks you through creating applications, choosing a deployment trigger, and backfilling historical data to get DORA metrics from day one.
+</Update>
+
 <Update label="2026-03-16" description="Week of March 16" tags={["Feature", "Update"]}>
   ## People profiles now show bio and location
 
