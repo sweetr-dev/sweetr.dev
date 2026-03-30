@@ -44,6 +44,11 @@
           "href": "https://github.com/sweetr-dev/sweetr.dev"
         },
         {
+          "anchor": "Changelog",
+          "icon": "list",
+          "href": "/changelog"
+        },
+        {
           "anchor": "Give Feedback",
           "icon": "message-code",
           "href": "https://sweetr.featurebase.app/"
@@ -52,6 +57,15 @@
     },
 
     "tabs": [
+      {
+        "tab": "Changelog",
+        "pages": [
+          {
+            "group": "",
+            "pages": ["changelog"]
+          }
+        ]
+      },
       {
         "tab": "Sweetr",
         "pages": [

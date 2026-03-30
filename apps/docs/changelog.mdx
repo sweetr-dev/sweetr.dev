@@ -1,0 +1,61 @@
+---
+title: "Changelog"
+description: "New features, updates, and fixes."
+---
+
+<Update label="March 2026" description="Self-hosting, incident detection, and more" tags={["Feature", "Update", "Fix"]}>
+
+## New features
+
+### Self-hosting support
+
+You can now self-host Sweetr on your own infrastructure with a single command. The deploy script walks you through the full setup — from creating a GitHub App to generating your Docker Compose stack.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+```
+
+[Self-hosting guide](/get-started/self-host)
+
+### Incident detection automation
+
+Sweetr now automatically detects incidents from your deployments. Three detection strategies are available out of the box:
+
+- **Rollbacks** — detects when a deployment reverts to a previously deployed version.
+- **Reverts** — detects GitHub revert PRs.
+- **Hotfixes** — matches configurable patterns in PR titles, branch names, or labels.
+
+Incident Detection is enabled by default for every workspace. Detected incidents feed directly into your [DORA metrics](/metrics-and-insights/dora) for more accurate change failure rate and mean time to recover.
+
+[Incident detection docs](/automations/incident-detection)
+
+### People bio and location
+
+Profile pages now show each person's bio and location, synced from GitHub. This makes it easier to get context on teammates across your organization.
+
+[People directory](/platform/people)
+
+### DORA metrics in Slack digests
+
+Your team's [Slack digest](/automations/digests) now includes all four DORA metrics — deployment frequency, lead time, change failure rate, and mean time to recover. If deployments aren't set up yet, the digest links directly to the setup guide.
+
+## Updates
+
+### Deployment setup guidance
+
+Pages that depend on deployment data — like DORA metrics, incidents, and team alerts — now show a setup banner when deployments haven't been configured yet. The banner links you straight to the [deployment setup guide](/platform/deployments#setting-up-deployments-for-dora-metrics).
+
+### API rate limiting
+
+The REST API now enforces a rate limit of 100 requests per minute per API key to ensure fair usage across all workspaces.
+
+[API rate limit docs](/api-reference/rate-limit)
+
+## Bug fixes
+
+- **PR timeline** — Fixed personal metrics date range calculations and resolved an issue where cycle time of zero was incorrectly hidden.
+- **DORA team filtering** — Team filtering on DORA metrics now correctly uses deployment author team membership instead of application ownership.
+- **First review calculation** — Fixed a bug where the first review timestamp used aggregated data instead of chronological review events.
+- **Code review sync** — Resolved an issue where code reviews could fail to sync under certain conditions.
+
+</Update>
