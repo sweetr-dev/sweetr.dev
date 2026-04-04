@@ -4,6 +4,11 @@ import { AppSpotlight } from "../components/app-spotlight";
 import { useAppStore } from "../providers/app.provider";
 import { usePaywall } from "../providers/billing.provider";
 import { useSentry } from "../providers/sentry.provider";
+import { useSandbox } from "../sandbox/sandbox-context";
+import {
+  SandboxBanner,
+  SANDBOX_BANNER_HEIGHT,
+} from "../sandbox/sandbox-banner";
 
 interface AppProps {
   children?: React.ReactElement;
@@ -11,11 +16,12 @@ interface AppProps {
 
 export const AppPage = ({ children }: AppProps) => {
   const { workspace } = useAppStore();
+  const { isSandbox } = useSandbox();
   const { shouldShowPaywall, goToPaywall, showPaywallNotification } =
     usePaywall();
   useSentry();
 
-  if (shouldShowPaywall) {
+  if (shouldShowPaywall && !isSandbox) {
     showPaywallNotification();
     goToPaywall();
 
@@ -24,8 +30,9 @@ export const AppPage = ({ children }: AppProps) => {
 
   return (
     <>
+      {isSandbox && <SandboxBanner />}
       {workspace && <AppSpotlight workspaceId={workspace.id} />}
-      <AppShell key={workspace?.id}>
+      <AppShell key={workspace?.id} topOffset={isSandbox ? SANDBOX_BANNER_HEIGHT : 0}>
         {children ? children : <Outlet />}
       </AppShell>
     </>

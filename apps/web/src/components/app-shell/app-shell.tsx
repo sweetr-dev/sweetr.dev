@@ -7,9 +7,10 @@ import { useScreenSize } from "../../providers/screen.provider";
 
 interface Props {
   children: React.ReactNode;
+  topOffset?: number;
 }
 
-export const AppShell = ({ children }: Props) => {
+export const AppShell = ({ children, topOffset = 0 }: Props) => {
   const theme = useMantineTheme();
   const { isSmallScreen } = useScreenSize();
   const [isMobileNavOpen, handlers] = useDisclosure(false);
@@ -21,6 +22,13 @@ export const AppShell = ({ children }: Props) => {
         main: {
           background: theme.colors.dark[8],
           overflowX: "auto",
+          ...(topOffset > 0 && { paddingTop: `calc(var(--app-shell-header-height) + ${topOffset}px)` }),
+        },
+        header: {
+          ...(topOffset > 0 && { top: topOffset }),
+        },
+        navbar: {
+          ...(topOffset > 0 && { top: topOffset, height: `calc(100% - ${topOffset}px)` }),
         },
       }}
       layout={isSmallScreen ? "default" : "alt"}

@@ -5,6 +5,7 @@ import { ClientError } from "graphql-request";
 import { useAppStore } from "./app.provider";
 import { ResourceNotFound } from "../exceptions/resource-not-found.exception";
 import { getEnv } from "../env";
+import { clearSandboxMode } from "../sandbox/sandbox-context";
 
 export const useAuthenticatedUser = () => {
   const { authenticatedUser } = useAppStore();
@@ -24,6 +25,8 @@ export const getAuthorizationHeader = (): string | undefined =>
   Cookies.get("Authorization");
 
 export const setAuth = (accessToken: string): void => {
+  clearSandboxMode();
+
   Cookies.set("Authorization", accessToken, {
     domain: getEnv("AUTH_COOKIE_DOMAIN"),
     secure: true,
