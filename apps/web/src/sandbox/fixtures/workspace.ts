@@ -29,10 +29,7 @@ export const userWorkspacesFixture = {
       billing: {
         __typename: "Billing" as const,
         trial: null,
-        subscription: {
-          __typename: "Subscription" as const,
-          isActive: true,
-        },
+        subscription: null,
       },
     },
   ],

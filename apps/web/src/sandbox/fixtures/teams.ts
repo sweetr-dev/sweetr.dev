@@ -6,7 +6,10 @@ import { TeamMemberRole } from "@sweetr/graphql-types/frontend/graphql";
 import { PEOPLE } from "./people";
 
 const person = (id: string) => {
-  const p = PEOPLE.find((p) => p.id === id)!;
+  const p = PEOPLE.find((x) => x.id === id);
+  if (!p) {
+    throw new Error(`Person with id "${id}" not found in PEOPLE fixture`);
+  }
   return {
     __typename: "Person" as const,
     id: p.id,

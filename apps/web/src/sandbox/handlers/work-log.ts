@@ -8,13 +8,7 @@ import {
 import { generateBuckets } from "../generators/chart-data";
 import { TEAMS } from "../fixtures/teams";
 import { PEOPLE } from "../fixtures/people";
-import {
-  subMonths,
-  parseISO,
-  addDays,
-  differenceInDays,
-  addHours,
-} from "date-fns";
+import { subMonths, parseISO, addDays, addHours, startOfDay } from "date-fns";
 
 const MS_HOUR = 3_600_000;
 const MS_MINUTE = 60_000;
@@ -80,20 +74,22 @@ function seededRandom(seed: number) {
 function generateWorkLogEvents(
   from: string,
   to: string,
-  teamMembers: typeof TEAMS[number]["members"],
+  teamMembers: (typeof TEAMS)[number]["members"],
 ) {
-  const start = parseISO(from);
-  const end = parseISO(to);
-  const totalDays = differenceInDays(end, start);
+  const start = startOfDay(parseISO(from));
+  const end = startOfDay(parseISO(to));
   const events: Array<Record<string, unknown>> = [];
 
   let prCounter = 1000;
 
-  for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
-    const day = addDays(start, dayOffset);
+  for (let day = start; day <= end; day = addDays(day, 1)) {
     const dayOfWeek = day.getDay();
 
     if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+
+    const dayOffset = Math.round(
+      (day.getTime() - start.getTime()) / 86_400_000,
+    );
 
     for (const member of teamMembers) {
       const person = PEOPLE.find((p) => p.id === member.person.id);
@@ -102,7 +98,8 @@ function generateWorkLogEvents(
       const seed = dayOffset * 100 + Number(person.id);
       const rand = seededRandom(seed);
 
-      const actionsToday = rand < 0.15 ? 0 : rand < 0.5 ? 1 : rand < 0.8 ? 2 : 3;
+      const actionsToday =
+        rand < 0.15 ? 0 : rand < 0.5 ? 1 : rand < 0.8 ? 2 : 3;
 
       for (let action = 0; action < actionsToday; action++) {
         const actionSeed = seed * 10 + action;
@@ -110,27 +107,37 @@ function generateWorkLogEvents(
         const hourOffset = 9 + Math.floor(actionRand * 8);
         const eventTime = addHours(day, hourOffset);
 
-        const titleIndex = (prCounter + Math.floor(actionRand * 7)) % PR_TITLES.length;
-        const sizeIndex = Math.floor(seededRandom(actionSeed + 1) * SIZES.length);
+        const titleIndex =
+          (prCounter + Math.floor(actionRand * 7)) % PR_TITLES.length;
+        const sizeIndex = Math.floor(
+          seededRandom(actionSeed + 1) * SIZES.length,
+        );
         const size = SIZES[sizeIndex];
         const stats = sizeStats[size];
 
-        const prId = `pr-wl-${prCounter++}`;
+        const prNumber = prCounter++;
+        const prId = `pr-wl-${prNumber}`;
         const createdAt = eventTime.toISOString();
 
         const pr = {
           __typename: "PullRequest",
           id: prId,
           title: PR_TITLES[titleIndex],
-          gitUrl: `https://github.com/sweetr-dev/sweetr.dev/pull/${prCounter}`,
+          gitUrl: `https://github.com/sweetr-dev/sweetr.dev/pull/${prNumber}`,
           commentCount: Math.floor(seededRandom(actionSeed + 2) * 8),
           changedFilesCount: stats.files,
           linesAddedCount: stats.added,
           linesDeletedCount: stats.deleted,
           state: PullRequestState.MERGED,
           createdAt,
-          mergedAt: addHours(eventTime, 2 + Math.floor(actionRand * 6)).toISOString(),
-          closedAt: addHours(eventTime, 2 + Math.floor(actionRand * 6)).toISOString(),
+          mergedAt: addHours(
+            eventTime,
+            2 + Math.floor(actionRand * 6),
+          ).toISOString(),
+          closedAt: addHours(
+            eventTime,
+            2 + Math.floor(actionRand * 6),
+          ).toISOString(),
           tracking: {
             __typename: "PullRequestTracking",
             size,
@@ -189,9 +196,10 @@ function generateWorkLogEvents(
             codeReview: {
               __typename: "CodeReview",
               id: `cr-wl-${prId}`,
-              state: seededRandom(actionSeed + 5) > 0.3
-                ? CodeReviewState.APPROVED
-                : CodeReviewState.CHANGES_REQUESTED,
+              state:
+                seededRandom(actionSeed + 5) > 0.3
+                  ? CodeReviewState.APPROVED
+                  : CodeReviewState.CHANGES_REQUESTED,
               commentCount: 1 + Math.floor(seededRandom(actionSeed + 6) * 4),
               createdAt: addHours(eventTime, 1).toISOString(),
               author: {

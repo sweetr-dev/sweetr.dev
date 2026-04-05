@@ -21,7 +21,6 @@ function getTeamInput(variables: Record<string, unknown>) {
 }
 
 const MS_HOUR = 3_600_000;
-const MS_MINUTE = 60_000;
 
 export const chartMetricsHandlers = [
   graphql.query("ChartCycleTime", ({ variables }) => {

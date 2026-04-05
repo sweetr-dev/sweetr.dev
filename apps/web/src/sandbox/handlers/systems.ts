@@ -6,6 +6,60 @@ import {
   DigestType,
   IntegrationApp,
 } from "@sweetr/graphql-types/frontend/graphql";
+import { deploymentsFixture } from "../fixtures/deployments";
+import { incidentsFixture } from "../fixtures/incidents";
+import { pullRequestsFixture } from "../fixtures/pull-requests";
+
+const applicationDetailById = {
+  "1": {
+    __typename: "Application" as const,
+    id: "1",
+    name: "sweetr-api",
+    description: "Backend API service",
+    archivedAt: null,
+    team: {
+      __typename: "Team" as const,
+      id: "1",
+      name: "Platform",
+      icon: "🛠️",
+    },
+    repository: {
+      __typename: "Repository" as const,
+      id: "1",
+      name: "sweetr.dev",
+    },
+    deploymentSettings: {
+      __typename: "DeploymentSettings" as const,
+      trigger: DeploymentSettingsTrigger.MERGE,
+      subdirectory: null,
+      targetBranch: "main",
+    },
+  },
+  "2": {
+    __typename: "Application" as const,
+    id: "2",
+    name: "sweetr-web",
+    description: "Frontend web application",
+    archivedAt: null,
+    team: {
+      __typename: "Team" as const,
+      id: "2",
+      name: "Frontend",
+      icon: "🎨",
+    },
+    repository: {
+      __typename: "Repository" as const,
+      id: "1",
+      name: "sweetr.dev",
+    },
+    deploymentSettings: {
+      __typename: "DeploymentSettings" as const,
+      trigger: DeploymentSettingsTrigger.MERGE,
+      subdirectory: "apps/web",
+      targetBranch: "main",
+    },
+  },
+};
 
 export const systemsHandlers = [
   graphql.query("Repositories", () => {
@@ -152,23 +206,78 @@ export const systemsHandlers = [
     });
   }),
 
-  graphql.query("Incidents", () => {
+  graphql.query("Incidents", ({ variables }) => {
+    const input = (variables.input ?? {}) as { cursor?: string };
+    if (input.cursor) {
+      return HttpResponse.json({
+        data: { workspace: { __typename: "Workspace", incidents: [] } },
+      });
+    }
     return HttpResponse.json({
       data: {
         workspace: {
           __typename: "Workspace",
-          incidents: [],
+          incidents: incidentsFixture,
         },
       },
     });
   }),
 
-  graphql.query("Deployments", () => {
+  graphql.query("Incident", ({ variables }) => {
+    const incident =
+      incidentsFixture.find((i) => i.id === variables.incidentId) ?? null;
     return HttpResponse.json({
       data: {
         workspace: {
           __typename: "Workspace",
-          deployments: [],
+          incident,
+        },
+      },
+    });
+  }),
+
+  graphql.query("Deployments", ({ variables }) => {
+    const input = (variables.input ?? {}) as { cursor?: string };
+    if (input.cursor) {
+      return HttpResponse.json({
+        data: { workspace: { __typename: "Workspace", deployments: [] } },
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        workspace: {
+          __typename: "Workspace",
+          deployments: deploymentsFixture,
+        },
+      },
+    });
+  }),
+
+  graphql.query("Deployment", ({ variables }) => {
+    const dep = deploymentsFixture.find((d) => d.id === variables.deploymentId);
+    if (!dep) {
+      return HttpResponse.json({
+        data: { workspace: { __typename: "Workspace", deployment: null } },
+      });
+    }
+    const mergedPRs = pullRequestsFixture
+      .filter((pr) => pr.mergedAt)
+      .slice(0, dep.pullRequestCount);
+    return HttpResponse.json({
+      data: {
+        workspace: {
+          __typename: "Workspace",
+          deployment: {
+            ...dep,
+            application: {
+              ...dep.application,
+              repository: {
+                __typename: "Repository",
+                fullName: "sweetr-dev/sweetr.dev",
+              },
+            },
+            pullRequests: mergedPRs,
+          },
         },
       },
     });
@@ -179,18 +288,14 @@ export const systemsHandlers = [
       data: {
         workspace: {
           __typename: "Workspace",
-          applications: [
-            {
-              __typename: "Application",
-              id: "1",
-              name: "sweetr-api",
-            },
-            {
-              __typename: "Application",
-              id: "2",
-              name: "sweetr-web",
-            },
-          ],
+          deployments: deploymentsFixture.map((d) => ({
+            __typename: "Deployment",
+            id: d.id,
+            description: d.description,
+            version: d.version,
+            deployedAt: d.deployedAt,
+            application: d.application,
+          })),
         },
       },
     });
@@ -276,52 +381,15 @@ export const systemsHandlers = [
     });
   }),
 
-  graphql.query("Application", () => {
+  graphql.query("Application", ({ variables }) => {
+    const id = variables.applicationId as string;
+    const application =
+      applicationDetailById[id as keyof typeof applicationDetailById] ?? null;
     return HttpResponse.json({
       data: {
         workspace: {
           __typename: "Workspace",
-          application: {
-            __typename: "Application",
-            id: "1",
-            name: "sweetr-api",
-            description: "Backend API service",
-            archivedAt: null,
-            team: { __typename: "Team", id: "1", name: "Platform", icon: "🛠️" },
-            repository: {
-              __typename: "Repository",
-              id: "1",
-              name: "sweetr.dev",
-            },
-            deploymentSettings: {
-              __typename: "DeploymentSettings",
-              trigger: DeploymentSettingsTrigger.MERGE,
-              subdirectory: null,
-              targetBranch: "main",
-            },
-          },
-        },
-      },
-    });
-  }),
-
-  graphql.query("Incident", () => {
-    return HttpResponse.json({
-      data: {
-        workspace: {
-          __typename: "Workspace",
-          incident: null,
-        },
-      },
-    });
-  }),
-
-  graphql.query("Deployment", () => {
-    return HttpResponse.json({
-      data: {
-        workspace: {
-          __typename: "Workspace",
-          deployment: null,
+          application,
         },
       },
     });
@@ -435,7 +503,14 @@ export const systemsHandlers = [
           billing: {
             __typename: "Billing",
             estimatedSeats: 5,
-            purchasablePlans: null,
+            purchasablePlans: {
+              __typename: "PurchasablePlans",
+              cloud: {
+                __typename: "PlanKeys",
+                monthly: "price_cloud_monthly",
+                yearly: "price_cloud_yearly",
+              },
+            },
           },
         },
       },

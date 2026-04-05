@@ -1,10 +1,14 @@
 import { redirect } from "react-router";
 import Cookies from "js-cookie";
 import { setAuthorizationHeader } from "../api/clients/graphql-client";
-import { getEnv } from "../env";
+import {
+  clearSandboxMode,
+  getSandboxCookieAttributes,
+  SANDBOX_AUTH_COOKIE,
+  SANDBOX_STORAGE_KEY,
+} from "./sandbox-context";
 
 const SANDBOX_COOKIE_VALUE = "sandbox-mode";
-const SANDBOX_STORAGE_KEY = "sweetr-sandbox";
 
 let workerStarted = false;
 
@@ -14,15 +18,30 @@ let workerStarted = false;
  */
 export const ensureSandboxWorker = async () => {
   if (!workerStarted) {
-    const { worker } = await import("./worker");
-    await worker.start({
-      onUnhandledRequest: "bypass",
-      quiet: true,
-    });
-    workerStarted = true;
+    try {
+      const { worker } = await import("./worker");
+      await worker.start({
+        onUnhandledRequest: "bypass",
+        quiet: true,
+      });
+      workerStarted = true;
+    } catch (e) {
+      clearSandboxMode();
+      throw e;
+    }
   }
 
   setAuthorizationHeader(SANDBOX_COOKIE_VALUE);
+};
+
+/** Stops MSW so non-sandbox navigations hit the real API. */
+export const stopSandboxWorker = async (): Promise<void> => {
+  if (!workerStarted) {
+    return;
+  }
+  const { worker } = await import("./worker");
+  await worker.stop();
+  workerStarted = false;
 };
 
 /**
@@ -35,9 +54,8 @@ export const sandboxLoader = async () => {
 
   sessionStorage.setItem(SANDBOX_STORAGE_KEY, "true");
 
-  Cookies.set("Authorization", SANDBOX_COOKIE_VALUE, {
-    domain: getEnv("AUTH_COOKIE_DOMAIN"),
-    secure: true,
+  Cookies.set(SANDBOX_AUTH_COOKIE, SANDBOX_COOKIE_VALUE, {
+    ...getSandboxCookieAttributes(),
   });
 
   return redirect("/");

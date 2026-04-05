@@ -8,8 +8,18 @@ export const homeHandlers = [
   }),
 
   graphql.query("Teammates", ({ variables }) => {
+    const handle =
+      variables && typeof variables.handle === "string"
+        ? variables.handle
+        : null;
+    if (!handle) {
+      return HttpResponse.json(
+        { errors: [{ message: "Missing required variable: handle" }] },
+        { status: 400 },
+      );
+    }
     return HttpResponse.json({
-      data: teammatesFixture(variables.handle as string),
+      data: teammatesFixture(handle),
     });
   }),
 ];

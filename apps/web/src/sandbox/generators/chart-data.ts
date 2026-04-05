@@ -47,6 +47,9 @@ export function mapPattern(
   jitterPercent = 0.08,
 ): number[] {
   if (length <= 0) return [];
+  if (pattern.length === 0) {
+    return Array.from({ length }, () => 0);
+  }
   if (length === 1) return [Math.round(pattern[0] * scale)];
 
   const result: number[] = [];

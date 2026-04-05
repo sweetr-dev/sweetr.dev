@@ -7,7 +7,9 @@ const BANNER_HEIGHT = 32;
 
 export const SANDBOX_BANNER_HEIGHT = BANNER_HEIGHT;
 
-const handleExitSandbox = () => {
+const handleExitSandbox = async () => {
+  const { stopSandboxWorker } = await import("./sandbox-provider");
+  await stopSandboxWorker();
   clearSandboxMode();
   logout();
   window.location.href = "/login";

@@ -4,7 +4,7 @@ import { AppSpotlight } from "../components/app-spotlight";
 import { useAppStore } from "../providers/app.provider";
 import { usePaywall } from "../providers/billing.provider";
 import { useSentry } from "../providers/sentry.provider";
-import { useSandbox } from "../sandbox/sandbox-context";
+import { getSandboxState } from "../sandbox/sandbox-context";
 import {
   SandboxBanner,
   SANDBOX_BANNER_HEIGHT,
@@ -16,7 +16,7 @@ interface AppProps {
 
 export const AppPage = ({ children }: AppProps) => {
   const { workspace } = useAppStore();
-  const { isSandbox } = useSandbox();
+  const { isSandbox } = getSandboxState();
   const { shouldShowPaywall, goToPaywall, showPaywallNotification } =
     usePaywall();
   useSentry();

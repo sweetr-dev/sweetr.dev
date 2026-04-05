@@ -5,8 +5,9 @@ import {
 import type { PullRequestsQuery } from "@sweetr/graphql-types/frontend/graphql";
 import { subDays, subHours } from "date-fns";
 
-const daysAgo = (days: number) => subDays(new Date(), days).toISOString();
-const hoursAgo = (hours: number) => subHours(new Date(), hours).toISOString();
+const FIXTURE_NOW = new Date();
+const daysAgo = (days: number) => subDays(FIXTURE_NOW, days).toISOString();
+const hoursAgo = (hours: number) => subHours(FIXTURE_NOW, hours).toISOString();
 
 const MS_HOUR = 3_600_000;
 const MS_MINUTE = 60_000;
@@ -101,7 +102,7 @@ export const pullRequestsFixture: PR[] = [
       timeToCode: 2 * MS_HOUR,
       timeToFirstReview: 3 * MS_HOUR,
       timeToFirstApproval: 6 * MS_HOUR,
-      timeToMerge: 48 * MS_HOUR,
+      timeToMerge: null,
       timeToDeploy: null,
       firstReviewAt: daysAgo(3),
       firstApprovalAt: daysAgo(3),
@@ -179,7 +180,7 @@ export const pullRequestsFixture: PR[] = [
     __typename: "PullRequest",
     id: "pr-100",
     title: "feat: add sandbox mode for demo",
-    gitUrl: "https://github.com/sweetr-dev/sweetr.dev/pull/96",
+    gitUrl: "https://github.com/sweetr-dev/sweetr.dev/pull/100",
     commentCount: 3,
     changedFilesCount: 12,
     linesAddedCount: 450,
