@@ -52,6 +52,7 @@ import {
   redirectIfCredentials,
   redirectIfNoCredentials,
 } from "./providers/auth.provider";
+import { isSandboxMode } from "./sandbox/sandbox-context";
 import {
   handleOAuthRedirect,
   installGitAppIfNoWorkspaces,
@@ -106,6 +107,16 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      // Sandbox entry point — starts MSW, sets fake auth, redirects to /
+      {
+        path: "/sandbox",
+        lazy: async () => {
+          const { sandboxLoader } = await import(
+            "./sandbox/sandbox-provider"
+          );
+          return { loader: sandboxLoader };
+        },
+      },
       // Authenticated pages
       {
         element: <AppPage />,
@@ -115,6 +126,13 @@ export const router = createBrowserRouter([
           </AppPage>
         ),
         loader: async ({ request }) => {
+          if (isSandboxMode()) {
+            const { ensureSandboxWorker } = await import(
+              "./sandbox/sandbox-provider"
+            );
+            await ensureSandboxWorker();
+          }
+
           const redirectResponse = redirectIfNoCredentials(
             new URL(request.url),
           );

@@ -112,6 +112,16 @@ export const LoginPage = () => {
               Works for login and signup. New teams will be guided through
               setup.
             </Text>
+            <Text
+              component="a"
+              href="/sandbox"
+              size="xs"
+              c="dimmed"
+              td="underline"
+              style={{ textUnderlineOffset: 3 }}
+            >
+              Explore the sandbox instead.
+            </Text>
           </Stack>
 
           <Box

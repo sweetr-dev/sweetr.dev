@@ -38,5 +38,10 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "npm@8.5.5"
+  "packageManager": "npm@8.5.5",
+  "msw": {
+    "workerDirectory": [
+      "apps/web/public"
+    ]
+  }
 }

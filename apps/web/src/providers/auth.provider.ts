@@ -5,6 +5,12 @@ import { ClientError } from "graphql-request";
 import { useAppStore } from "./app.provider";
 import { ResourceNotFound } from "../exceptions/resource-not-found.exception";
 import { getEnv } from "../env";
+import {
+  clearSandboxMode,
+  isSandboxMode,
+  SANDBOX_AUTH_COOKIE,
+  getSandboxCookieAttributes,
+} from "../sandbox/sandbox-context";
 
 export const useAuthenticatedUser = () => {
   const { authenticatedUser } = useAppStore();
@@ -20,10 +26,19 @@ export const isAuthenticated = (): boolean => {
   return !!getAuthorizationHeader();
 };
 
-export const getAuthorizationHeader = (): string | undefined =>
-  Cookies.get("Authorization");
+export const getAuthorizationHeader = (): string | undefined => {
+  if (isSandboxMode()) {
+    return Cookies.get(SANDBOX_AUTH_COOKIE);
+  }
+  return Cookies.get("Authorization");
+};
 
 export const setAuth = (accessToken: string): void => {
+  clearSandboxMode();
+  void import("../sandbox/sandbox-provider").then(({ stopSandboxWorker }) =>
+    stopSandboxWorker(),
+  );
+
   Cookies.set("Authorization", accessToken, {
     domain: getEnv("AUTH_COOKIE_DOMAIN"),
     secure: true,
@@ -37,6 +52,7 @@ export const logout = (): void => {
     domain: getEnv("AUTH_COOKIE_DOMAIN"),
     secure: true,
   });
+  Cookies.remove(SANDBOX_AUTH_COOKIE, getSandboxCookieAttributes());
 };
 
 export const redirectIfNoCredentials = (from: URL) => {
