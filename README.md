@@ -4,21 +4,14 @@
   </a>
 <h3 align="center">sweetr.dev</h3>
   <p align="center"><strong>The open platform for Engineering Performance++</strong></p>
-<p align="center">
-  <i>Insights and automations your dev team will actually trust.
-</p>
 
 <p align="center">
   <a href="https://sweetr.dev">Website</a>
   ·
   <a href="https://docs.sweetr.dev/">Docs</a>
-  ·
-  <a href="https://sweetr.featurebase.app/">Feedback</a>
 </p>
-
 <br/>
-
-<hr/>
+<hr/> 
 
 ### Getting Started
   
@@ -26,11 +19,16 @@ Start a 14-day free trial: <a href="https://github.com/apps/sweetr-dev/installat
 <br/>
 Self-host for free: <a href="https://docs.sweetr.dev/get-started/self-host">Read the guide</a>
 <hr/>
-<br/>
+
+
+<hr/> 
 
 ### What problems does it solve?
-PRs get stuck. Bottlenecks stay hidden. Decisions happen without signals. Sweetr gives your team the visibility and automations to uncover friction, improve delivery, and build a better developer experience.
-Explore the feature sections to learn how each tool can help your team.
+
+PRs get stuck. Bottlenecks stay hidden. Decisions happen without signals. 
+
+Sweetr gives your team the visibility and automations to uncover friction, improve delivery, and build a better developer experience. 
+<hr/> 
 
 <br/>
 
