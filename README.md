@@ -3,8 +3,9 @@
     <img src="https://github.com/user-attachments/assets/d0aa771f-60a4-4f50-ae20-7bf35f6b4b2d" alt="Sweetr Logo">
   </a>
 <h3 align="center">sweetr.dev</h3>
+  <p align="center"><strong>The open platform for Engineering Performance++</strong></p>
 <p align="center">
-  <i>Insights and automations your dev team will actually trust. Free to <a href="https://docs.sweetr.dev/get-started/self-host" target="blank">self-host</a>.</i>
+  <i>Insights and automations your dev team will actually trust.
 </p>
 
 <p align="center">
@@ -16,10 +17,27 @@
 </p>
 
 <br/>
+
+<hr/>
+
+### Getting Started
+  
+Start a 14-day free trial: <a href="https://github.com/apps/sweetr-dev/installations/new">Install the GitHub App</a>
 <br/>
-    
+Self-host for free: <a href="https://docs.sweetr.dev/get-started/self-host">Read the guide</a>
+<hr/>
+<br/>
+
+### What problems does it solve?
+PRs get stuck. Bottlenecks stay hidden. Decisions happen without signals. Sweetr gives your team the visibility and automations to uncover friction, improve delivery, and build a better developer experience.
+Explore the feature sections to learn how each tool can help your team.
+
+<br/>
+
 ## 📋 Activity
+
 Spot work that needs attention; unblock your team; gather data for retros, 1:1s and performance reviews.
+
 <table>
   <tr>
     <th><a href="https://docs.sweetr.dev/metrics-and-insights/work-log" target="_blank">Work Log</a></th>
