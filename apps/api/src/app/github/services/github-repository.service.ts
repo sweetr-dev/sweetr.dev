@@ -1,7 +1,7 @@
 import { GitProvider, Repository, Workspace } from "@prisma/client";
 import {
   GITHUB_MAX_PAGE_LIMIT,
-  getInstallationGraphQLOctoKit,
+  getInstallationOctoKit,
 } from "../../../lib/octokit";
 import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
@@ -11,6 +11,10 @@ import {
   DEFAULT_SYNC_BATCH_SINCE_DAYS_AGO,
   scheduleSyncBatch,
 } from "../../sync-batch/services/sync-batch.service";
+import { captureException } from "../../../lib/sentry";
+import { initApplicationsFromRepositories } from "../../applications/services/application.service";
+import { initIncidentDetectionSettings } from "../../incidents/services/incident-detection.service";
+import { isRepositorySyncable } from "../../repositories/services/repository.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -19,7 +23,7 @@ type RepositoryData = Omit<
 
 export const syncGitHubRepositories = async (
   gitInstallationId: number,
-  targetRepositories?: string[]
+  syncRepositories?: string[]
 ): Promise<void> => {
   logger.info("syncGitHubRepositories", { gitInstallationId });
 
@@ -32,11 +36,38 @@ export const syncGitHubRepositories = async (
     return;
   }
 
-  const isOnboarding = targetRepositories === undefined;
+  const isOnboarding = syncRepositories === undefined;
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
 
-  if (targetRepositories === undefined || targetRepositories.length > 0) {
+  if (isOnboarding) {
+    try {
+      await initIncidentDetectionSettings(workspace.id);
+    } catch (error) {
+      logger.warn("Failed to initialize incident detection settings", {
+        workspaceId: workspace.id,
+        error,
+      });
+      captureException(error);
+    }
+
+    try {
+      await initApplicationsFromRepositories(
+        workspace.id,
+        repositories.filter(isRepositorySyncable)
+      );
+    } catch (error) {
+      logger.warn("Failed to initialize applications from repositories", {
+        workspaceId: workspace.id,
+        error,
+      });
+      captureException(error);
+    }
+  }
+
+  // When syncRepositories is undefined, we are onboarding.
+  // We schedule a sync batch without specifying any repositories, which will trigger all repositories to be synced.
+  if (syncRepositories === undefined || syncRepositories.length > 0) {
     await scheduleSyncBatch({
       workspaceId: workspace.id,
       scheduledAt: new Date(),
@@ -44,8 +75,7 @@ export const syncGitHubRepositories = async (
       metadata: {
         isOnboarding,
         repositories:
-          targetRepositories ??
-          repositories.map((repository) => repository.name),
+          syncRepositories ?? repositories.map((repository) => repository.name),
         gitProvider: GitProvider.GITHUB,
       },
     });
@@ -55,62 +85,37 @@ export const syncGitHubRepositories = async (
 const fetchGitHubRepositories = async (
   gitInstallationId: number
 ): Promise<RepositoryData[]> => {
-  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
+  const octokit = getInstallationOctoKit(gitInstallationId);
 
   const repositories: any[] = [];
-  let hasNextPage = true;
-  let cursor: string | null = null;
+  let page = 1;
 
-  while (hasNextPage) {
-    const response: any = await fireGraphQLRequest({
-      query: `
-          query GetOrganizationRepositories($cursor: String) {
-            viewer {
-              repositories(first: ${GITHUB_MAX_PAGE_LIMIT}, after: $cursor) {
-                pageInfo {
-                  endCursor
-                  hasNextPage
-                }
-                nodes {
-                  id
-                  name
-                  nameWithOwner
-                  description
-                  stargazerCount
-                  isFork
-                  isArchived
-                  isMirror
-                  isPrivate
-                  archivedAt
-                  createdAt
-                }
-              }
-            }
-          }
-        `,
-      cursor,
+  while (true) {
+    // We can't use GraphQL API here anymore since it will throw permission error when trying to access defaultBranchRef
+    const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
+      per_page: GITHUB_MAX_PAGE_LIMIT,
+      page,
     });
 
-    const { nodes, pageInfo } = response.viewer.repositories;
+    repositories.push(...data.repositories);
 
-    repositories.push(...nodes);
-
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
+    if (repositories.length >= data.total_count) break;
+    page++;
   }
 
   return repositories.map((repository) => ({
-    gitRepositoryId: repository.id,
+    gitRepositoryId: repository.node_id,
     gitProvider: GitProvider.GITHUB,
     name: repository.name,
-    fullName: repository.nameWithOwner,
-    description: repository.description,
-    starCount: repository.stargazerCount,
-    isFork: repository.isFork,
-    isMirror: repository.isMirror,
-    isPrivate: repository.isPrivate,
-    archivedAt: repository.archivedAt ? new Date(repository.archivedAt) : null,
-    createdAt: new Date(repository.createdAt),
+    fullName: repository.full_name,
+    description: repository.description ?? null,
+    defaultBranch: repository.default_branch ?? "main",
+    starCount: repository.stargazers_count ?? 0,
+    isFork: repository.fork ?? false,
+    isMirror: !!repository.mirror_url,
+    isPrivate: repository.private ?? false,
+    archivedAt: repository.archived ? new Date() : null, // We used to fetch archivedAt from GraphQL, sadly not available in the REST API
+    createdAt: new Date(repository.created_at!),
   }));
 };
 

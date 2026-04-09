@@ -1,11 +1,12 @@
-import { Application, Prisma } from "@prisma/client";
+import { Application, Prisma, Repository } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
-import { assign } from "radash";
+import { assign, parallel } from "radash";
 import { getPrisma, take } from "../../../prisma";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { validateInputOrThrow } from "../../validator.service";
 import {
   ArchiveApplicationArgs,
+  DeploymentSettingsTrigger,
   FindApplicationByIdArgs,
   FindApplicationByNameArgs,
   PaginateApplicationsArgs,
@@ -130,5 +131,24 @@ export const unarchiveApplication = async ({
   return getPrisma(workspaceId).application.update({
     where: { id: applicationId },
     data: { archivedAt: null },
+  });
+};
+
+export const initApplicationsFromRepositories = async (
+  workspaceId: number,
+  repositories: Repository[]
+) => {
+  await parallel(10, repositories, async (repository) => {
+    return upsertApplication({
+      workspaceId,
+      name: repository.name,
+      description: repository.description,
+      repositoryId: repository.id,
+      deploymentSettings: {
+        trigger: DeploymentSettingsTrigger.MERGE,
+        subdirectory: "",
+        targetBranch: repository.defaultBranch ?? "main",
+      },
+    });
   });
 };

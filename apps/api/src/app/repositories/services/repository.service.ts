@@ -80,7 +80,7 @@ export const findRepositoriesByWorkspace = async ({
   return getPrisma(workspaceId).repository.findMany(query);
 };
 
-export const isRepositorySyncable = async (repository: Repository) => {
+export const isRepositorySyncable = (repository: Repository) => {
   return (
     repository.isFork === false &&
     repository.isMirror === false &&

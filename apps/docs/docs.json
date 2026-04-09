@@ -62,7 +62,7 @@
               {
                 "group": "Get Started",
                 "icon": "sparkles",
-                "pages": ["get-started/cloud", "get-started/self-host"]
+                "pages": ["get-started/cloud", "get-started/self-host", "get-started/onboarding"]
               }
             ]
           },

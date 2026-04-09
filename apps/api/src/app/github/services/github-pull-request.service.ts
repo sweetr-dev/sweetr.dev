@@ -33,7 +33,7 @@ import { gitHubUserToGitProfileData } from "./github-user.service";
 
 type RepositoryData = Omit<
   Repository,
-  "id" | "workspaceId" | "createdAt" | "updatedAt"
+  "id" | "workspaceId" | "createdAt" | "updatedAt" | "defaultBranch"
 >;
 
 export interface SyncPullRequestArgs {

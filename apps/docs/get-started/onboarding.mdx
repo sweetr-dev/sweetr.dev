@@ -1,0 +1,107 @@
+---
+title: Onboarding
+description: What Sweetr sets up for you and what to do next.
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+After installing the Sweetr GitHub App, we run an initial sync that pulls in your organization's repositories, pull requests, code reviews, and teams. This guide walks you through what was set up automatically and what you should review.
+
+## Setup Teams
+
+Sweetr imported your GitHub teams and their members during the initial sync.
+
+<Warning>
+  **This is a one-time import.**
+
+If you change teams in GitHub later, those changes won't show up in Sweetr.
+
+You'll need to edit teams directly in Sweetr going forward.
+
+</Warning>
+
+### What to do
+
+<Steps>
+  <Step title="Review your teams">
+    Check the [Teams](/platform/teams) page. Make sure the imported teams match
+    your current org structure and remove any that are outdated.
+  </Step>
+  <Step title="Adjust membership">
+    Add or remove members as needed. See [Teams](/platform/teams) for details on
+    roles and management.
+  </Step>
+  <Step title="Explore team insights">
+    Once your teams look right, you're free to explore team-scoped views like
+    [Work Log](/metrics-and-insights/work-log) and [Work in
+    Progress](/metrics-and-insights/wip).
+  </Step>
+</Steps>
+
+## Setup DORA metrics
+
+To calculate [DORA metrics](/metrics-and-insights/dora), Sweetr needs to know about your [applications](/platform/applications), [deployments](/platform/deployments), and [incidents](/platform/incidents).
+
+<AccordionGroup>
+  <Accordion title="Applications" icon="cube" defaultOpen>
+
+Sweetr created an application for each of your repositories during the initial sync. An application is a deployable unit that connects a repository to its deployments and environments.
+
+<Warning>
+  **Sweetr supports monorepos but can't detect them on initial sync.**
+
+    If you have monorepos, split the auto-created application into separate
+    applications and map each to a subdirectory. This way pull requests get
+    linked to the right application.
+
+</Warning>
+  </Accordion>
+
+<Accordion title="Deployments" icon="rocket" defaultOpen>
+
+Every auto-created application is pre-configured to consider the merge of a Pull Request as a deployment, so you have DORA metrics from day one.
+
+This is often inaccurate as many companies deploy multiple PRs at once. You should switch to the [API Webhook](/platform/deployments#setting-up-deployments-for-dora-metrics) trigger for full data accuracy.
+
+<Tip>
+  **Tip:** After creating applications, you can go to Settings > Workspace and click
+  "Resync all historical data" to backfill deployments from previously merged PRs.
+</Tip>
+
+</Accordion>
+
+  <Accordion title="Incidents" icon="flame" defaultOpen>
+  
+Incidents are production issues caused by a deployment. They feed into Change Failure Rate and Mean Time to Recovery.
+
+Sweetr has [Incident Detection](/automations/incident-detection) enabled by default. It creates incidents when it spots rollbacks, hotfixes, or reverts. You can also [create them manually](/platform/incidents).
+
+  </Accordion>
+</AccordionGroup>
+
+### What to do
+
+<Steps>
+  <Step title="Review your applications">
+    Go to [Applications](/platform/applications) and check the auto-created
+    list. If you have monorepos, split them into separate applications per
+    service.
+  </Step>
+  <Step title="Tweak incident detection (optional)">
+    The [Incident Detection](/automations/incident-detection) automation is
+    already running. If your team uses specific branch names or PR labels for
+    hotfixes, customize the patterns there. Then check
+    [Incidents](/platform/incidents) to make sure the auto-detected ones look
+    right.
+  </Step>
+  <Step title="Check your DORA dashboard">
+    Go to [DORA Metrics](/metrics-and-insights/dora) to see how your team is
+    doing.
+  </Step>
+</Steps>
+
+## Inviting teammates
+
+Share the workspace URL with your team. Anyone in your GitHub organization will auto-join when they log in with their GitHub account.
+
+<CtaGetStarted />
