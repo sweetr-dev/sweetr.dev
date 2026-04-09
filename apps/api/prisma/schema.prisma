@@ -309,15 +309,16 @@ model Repository {
   gitProvider     GitProvider
   gitRepositoryId String
 
-  name        String
-  fullName    String
-  description String?
-  isPrivate   Boolean
-  isFork      Boolean
-  isMirror    Boolean
-  archivedAt  DateTime?
-  starCount   Int
-  createdAt   DateTime
+  name          String
+  fullName      String
+  defaultBranch String    @default("main")
+  description   String?
+  isPrivate     Boolean
+  isFork        Boolean
+  isMirror      Boolean
+  archivedAt    DateTime?
+  starCount     Int
+  createdAt     DateTime
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int

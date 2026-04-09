@@ -4,7 +4,10 @@ import { logger } from "../../../lib/logger";
 import { ResourceNotFoundException } from "../../errors/exceptions/resource-not-found.exception";
 import { findDeploymentByIdOrThrow } from "../../deployment/services/deployment.service";
 import { findWorkspaceById } from "../../workspaces/services/workspace.service";
-import { findAutomationByType } from "../../automations/services/automation.service";
+import {
+  findAutomationByType,
+  upsertAutomationSettings,
+} from "../../automations/services/automation.service";
 import { isActiveCustomer } from "../../authorization.service";
 import { IncidentDetectionSettings } from "../../automations/services/automation.types";
 import { HandleIncidentDetectionAutomationArgs } from "./incident-detection.types";
@@ -279,4 +282,31 @@ const detectHotfix = async (
     causeDeploymentId: previousDeployment.id,
     fixDeploymentId: deployment.id,
   };
+};
+
+export const initIncidentDetectionSettings = async (workspaceId: number) => {
+  const automation = await findAutomationByType({
+    workspaceId,
+    type: AutomationType.INCIDENT_DETECTION,
+  });
+
+  if (automation) return;
+
+  const defaultSettings: IncidentDetectionSettings = {
+    revert: { enabled: true },
+    rollback: { enabled: true },
+    hotfix: {
+      enabled: true,
+      prTitleRegEx: "hotfix",
+      branchRegEx: "^hotfix",
+      prLabelRegEx: "hotfix",
+    },
+  };
+
+  await upsertAutomationSettings({
+    workspaceId,
+    type: AutomationType.INCIDENT_DETECTION,
+    enabled: true,
+    settings: defaultSettings,
+  });
 };
