@@ -11,30 +11,30 @@ import {
 } from "@tabler/icons-react";
 import { endOfToday } from "date-fns";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { Breadcrumbs } from "../../../components/breadcrumbs";
-import { FilterDate } from "../../../components/filter-date";
-import { FilterMultiSelect } from "../../../components/filter-multi-select";
-import { PageContainer } from "../../../components/page-container";
+import { Breadcrumbs } from "../../../../components/breadcrumbs";
+import { FilterDate } from "../../../../components/filter-date";
+import { FilterMultiSelect } from "../../../../components/filter-multi-select";
+import { PageContainer } from "../../../../components/page-container";
 import {
   useApplicationAsyncOptions,
   useEnvironmentAsyncOptions,
   useTeamAsyncOptions,
-} from "../../../providers/async-options.provider";
+} from "../../../../providers/async-options.provider";
 import {
   getAbbreviatedDuration,
   humanizeDuration,
   parseNullableISO,
   thirtyDaysAgo,
-} from "../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
-import { IconDeployment, IconTeam } from "../../../providers/icon.provider";
-import { useScreenSize } from "../../../providers/screen.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
-import { DoraMetricFilters, DoraMetricOutletContext } from "./types";
-import { useDoraMetrics } from "./useDoraMetrics";
-import { useFeatureAdoption } from "../../../providers/feature-adoption.provider";
-import { AlertEnableFeature } from "../../../components/alert-enable-feature";
+} from "../../../../providers/date.provider";
+import { useFilterSearchParameters } from "../../../../providers/filter.provider";
+import { IconDeployment, IconTeam } from "../../../../providers/icon.provider";
+import { useScreenSize } from "../../../../providers/screen.provider";
+import { useWorkspace } from "../../../../providers/workspace.provider";
+import { CardDoraMetric } from "../components/card-dora-metric/dora-card-stat";
+import { DoraMetricFilters, DoraMetricOutletContext } from "../types";
+import { useDoraMetrics } from "../useDoraMetrics";
+import { useFeatureAdoption } from "../../../../providers/feature-adoption.provider";
+import { AlertEnableFeature } from "../../../../components/alert-enable-feature";
 
 export const DoraPage = () => {
   const { pathname } = useLocation();

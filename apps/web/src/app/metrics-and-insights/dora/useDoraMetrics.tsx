@@ -1,4 +1,4 @@
-import { useDoraMetricsQuery } from "../../api/dora-metrics.api";
+import { useDoraMetricsQuery } from "../../../api/dora-metrics.api";
 import { DoraMetricFilters } from "./types";
 
 interface UseDoraMetricsProps {

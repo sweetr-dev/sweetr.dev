@@ -35,7 +35,7 @@ import { TeamPullRequestsPage } from "./app/humans/teams/[id]/pull-requests/page
 import { TeamWorkInProgressPage } from "./app/humans/teams/[id]/work-in-progress/page";
 import { TeamWorkLogPage } from "./app/humans/teams/[id]/work-log/page";
 import { TeamsPage } from "./app/humans/teams/page";
-import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
+import { DoraPage } from "./app/metrics-and-insights/dora/page";
 import { AppPage } from "./app/page";
 import { BillingPage } from "./app/settings/billing/page";
 import { IntegrationsPage } from "./app/settings/integrations/page";
@@ -68,12 +68,14 @@ import { EnvironmentsPage } from "./app/systems/environments/page";
 import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
 import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
 import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
-import { DoraFailureRatePage } from "./app/metrics-and-insights/dora/failure-rate/page";
-import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/dora/deployment-frequency/page";
-import { DoraLeadTimePage } from "./app/metrics-and-insights/dora/lead-time/page";
-import { DoraMttrPage } from "./app/metrics-and-insights/dora/mttr/page";
+import { DoraFailureRatePage } from "./app/metrics-and-insights/dora/trends/failure-rate/page";
+import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/dora/trends/deployment-frequency/page";
+import { DoraLeadTimePage } from "./app/metrics-and-insights/dora/trends/lead-time/page";
+import { DoraMttrPage } from "./app/metrics-and-insights/dora/trends/mttr/page";
 import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
 import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
+import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
+import { PrFlowPage } from "./app/metrics-and-insights/pr-flow/page";
 
 export const router = createBrowserRouter([
   {
@@ -266,6 +268,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "/metrics-and-insights/dora",
+                element: <DoraPage />,
                 children: [
                   {
                     path: "/metrics-and-insights/dora/deployment-frequency",
@@ -284,6 +287,10 @@ export const router = createBrowserRouter([
                     element: <DoraMttrPage />,
                   },
                 ],
+              },
+              {
+                path: "/metrics-and-insights/pr-flow",
+                element: <PrFlowPage />,
               },
             ],
           },

@@ -6,24 +6,24 @@ import {
   echarts,
   formatAxisDate,
   formatTooltipDate,
-} from "../../../../../providers/echarts.provider";
+} from "../../../../../../providers/echarts.provider";
 
-interface ChartFailureRateData {
+interface ChartDeploymentFrequencyData {
   columns: string[];
   series: { name: string; data: number[]; color?: string }[];
 }
 
-interface ChartFailureRateProps {
-  chartData?: ChartFailureRateData | null;
+interface ChartDeploymentFrequencyProps {
+  chartData?: ChartDeploymentFrequencyData | null;
   period: Period;
   id?: string;
 }
 
-export const ChartFailureRate = ({
+export const ChartDeploymentFrequency = ({
   chartData,
   period,
-  id: chartId = "chart-failure-rate",
-}: ChartFailureRateProps) => {
+  id: chartId = "chart-deployment-frequency",
+}: ChartDeploymentFrequencyProps) => {
   useEffect(() => {
     if (!chartData) return;
 
@@ -38,7 +38,7 @@ export const ChartFailureRate = ({
         padding: [10, 15],
         textStyle: { color: "#fff", fontSize: 16 },
         valueFormatter(value) {
-          return `${value}%`;
+          return value;
         },
         axisPointer: {
           label: {
@@ -74,7 +74,7 @@ export const ChartFailureRate = ({
         min: 0,
         axisLabel: {
           formatter(value) {
-            return parseFloat(value).toFixed(1);
+            return value;
           },
         },
       },

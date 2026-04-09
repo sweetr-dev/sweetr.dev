@@ -1,7 +1,12 @@
-import { Divider, Title, NavLink } from "@mantine/core";
-import { IconChartBar, IconGitPullRequest } from "@tabler/icons-react";
+import { Divider, Title, NavLink, Badge } from "@mantine/core";
+import {
+  IconBrain,
+  IconChartBar,
+  IconChartPie2,
+  IconGitPullRequest,
+} from "@tabler/icons-react";
 import { Link, useLocation } from "react-router";
-import { Subnav } from "../../../../../components/subnav";
+import { Subnav } from "../../../../components/subnav";
 
 export const SubnavMetrics = () => {
   const { pathname } = useLocation();
@@ -9,7 +14,7 @@ export const SubnavMetrics = () => {
   return (
     <Subnav>
       <Title order={3} mt={34}>
-        Metrics & Insights
+        Metrics
       </Title>
       <Divider label="Dashboards" labelPosition="left" mt="sm" />
       <NavLink
@@ -25,6 +30,32 @@ export const SubnavMetrics = () => {
         component={Link}
         label="PR Flow"
         leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
+      />
+      <NavLink
+        to="/metrics-and-insights/ai-adoption"
+        active={pathname.startsWith("/metrics-and-insights/ai-adoption")}
+        component={Link}
+        label="Work Allocation"
+        disabled
+        rightSection={
+          <Badge size="xs" variant="default">
+            Soon
+          </Badge>
+        }
+        leftSection={<IconChartPie2 stroke={1.5} size={18} />}
+      />
+      <NavLink
+        to="/metrics-and-insights/ai-adoption"
+        active={pathname.startsWith("/metrics-and-insights/ai-adoption")}
+        component={Link}
+        label="AI Adoption"
+        disabled
+        rightSection={
+          <Badge size="xs" variant="default">
+            Soon
+          </Badge>
+        }
+        leftSection={<IconBrain stroke={1.5} size={18} />}
       />
     </Subnav>
   );

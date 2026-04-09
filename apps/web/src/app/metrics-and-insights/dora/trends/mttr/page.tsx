@@ -1,16 +1,15 @@
-import { Box, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
 import { useOutletContext } from "react-router";
-import { FilterSelect } from "../../../../components/filter-select";
-import { useWorkspace } from "../../../../providers/workspace.provider";
-import { ButtonUnderstand } from "../components/button-understand";
+import { FilterSelect } from "../../../../../components/filter-select";
+import { useWorkspace } from "../../../../../providers/workspace.provider";
+import { ButtonUnderstand } from "../../components/button-understand";
 import { DoraMetricOutletContext } from "../../types";
 import { useDoraMetrics } from "../../useDoraMetrics";
-import { ChartAverageTime } from "../../../humans/teams/[id]/health-and-performance/components/chart-average-time";
-import { LeadTimeBreakdown } from "./components/lead-time-breakdown";
+import { ChartAverageTime } from "../../../../humans/teams/[id]/health-and-performance/components/chart-average-time";
 
-export const DoraLeadTimePage = () => {
+export const DoraMttrPage = () => {
   const { workspace } = useWorkspace();
   const { filters, onPeriodChange } =
     useOutletContext<DoraMetricOutletContext>();
@@ -19,7 +18,7 @@ export const DoraLeadTimePage = () => {
     filters,
   });
 
-  if (isLoading || !metrics.leadTime) {
+  if (isLoading || !metrics.meanTimeToRecover) {
     return <Skeleton height={400} />;
   }
 
@@ -42,14 +41,14 @@ export const DoraLeadTimePage = () => {
         <ButtonUnderstand>
           <Stack gap="xs">
             <Text size="sm">
-              Lead Time measures how long it takes for code to go from first
-              commit to production. Shorter lead times mean your team can
-              deliver value faster and respond quickly to customer needs.
+              Mean Time to Recovery (MTTR) measures how quickly your team
+              restores service after a failure. Shorter recovery times mean less
+              impact on users and business.
             </Text>
             <Text size="sm">
-              Use the breakdown below to identify bottlenecks: Is code waiting
-              too long for review? Are approvals slow? This helps you focus
-              improvement efforts where they matter most.
+              Elite teams recover in under an hour. To improve MTTR, invest in
+              monitoring and alerting, practice incident response, and ensure
+              quick rollback capabilities are in place.
             </Text>
           </Stack>
         </ButtonUnderstand>
@@ -58,21 +57,12 @@ export const DoraLeadTimePage = () => {
       <Paper withBorder bg="dark.6" h={400} p="xs">
         <ChartAverageTime
           chartData={{
-            columns: metrics.leadTime.columns,
-            data: metrics.leadTime.data,
+            columns: metrics.meanTimeToRecover.columns,
+            data: metrics.meanTimeToRecover.data,
           }}
           period={filters.period}
         />
       </Paper>
-
-      {metrics.leadTime.breakdown && (
-        <Box mt="xl">
-          <LeadTimeBreakdown
-            breakdown={metrics.leadTime.breakdown}
-            previousPeriod={metrics.leadTime.previousPeriod}
-          />
-        </Box>
-      )}
     </>
   );
 };

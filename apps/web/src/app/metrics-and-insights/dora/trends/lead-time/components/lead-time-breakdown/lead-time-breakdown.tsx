@@ -8,7 +8,7 @@ import {
   IconRocket,
 } from "@tabler/icons-react";
 import { Step } from "./step";
-import { DateTimeRange } from "../../../../../../providers/date.provider";
+import { DateTimeRange } from "../../../../../../../providers/date.provider";
 
 interface LeadTimeBreakdownProps {
   breakdown: {
