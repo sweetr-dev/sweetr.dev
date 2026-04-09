@@ -42,8 +42,21 @@ export const syncGitHubRepositories = async (
   if (isOnboarding) {
     try {
       await initIncidentDetectionSettings(workspace.id);
+    } catch (error) {
+      logger.warn("Failed to initialize incident detection settings", {
+        workspaceId: workspace.id,
+        error,
+      });
+      captureException(error);
+    }
+
+    try {
       await initApplicationsFromRepositories(workspace.id, repositories);
     } catch (error) {
+      logger.warn("Failed to initialize applications from repositories", {
+        workspaceId: workspace.id,
+        error,
+      });
       captureException(error);
     }
   }
@@ -121,7 +134,7 @@ const fetchGitHubRepositories = async (
     name: repository.name,
     fullName: repository.nameWithOwner,
     description: repository.description,
-    defaultBranch: repository.defaultBranchRef?.name,
+    defaultBranch: repository.defaultBranchRef?.name ?? "main",
     starCount: repository.stargazerCount,
     isFork: repository.isFork,
     isMirror: repository.isMirror,

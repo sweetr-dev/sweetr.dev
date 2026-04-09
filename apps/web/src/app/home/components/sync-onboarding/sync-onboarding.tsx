@@ -120,7 +120,7 @@ export const SyncOnboarding = ({
               </div>
             </Group>
             <ButtonDocs
-              href="https://docs.sweetr.dev/get-started/onboarding#teams"
+              href="https://docs.sweetr.dev/get-started/onboarding#setup-teams"
               variant="light"
             />
           </Group>
@@ -153,7 +153,7 @@ export const SyncOnboarding = ({
               </div>
             </Group>
             <ButtonDocs
-              href="https://docs.sweetr.dev/get-started/onboarding#dora-metrics"
+              href="https://docs.sweetr.dev/get-started/onboarding#setup-dora-metrics"
               variant="light"
             />
           </Group>
