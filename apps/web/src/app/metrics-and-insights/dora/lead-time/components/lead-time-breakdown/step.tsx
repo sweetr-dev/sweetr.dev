@@ -19,7 +19,7 @@ import {
   formatLocaleDate,
   formatMsDuration,
   getAbbreviatedDuration,
-} from "../../../../../providers/date.provider";
+} from "../../../../../../providers/date.provider";
 import { UTCDate } from "@date-fns/utc";
 
 interface StepProps {

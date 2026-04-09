@@ -2,24 +2,23 @@ import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
 import { useOutletContext } from "react-router";
-import { FilterSelect } from "../../../components/filter-select";
-import { useWorkspace } from "../../../providers/workspace.provider";
+import { FilterSelect } from "../../../../components/filter-select";
+import { useWorkspace } from "../../../../providers/workspace.provider";
 import { ButtonUnderstand } from "../components/button-understand";
-import { DoraMetricOutletContext } from "../types";
-import { useDoraMetrics } from "../useDoraMetrics";
-import { ChartDeploymentFrequency } from "./chart-deployment-frequency/chart-deployment-frequency";
+import { DoraMetricOutletContext } from "../../types";
+import { useDoraMetrics } from "../../useDoraMetrics";
+import { ChartFailureRate } from "./chart-failure-rate/chart-failure-rate";
 
-export const DoraDeploymentFrequencyPage = () => {
+export const DoraFailureRatePage = () => {
+  const { workspace } = useWorkspace();
   const { filters, onPeriodChange } =
     useOutletContext<DoraMetricOutletContext>();
-  const { workspace } = useWorkspace();
-
   const { isLoading, metrics } = useDoraMetrics({
     workspaceId: workspace.id,
     filters,
   });
 
-  if (isLoading || !metrics.deploymentFrequency) {
+  if (isLoading || !metrics.changeFailureRate) {
     return <Skeleton height={400} />;
   }
 
@@ -42,27 +41,27 @@ export const DoraDeploymentFrequencyPage = () => {
         <ButtonUnderstand>
           <Stack gap="xs">
             <Text size="sm">
-              Deployment Frequency shows how often your team ships code to
-              production. Higher frequency typically indicates smaller, safer
-              changes and a healthy CI/CD pipeline.
+              Change Failure Rate measures the percentage of deployments that
+              cause a failure in production. Lower rates indicate better
+              testing, code review practices, and overall code quality.
             </Text>
             <Text size="sm">
-              Elite teams deploy multiple times per day. If your frequency is
-              low, look for large batch sizes, manual processes, or fear of
-              deploying that might be slowing you down.
+              Elite teams maintain a failure rate below 15%. If yours is higher,
+              consider improving test coverage, adding staging environments, or
+              implementing feature flags for safer rollouts.
             </Text>
           </Stack>
         </ButtonUnderstand>
       </Group>
 
       <Paper withBorder bg="dark.6" h={400} p="xs">
-        <ChartDeploymentFrequency
+        <ChartFailureRate
           chartData={{
-            columns: metrics.deploymentFrequency.columns,
+            columns: metrics.changeFailureRate.columns,
             series: [
               {
-                name: "Deployments",
-                data: metrics.deploymentFrequency.data,
+                name: "Failure Rate",
+                data: metrics.changeFailureRate.data,
                 color: "#8ce99a",
               },
             ],

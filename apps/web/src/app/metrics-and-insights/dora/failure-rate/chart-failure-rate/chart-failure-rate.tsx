@@ -6,7 +6,7 @@ import {
   echarts,
   formatAxisDate,
   formatTooltipDate,
-} from "../../../../providers/echarts.provider";
+} from "../../../../../providers/echarts.provider";
 
 interface ChartFailureRateData {
   columns: string[];

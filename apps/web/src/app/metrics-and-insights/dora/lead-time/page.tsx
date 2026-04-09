@@ -2,12 +2,12 @@ import { Box, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
 import { useOutletContext } from "react-router";
-import { FilterSelect } from "../../../components/filter-select";
-import { useWorkspace } from "../../../providers/workspace.provider";
+import { FilterSelect } from "../../../../components/filter-select";
+import { useWorkspace } from "../../../../providers/workspace.provider";
 import { ButtonUnderstand } from "../components/button-understand";
-import { DoraMetricOutletContext } from "../types";
-import { useDoraMetrics } from "../useDoraMetrics";
-import { ChartAverageTime } from "../../humans/teams/[id]/health-and-performance/components/chart-average-time";
+import { DoraMetricOutletContext } from "../../types";
+import { useDoraMetrics } from "../../useDoraMetrics";
+import { ChartAverageTime } from "../../../humans/teams/[id]/health-and-performance/components/chart-average-time";
 import { LeadTimeBreakdown } from "./components/lead-time-breakdown";
 
 export const DoraLeadTimePage = () => {

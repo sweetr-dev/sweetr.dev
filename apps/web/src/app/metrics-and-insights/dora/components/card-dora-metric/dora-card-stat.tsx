@@ -9,7 +9,7 @@ import { Link, useLocation } from "react-router";
 import {
   DateTimeRange,
   formatLocaleDate,
-} from "../../../../providers/date.provider";
+} from "../../../../../providers/date.provider";
 
 interface CardDoraMetricProps {
   name: string;

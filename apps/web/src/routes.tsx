@@ -68,10 +68,10 @@ import { EnvironmentsPage } from "./app/systems/environments/page";
 import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
 import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
 import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
-import { DoraFailureRatePage } from "./app/metrics-and-insights/failure-rate/page";
-import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/deployment-frequency/page";
-import { DoraLeadTimePage } from "./app/metrics-and-insights/lead-time/page";
-import { DoraMttrPage } from "./app/metrics-and-insights/mttr/page";
+import { DoraFailureRatePage } from "./app/metrics-and-insights/dora/failure-rate/page";
+import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/dora/deployment-frequency/page";
+import { DoraLeadTimePage } from "./app/metrics-and-insights/dora/lead-time/page";
+import { DoraMttrPage } from "./app/metrics-and-insights/dora/mttr/page";
 import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
 import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
 
@@ -111,9 +111,7 @@ export const router = createBrowserRouter([
       {
         path: "/sandbox",
         lazy: async () => {
-          const { sandboxLoader } = await import(
-            "./sandbox/sandbox-provider"
-          );
+          const { sandboxLoader } = await import("./sandbox/sandbox-provider");
           return { loader: sandboxLoader };
         },
       },
@@ -127,9 +125,8 @@ export const router = createBrowserRouter([
         ),
         loader: async ({ request }) => {
           if (isSandboxMode()) {
-            const { ensureSandboxWorker } = await import(
-              "./sandbox/sandbox-provider"
-            );
+            const { ensureSandboxWorker } =
+              await import("./sandbox/sandbox-provider");
             await ensureSandboxWorker();
           }
 
@@ -268,20 +265,25 @@ export const router = createBrowserRouter([
             element: <MetricsAndInsightsPage />,
             children: [
               {
-                path: "/metrics-and-insights/deployment-frequency",
-                element: <DoraDeploymentFrequencyPage />,
-              },
-              {
-                path: "/metrics-and-insights/lead-time",
-                element: <DoraLeadTimePage />,
-              },
-              {
-                path: "/metrics-and-insights/failure-rate",
-                element: <DoraFailureRatePage />,
-              },
-              {
-                path: "/metrics-and-insights/mttr",
-                element: <DoraMttrPage />,
+                path: "/metrics-and-insights/dora",
+                children: [
+                  {
+                    path: "/metrics-and-insights/dora/deployment-frequency",
+                    element: <DoraDeploymentFrequencyPage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/lead-time",
+                    element: <DoraLeadTimePage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/failure-rate",
+                    element: <DoraFailureRatePage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/mttr",
+                    element: <DoraMttrPage />,
+                  },
+                ],
               },
             ],
           },
