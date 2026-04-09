@@ -152,6 +152,9 @@ const fetchPullRequest = async (
               id
               name
               nameWithOwner
+              defaultBranchRef {
+                name
+              }
               description
               stargazerCount
               isFork
@@ -468,6 +471,7 @@ const upsertRepository = async (workspaceId, gitRepositoryData: any) => {
     gitProvider: GitProvider.GITHUB,
     name: gitRepositoryData.name,
     fullName: gitRepositoryData.nameWithOwner,
+    defaultBranch: gitRepositoryData.defaultBranchRef?.name,
     description: gitRepositoryData.description,
     starCount: gitRepositoryData.stargazerCount,
     isFork: gitRepositoryData.isFork,
