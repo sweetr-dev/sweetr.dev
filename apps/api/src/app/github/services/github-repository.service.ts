@@ -1,7 +1,7 @@
 import { GitProvider, Repository, Workspace } from "@prisma/client";
 import {
   GITHUB_MAX_PAGE_LIMIT,
-  getInstallationGraphQLOctoKit,
+  getInstallationOctoKit,
 } from "../../../lib/octokit";
 import { getPrisma } from "../../../prisma";
 import { parallel } from "radash";
@@ -14,6 +14,7 @@ import {
 import { captureException } from "../../../lib/sentry";
 import { initApplicationsFromRepositories } from "../../applications/services/application.service";
 import { initIncidentDetectionSettings } from "../../incidents/services/incident-detection.service";
+import { isRepositorySyncable } from "../../repositories/services/repository.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -51,7 +52,10 @@ export const syncGitHubRepositories = async (
     }
 
     try {
-      await initApplicationsFromRepositories(workspace.id, repositories);
+      await initApplicationsFromRepositories(
+        workspace.id,
+        repositories.filter(isRepositorySyncable)
+      );
     } catch (error) {
       logger.warn("Failed to initialize applications from repositories", {
         workspaceId: workspace.id,
@@ -81,66 +85,37 @@ export const syncGitHubRepositories = async (
 const fetchGitHubRepositories = async (
   gitInstallationId: number
 ): Promise<RepositoryData[]> => {
-  const fireGraphQLRequest = getInstallationGraphQLOctoKit(gitInstallationId);
+  const octokit = getInstallationOctoKit(gitInstallationId);
 
   const repositories: any[] = [];
-  let hasNextPage = true;
-  let cursor: string | null = null;
+  let page = 1;
 
-  while (hasNextPage) {
-    const response: any = await fireGraphQLRequest({
-      query: `
-          query GetOrganizationRepositories($cursor: String) {
-            viewer {
-              repositories(first: ${GITHUB_MAX_PAGE_LIMIT}, after: $cursor) {
-                pageInfo {
-                  endCursor
-                  hasNextPage
-                }
-                nodes {
-                  id
-                  name
-                  nameWithOwner
-                  description
-                  defaultBranchRef {
-                    name
-                  }
-                  stargazerCount
-                  isFork
-                  isArchived
-                  isMirror
-                  isPrivate
-                  archivedAt
-                  createdAt
-                }
-              }
-            }
-          }
-        `,
-      cursor,
+  while (true) {
+    // We can't use GraphQL API here since it will throw permission error when trying to access defaultBranchRef
+    const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
+      per_page: GITHUB_MAX_PAGE_LIMIT,
+      page,
     });
 
-    const { nodes, pageInfo } = response.viewer.repositories;
+    repositories.push(...data.repositories);
 
-    repositories.push(...nodes);
-
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
+    if (repositories.length >= data.total_count) break;
+    page++;
   }
 
   return repositories.map((repository) => ({
-    gitRepositoryId: repository.id,
+    gitRepositoryId: repository.node_id,
     gitProvider: GitProvider.GITHUB,
     name: repository.name,
-    fullName: repository.nameWithOwner,
-    description: repository.description,
-    defaultBranch: repository.defaultBranchRef?.name ?? "main",
-    starCount: repository.stargazerCount,
-    isFork: repository.isFork,
-    isMirror: repository.isMirror,
-    isPrivate: repository.isPrivate,
-    archivedAt: repository.archivedAt ? new Date(repository.archivedAt) : null,
-    createdAt: new Date(repository.createdAt),
+    fullName: repository.full_name,
+    description: repository.description ?? null,
+    defaultBranch: repository.default_branch ?? "main",
+    starCount: repository.stargazers_count ?? 0,
+    isFork: repository.fork ?? false,
+    isMirror: !!repository.mirror_url,
+    isPrivate: repository.private ?? false,
+    archivedAt: repository.archived ? new Date() : null,
+    createdAt: new Date(repository.created_at!),
   }));
 };
 

@@ -138,11 +138,7 @@ export const initApplicationsFromRepositories = async (
   workspaceId: number,
   repositories: Repository[]
 ) => {
-  const activeRepositories = repositories.filter(
-    (repo) => !repo.archivedAt && !repo.isFork && !repo.isMirror
-  );
-
-  await parallel(10, activeRepositories, async (repository) => {
+  await parallel(10, repositories, async (repository) => {
     return upsertApplication({
       workspaceId,
       name: repository.name,

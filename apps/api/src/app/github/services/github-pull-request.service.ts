@@ -33,7 +33,7 @@ import { gitHubUserToGitProfileData } from "./github-user.service";
 
 type RepositoryData = Omit<
   Repository,
-  "id" | "workspaceId" | "createdAt" | "updatedAt"
+  "id" | "workspaceId" | "createdAt" | "updatedAt" | "defaultBranch"
 >;
 
 export interface SyncPullRequestArgs {
@@ -152,9 +152,6 @@ const fetchPullRequest = async (
               id
               name
               nameWithOwner
-              defaultBranchRef {
-                name
-              }
               description
               stargazerCount
               isFork
@@ -471,7 +468,6 @@ const upsertRepository = async (workspaceId, gitRepositoryData: any) => {
     gitProvider: GitProvider.GITHUB,
     name: gitRepositoryData.name,
     fullName: gitRepositoryData.nameWithOwner,
-    defaultBranch: gitRepositoryData.defaultBranchRef?.name,
     description: gitRepositoryData.description,
     starCount: gitRepositoryData.stargazerCount,
     isFork: gitRepositoryData.isFork,
