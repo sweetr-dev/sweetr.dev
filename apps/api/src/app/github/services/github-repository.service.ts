@@ -91,7 +91,7 @@ const fetchGitHubRepositories = async (
   let page = 1;
 
   while (true) {
-    // We can't use GraphQL API here since it will throw permission error when trying to access defaultBranchRef
+    // We can't use GraphQL API here anymore since it will throw permission error when trying to access defaultBranchRef
     const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
       per_page: GITHUB_MAX_PAGE_LIMIT,
       page,
@@ -114,7 +114,7 @@ const fetchGitHubRepositories = async (
     isFork: repository.fork ?? false,
     isMirror: !!repository.mirror_url,
     isPrivate: repository.private ?? false,
-    archivedAt: repository.archived ? new Date() : null,
+    archivedAt: repository.archived ? new Date() : null, // We used to fetch archivedAt from GraphQL, sadly not available in the REST API
     createdAt: new Date(repository.created_at!),
   }));
 };
