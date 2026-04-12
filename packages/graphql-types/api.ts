@@ -264,6 +264,16 @@ export type CodeReviewsInput = {
   to?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type CycleTimeBreakdownChartData = {
+  __typename?: 'CycleTimeBreakdownChartData';
+  columns: Array<Scalars['DateTime']['output']>;
+  cycleTime: Array<Scalars['BigInt']['output']>;
+  timeToApproval: Array<Scalars['BigInt']['output']>;
+  timeToCode: Array<Scalars['BigInt']['output']>;
+  timeToFirstReview: Array<Scalars['BigInt']['output']>;
+  timeToMerge: Array<Scalars['BigInt']['output']>;
+};
+
 export type DateTimeRange = {
   /** The start of the date range */
   from?: InputMaybe<Scalars['DateTime']['input']>;
@@ -902,6 +912,7 @@ export type PullRequestFlowInput = {
 export type PullRequestFlowMetrics = {
   __typename?: 'PullRequestFlowMetrics';
   cycleTime?: Maybe<NumericChartData>;
+  cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
   pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
   sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
   throughput?: Maybe<NumericSeriesChartData>;
@@ -913,6 +924,11 @@ export type PullRequestFlowMetrics = {
 
 
 export type PullRequestFlowMetricsCycleTimeArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsCycleTimeBreakdownArgs = {
   input: PullRequestFlowInput;
 };
 
@@ -1631,6 +1647,7 @@ export type ResolversTypes = {
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
   CodeReviewSubmittedEvent: ResolverTypeWrapper<DeepPartial<CodeReviewSubmittedEvent>>;
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
+  CycleTimeBreakdownChartData: ResolverTypeWrapper<DeepPartial<CycleTimeBreakdownChartData>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DateTimeRangeValue: ResolverTypeWrapper<DeepPartial<DateTimeRangeValue>>;
@@ -1766,6 +1783,7 @@ export type ResolversParentTypes = {
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
   CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
+  CycleTimeBreakdownChartData: DeepPartial<CycleTimeBreakdownChartData>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
   DateTimeRangeValue: DeepPartial<DateTimeRangeValue>;
@@ -1984,6 +2002,15 @@ export type CodeReviewSubmittedEventResolvers<ContextType = GraphQLContext, Pare
   codeReview?: Resolver<ResolversTypes['CodeReview'], ParentType, ContextType>;
   eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CycleTimeBreakdownChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CycleTimeBreakdownChartData'] = ResolversParentTypes['CycleTimeBreakdownChartData']> = {
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  cycleTime?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToApproval?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToCode?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToFirstReview?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToMerge?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
@@ -2223,6 +2250,7 @@ export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, Paren
 
 export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestFlowMetrics'] = ResolversParentTypes['PullRequestFlowMetrics']> = {
   cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeArgs, 'input'>>;
+  cycleTimeBreakdown?: Resolver<Maybe<ResolversTypes['CycleTimeBreakdownChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeBreakdownArgs, 'input'>>;
   pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
   sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
   throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
@@ -2432,6 +2460,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
+  CycleTimeBreakdownChartData?: CycleTimeBreakdownChartDataResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DateTimeRangeValue?: DateTimeRangeValueResolvers<ContextType>;
   Deployment?: DeploymentResolvers<ContextType>;

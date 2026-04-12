@@ -38,25 +38,13 @@ export const usePrFlowMetricsQuery = (
                       color
                     }
                   }
-                  cycleTime(input: $input) {
+                  cycleTimeBreakdown(input: $input) {
                     columns
-                    data
-                  }
-                  timeToCode(input: $input) {
-                    columns
-                    data
-                  }
-                  timeToMerge(input: $input) {
-                    columns
-                    data
-                  }
-                  timeToFirstReview(input: $input) {
-                    columns
-                    data
-                  }
-                  timeToApproval(input: $input) {
-                    columns
-                    data
+                    cycleTime
+                    timeToCode
+                    timeToFirstReview
+                    timeToApproval
+                    timeToMerge
                   }
                   pullRequestSizeDistribution(input: $input) {
                     columns

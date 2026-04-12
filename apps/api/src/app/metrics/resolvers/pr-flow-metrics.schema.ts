@@ -10,6 +10,7 @@ export default /* GraphQL */ `
     timeToMerge(input: PullRequestFlowInput!): NumericChartData
     timeToFirstReview(input: PullRequestFlowInput!): NumericChartData
     timeToApproval(input: PullRequestFlowInput!): NumericChartData
+    cycleTimeBreakdown(input: PullRequestFlowInput!): CycleTimeBreakdownChartData
     pullRequestSizeDistribution(
       input: PullRequestFlowInput!
     ): PullRequestSizeDistributionChartData
@@ -53,5 +54,14 @@ export default /* GraphQL */ `
     y: Float!
     title: String
     url: String
+  }
+
+  type CycleTimeBreakdownChartData {
+    columns: [DateTime!]!
+    cycleTime: [BigInt!]!
+    timeToCode: [BigInt!]!
+    timeToFirstReview: [BigInt!]!
+    timeToApproval: [BigInt!]!
+    timeToMerge: [BigInt!]!
   }
 `;

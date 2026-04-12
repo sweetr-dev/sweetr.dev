@@ -136,7 +136,7 @@ export const PrFlowPage = () => {
         content={
           <SimpleGrid cols={2}>
             <CardChart
-              title="Throughput"
+              title="PR Throughput"
               description="Number of pull requests merged and closed over time. Helps track delivery velocity and identify slowdowns."
             >
               <ChartThroughput
@@ -146,7 +146,7 @@ export const PrFlowPage = () => {
               />
             </CardChart>
             <CardChart
-              title="Size distribution"
+              title="PR Size distribution"
               description="Distribution of merged pull requests by size (lines added + deleted). The line shows the average lines changed per PR each period."
             >
               <ChartSizeDistribution
@@ -156,26 +156,21 @@ export const PrFlowPage = () => {
               />
             </CardChart>
             <CardChart
-              title="Cycle time"
-              description="Stacked breakdown of cycle time: time to first review, time to approve, and time to merge."
+              title="PR Cycle time Breakdown"
+              description="Stacked breakdown of mean cycle time."
               style={{ gridColumn: "span 2" }}
             >
               <ChartCycleTimeBreakdown
                 chartId="pr-flow-cycle-time"
-                chartData={{
-                  cycleTime: prFlow?.cycleTime,
-                  timeToCode: prFlow?.timeToCode,
-                  timeToFirstReview: prFlow?.timeToFirstReview,
-                  timeToApproval: prFlow?.timeToApproval,
-                  timeToMerge: prFlow?.timeToMerge,
-                }}
+                chartData={prFlow?.cycleTimeBreakdown}
                 period={filters.values.period}
               />
             </CardChart>
             <CardChart
-              title="Size vs Cycle Time"
+              title="PR Size vs Cycle Time"
               description="Scatter plot correlating PR size (lines changed) with cycle time. Larger PRs typically take longer to review and merge."
               style={{ gridColumn: "span 2" }}
+              height={450}
             >
               <ChartSizeCycleCorrelation
                 chartId="pr-flow-size-cycle-correlation"

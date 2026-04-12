@@ -528,6 +528,128 @@ export const getWorkspaceCycleTimeChartData = async (
   }));
 };
 
+interface CycleTimeBreakdownRow {
+  period: Date;
+  cycle_time: number;
+  time_to_code: number;
+  time_to_first_review: number;
+  time_to_approval: number;
+  time_to_merge: number;
+}
+
+export interface CycleTimeBreakdownResult {
+  period: string;
+  cycleTime: bigint;
+  timeToCode: bigint;
+  timeToFirstReview: bigint;
+  timeToApproval: bigint;
+  timeToMerge: bigint;
+}
+
+export const getWorkspaceCycleTimeBreakdownChartData = async (
+  filters: PullRequestFlowChartFilters
+): Promise<CycleTimeBreakdownResult[]> => {
+  const trunc = periodToDateTrunc(filters.period);
+  const interval = periodToInterval(filters.period);
+  const { joins, conditions } = buildPullRequestFilters(filters);
+
+  const allConditions = [
+    ...conditions,
+    Prisma.sql`p."mergedAt" >= ${new Date(filters.startDate)}`,
+    Prisma.sql`p."mergedAt" <= ${new Date(filters.endDate)}`,
+    Prisma.sql`p."mergedAt" IS NOT NULL`,
+    Prisma.sql`pt."cycleTime" IS NOT NULL`,
+  ];
+
+  const joinClause = Prisma.join(joins, " ");
+  const whereClause = Prisma.join(allConditions, " AND ");
+
+  const query = Prisma.sql`
+    WITH periods AS (
+      SELECT generate_series(
+        DATE_TRUNC(${trunc}, ${new Date(filters.startDate)}::timestamp),
+        DATE_TRUNC(${trunc}, ${new Date(filters.endDate)}::timestamp),
+        ${interval}::interval
+      ) AS period
+    ),
+    per_pr_raw AS (
+      SELECT
+        DATE_TRUNC(${trunc}, p."mergedAt") AS period,
+        pt."cycleTime" AS cycle_time,
+        GREATEST(COALESCE(
+          CASE WHEN pt."firstReviewAt" IS NOT NULL
+            THEN EXTRACT(EPOCH FROM (pt."firstReviewAt" - COALESCE(pt."firstReadyAt", p."createdAt"))) * 1000
+          END, 0
+        ), 0) AS raw_first_review,
+        GREATEST(COALESCE(
+          CASE WHEN pt."firstApprovalAt" IS NOT NULL AND pt."firstReviewAt" IS NOT NULL
+            THEN EXTRACT(EPOCH FROM (pt."firstApprovalAt" - pt."firstReviewAt")) * 1000
+          END, 0
+        ), 0) AS raw_approve,
+        GREATEST(COALESCE(
+          CASE WHEN pt."firstApprovalAt" IS NOT NULL
+            THEN EXTRACT(EPOCH FROM (p."mergedAt" - pt."firstApprovalAt")) * 1000
+          END, 0
+        ), 0) AS raw_merge
+      FROM "PullRequestTracking" pt
+      ${joinClause}
+      WHERE ${whereClause}
+    ),
+    per_pr_balanced AS (
+      SELECT period, cycle_time,
+        CASE WHEN raw_sum > cycle_time AND raw_sum > 0 THEN
+          cycle_time * raw_first_review / raw_sum
+        ELSE raw_first_review END AS time_to_first_review,
+        CASE WHEN raw_sum > cycle_time AND raw_sum > 0 THEN
+          cycle_time * raw_approve / raw_sum
+        ELSE raw_approve END AS time_to_approve,
+        CASE WHEN raw_sum > cycle_time AND raw_sum > 0 THEN
+          cycle_time * raw_merge / raw_sum
+        ELSE raw_merge END AS time_to_merge,
+        CASE WHEN raw_sum > cycle_time THEN 0
+        ELSE GREATEST(cycle_time - raw_sum, 0) END AS time_to_code
+      FROM (
+        SELECT *, raw_first_review + raw_approve + raw_merge AS raw_sum
+        FROM per_pr_raw
+      ) sub
+    ),
+    data AS (
+      SELECT
+        period,
+        AVG(cycle_time)            AS cycle_time,
+        AVG(time_to_code)          AS time_to_code,
+        AVG(time_to_first_review)  AS time_to_first_review,
+        AVG(time_to_approve)       AS time_to_approve,
+        AVG(time_to_merge)         AS time_to_merge
+      FROM per_pr_balanced
+      GROUP BY period
+    )
+    SELECT
+      periods.period,
+      COALESCE(data.cycle_time, 0)            AS cycle_time,
+      COALESCE(data.time_to_code, 0)          AS time_to_code,
+      COALESCE(data.time_to_first_review, 0)  AS time_to_first_review,
+      COALESCE(data.time_to_approve, 0)       AS time_to_approval,
+      COALESCE(data.time_to_merge, 0)         AS time_to_merge
+    FROM periods
+    LEFT JOIN data ON periods.period = data.period
+    ORDER BY periods.period ASC;
+  `;
+
+  const results = await getPrisma(filters.workspaceId).$queryRaw<
+    CycleTimeBreakdownRow[]
+  >(query);
+
+  return results.map((r) => ({
+    period: r.period.toISOString(),
+    cycleTime: BigInt(Math.floor(r.cycle_time || 0)),
+    timeToCode: BigInt(Math.floor(r.time_to_code || 0)),
+    timeToFirstReview: BigInt(Math.floor(r.time_to_first_review || 0)),
+    timeToApproval: BigInt(Math.floor(r.time_to_approval || 0)),
+    timeToMerge: BigInt(Math.floor(r.time_to_merge || 0)),
+  }));
+};
+
 export const getWorkspaceThroughputChartData = async (
   filters: PullRequestFlowChartFilters
 ) => {
@@ -563,18 +685,23 @@ export const getWorkspaceThroughputChartData = async (
         ${interval}::interval
       ) AS period
     ),
-    statuses AS (
-      SELECT unnest(ARRAY['MERGED', 'CLOSED']::"PullRequestState"[]) AS status
-    ),
-    period_status_combos AS (
-      SELECT periods.period, statuses.status
-      FROM periods
-      CROSS JOIN statuses
+    opened_data AS (
+      SELECT
+        DATE_TRUNC(${trunc}, p."createdAt") AS period,
+        COUNT(p."id") AS value
+      FROM "PullRequest" p
+      INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
+      INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
+      WHERE wm."workspaceId" = ${filters.workspaceId}
+        AND p."createdAt" >= ${new Date(filters.startDate)}
+        AND p."createdAt" <= ${new Date(filters.endDate)}
+        ${teamFilter}
+        ${repoFilter}
+      GROUP BY period
     ),
     merged_data AS (
       SELECT
         DATE_TRUNC(${trunc}, p."mergedAt") AS period,
-        'MERGED'::"PullRequestState" AS status,
         COUNT(p."id") AS value
       FROM "PullRequest" p
       INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
@@ -590,7 +717,6 @@ export const getWorkspaceThroughputChartData = async (
     closed_data AS (
       SELECT
         DATE_TRUNC(${trunc}, p."closedAt") AS period,
-        'CLOSED'::"PullRequestState" AS status,
         COUNT(p."id") AS value
       FROM "PullRequest" p
       INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
@@ -604,58 +730,42 @@ export const getWorkspaceThroughputChartData = async (
         ${teamFilter}
         ${repoFilter}
       GROUP BY period
-    ),
-    data AS (
-      SELECT * FROM merged_data
-      UNION ALL
-      SELECT * FROM closed_data
     )
     SELECT
-      period_status_combos.period,
-      period_status_combos.status,
-      COALESCE(data.value, 0) AS value
-    FROM period_status_combos
-    LEFT JOIN data ON period_status_combos.period = data.period
-      AND period_status_combos.status = data.status
-    ORDER BY period_status_combos.period ASC, period_status_combos.status ASC;
+      periods.period,
+      COALESCE(o.value, 0) AS opened,
+      COALESCE(m.value, 0) AS merged,
+      COALESCE(c.value, 0) AS closed
+    FROM periods
+    LEFT JOIN opened_data o ON periods.period = o.period
+    LEFT JOIN merged_data m ON periods.period = m.period
+    LEFT JOIN closed_data c ON periods.period = c.period
+    ORDER BY periods.period ASC;
   `;
 
   const results = await getPrisma(filters.workspaceId).$queryRaw<
-    { period: Date; status: string; value: number }[]
+    { period: Date; opened: number; merged: number; closed: number }[]
   >(query);
 
-  const columns = [
-    ...new Set(results.map((result) => result.period.toISOString())),
-  ].sort();
-
-  const mergedByPeriod = new Map<string, bigint>(
-    columns.map((key) => [key, BigInt(0)])
-  );
-  const closedByPeriod = new Map<string, bigint>(
-    columns.map((key) => [key, BigInt(0)])
-  );
-
-  results.forEach((result) => {
-    const periodKey = result.period.toISOString();
-    if (result.status === "MERGED") {
-      mergedByPeriod.set(periodKey, BigInt(result.value));
-    } else {
-      closedByPeriod.set(periodKey, BigInt(result.value));
-    }
-  });
+  const columns = results.map((r) => r.period.toISOString());
 
   return {
     columns,
     series: [
       {
-        name: "Merged",
+        name: "Opened",
         color: "#8ce99a",
-        data: columns.map((col) => mergedByPeriod.get(col) || BigInt(0)),
+        data: results.map((r) => BigInt(r.opened)),
+      },
+      {
+        name: "Merged",
+        color: "#b197fc",
+        data: results.map((r) => BigInt(r.merged)),
       },
       {
         name: "Closed",
         color: "#ff8787",
-        data: columns.map((col) => closedByPeriod.get(col) || BigInt(0)),
+        data: results.map((r) => BigInt(r.closed)),
       },
     ],
   };
@@ -742,9 +852,9 @@ export const getWorkspacePullRequestSizeDistributionChartData = async (
   const prisma = getPrisma(filters.workspaceId);
 
   const [sizeResults, avgResults] = await Promise.all([
-    prisma.$queryRaw<
-      { period: Date; size: PullRequestSize; value: number }[]
-    >(sizeQuery),
+    prisma.$queryRaw<{ period: Date; size: PullRequestSize; value: number }[]>(
+      sizeQuery
+    ),
     prisma.$queryRaw<{ period: Date; value: number }[]>(avgQuery),
   ]);
 
@@ -830,10 +940,10 @@ const SIZE_SERIES_CONFIG: Record<
   PullRequestSize,
   { name: string; color: string }
 > = {
-  [PullRequestSize.TINY]: { name: "Tiny", color: "#8ce99a" },
+  [PullRequestSize.TINY]: { name: "Tiny", color: "#8ce9e3" },
   [PullRequestSize.SMALL]: { name: "Small", color: "#8ce99a" },
   [PullRequestSize.MEDIUM]: { name: "Medium", color: "#FFEC99" },
-  [PullRequestSize.LARGE]: { name: "Large", color: "#FF6B6B" },
+  [PullRequestSize.LARGE]: { name: "Large", color: "#ffb76b" },
   [PullRequestSize.HUGE]: { name: "Huge", color: "#FF6B6B" },
 };
 

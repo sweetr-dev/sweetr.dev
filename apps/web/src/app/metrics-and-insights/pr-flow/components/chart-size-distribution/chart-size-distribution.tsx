@@ -9,12 +9,9 @@ import {
   PullRequestSizeDistributionChartData,
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { CallbackDataParams } from "echarts/types/dist/shared";
 import { UTCDate } from "@date-fns/utc";
 
 const PR_FLOW_GROUP = "prFlow";
-
-type Arrayable<T> = T | T[];
 
 interface ChartSizeDistributionProps {
   chartId: string;
@@ -42,49 +39,66 @@ export const ChartSizeDistribution = ({
         trigger: "axis",
         backgroundColor: "#25262B",
         borderColor: "#303030",
-        padding: [10, 0],
-        textStyle: {
-          color: "#fff",
-          fontSize: 14,
-        },
-        formatter: function (params: Arrayable<CallbackDataParams>) {
+        padding: [0, 15],
+        textStyle: { color: "#fff", fontSize: 14 },
+        formatter(params) {
+          if (!Array.isArray(params) || params.length === 0) return "";
+          const idx = params[0].dataIndex!;
+          const dateLabel = formatTooltipDate(
+            new UTCDate(chartData.columns[idx]),
+            period,
+          );
+
           let total = 0;
-          let avgLine = "";
-          let tooltipContent = `<div style="padding: 0 15px;">${(params as any)[0].axisValueLabel}</div>`;
+          const sizeItems: { name: string; color: string; value: number }[] = [];
+          let avgLinesValue = 0;
 
-          (params as Array<CallbackDataParams>).forEach(function (item) {
-            if (item.seriesName === "Avg. Lines Changed") {
-              avgLine = `<div style="padding: 0 15px;">${item.marker} ${item.seriesName}: ${item.value}</div>`;
-              return;
+          for (const p of params) {
+            if (p.seriesName === "Avg. Lines Changed") {
+              avgLinesValue = Number(p.value) || 0;
+              continue;
             }
-            total += item.value as number;
-            tooltipContent += `<div style="padding: 0 15px;">${item.marker} ${item.seriesName}: ${item.value}</div>`;
-          });
+            const val = Number(p.value) || 0;
+            total += val;
+            sizeItems.push({ name: p.seriesName!, color: p.color as string, value: val });
+          }
 
-          tooltipContent += `<div style="padding: 5px 15px 0 15px; margin-top: 5px; border-top: 1px solid #373A40;"><div style="height: 10px; width: 10px; border-radius: 50%; background-color: #373A40; display: inline-block; margin-right: 10px;"></div>Total: ${total}</div>`;
-          tooltipContent += avgLine;
+          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
 
-          return tooltipContent;
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
+          for (const item of sizeItems) {
+            html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
+            html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${item.color}"></span>`;
+            html += `<span style="padding-right: 40px;">${item.name}</span>`;
+            html += `<span style="margin-left:auto;font-weight:500">${item.value}</span>`;
+            html += `</div>`;
+          }
+          html += `</div>`;
+
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">`;
+          html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#373A40"></span>`;
+          html += `<span style="padding-right: 40px;">Total</span>`;
+          html += `<span style="margin-left:auto;font-weight:600">${total}</span>`;
+          html += `</div>`;
+
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">`;
+          html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFF"></span>`;
+          html += `<span style="padding-right: 40px;">Avg. Lines Changed</span>`;
+          html += `<span style="margin-left:auto;font-weight:500">${avgLinesValue}</span>`;
+          html += `</div>`;
+
+          return html;
         },
         axisPointer: {
-          type: "line",
-          snap: true,
-          lineStyle: {
-            color: "#555",
-            type: "dashed",
-          },
-          label: {
-            formatter({ value }) {
-              return formatTooltipDate(new UTCDate(value), period);
-            },
-          },
+          type: "shadow",
         },
       },
       grid: {
         left: "0",
         right: "0",
-        bottom: "3%",
-        top: "50px",
+        bottom: "40px",
+        top: "15px",
+        containLabel: true,
       },
       xAxis: {
         data: chartData.columns,
@@ -106,16 +120,21 @@ export const ChartSizeDistribution = ({
         formatter(name) {
           return (
             {
-              Tiny: "T",
+              Tiny: "XS",
               Small: "S",
               Medium: "M",
-              Large: "X",
+              Large: "L",
               Huge: "XL",
-              "Avg. Lines Changed": "Avg. Lines Changed",
+              "Avg. Lines ": "Avg. Lines Changed",
             }[name] || name
           );
         },
-        top: 0,
+        bottom: 0,
+        textStyle: { color: "#C1C2C5", fontSize: 12 },
+        itemGap: 16,
+        icon: "roundRect",
+        itemWidth: 16,
+        itemHeight: 12,
       },
       yAxis: [
         {
@@ -152,8 +171,8 @@ export const ChartSizeDistribution = ({
           symbol: "circle",
           symbolSize: 5,
           yAxisIndex: 1,
-          lineStyle: { width: 2, color: "#ADB5BD" },
-          itemStyle: { color: "#ADB5BD" },
+          lineStyle: { width: 2, color: "#FFF" },
+          itemStyle: { color: "#FFF" },
           z: 10,
         },
       ],

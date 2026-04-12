@@ -6,63 +6,37 @@ import {
   formatTooltipDate,
 } from "../../../../../providers/echarts.provider";
 import {
-  NumericChartData,
+  CycleTimeBreakdownChartData,
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { formatMsDuration } from "../../../../../providers/date.provider";
+import { getAbbreviatedDuration } from "../../../../../providers/date.provider";
 import { UTCDate } from "@date-fns/utc";
 
 const PR_FLOW_GROUP = "prFlow";
 
-interface CycleTimeBreakdownData {
-  cycleTime?: NumericChartData | null;
-  timeToCode?: NumericChartData | null;
-  timeToFirstReview?: NumericChartData | null;
-  timeToApproval?: NumericChartData | null;
-  timeToMerge?: NumericChartData | null;
-}
-
 interface ChartCycleTimeBreakdownProps {
   chartId: string;
-  chartData: CycleTimeBreakdownData;
+  chartData?: CycleTimeBreakdownChartData | null;
   period: Period;
 }
 
-const STACKED_SERIES = [
-  { key: "timeToCode" as const, name: "Time to Code", color: "#ffd43b" },
-  { key: "timeToFirstReview" as const, name: "Time to First Review", color: "#74c0fc" },
-  { key: "timeToApproval" as const, name: "Time to Approve", color: "#b197fc" },
-  { key: "timeToMerge" as const, name: "Time to Merge", color: "#8ce99a" },
+const STACKED_SERIES: {
+  key: keyof Pick<
+    CycleTimeBreakdownChartData,
+    "timeToCode" | "timeToFirstReview" | "timeToApproval" | "timeToMerge"
+  >;
+  name: string;
+  color: string;
+}[] = [
+  { key: "timeToCode", name: "Coding", color: "#FFF " },
+  { key: "timeToFirstReview", name: "First Review", color: "#38d9a9" },
+  { key: "timeToApproval", name: "Approval", color: "#8ce99a" },
+  { key: "timeToMerge", name: "Merge", color: "#b197fc" },
 ];
 
 const formatDurationValue = (value: unknown): string => {
   if (!value) return "0s";
-  const ms = parseInt(value as string);
-  return (
-    formatMsDuration(ms, [
-      "years",
-      "months",
-      "weeks",
-      "days",
-      "hours",
-      "minutes",
-      "seconds",
-    ]) || `${Math.round(ms / 1000)} seconds`
-  );
-};
-
-const computePercentages = (chartData: CycleTimeBreakdownData, columns: string[]) => {
-  const raw = STACKED_SERIES.map(({ key }) =>
-    chartData[key]?.data ?? columns.map(() => 0)
-  );
-
-  const totals = columns.map((_, i) =>
-    raw.reduce((sum, series) => sum + (Number(series[i]) || 0), 0)
-  );
-
-  return raw.map((series) =>
-    series.map((val, i) => (totals[i] > 0 ? (Number(val) / totals[i]) * 100 : 0))
-  );
+  return getAbbreviatedDuration(parseInt(value as string)) || "0s";
 };
 
 export const ChartCycleTimeBreakdown = ({
@@ -73,35 +47,50 @@ export const ChartCycleTimeBreakdown = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !chartData) return;
 
-    const columns = chartData.cycleTime?.columns;
-    if (!columns) return;
+    const { columns, cycleTime } = chartData;
+    if (!columns.length) return;
 
     const chart = echarts.init(containerRef.current, "dark");
     chart.group = PR_FLOW_GROUP;
     echarts.connect(PR_FLOW_GROUP);
 
-    const percentages = computePercentages(chartData, columns);
-
-    const rawValues = STACKED_SERIES.map(({ key }) =>
-      chartData[key]?.data ?? columns.map(() => 0)
-    );
-
-    const stackedSeries = STACKED_SERIES.map(({ name, color }, i) => ({
-      type: "line" as const,
+    const stackedSeries = STACKED_SERIES.map(({ key, name, color }, i) => ({
+      type: "bar" as const,
       name,
       stack: "cycle-time",
-      data: percentages[i],
-      smooth: true,
+      data: chartData[key],
       color,
-      symbol: "none" as const,
-      lineStyle: { width: 1 },
+      barMaxWidth: 24,
+      itemStyle: {
+        borderColor: "#1A1B1E",
+        borderWidth: 1,
+      },
       emphasis: { focus: "series" as const },
-      areaStyle: { opacity: 0.75, color },
     }));
 
-    const cycleTimeRaw = chartData.cycleTime?.data ?? [];
+    const cycleTimeSeries = {
+      type: "line" as const,
+      name: "Cycle Time",
+      data: cycleTime,
+      smooth: true,
+      connectNulls: true,
+      color: "#8ce99a",
+      symbolSize: 0,
+      lineStyle: { width: 2 },
+      label: {
+        show: true,
+        position: "top" as const,
+        formatter: ({ value }: { value?: unknown }) => {
+          const val = Number(value) || 0;
+          if (!val) return "0s";
+          return getAbbreviatedDuration(val);
+        },
+        fontSize: 10,
+        color: "#fff",
+      },
+    };
 
     const options: ECOption = {
       backgroundColor: "transparent",
@@ -111,66 +100,79 @@ export const ChartCycleTimeBreakdown = ({
         textStyle: { color: "#C1C2C5", fontSize: 12 },
         itemGap: 16,
         icon: "roundRect",
-        itemWidth: 12,
-        itemHeight: 8,
+        itemWidth: 16,
+        itemHeight: 12,
       },
       tooltip: {
         trigger: "axis",
         backgroundColor: "#25262B",
         borderColor: "#303030",
-        padding: [10, 15],
+        padding: [0, 15],
         textStyle: { color: "#fff", fontSize: 14 },
         formatter(params) {
           if (!Array.isArray(params) || params.length === 0) return "";
           const idx = params[0].dataIndex!;
-          const dateLabel = formatTooltipDate(new UTCDate(columns[idx]), period);
+          const dateLabel = formatTooltipDate(
+            new UTCDate(columns[idx]),
+            period,
+          );
 
-          let html = `<div style="margin-bottom:8px;font-weight:600">${dateLabel}</div>`;
-          html += `<div style="margin-bottom:6px;color:#ff6b6b">Cycle Time: ${formatDurationValue(cycleTimeRaw[idx])}</div>`;
+          const total = STACKED_SERIES.reduce(
+            (sum, { key }) => sum + (Number(chartData[key][idx]) || 0),
+            0,
+          );
 
-          for (let i = 0; i < STACKED_SERIES.length; i++) {
-            const { name: sName, color: sColor } = STACKED_SERIES[i];
-            const absVal = rawValues[i][idx];
-            const pct = percentages[i][idx];
-            html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">`;
+          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
+
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
+          for (const { key, name: sName, color: sColor } of STACKED_SERIES) {
+            const absVal = Number(chartData[key][idx]) || 0;
+            const pct = total > 0 ? Math.round((absVal / total) * 100) : 0;
+            html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
             html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${sColor}"></span>`;
-            html += `<span>${sName}</span>`;
-            html += `<span style="margin-left:auto;font-weight:500">${formatDurationValue(absVal)} (${Math.round(pct)}%)</span>`;
+            html += `<span style="padding-right: 40px;">${sName}</span>`;
+            html += `<span style="margin-left:auto;font-weight:500">${formatDurationValue(absVal)} </span>`;
             html += `</div>`;
           }
+          html += `</div>`;
+
+          html += `
+            <div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">
+              <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8ce99a"></span>
+              <span>Cycle Time</span>
+              <span style="margin-left:auto;font-weight:600">${formatDurationValue(cycleTime[idx])}</span>
+            </div>`;
 
           return html;
         },
         axisPointer: {
-          type: "line",
-          snap: true,
-          lineStyle: { color: "#555", type: "dashed" },
+          type: "shadow",
         },
       },
       grid: {
-        left: "1%",
-        right: "1%",
-        bottom: "12%",
-        top: "4%",
+        left: "0",
+        right: "0",
+        bottom: "40px",
+        top: "15px",
         containLabel: true,
       },
       xAxis: {
-        boundaryGap: false,
         data: columns,
         axisLabel: {
-          formatter(value) {
+          formatter(value: string) {
             return formatAxisDate(new UTCDate(value), period);
           },
         },
       },
       yAxis: {
         min: 0,
-        max: 100,
         axisLabel: {
-          formatter: (value: number) => `${value}%`,
+          formatter(value: string) {
+            return getAbbreviatedDuration(parseInt(value));
+          },
         },
       },
-      series: stackedSeries,
+      series: [...stackedSeries, cycleTimeSeries],
     };
 
     chart.setOption(options);
