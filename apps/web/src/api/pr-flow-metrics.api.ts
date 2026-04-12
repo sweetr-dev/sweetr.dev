@@ -67,6 +67,15 @@ export const usePrFlowMetricsQuery = (
                       }
                     }
                   }
+                  teamOverview(input: $input) {
+                    teamId
+                    teamName
+                    teamIcon
+                    medianCycleTime
+                    mergedCount
+                    avgLinesChanged
+                    pctBigPrs
+                  }
                 }
               }
             }

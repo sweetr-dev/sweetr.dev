@@ -26,6 +26,7 @@ import { ChartSizeDistribution } from "./components/chart-size-distribution";
 import { ChartThroughput } from "./components/chart-throughput";
 import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correlation";
 import { CardChart } from "./components/card-chart";
+import { TableTeamOverview } from "./components/table-team-overview";
 import { PrFlowFilters } from "./types";
 
 export const PrFlowPage = () => {
@@ -179,6 +180,14 @@ export const PrFlowPage = () => {
             </CardChart>
           </SimpleGrid>
         }
+      />
+
+      <Divider mt="xl" mb="md" label="Team Overview" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={200} />}
+        content={<TableTeamOverview data={prFlow?.teamOverview} />}
       />
     </PageContainer>
   );

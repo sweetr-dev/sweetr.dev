@@ -36,3 +36,4 @@ import { MyComponent } from "./components/my-component/my-component";
 ```
 
 - Co-located files (hooks, types, utils, styles) go in the same folder when they are specific to that component.
+- **One component per file.** Never define more than one React component in a single `.tsx` file. If a component needs a helper component, that helper gets its own folder and file (either co-located or in a shared `components/` directory).

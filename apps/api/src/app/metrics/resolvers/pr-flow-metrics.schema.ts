@@ -17,6 +17,7 @@ export default /* GraphQL */ `
     sizeCycleTimeCorrelation(
       input: PullRequestFlowInput!
     ): ScatterChartData
+    teamOverview(input: PullRequestFlowInput!): [TeamPrFlowOverviewRow!]
   }
 
   input PullRequestFlowInput {
@@ -54,6 +55,16 @@ export default /* GraphQL */ `
     y: Float!
     title: String
     url: String
+  }
+
+  type TeamPrFlowOverviewRow {
+    teamId: SweetID
+    teamName: String!
+    teamIcon: String!
+    medianCycleTime: BigInt!
+    mergedCount: Int!
+    avgLinesChanged: Float!
+    pctBigPrs: Float!
   }
 
   type CycleTimeBreakdownChartData {

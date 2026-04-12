@@ -7,6 +7,7 @@ import {
   getWorkspaceCycleTimeChartData,
   getWorkspacePullRequestSizeDistributionChartData,
   getWorkspaceSizeCycleTimeCorrelation,
+  getWorkspaceTeamOverview,
   getWorkspaceThroughputChartData,
   getWorkspaceTimeForApprovalChartData,
   getWorkspaceTimeForFirstReviewChartData,
@@ -180,6 +181,19 @@ export const prFlowMetricsQuery = createFieldResolver(
 
       const filters = buildFilters(input, context.workspaceId);
       return getWorkspaceSizeCycleTimeCorrelation(filters);
+    },
+    teamOverview: async (_, { input }, context) => {
+      logger.info("query.metrics.prFlow.teamOverview", {
+        workspaceId: context.workspaceId,
+        input,
+      });
+
+      if (!context.workspaceId) {
+        throw new ResourceNotFoundException("Workspace not found");
+      }
+
+      const filters = buildFilters(input, context.workspaceId);
+      return getWorkspaceTeamOverview(filters);
     },
   }
 );

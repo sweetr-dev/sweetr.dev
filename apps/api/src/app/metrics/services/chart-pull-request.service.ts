@@ -1024,3 +1024,109 @@ export const getWorkspaceSizeCycleTimeCorrelation = async (
       }),
   };
 };
+
+interface TeamOverviewRow {
+  team_id: number | null;
+  team_name: string;
+  team_icon: string;
+  median_cycle_time: number;
+  merged_count: bigint;
+  avg_lines_changed: number;
+  pct_big_prs: number;
+}
+
+export const getWorkspaceTeamOverview = async (
+  filters: Omit<PullRequestFlowChartFilters, "period">
+) => {
+  const { joins, conditions } = buildPullRequestFilters(
+    filters as PullRequestFlowChartFilters
+  );
+
+  const allConditions = [
+    ...conditions,
+    Prisma.sql`p."mergedAt" >= ${new Date(filters.startDate)}`,
+    Prisma.sql`p."mergedAt" <= ${new Date(filters.endDate)}`,
+    Prisma.sql`p."mergedAt" IS NOT NULL`,
+  ];
+
+  const joinClause = Prisma.join(joins, " ");
+  const whereClause = Prisma.join(allConditions, " AND ");
+
+  const teamFilter =
+    filters.teamIds && filters.teamIds.length > 0
+      ? Prisma.sql`AND t."id" = ANY(ARRAY[${Prisma.join(
+          filters.teamIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])`
+      : Prisma.empty;
+
+  const query = Prisma.sql`
+    WITH org_data AS (
+      SELECT
+        NULL::integer AS team_id,
+        'All teams' AS team_name,
+        '' AS team_icon,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pt."cycleTime") AS median_cycle_time,
+        COUNT(p."id") AS merged_count,
+        AVG(pt."linesAddedCount" + pt."linesDeletedCount") AS avg_lines_changed,
+        COUNT(*) FILTER (WHERE pt.size IN ('LARGE'::"PullRequestSize", 'HUGE'::"PullRequestSize")) * 100.0
+          / NULLIF(COUNT(*), 0) AS pct_big_prs
+      FROM "PullRequestTracking" pt
+      ${joinClause}
+      WHERE ${whereClause}
+    ),
+    all_teams AS (
+      SELECT t."id", t."name", t."icon"
+      FROM "Team" t
+      WHERE t."workspaceId" = ${filters.workspaceId}
+        AND t."archivedAt" IS NULL
+        ${teamFilter}
+    ),
+    pr_per_team AS (
+      SELECT
+        tm2."teamId" AS team_id,
+        pt."cycleTime",
+        pt."linesAddedCount",
+        pt."linesDeletedCount",
+        pt.size,
+        p."id" AS pr_id
+      FROM "PullRequestTracking" pt
+      ${joinClause}
+      INNER JOIN "TeamMember" tm2 ON gp."id" = tm2."gitProfileId"
+        AND tm2."workspaceId" = ${filters.workspaceId}
+      WHERE ${whereClause}
+    ),
+    team_data AS (
+      SELECT
+        at."id" AS team_id,
+        at."name" AS team_name,
+        at."icon" AS team_icon,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ppt."cycleTime") AS median_cycle_time,
+        COUNT(ppt.pr_id) AS merged_count,
+        AVG(ppt."linesAddedCount" + ppt."linesDeletedCount") AS avg_lines_changed,
+        COUNT(*) FILTER (WHERE ppt.size IN ('LARGE'::"PullRequestSize", 'HUGE'::"PullRequestSize")) * 100.0
+          / NULLIF(COUNT(ppt.pr_id), 0) AS pct_big_prs
+      FROM all_teams at
+      LEFT JOIN pr_per_team ppt ON ppt.team_id = at."id"
+      GROUP BY at."id", at."name", at."icon"
+    )
+    SELECT * FROM org_data
+    UNION ALL
+    SELECT * FROM team_data
+    ORDER BY team_id NULLS FIRST, team_name ASC;
+  `;
+
+  const results = await getPrisma(filters.workspaceId).$queryRaw<
+    TeamOverviewRow[]
+  >(query);
+
+  return results.map((r) => ({
+    teamId: r.team_id,
+    teamName: r.team_name,
+    teamIcon: r.team_icon,
+    medianCycleTime: BigInt(Math.floor(Number(r.median_cycle_time) || 0)),
+    mergedCount: Number(r.merged_count),
+    avgLinesChanged: Math.round(Number(r.avg_lines_changed) || 0),
+    pctBigPrs: Math.round(Number(r.pct_big_prs) || 0),
+  }));
+};

@@ -915,6 +915,7 @@ export type PullRequestFlowMetrics = {
   cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
   pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
   sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
+  teamOverview?: Maybe<Array<TeamPrFlowOverviewRow>>;
   throughput?: Maybe<NumericSeriesChartData>;
   timeToApproval?: Maybe<NumericChartData>;
   timeToCode?: Maybe<NumericChartData>;
@@ -939,6 +940,11 @@ export type PullRequestFlowMetricsPullRequestSizeDistributionArgs = {
 
 
 export type PullRequestFlowMetricsSizeCycleTimeCorrelationArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTeamOverviewArgs = {
   input: PullRequestFlowInput;
 };
 
@@ -1223,6 +1229,17 @@ export type TeamMetricInput = {
   period: Period;
   /** The team id to filter by. */
   teamId: Scalars['SweetID']['input'];
+};
+
+export type TeamPrFlowOverviewRow = {
+  __typename?: 'TeamPrFlowOverviewRow';
+  avgLinesChanged: Scalars['Float']['output'];
+  medianCycleTime: Scalars['BigInt']['output'];
+  mergedCount: Scalars['Int']['output'];
+  pctBigPrs: Scalars['Float']['output'];
+  teamIcon: Scalars['String']['output'];
+  teamId?: Maybe<Scalars['SweetID']['output']>;
+  teamName: Scalars['String']['output'];
 };
 
 export type TeamWorkLogInput = {
@@ -1723,6 +1740,7 @@ export type ResolversTypes = {
   TeamMember: ResolverTypeWrapper<DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversTypes['Person'], team: ResolversTypes['Team'] }>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
   TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
+  TeamPrFlowOverviewRow: ResolverTypeWrapper<DeepPartial<TeamPrFlowOverviewRow>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
   TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
@@ -1849,6 +1867,7 @@ export type ResolversParentTypes = {
   Team: DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversParentTypes['Alert']>, alerts: Array<ResolversParentTypes['Alert']>, members: Array<ResolversParentTypes['TeamMember']>, workLog: ResolversParentTypes['TeamWorkLogResponse'] }>;
   TeamMember: DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversParentTypes['Person'], team: ResolversParentTypes['Team'] }>;
   TeamMetricInput: DeepPartial<TeamMetricInput>;
+  TeamPrFlowOverviewRow: DeepPartial<TeamPrFlowOverviewRow>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
@@ -2253,6 +2272,7 @@ export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, Parent
   cycleTimeBreakdown?: Resolver<Maybe<ResolversTypes['CycleTimeBreakdownChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeBreakdownArgs, 'input'>>;
   pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
   sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
+  teamOverview?: Resolver<Maybe<Array<ResolversTypes['TeamPrFlowOverviewRow']>>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTeamOverviewArgs, 'input'>>;
   throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
   timeToApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToApprovalArgs, 'input'>>;
   timeToCode?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToCodeArgs, 'input'>>;
@@ -2367,6 +2387,16 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TeamMemberRole'], ParentType, ContextType>;
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+};
+
+export type TeamPrFlowOverviewRowResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamPrFlowOverviewRow'] = ResolversParentTypes['TeamPrFlowOverviewRow']> = {
+  avgLinesChanged?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  medianCycleTime?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  mergedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pctBigPrs?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  teamIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['SweetID']>, ParentType, ContextType>;
+  teamName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type TeamWorkLogResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamWorkLogResponse'] = ResolversParentTypes['TeamWorkLogResponse']> = {
@@ -2504,6 +2534,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   SyncBatch?: SyncBatchResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TeamPrFlowOverviewRow?: TeamPrFlowOverviewRowResolvers<ContextType>;
   TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;
