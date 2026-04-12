@@ -7,6 +7,7 @@ import {
   CodeReviewDistributionRow,
   CodeReviewLink,
 } from "./chart-code-review.types";
+import { PullRequestFlowChartFilters } from "./chart-pull-request.types";
 
 export const getCodeReviewDistributionChartData = async ({
   workspaceId,
@@ -139,6 +140,77 @@ export const processCodeReviewDistributionRows = (
   return {
     entities: sortedEntitiesWithSharePercentage,
     links: combinedLinks,
+    totalReviews,
+  };
+};
+
+export const getWorkspaceCodeReviewDistributionChartData = async (
+  filters: PullRequestFlowChartFilters
+) => {
+  const teamFilter =
+    filters.teamIds && filters.teamIds.length > 0
+      ? Prisma.sql`AND EXISTS (
+          SELECT 1 FROM "TeamMember" tm
+          WHERE tm."gitProfileId" = CR_Author."id"
+          AND tm."teamId" = ANY(ARRAY[${Prisma.join(
+            filters.teamIds.map((id) => Prisma.sql`${id}`),
+            ", "
+          )}])
+        )`
+      : Prisma.empty;
+
+  const repoFilter =
+    filters.repositoryIds && filters.repositoryIds.length > 0
+      ? Prisma.sql`AND "PullRequest"."repositoryId" = ANY(ARRAY[${Prisma.join(
+          filters.repositoryIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])`
+      : Prisma.empty;
+
+  const query = Prisma.sql`
+  SELECT
+    CONCAT('cr-author:', CR_Author."handle") AS source,
+    CONCAT(PR_Author."handle", ':', CR_Author."name") AS target,
+    CR_Author."name" AS "crAuthorName",
+    CR_Author."avatar" AS "crAuthorAvatar",
+    PR_Author."name" AS "prAuthorName",
+    PR_Author."avatar" AS "prAuthorAvatar",
+    COUNT(*) AS value
+  FROM
+    "CodeReview"
+  JOIN
+    "PullRequest" ON "CodeReview"."pullRequestId" = "PullRequest".id
+  JOIN
+    "GitProfile" AS CR_Author ON "CodeReview"."authorId" = CR_Author.id
+  JOIN
+    "GitProfile" AS PR_Author ON "PullRequest"."authorId" = PR_Author.id
+  JOIN
+    "WorkspaceMembership" as CR_Member ON CR_Author."id" = CR_Member."gitProfileId"
+  JOIN
+    "WorkspaceMembership" as PR_Member ON PR_Author."id" = PR_Member."gitProfileId"
+  WHERE
+    "CodeReview"."createdAt" >= ${filters.startDate}
+    AND "CodeReview"."createdAt" <= ${filters.endDate}
+    AND CR_Member."workspaceId" = ${filters.workspaceId}
+    AND PR_Member."workspaceId" = ${filters.workspaceId}
+    ${teamFilter}
+    ${repoFilter}
+  GROUP BY
+    CR_Author."id", PR_Author."id";
+`;
+
+  const results =
+    await getPrisma(filters.workspaceId).$queryRaw<
+      CodeReviewDistributionRow[]
+    >(query);
+
+  const { entities, links, totalReviews } = processCodeReviewDistributionRows(
+    results.map((result) => ({ ...result, value: Number(result.value) }))
+  );
+
+  return {
+    entities,
+    links,
     totalReviews,
   };
 };

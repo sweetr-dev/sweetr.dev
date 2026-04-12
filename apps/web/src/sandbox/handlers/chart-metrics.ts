@@ -170,4 +170,23 @@ export const chartMetricsHandlers = [
   graphql.query("ChartCodeReviewDistribution", () => {
     return HttpResponse.json({ data: codeReviewDistributionFixture });
   }),
+
+  graphql.query("CodeReviewDistributionWorkspace", () => {
+    const distributionData =
+      codeReviewDistributionFixture.workspace.metrics.codeReviewDistribution;
+    return HttpResponse.json({
+      data: {
+        workspace: {
+          __typename: "Workspace",
+          metrics: {
+            __typename: "Metrics",
+            prFlow: {
+              __typename: "PullRequestFlowMetrics",
+              codeReviewDistribution: distributionData,
+            },
+          },
+        },
+      },
+    });
+  }),
 ];

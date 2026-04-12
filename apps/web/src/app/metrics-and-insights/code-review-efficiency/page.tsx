@@ -1,4 +1,4 @@
-import { Divider, Group, SimpleGrid, Skeleton } from "@mantine/core";
+import { Group, Paper, Skeleton, Table } from "@mantine/core";
 import { LoadableContent } from "../../../components/loadable-content";
 import { useForm } from "@mantine/form";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
@@ -20,7 +20,10 @@ import {
 import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
-import { usePrFlowMetricsQuery } from "../../../api/pr-flow-metrics.api";
+import { useCodeReviewDistributionWorkspaceQuery } from "../../../api/code-review-efficiency-metrics.api";
+import { PageEmptyState } from "../../../components/page-empty-state";
+import { AvatarUser } from "../../../components/avatar-user";
+import { ChartCodeReviewDistribution } from "../../humans/teams/[id]/health-and-performance/components/chart-code-review-distribution";
 import { CodeReviewEfficiencyFilters } from "./types";
 
 export const CodeReviewEfficiencyPage = () => {
@@ -51,8 +54,17 @@ export const CodeReviewEfficiencyPage = () => {
 
   const queryArgs = { workspaceId: workspace.id, input: queryInput };
 
-  const { data, isLoading } = usePrFlowMetricsQuery(queryArgs);
-  const prFlow = data?.workspace.metrics?.prFlow;
+  const { data, isLoading } = useCodeReviewDistributionWorkspaceQuery(
+    queryArgs,
+  );
+  const codeReviewDistribution =
+    data?.workspace.metrics?.prFlow?.codeReviewDistribution;
+
+  const isEmpty = !codeReviewDistribution?.entities.length && !isLoading;
+
+  const reviewers = codeReviewDistribution?.entities.filter(
+    (entity) => entity.reviewCount !== null,
+  );
 
   return (
     <PageContainer size="lg">
@@ -116,23 +128,61 @@ export const CodeReviewEfficiencyPage = () => {
         />
       </Group>
 
-      <Divider mt="xl" mb="md" label="Pull Request" labelPosition="left" />
+      <Paper withBorder h={500} p="xs" mt="md" bg="dark.6">
+        <LoadableContent
+          isLoading={isLoading}
+          whenLoading={<Skeleton h="100%" />}
+          h="100%"
+          display="flex"
+          content={
+            <ChartCodeReviewDistribution
+              chartData={codeReviewDistribution}
+              period={filters.values.period}
+            />
+          }
+          style={
+            isEmpty
+              ? { alignItems: "center", justifyContent: "center" }
+              : undefined
+          }
+          isEmpty={isEmpty}
+          whenEmpty={<PageEmptyState message="No data available." />}
+        />
+      </Paper>
 
-      <LoadableContent
-        isLoading={isLoading}
-        whenLoading={
-          <SimpleGrid cols={2}>
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} style={{ gridColumn: "span 2" }} />
-          </SimpleGrid>
-        }
-        content={<>The content</>}
-      />
+      {!isEmpty && (
+        <Paper mt="md" withBorder p="xs" bg="dark.6">
+          <Table>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Reviewer</Table.Th>
+                <Table.Th ta="right">Reviews</Table.Th>
+                <Table.Th ta="right">%</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {reviewers?.map((reviewer) => (
+                <Table.Tr key={reviewer.id}>
+                  <Table.Td>
+                    <Group gap="xs">
+                      <AvatarUser
+                        src={reviewer.image}
+                        size={24}
+                        name={reviewer.name}
+                      />
+                      {reviewer.name}
+                    </Group>
+                  </Table.Td>
+                  <Table.Td align="right">{reviewer.reviewCount}</Table.Td>
+                  <Table.Td align="right">
+                    {reviewer.reviewSharePercentage}%
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </Paper>
+      )}
     </PageContainer>
   );
 };

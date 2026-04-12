@@ -911,6 +911,7 @@ export type PullRequestFlowInput = {
 
 export type PullRequestFlowMetrics = {
   __typename?: 'PullRequestFlowMetrics';
+  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
   cycleTime?: Maybe<NumericChartData>;
   cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
   pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
@@ -921,6 +922,11 @@ export type PullRequestFlowMetrics = {
   timeToCode?: Maybe<NumericChartData>;
   timeToFirstReview?: Maybe<NumericChartData>;
   timeToMerge?: Maybe<NumericChartData>;
+};
+
+
+export type PullRequestFlowMetricsCodeReviewDistributionArgs = {
+  input: PullRequestFlowInput;
 };
 
 
@@ -2268,6 +2274,7 @@ export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, Paren
 };
 
 export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestFlowMetrics'] = ResolversParentTypes['PullRequestFlowMetrics']> = {
+  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCodeReviewDistributionArgs, 'input'>>;
   cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeArgs, 'input'>>;
   cycleTimeBreakdown?: Resolver<Maybe<ResolversTypes['CycleTimeBreakdownChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeBreakdownArgs, 'input'>>;
   pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
