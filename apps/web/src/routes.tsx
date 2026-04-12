@@ -76,6 +76,7 @@ import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
 import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
 import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
 import { PrFlowPage } from "./app/metrics-and-insights/pr-flow/page";
+import { CodeReviewEfficiencyPage } from "./app/metrics-and-insights/code-review-efficiency/page";
 
 export const router = createBrowserRouter([
   {
@@ -291,6 +292,10 @@ export const router = createBrowserRouter([
               {
                 path: "/metrics-and-insights/pr-flow",
                 element: <PrFlowPage />,
+              },
+              {
+                path: "/metrics-and-insights/code-review-efficiency",
+                element: <CodeReviewEfficiencyPage />,
               },
             ],
           },

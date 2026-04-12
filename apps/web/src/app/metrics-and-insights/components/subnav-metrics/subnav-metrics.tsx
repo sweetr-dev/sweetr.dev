@@ -1,8 +1,9 @@
 import { Divider, Title, NavLink, Badge } from "@mantine/core";
 import {
   IconBrain,
-  IconChartBar,
+  IconChartArcs3,
   IconChartPie2,
+  IconEyeCode,
   IconGitPullRequest,
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router";
@@ -16,21 +17,31 @@ export const SubnavMetrics = () => {
       <Title order={3} mt={34}>
         Metrics
       </Title>
-      <Divider label="Dashboards" labelPosition="left" mt="sm" />
+      <Divider label="Delivery" labelPosition="left" mt="sm" />
       <NavLink
         to="/metrics-and-insights/dora"
         active={pathname.startsWith("/metrics-and-insights/dora")}
         component={Link}
         label="DORA"
-        leftSection={<IconChartBar stroke={1.5} size={18} />}
+        leftSection={<IconChartArcs3 stroke={1.5} size={18} />}
       />
       <NavLink
         to="/metrics-and-insights/pr-flow"
         active={pathname.startsWith("/metrics-and-insights/pr-flow")}
         component={Link}
-        label="PR Flow"
+        label="Pull Requests Flow"
         leftSection={<IconGitPullRequest stroke={1.5} size={18} />}
       />
+      <NavLink
+        to="/metrics-and-insights/code-review-efficiency"
+        active={pathname.startsWith(
+          "/metrics-and-insights/code-review-efficiency",
+        )}
+        component={Link}
+        label="Code Review Efficiency"
+        leftSection={<IconEyeCode stroke={1.5} size={18} />}
+      />
+      <Divider label="Misc" labelPosition="left" mt="sm" />
       <NavLink
         to="/metrics-and-insights/ai-adoption"
         active={pathname.startsWith("/metrics-and-insights/ai-adoption")}

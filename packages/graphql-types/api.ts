@@ -594,6 +594,7 @@ export type Metrics = {
   codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
   cycleTime?: Maybe<NumericChartData>;
   dora: DoraMetrics;
+  prFlow: PullRequestFlowMetrics;
   pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
   timeForApproval?: Maybe<NumericChartData>;
   timeForFirstReview?: Maybe<NumericChartData>;
@@ -887,6 +888,63 @@ export type PullRequestCreatedEvent = {
   pullRequest: PullRequest;
 };
 
+export type PullRequestFlowInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The repository ids to filter by. */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The team ids to filter by. */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+};
+
+export type PullRequestFlowMetrics = {
+  __typename?: 'PullRequestFlowMetrics';
+  cycleTime?: Maybe<NumericChartData>;
+  pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
+  sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
+  throughput?: Maybe<NumericSeriesChartData>;
+  timeToApproval?: Maybe<NumericChartData>;
+  timeToFirstReview?: Maybe<NumericChartData>;
+  timeToMerge?: Maybe<NumericChartData>;
+};
+
+
+export type PullRequestFlowMetricsCycleTimeArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsPullRequestSizeDistributionArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsSizeCycleTimeCorrelationArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsThroughputArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTimeToApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTimeToFirstReviewArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTimeToMergeArgs = {
+  input: PullRequestFlowInput;
+};
+
 export type PullRequestMergedEvent = {
   __typename?: 'PullRequestMergedEvent';
   eventAt: Scalars['DateTime']['output'];
@@ -905,6 +963,13 @@ export enum PullRequestSize {
   SMALL = 'SMALL',
   TINY = 'TINY'
 }
+
+export type PullRequestSizeDistributionChartData = {
+  __typename?: 'PullRequestSizeDistributionChartData';
+  averageLinesChanged: Array<Scalars['Float']['output']>;
+  columns: Array<Scalars['DateTime']['output']>;
+  series: Array<ChartNumericSeries>;
+};
 
 export enum PullRequestState {
   CLOSED = 'CLOSED',
@@ -1025,6 +1090,26 @@ export type Repository = {
   fullName: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type ScatterChartData = {
+  __typename?: 'ScatterChartData';
+  series: Array<ScatterChartSeries>;
+};
+
+export type ScatterChartSeries = {
+  __typename?: 'ScatterChartSeries';
+  color?: Maybe<Scalars['HexColorCode']['output']>;
+  data: Array<ScatterPoint>;
+  name: Scalars['String']['output'];
+};
+
+export type ScatterPoint = {
+  __typename?: 'ScatterPoint';
+  title?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
 };
 
 export type ScheduleSyncBatchInput = {
@@ -1585,9 +1670,12 @@ export type ResolversTypes = {
   PlanKeys: ResolverTypeWrapper<DeepPartial<PlanKeys>>;
   PullRequest: ResolverTypeWrapper<DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversTypes['Person'] }>>;
   PullRequestCreatedEvent: ResolverTypeWrapper<DeepPartial<PullRequestCreatedEvent>>;
+  PullRequestFlowInput: ResolverTypeWrapper<DeepPartial<PullRequestFlowInput>>;
+  PullRequestFlowMetrics: ResolverTypeWrapper<DeepPartial<PullRequestFlowMetrics>>;
   PullRequestMergedEvent: ResolverTypeWrapper<DeepPartial<PullRequestMergedEvent>>;
   PullRequestOwnerType: ResolverTypeWrapper<DeepPartial<PullRequestOwnerType>>;
   PullRequestSize: ResolverTypeWrapper<DeepPartial<PullRequestSize>>;
+  PullRequestSizeDistributionChartData: ResolverTypeWrapper<DeepPartial<PullRequestSizeDistributionChartData>>;
   PullRequestState: ResolverTypeWrapper<DeepPartial<PullRequestState>>;
   PullRequestTracking: ResolverTypeWrapper<DeepPartial<PullRequestTracking>>;
   PullRequestTrendInput: ResolverTypeWrapper<DeepPartial<PullRequestTrendInput>>;
@@ -1599,6 +1687,9 @@ export type ResolversTypes = {
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
+  ScatterChartData: ResolverTypeWrapper<DeepPartial<ScatterChartData>>;
+  ScatterChartSeries: ResolverTypeWrapper<DeepPartial<ScatterChartSeries>>;
+  ScatterPoint: ResolverTypeWrapper<DeepPartial<ScatterPoint>>;
   ScheduleSyncBatchInput: ResolverTypeWrapper<DeepPartial<ScheduleSyncBatchInput>>;
   SendTestMessageInput: ResolverTypeWrapper<DeepPartial<SendTestMessageInput>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
@@ -1708,7 +1799,10 @@ export type ResolversParentTypes = {
   PlanKeys: DeepPartial<PlanKeys>;
   PullRequest: DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversParentTypes['Person'] }>;
   PullRequestCreatedEvent: DeepPartial<PullRequestCreatedEvent>;
+  PullRequestFlowInput: DeepPartial<PullRequestFlowInput>;
+  PullRequestFlowMetrics: DeepPartial<PullRequestFlowMetrics>;
   PullRequestMergedEvent: DeepPartial<PullRequestMergedEvent>;
+  PullRequestSizeDistributionChartData: DeepPartial<PullRequestSizeDistributionChartData>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
   PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
   PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
@@ -1719,6 +1813,9 @@ export type ResolversParentTypes = {
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
+  ScatterChartData: DeepPartial<ScatterChartData>;
+  ScatterChartSeries: DeepPartial<ScatterChartSeries>;
+  ScatterPoint: DeepPartial<ScatterPoint>;
   ScheduleSyncBatchInput: DeepPartial<ScheduleSyncBatchInput>;
   SendTestMessageInput: DeepPartial<SendTestMessageInput>;
   String: DeepPartial<Scalars['String']['output']>;
@@ -2021,6 +2118,7 @@ export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends Re
   codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<MetricsCodeReviewDistributionArgs, 'input'>>;
   cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsCycleTimeArgs, 'input'>>;
   dora?: Resolver<ResolversTypes['DoraMetrics'], ParentType, ContextType>;
+  prFlow?: Resolver<ResolversTypes['PullRequestFlowMetrics'], ParentType, ContextType>;
   pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<MetricsPullRequestSizeDistributionArgs, 'input'>>;
   timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
   timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
@@ -2117,10 +2215,26 @@ export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestFlowMetrics'] = ResolversParentTypes['PullRequestFlowMetrics']> = {
+  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeArgs, 'input'>>;
+  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
+  sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
+  throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
+  timeToApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToApprovalArgs, 'input'>>;
+  timeToFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToFirstReviewArgs, 'input'>>;
+  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToMergeArgs, 'input'>>;
+};
+
 export type PullRequestMergedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestMergedEvent'] = ResolversParentTypes['PullRequestMergedEvent']> = {
   eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   pullRequest?: Resolver<ResolversTypes['PullRequest'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PullRequestSizeDistributionChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestSizeDistributionChartData'] = ResolversParentTypes['PullRequestSizeDistributionChartData']> = {
+  averageLinesChanged?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  series?: Resolver<Array<ResolversTypes['ChartNumericSeries']>, ParentType, ContextType>;
 };
 
 export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestTracking'] = ResolversParentTypes['PullRequestTracking']> = {
@@ -2161,6 +2275,23 @@ export type RepositoryResolvers<ContextType = GraphQLContext, ParentType extends
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ScatterChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterChartData'] = ResolversParentTypes['ScatterChartData']> = {
+  series?: Resolver<Array<ResolversTypes['ScatterChartSeries']>, ParentType, ContextType>;
+};
+
+export type ScatterChartSeriesResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterChartSeries'] = ResolversParentTypes['ScatterChartSeries']> = {
+  color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['ScatterPoint']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ScatterPointResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterPoint'] = ResolversParentTypes['ScatterPoint']> = {
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -2321,12 +2452,17 @@ export type Resolvers<ContextType = GraphQLContext> = {
   PlanKeys?: PlanKeysResolvers<ContextType>;
   PullRequest?: PullRequestResolvers<ContextType>;
   PullRequestCreatedEvent?: PullRequestCreatedEventResolvers<ContextType>;
+  PullRequestFlowMetrics?: PullRequestFlowMetricsResolvers<ContextType>;
   PullRequestMergedEvent?: PullRequestMergedEventResolvers<ContextType>;
+  PullRequestSizeDistributionChartData?: PullRequestSizeDistributionChartDataResolvers<ContextType>;
   PullRequestTracking?: PullRequestTrackingResolvers<ContextType>;
   PullRequestsInProgressResponse?: PullRequestsInProgressResponseResolvers<ContextType>;
   PurchasablePlans?: PurchasablePlansResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Repository?: RepositoryResolvers<ContextType>;
+  ScatterChartData?: ScatterChartDataResolvers<ContextType>;
+  ScatterChartSeries?: ScatterChartSeriesResolvers<ContextType>;
+  ScatterPoint?: ScatterPointResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SweetID?: GraphQLScalarType;
   SyncBatch?: SyncBatchResolvers<ContextType>;

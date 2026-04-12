@@ -21,18 +21,13 @@ import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { usePrFlowMetricsQuery } from "../../../api/pr-flow-metrics.api";
-import { ChartTimeMetric } from "./components/chart-time-metric";
-import { ChartSizeDistribution } from "./components/chart-size-distribution";
-import { ChartThroughput } from "./components/chart-throughput";
-import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correlation";
-import { CardChart } from "./components/card-chart";
-import { PrFlowFilters } from "./types";
+import { CodeReviewEfficiencyFilters } from "./types";
 
-export const PrFlowPage = () => {
+export const CodeReviewEfficiencyPage = () => {
   const searchParams = useFilterSearchParameters();
   const { workspace } = useWorkspace();
 
-  const filters = useForm<PrFlowFilters>({
+  const filters = useForm<CodeReviewEfficiencyFilters>({
     initialValues: {
       from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
       to: searchParams.get("to") || endOfToday().toISOString(),
@@ -136,80 +131,7 @@ export const PrFlowPage = () => {
             <Skeleton h={340} style={{ gridColumn: "span 2" }} />
           </SimpleGrid>
         }
-        content={
-          <SimpleGrid cols={2}>
-            <CardChart
-              title="Throughput"
-              description="Number of pull requests merged and closed over time. Helps track delivery velocity and identify slowdowns."
-            >
-              <ChartThroughput
-                chartId="pr-flow-throughput"
-                chartData={prFlow?.throughput}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Size distribution"
-              description="Distribution of merged pull requests by size (lines added + deleted). The line shows the average lines changed per PR each period."
-            >
-              <ChartSizeDistribution
-                chartId="pr-flow-size-distribution"
-                chartData={prFlow?.pullRequestSizeDistribution}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Cycle time"
-              description="Average time from first commit to merge. Lower cycle times indicate a healthier development workflow."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-cycle-time"
-                chartData={prFlow?.cycleTime}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to first review"
-              description="Average time from PR creation until the first review is submitted. Shorter times mean faster feedback loops."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-first-review"
-                chartData={prFlow?.timeToFirstReview}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to approve"
-              description="Average time from the first review until approval. Tracks how long the review process takes after initial feedback."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-approval"
-                chartData={prFlow?.timeToApproval}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to merge"
-              description="Average time from approval to merge. Long times may indicate bottlenecks in deployment or merge processes."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-merge"
-                chartData={prFlow?.timeToMerge}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Size vs Cycle Time"
-              description="Scatter plot correlating PR size (lines changed) with cycle time. Larger PRs typically take longer to review and merge."
-              style={{ gridColumn: "span 2" }}
-            >
-              <ChartSizeCycleCorrelation
-                chartId="pr-flow-size-cycle-correlation"
-                chartData={prFlow?.sizeCycleTimeCorrelation}
-              />
-            </CardChart>
-          </SimpleGrid>
-        }
+        content={<>The content</>}
       />
     </PageContainer>
   );
