@@ -9,6 +9,7 @@ import {
   getWorkspaceThroughputChartData,
   getWorkspaceTimeForApprovalChartData,
   getWorkspaceTimeForFirstReviewChartData,
+  getWorkspaceTimeToCodeChartData,
   getWorkspaceTimeToMergeChartData,
 } from "../../services/chart-pull-request.service";
 import { PullRequestFlowChartFilters } from "../../services/chart-pull-request.types";
@@ -40,6 +41,24 @@ export const prFlowMetricsQuery = createFieldResolver(
 
       const filters = buildFilters(input, context.workspaceId);
       return getWorkspaceThroughputChartData(filters);
+    },
+    timeToCode: async (_, { input }, context) => {
+      logger.info("query.metrics.prFlow.timeToCode", {
+        workspaceId: context.workspaceId,
+        input,
+      });
+
+      if (!context.workspaceId) {
+        throw new ResourceNotFoundException("Workspace not found");
+      }
+
+      const filters = buildFilters(input, context.workspaceId);
+      const result = await getWorkspaceTimeToCodeChartData(filters);
+
+      return {
+        columns: result.map((r) => r.period),
+        data: result.map((r) => r.value),
+      };
     },
     cycleTime: async (_, { input }, context) => {
       logger.info("query.metrics.prFlow.cycleTime", {

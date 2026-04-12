@@ -21,7 +21,7 @@ import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { usePrFlowMetricsQuery } from "../../../api/pr-flow-metrics.api";
-import { ChartTimeMetric } from "./components/chart-time-metric";
+import { ChartCycleTimeBreakdown } from "./components/chart-cycle-time-breakdown";
 import { ChartSizeDistribution } from "./components/chart-size-distribution";
 import { ChartThroughput } from "./components/chart-throughput";
 import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correlation";
@@ -129,10 +129,7 @@ export const PrFlowPage = () => {
           <SimpleGrid cols={2}>
             <Skeleton h={340} />
             <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
-            <Skeleton h={340} />
+            <Skeleton h={340} style={{ gridColumn: "span 2" }} />
             <Skeleton h={340} style={{ gridColumn: "span 2" }} />
           </SimpleGrid>
         }
@@ -160,41 +157,18 @@ export const PrFlowPage = () => {
             </CardChart>
             <CardChart
               title="Cycle time"
-              description="Average time from first commit to merge. Lower cycle times indicate a healthier development workflow."
+              description="Stacked breakdown of cycle time: time to first review, time to approve, and time to merge."
+              style={{ gridColumn: "span 2" }}
             >
-              <ChartTimeMetric
+              <ChartCycleTimeBreakdown
                 chartId="pr-flow-cycle-time"
-                chartData={prFlow?.cycleTime}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to first review"
-              description="Average time from PR creation until the first review is submitted. Shorter times mean faster feedback loops."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-first-review"
-                chartData={prFlow?.timeToFirstReview}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to approve"
-              description="Average time from the first review until approval. Tracks how long the review process takes after initial feedback."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-approval"
-                chartData={prFlow?.timeToApproval}
-                period={filters.values.period}
-              />
-            </CardChart>
-            <CardChart
-              title="Time to merge"
-              description="Average time from approval to merge. Long times may indicate bottlenecks in deployment or merge processes."
-            >
-              <ChartTimeMetric
-                chartId="pr-flow-time-to-merge"
-                chartData={prFlow?.timeToMerge}
+                chartData={{
+                  cycleTime: prFlow?.cycleTime,
+                  timeToCode: prFlow?.timeToCode,
+                  timeToFirstReview: prFlow?.timeToFirstReview,
+                  timeToApproval: prFlow?.timeToApproval,
+                  timeToMerge: prFlow?.timeToMerge,
+                }}
                 period={filters.values.period}
               />
             </CardChart>

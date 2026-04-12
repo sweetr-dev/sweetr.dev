@@ -42,6 +42,10 @@ export const usePrFlowMetricsQuery = (
                     columns
                     data
                   }
+                  timeToCode(input: $input) {
+                    columns
+                    data
+                  }
                   timeToMerge(input: $input) {
                     columns
                     data

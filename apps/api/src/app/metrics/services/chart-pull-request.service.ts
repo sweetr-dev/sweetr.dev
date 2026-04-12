@@ -448,6 +448,26 @@ export const getWorkspaceTimeToMergeChartData = async (
   }));
 };
 
+export const getWorkspaceTimeToCodeChartData = async (
+  filters: PullRequestFlowChartFilters
+) => {
+  const query = buildPrFlowTimeQuery(
+    filters,
+    Prisma.sql`p."mergedAt"`,
+    Prisma.sql`AVG(pt."timeToCode")`,
+    Prisma.sql`p."mergedAt" >= ${new Date(filters.startDate)} AND p."mergedAt" <= ${new Date(filters.endDate)} AND pt."timeToCode" IS NOT NULL`
+  );
+
+  const results = await getPrisma(filters.workspaceId).$queryRaw<
+    { period: Date; value: number }[]
+  >(query);
+
+  return results.map((r) => ({
+    period: r.period.toISOString(),
+    value: BigInt(Math.floor(r.value || 0)),
+  }));
+};
+
 export const getWorkspaceTimeForFirstReviewChartData = async (
   filters: PullRequestFlowChartFilters
 ) => {

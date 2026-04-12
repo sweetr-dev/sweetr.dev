@@ -6,6 +6,7 @@ export default /* GraphQL */ `
   type PullRequestFlowMetrics {
     throughput(input: PullRequestFlowInput!): NumericSeriesChartData
     cycleTime(input: PullRequestFlowInput!): NumericChartData
+    timeToCode(input: PullRequestFlowInput!): NumericChartData
     timeToMerge(input: PullRequestFlowInput!): NumericChartData
     timeToFirstReview(input: PullRequestFlowInput!): NumericChartData
     timeToApproval(input: PullRequestFlowInput!): NumericChartData

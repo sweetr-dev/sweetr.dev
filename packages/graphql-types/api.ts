@@ -906,6 +906,7 @@ export type PullRequestFlowMetrics = {
   sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
   throughput?: Maybe<NumericSeriesChartData>;
   timeToApproval?: Maybe<NumericChartData>;
+  timeToCode?: Maybe<NumericChartData>;
   timeToFirstReview?: Maybe<NumericChartData>;
   timeToMerge?: Maybe<NumericChartData>;
 };
@@ -932,6 +933,11 @@ export type PullRequestFlowMetricsThroughputArgs = {
 
 
 export type PullRequestFlowMetricsTimeToApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTimeToCodeArgs = {
   input: PullRequestFlowInput;
 };
 
@@ -2221,6 +2227,7 @@ export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, Parent
   sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
   throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
   timeToApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToApprovalArgs, 'input'>>;
+  timeToCode?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToCodeArgs, 'input'>>;
   timeToFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToFirstReviewArgs, 'input'>>;
   timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToMergeArgs, 'input'>>;
 };

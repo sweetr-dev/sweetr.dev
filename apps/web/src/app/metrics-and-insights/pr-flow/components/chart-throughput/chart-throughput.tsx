@@ -63,10 +63,10 @@ export const ChartThroughput = ({
         top: 0,
       },
       grid: {
-        left: "1%",
-        right: "4%",
-        bottom: "3%",
-        top: "30px",
+        left: "0",
+        right: "0",
+        bottom: "0",
+        top: "40px",
         containLabel: true,
       },
       xAxis: {
