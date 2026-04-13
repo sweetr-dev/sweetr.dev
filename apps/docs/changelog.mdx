@@ -1,0 +1,101 @@
+---
+title: "Changelog"
+description: "New features, updates, and fixes."
+---
+
+<Update label="April 13, 2026" description="Guided onboarding and automatic workspace setup" tags={["Feature", "Update", "Fix"]}>
+
+## New features
+
+### Guided onboarding experience
+
+New workspaces now get a step-by-step onboarding flow. After installing the GitHub App, you'll see a real-time sync progress bar as Sweetr pulls in your repositories, pull requests, and code reviews. While data syncs, a getting-started checklist guides you through setting up teams and configuring DORA metrics.
+
+[Onboarding guide](/get-started/onboarding)
+
+## Updates
+
+### Automatic application and incident detection setup
+
+Sweetr now automatically creates an [application](/platform/applications) for each of your repositories during the initial sync, with merge-based deployment tracking pre-configured. [Incident detection](/automations/incident-detection) is also initialized out of the box — so you get DORA metrics from day one without any manual setup.
+
+## Bug fixes
+
+- **Code review sync** — Fixed an issue where reviews without a submission timestamp could interrupt the sync process.
+
+</Update>
+
+<Update label="April 6, 2026" description="Sandbox mode, new login page, and macOS Docker support" tags={["Feature", "Fix"]}>
+
+## New features
+
+### Sandbox mode
+
+You can now explore Sweetr without signing up. The new sandbox mode lets you browse the full interface with realistic mock data — metrics, pull requests, DORA charts, and more. Just visit the login page and click "Explore the sandbox instead."
+
+### Revamped login page
+
+The login page has been redesigned with a cleaner layout and a quick overview of DORA elite benchmarks, so you know what you're working toward before you even sign in.
+
+## Bug fixes
+
+- **Self-hosted Docker on macOS** — Docker images now support ARM64 architecture, fixing compatibility issues for self-hosted users running on Apple Silicon (M1/M2/M3/M4) machines.
+
+</Update>
+
+<Update label="March 2026" description="Self-hosting, incident detection, and more" tags={["Feature", "Update", "Fix"]}>
+
+## New features
+
+### Self-hosting support
+
+You can now self-host Sweetr on your own infrastructure with a single command. The deploy script walks you through the full setup — from creating a GitHub App to generating your Docker Compose stack.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sweetr-dev/sweetr.dev/main/bin/deploy | bash
+```
+
+[Self-hosting guide](/get-started/self-host)
+
+### Incident detection automation
+
+Sweetr now automatically detects incidents from your deployments. Three detection strategies are available out of the box:
+
+- **Rollbacks** — detects when a deployment reverts to a previously deployed version.
+- **Reverts** — detects GitHub revert PRs.
+- **Hotfixes** — matches configurable patterns in PR titles, branch names, or labels.
+
+Incident Detection is enabled by default for every workspace. Detected incidents feed directly into your [DORA metrics](/metrics-and-insights/dora) for more accurate change failure rate and mean time to recover.
+
+[Incident detection docs](/automations/incident-detection)
+
+### People bio and location
+
+Profile pages now show each person's bio and location, synced from GitHub. This makes it easier to get context on teammates across your organization.
+
+[People directory](/platform/people)
+
+### DORA metrics in Slack digests
+
+Your team's [Slack digest](/automations/digests) now includes all four DORA metrics — deployment frequency, lead time, change failure rate, and mean time to recover. If deployments aren't set up yet, the digest links directly to the setup guide.
+
+## Updates
+
+### Deployment setup guidance
+
+Pages that depend on deployment data — like DORA metrics, incidents, and team alerts — now show a setup banner when deployments haven't been configured yet. The banner links you straight to the [deployment setup guide](/platform/deployments#setting-up-deployments-for-dora-metrics).
+
+### API rate limiting
+
+The REST API now enforces a rate limit of 100 requests per minute per API key to ensure fair usage across all workspaces.
+
+[API rate limit docs](/api-reference/rate-limit)
+
+## Bug fixes
+
+- **PR timeline** — Fixed personal metrics date range calculations and resolved an issue where cycle time of zero was incorrectly hidden.
+- **DORA team filtering** — Team filtering on DORA metrics now correctly uses deployment author team membership instead of application ownership.
+- **First review calculation** — Fixed a bug where the first review timestamp used aggregated data instead of chronological review events.
+- **Code review sync** — Resolved an issue where code reviews could fail to sync under certain conditions.
+
+</Update>
