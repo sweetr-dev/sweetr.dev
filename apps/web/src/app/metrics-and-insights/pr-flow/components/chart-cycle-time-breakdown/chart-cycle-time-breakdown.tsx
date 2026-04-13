@@ -18,6 +18,7 @@ interface ChartCycleTimeBreakdownProps {
   chartId: string;
   chartData?: CycleTimeBreakdownChartData | null;
   period: Period;
+  onColumnClick?: (columnDate: string) => void;
 }
 
 const STACKED_SERIES: {
@@ -28,8 +29,8 @@ const STACKED_SERIES: {
   name: string;
   color: string;
 }[] = [
-  { key: "timeToCode", name: "Coding", color: "#FFF " },
-  { key: "timeToFirstReview", name: "First Review", color: "#38d9a9" },
+  { key: "timeToCode", name: "Coding", color: "#8ce0e9 " },
+  { key: "timeToFirstReview", name: "First Review", color: "#8ce9c7" },
   { key: "timeToApproval", name: "Approval", color: "#8ce99a" },
   { key: "timeToMerge", name: "Merge", color: "#b197fc" },
 ];
@@ -43,6 +44,7 @@ export const ChartCycleTimeBreakdown = ({
   chartId,
   chartData,
   period,
+  onColumnClick,
 }: ChartCycleTimeBreakdownProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -56,11 +58,34 @@ export const ChartCycleTimeBreakdown = ({
     chart.group = PR_FLOW_GROUP;
     echarts.connect(PR_FLOW_GROUP);
 
-    const stackedSeries = STACKED_SERIES.map(({ key, name, color }, i) => ({
+    // ECharts' barMinHeight breaks stacking (segments overlap instead of stack).
+    // Instead, we clamp non-zero values to a % of the tallest column so every
+    // phase stays visible regardless of how small it is relative to others.
+    // Tooltips and labels read from the original chartData to show real values.
+    const maxColumnTotal = Math.max(
+      ...columns.map((_, idx) =>
+        STACKED_SERIES.reduce(
+          (sum, { key }) => sum + (Number(chartData[key][idx]) || 0),
+          0,
+        ),
+      ),
+    );
+    const minVisibleValue = maxColumnTotal * 0.03;
+
+    const clampedData: Record<string, number[]> = {};
+    for (const { key } of STACKED_SERIES) {
+      clampedData[key] = chartData[key].map((_, idx) => {
+        const raw = Number(chartData[key][idx]) || 0;
+        if (raw === 0) return 0;
+        return Math.max(raw, minVisibleValue);
+      });
+    }
+
+    const stackedSeries = STACKED_SERIES.map(({ key, name, color }) => ({
       type: "bar" as const,
       name,
       stack: "cycle-time",
-      data: chartData[key],
+      data: clampedData[key],
       color,
       barMaxWidth: 24,
       itemStyle: {
@@ -70,20 +95,29 @@ export const ChartCycleTimeBreakdown = ({
       emphasis: { focus: "series" as const },
     }));
 
+    // Line must use clamped totals so it sits above the inflated bars.
+    const clampedCycleTime = columns.map((_, idx) =>
+      STACKED_SERIES.reduce(
+        (sum, { key }) => sum + (clampedData[key][idx] || 0),
+        0,
+      ),
+    );
+
     const cycleTimeSeries = {
       type: "line" as const,
       name: "Cycle Time",
-      data: cycleTime,
+      data: clampedCycleTime,
       smooth: true,
       connectNulls: true,
-      color: "#8ce99a",
+      color: "#FFFFFF",
       symbolSize: 0,
       lineStyle: { width: 2 },
       label: {
-        show: true,
+        show: cycleTime.length <= 15,
         position: "top" as const,
-        formatter: ({ value }: { value?: unknown }) => {
-          const val = Number(value) || 0;
+        // Use original cycleTime, not the clamped value ECharts passes.
+        formatter: ({ dataIndex }: { dataIndex?: number }) => {
+          const val = Number(cycleTime[dataIndex ?? 0]) || 0;
           if (!val) return "0s";
           return getAbbreviatedDuration(val);
         },
@@ -138,7 +172,7 @@ export const ChartCycleTimeBreakdown = ({
 
           html += `
             <div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">
-              <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8ce99a"></span>
+              <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFFFFF"></span>
               <span>Cycle Time</span>
               <span style="margin-left:auto;font-weight:600">${formatDurationValue(cycleTime[idx])}</span>
             </div>`;
@@ -177,6 +211,23 @@ export const ChartCycleTimeBreakdown = ({
 
     chart.setOption(options);
 
+    if (onColumnClick) {
+      chart.getZr().on("click", (e) => {
+        if (!chart.containPixel("grid", [e.offsetX, e.offsetY])) return;
+        const [dataIndex] = chart.convertFromPixel("grid", [
+          e.offsetX,
+          e.offsetY,
+        ]);
+        const col = columns[Math.round(dataIndex)];
+        if (col) onColumnClick(col);
+      });
+      chart.getZr().on("mousemove", (e) => {
+        if (chart.containPixel("grid", [e.offsetX, e.offsetY])) {
+          chart.getZr().setCursorStyle("pointer");
+        }
+      });
+    }
+
     const handleResize = () => chart.resize();
     window.addEventListener("resize", handleResize);
 
@@ -184,7 +235,7 @@ export const ChartCycleTimeBreakdown = ({
       window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, [chartData, period, chartId]);
+  }, [chartData, period, chartId, onColumnClick]);
 
   return (
     <div

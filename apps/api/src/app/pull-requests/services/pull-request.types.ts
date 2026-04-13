@@ -9,6 +9,7 @@ export interface PaginatePullRequestsArgs {
   completedAt?: DateTimeRange;
   states?: PullRequestState[];
   sizes?: PullRequestSize[];
+  repositoryIds?: number[];
 }
 
 export interface PullRequestFile {

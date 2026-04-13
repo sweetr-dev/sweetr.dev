@@ -11,9 +11,11 @@ import {
 } from "@mantine/core";
 import {
   IconDotsVertical,
+  IconExternalLink,
   IconInfoCircle,
   IconSpeakerphone,
 } from "@tabler/icons-react";
+import { Link } from "react-router";
 import { useDisclosure } from "@mantine/hooks";
 
 interface ChartCardProps {
@@ -22,6 +24,7 @@ interface ChartCardProps {
   children: ReactNode;
   height?: number;
   style?: React.CSSProperties;
+  href?: string;
 }
 
 export const CardChart = ({
@@ -30,6 +33,7 @@ export const CardChart = ({
   children,
   height = 340,
   style,
+  href,
 }: ChartCardProps) => {
   const [menuOpened, { toggle: toggleMenu, close: closeMenu }] =
     useDisclosure(false);
@@ -99,6 +103,16 @@ export const CardChart = ({
           </Menu.Target>
 
           <Menu.Dropdown>
+            {href && (
+              <Menu.Item
+                leftSection={<IconExternalLink size={14} stroke={1.5} />}
+                component={Link}
+                to={href}
+                onClick={closeMenu}
+              >
+                View Pull Requests
+              </Menu.Item>
+            )}
             <Menu.Item
               leftSection={<IconSpeakerphone size={14} stroke={1.5} />}
               component="a"

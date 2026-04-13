@@ -34,6 +34,7 @@ export const pullRequestsQuery = createFieldResolver("Workspace", {
       },
       states: input.states || undefined,
       sizes: input.sizes || undefined,
+      repositoryIds: input.repositoryIds || undefined,
     });
 
     return pullRequests.map(transformPullRequest);

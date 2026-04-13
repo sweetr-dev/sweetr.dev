@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ECOption,
   echarts,
@@ -10,21 +10,32 @@ import {
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { UTCDate } from "@date-fns/utc";
+import { Menu } from "@mantine/core";
+import { IconGitMerge, IconGitPullRequest } from "@tabler/icons-react";
 
 const PR_FLOW_GROUP = "prFlow";
+
+export type ThroughputDateType = "created" | "completed";
 
 interface ChartThroughputProps {
   chartId: string;
   chartData?: NumericSeriesChartData | null;
   period: Period;
+  onColumnClick?: (columnDate: string, dateType: ThroughputDateType) => void;
 }
 
 export const ChartThroughput = ({
   chartId,
   chartData,
   period,
+  onColumnClick,
 }: ChartThroughputProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [menu, setMenu] = useState<{
+    x: number;
+    y: number;
+    columnDate: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!chartData || !containerRef.current) return;
@@ -55,7 +66,10 @@ export const ChartThroughput = ({
           );
 
           const opened = seriesMeta.find((s) => s.name === "Opened");
-          const openedVal = Number(chartData.series.find((s) => s.name === "Opened")?.data[idx]) || 0;
+          const openedVal =
+            Number(
+              chartData.series.find((s) => s.name === "Opened")?.data[idx],
+            ) || 0;
 
           const outcomeSeries = seriesMeta.filter(
             (s) => s.name === "Merged" || s.name === "Closed",
@@ -73,7 +87,10 @@ export const ChartThroughput = ({
 
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
           for (const meta of outcomeSeries) {
-            const val = Number(chartData.series.find((s) => s.name === meta.name)?.data[idx]) || 0;
+            const val =
+              Number(
+                chartData.series.find((s) => s.name === meta.name)?.data[idx],
+              ) || 0;
             html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
             html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${meta.color}"></span>`;
             html += `<span style="padding-right: 40px;">${meta.name}</span>`;
@@ -137,6 +154,30 @@ export const ChartThroughput = ({
 
     chart.setOption(options);
 
+    if (onColumnClick) {
+      chart.getZr().on("click", (e) => {
+        if (!chart.containPixel("grid", [e.offsetX, e.offsetY])) return;
+        const [dataIndex] = chart.convertFromPixel("grid", [
+          e.offsetX,
+          e.offsetY,
+        ]);
+        const col = chartData.columns[Math.round(dataIndex)];
+        if (!col) return;
+
+        const rect = containerRef.current!.getBoundingClientRect();
+        setMenu({
+          x: rect.left + e.offsetX,
+          y: rect.top + e.offsetY,
+          columnDate: col,
+        });
+      });
+      chart.getZr().on("mousemove", (e) => {
+        if (chart.containPixel("grid", [e.offsetX, e.offsetY])) {
+          chart.getZr().setCursorStyle("pointer");
+        }
+      });
+    }
+
     const handleResize = () => chart.resize();
     window.addEventListener("resize", handleResize);
 
@@ -144,13 +185,58 @@ export const ChartThroughput = ({
       window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, [chartData, period, chartId]);
+  }, [chartData, period, chartId, onColumnClick]);
 
   return (
-    <div
-      ref={containerRef}
-      id={chartId}
-      style={{ width: "100%", flex: 1, minHeight: 0 }}
-    />
+    <div style={{ width: "100%", flex: 1, minHeight: 0, position: "relative" }}>
+      <div
+        ref={containerRef}
+        id={chartId}
+        style={{ width: "100%", height: "100%" }}
+      />
+      <Menu
+        opened={!!menu}
+        onChange={(opened) => {
+          if (!opened) setMenu(null);
+        }}
+        position="bottom-start"
+        shadow="md"
+        withArrow
+      >
+        <Menu.Target>
+          <div
+            style={{
+              position: "fixed",
+              left: menu?.x ?? 0,
+              top: menu?.y ?? 0,
+              width: 0,
+              height: 0,
+              pointerEvents: "none",
+            }}
+          />
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>View Pull Requests</Menu.Label>
+          <Menu.Item
+            leftSection={<IconGitPullRequest size={16} stroke={1.5} />}
+            onClick={() => {
+              if (menu) onColumnClick?.(menu.columnDate, "created");
+              setMenu(null);
+            }}
+          >
+            Opened
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconGitMerge size={16} stroke={1.5} />}
+            onClick={() => {
+              if (menu) onColumnClick?.(menu.columnDate, "completed");
+              setMenu(null);
+            }}
+          >
+            Merged / Closed
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </div>
   );
 };

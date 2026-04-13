@@ -1062,6 +1062,8 @@ export type PullRequestsQueryInput = {
   ownerIds: Array<Scalars['SweetID']['input']>;
   /** Whether the ids refer to teams or people */
   ownerType: PullRequestOwnerType;
+  /** The repository ids to filter by */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The size to filter by */
   sizes?: InputMaybe<Array<PullRequestSize>>;
   /** The state to filter by */

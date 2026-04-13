@@ -17,12 +17,14 @@ interface ChartSizeDistributionProps {
   chartId: string;
   chartData?: PullRequestSizeDistributionChartData | null;
   period: Period;
+  onColumnClick?: (columnDate: string) => void;
 }
 
 export const ChartSizeDistribution = ({
   chartId,
   chartData,
   period,
+  onColumnClick,
 }: ChartSizeDistributionProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -152,16 +154,18 @@ export const ChartSizeDistribution = ({
       ],
       series: [
         ...chartData.series.map((chartSeries) => ({
-          barCategoryGap: "50%",
-          barGap: "50%",
           name: chartSeries.name,
           data: chartSeries.data,
           color: chartSeries.color || undefined,
-          smooth: true,
-          symbolSize: 7,
           type: "bar" as const,
           stack: "Total",
           yAxisIndex: 0,
+          barMaxWidth: 24,
+          itemStyle: {
+            borderColor: "#1A1B1E",
+            borderWidth: 1,
+          },
+          emphasis: { focus: "series" as const },
         })),
         {
           name: "Avg. Lines Changed",
@@ -180,6 +184,23 @@ export const ChartSizeDistribution = ({
 
     chart.setOption(options);
 
+    if (onColumnClick) {
+      chart.getZr().on("click", (e) => {
+        if (!chart.containPixel("grid", [e.offsetX, e.offsetY])) return;
+        const [dataIndex] = chart.convertFromPixel("grid", [
+          e.offsetX,
+          e.offsetY,
+        ]);
+        const col = chartData.columns[Math.round(dataIndex)];
+        if (col) onColumnClick(col);
+      });
+      chart.getZr().on("mousemove", (e) => {
+        if (chart.containPixel("grid", [e.offsetX, e.offsetY])) {
+          chart.getZr().setCursorStyle("pointer");
+        }
+      });
+    }
+
     const handleResize = () => chart.resize();
     window.addEventListener("resize", handleResize);
 
@@ -187,7 +208,7 @@ export const ChartSizeDistribution = ({
       window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, [chartData, period, chartId]);
+  }, [chartData, period, chartId, onColumnClick]);
 
   return (
     <div

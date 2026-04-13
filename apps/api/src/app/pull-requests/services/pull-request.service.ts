@@ -117,6 +117,13 @@ export const paginatePullRequests = async (
     };
   }
 
+  if (args.repositoryIds?.length) {
+    query.where = {
+      ...query.where,
+      repositoryId: { in: args.repositoryIds },
+    };
+  }
+
   return getPrisma(workspaceId).pullRequest.findMany(query);
 };
 

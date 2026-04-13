@@ -16,11 +16,13 @@ import { useWorkspace } from "./workspace.provider";
 interface UsePullRequestListOptions {
   ownerIds: string[];
   ownerType?: PullRequestOwnerType;
+  repositoryIds?: string[];
 }
 
 export const usePullRequestList = ({
   ownerIds,
   ownerType = PullRequestOwnerType.TEAM,
+  repositoryIds,
 }: UsePullRequestListOptions) => {
   const { workspace } = useWorkspace();
   const searchParams = useFilterSearchParameters();
@@ -57,6 +59,7 @@ export const usePullRequestList = ({
         ownerType,
         states: filters.values.states,
         sizes: filters.values.sizes,
+        repositoryIds: repositoryIds?.length ? repositoryIds : undefined,
         createdAt: {
           from: filters.values.createdAtFrom,
           to: filters.values.createdAtTo,
