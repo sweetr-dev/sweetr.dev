@@ -52,7 +52,7 @@
     "date-fns": "^4.0.0",
     "dotenv": "^16.3.1",
     "envsafe": "^2.0.3",
-    "fastify": "^5.7.4",
+    "fastify": "^5.8.5",
     "fastify-raw-body": "^5.0.0",
     "got": "^11.8.3",
     "graphql": "^16.8.1",
