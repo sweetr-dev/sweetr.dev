@@ -3,7 +3,7 @@
     <img src="https://github.com/user-attachments/assets/d0aa771f-60a4-4f50-ae20-7bf35f6b4b2d" alt="Sweetr Logo">
   </a>
 <h3 align="center">sweetr.dev</h3>
-  <p align="center"><strong>The open platform for Engineering Performance++</strong></p>
+  <p align="center"><strong>The open platform for Developer Productivity++</strong></p>
 
 <p align="center">
   <a href="https://sweetr.dev">Website</a>
@@ -11,24 +11,25 @@
   <a href="https://docs.sweetr.dev/">Docs</a>
 </p>
 <br/>
-<hr/> 
+<hr/>
 
 ### Getting Started
-  
+
 Start a 14-day free trial: <a href="https://github.com/apps/sweetr-dev/installations/new">Install the GitHub App</a>
 <br/>
 Self-host for free: <a href="https://docs.sweetr.dev/get-started/self-host">Read the guide</a>
+
 <hr/>
 
-
-<hr/> 
+<hr/>
 
 ### What problems does it solve?
 
-PRs get stuck. Bottlenecks stay hidden. Decisions happen without signals. 
+PRs get stuck. Bottlenecks stay hidden. Decisions happen without signals.
 
-Sweetr gives your team the visibility and automations to uncover friction, improve delivery, and build a better developer experience. 
-<hr/> 
+Sweetr gives your team the visibility and automations to uncover friction, improve delivery, and build a better developer experience.
+
+<hr/>
 
 <br/>
 
