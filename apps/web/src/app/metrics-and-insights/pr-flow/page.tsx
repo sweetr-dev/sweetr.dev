@@ -34,7 +34,7 @@ import { ChartSizeDistribution } from "./components/chart-size-distribution";
 import { ChartThroughput } from "./components/chart-throughput";
 import type { ThroughputDateType } from "./components/chart-throughput/chart-throughput";
 import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correlation";
-import { CardChart } from "./components/card-chart";
+import { CardChart } from "../../../components/card-chart";
 import { TableTeamOverview } from "./components/table-team-overview";
 import { PrFlowFilters } from "./types";
 

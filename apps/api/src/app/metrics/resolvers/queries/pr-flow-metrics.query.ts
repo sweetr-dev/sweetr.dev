@@ -14,7 +14,6 @@ import {
   getWorkspaceTimeToCodeChartData,
   getWorkspaceTimeToMergeChartData,
 } from "../../services/chart-pull-request.service";
-import { getWorkspaceCodeReviewDistributionChartData } from "../../services/chart-code-review.service";
 import { PullRequestFlowChartFilters } from "../../services/chart-pull-request.types";
 
 const buildFilters = (
@@ -195,19 +194,6 @@ export const prFlowMetricsQuery = createFieldResolver(
 
       const filters = buildFilters(input, context.workspaceId);
       return getWorkspaceTeamOverview(filters);
-    },
-    codeReviewDistribution: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.codeReviewDistribution", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildFilters(input, context.workspaceId);
-      return getWorkspaceCodeReviewDistributionChartData(filters);
     },
   }
 );

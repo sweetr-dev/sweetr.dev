@@ -18,7 +18,6 @@ export default /* GraphQL */ `
       input: PullRequestFlowInput!
     ): ScatterChartData
     teamOverview(input: PullRequestFlowInput!): [TeamPrFlowOverviewRow!]
-    codeReviewDistribution(input: PullRequestFlowInput!): CodeReviewDistributionChartData
   }
 
   input PullRequestFlowInput {

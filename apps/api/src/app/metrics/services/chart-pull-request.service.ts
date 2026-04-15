@@ -351,10 +351,9 @@ const buildPullRequestFilters = (
   const joins: Prisma.Sql[] = [
     Prisma.sql`INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"`,
     Prisma.sql`INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"`,
-    Prisma.sql`INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"`,
   ];
   const conditions: Prisma.Sql[] = [
-    Prisma.sql`wm."workspaceId" = ${filters.workspaceId}`,
+    Prisma.sql`p."workspaceId" = ${filters.workspaceId}`,
   ];
 
   if (filters.teamIds && filters.teamIds.length > 0) {
@@ -690,9 +689,7 @@ export const getWorkspaceThroughputChartData = async (
         DATE_TRUNC(${trunc}, p."createdAt") AS period,
         COUNT(p."id") AS value
       FROM "PullRequest" p
-      INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-      INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-      WHERE wm."workspaceId" = ${filters.workspaceId}
+      WHERE p."workspaceId" = ${filters.workspaceId}
         AND p."createdAt" >= ${new Date(filters.startDate)}
         AND p."createdAt" <= ${new Date(filters.endDate)}
         ${teamFilter}
@@ -704,9 +701,7 @@ export const getWorkspaceThroughputChartData = async (
         DATE_TRUNC(${trunc}, p."mergedAt") AS period,
         COUNT(p."id") AS value
       FROM "PullRequest" p
-      INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-      INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-      WHERE wm."workspaceId" = ${filters.workspaceId}
+      WHERE p."workspaceId" = ${filters.workspaceId}
         AND p."mergedAt" >= ${new Date(filters.startDate)}
         AND p."mergedAt" <= ${new Date(filters.endDate)}
         AND p."mergedAt" IS NOT NULL
@@ -719,9 +714,7 @@ export const getWorkspaceThroughputChartData = async (
         DATE_TRUNC(${trunc}, p."closedAt") AS period,
         COUNT(p."id") AS value
       FROM "PullRequest" p
-      INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
-      INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
-      WHERE wm."workspaceId" = ${filters.workspaceId}
+      WHERE p."workspaceId" = ${filters.workspaceId}
         AND p."closedAt" >= ${new Date(filters.startDate)}
         AND p."closedAt" <= ${new Date(filters.endDate)}
         AND p."closedAt" IS NOT NULL

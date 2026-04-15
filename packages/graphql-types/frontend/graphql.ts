@@ -222,6 +222,15 @@ export type CodeReview = {
   state: CodeReviewState;
 };
 
+export type CodeReviewCountKpi = {
+  __typename?: 'CodeReviewCountKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['Int']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['Int']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
 export type CodeReviewDistributionChartData = {
   __typename?: 'CodeReviewDistributionChartData';
   entities: Array<CodeReviewDistributionEntity>;
@@ -238,6 +247,88 @@ export type CodeReviewDistributionEntity = {
   reviewSharePercentage?: Maybe<Scalars['Float']['output']>;
 };
 
+export type CodeReviewDurationKpi = {
+  __typename?: 'CodeReviewDurationKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['BigInt']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['BigInt']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
+export type CodeReviewEfficiencyMetrics = {
+  __typename?: 'CodeReviewEfficiencyMetrics';
+  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
+  kpiAvgCommentsPerPr?: Maybe<CodeReviewFloatKpi>;
+  kpiPrsWithoutApproval?: Maybe<CodeReviewCountKpi>;
+  kpiTimeToApproval?: Maybe<CodeReviewDurationKpi>;
+  kpiTimeToFirstReview?: Maybe<CodeReviewDurationKpi>;
+  prsWithoutApproval?: Maybe<Scalars['Int']['output']>;
+  reviewTurnaroundTime?: Maybe<NumericChartData>;
+  sizeCommentCorrelation?: Maybe<ScatterChartData>;
+  teamOverview?: Maybe<Array<CodeReviewTeamOverviewRow>>;
+  timeToApproval?: Maybe<NumericChartData>;
+};
+
+
+export type CodeReviewEfficiencyMetricsCodeReviewDistributionArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsKpiAvgCommentsPerPrArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsKpiPrsWithoutApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsKpiTimeToApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsKpiTimeToFirstReviewArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsPrsWithoutApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsReviewTurnaroundTimeArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsSizeCommentCorrelationArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsTeamOverviewArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsTimeToApprovalArgs = {
+  input: PullRequestFlowInput;
+};
+
+export type CodeReviewFloatKpi = {
+  __typename?: 'CodeReviewFloatKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['Float']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['Float']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
 export enum CodeReviewState {
   APPROVED = 'APPROVED',
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
@@ -248,6 +339,16 @@ export type CodeReviewSubmittedEvent = {
   __typename?: 'CodeReviewSubmittedEvent';
   codeReview: CodeReview;
   eventAt: Scalars['DateTime']['output'];
+};
+
+export type CodeReviewTeamOverviewRow = {
+  __typename?: 'CodeReviewTeamOverviewRow';
+  avgTimeToApproval: Scalars['BigInt']['output'];
+  avgTimeToFirstReview: Scalars['BigInt']['output'];
+  prsWithoutApproval: Scalars['Int']['output'];
+  teamIcon: Scalars['String']['output'];
+  teamId?: Maybe<Scalars['SweetID']['output']>;
+  teamName: Scalars['String']['output'];
 };
 
 export type CodeReviewsInput = {
@@ -599,6 +700,7 @@ export type MeanTimeToRecoverMetric = {
 export type Metrics = {
   __typename?: 'Metrics';
   codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
+  codeReviewEfficiency: CodeReviewEfficiencyMetrics;
   cycleTime?: Maybe<NumericChartData>;
   dora: DoraMetrics;
   prFlow: PullRequestFlowMetrics;
@@ -908,7 +1010,6 @@ export type PullRequestFlowInput = {
 
 export type PullRequestFlowMetrics = {
   __typename?: 'PullRequestFlowMetrics';
-  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
   cycleTime?: Maybe<NumericChartData>;
   cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
   pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
@@ -919,11 +1020,6 @@ export type PullRequestFlowMetrics = {
   timeToCode?: Maybe<NumericChartData>;
   timeToFirstReview?: Maybe<NumericChartData>;
   timeToMerge?: Maybe<NumericChartData>;
-};
-
-
-export type PullRequestFlowMetricsCodeReviewDistributionArgs = {
-  input: PullRequestFlowInput;
 };
 
 
@@ -1689,13 +1785,13 @@ export type LoginToStripeMutationVariables = Exact<{
 
 export type LoginToStripeMutation = { __typename?: 'Mutation', loginToStripe?: string | null };
 
-export type CodeReviewDistributionWorkspaceQueryVariables = Exact<{
+export type CodeReviewEfficiencyMetricsQueryVariables = Exact<{
   workspaceId: Scalars['SweetID']['input'];
   input: PullRequestFlowInput;
 }>;
 
 
-export type CodeReviewDistributionWorkspaceQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', metrics: { __typename?: 'Metrics', prFlow: { __typename?: 'PullRequestFlowMetrics', codeReviewDistribution?: { __typename?: 'CodeReviewDistributionChartData', totalReviews: number, entities: Array<{ __typename?: 'CodeReviewDistributionEntity', id: string, name: string, image?: string | null, reviewCount?: number | null, reviewSharePercentage?: number | null }>, links: Array<{ __typename?: 'GraphChartLink', source: string, target: string, value: number }> } | null } } } };
+export type CodeReviewEfficiencyMetricsQuery = { __typename?: 'Query', workspace: { __typename?: 'Workspace', metrics: { __typename?: 'Metrics', codeReviewEfficiency: { __typename?: 'CodeReviewEfficiencyMetrics', prsWithoutApproval?: number | null, reviewTurnaroundTime?: { __typename?: 'NumericChartData', columns: Array<string>, data: Array<number> } | null, timeToApproval?: { __typename?: 'NumericChartData', columns: Array<string>, data: Array<number> } | null, kpiTimeToFirstReview?: { __typename?: 'CodeReviewDurationKpi', currentAmount: number, previousAmount: number, change: number, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } } | null, kpiTimeToApproval?: { __typename?: 'CodeReviewDurationKpi', currentAmount: number, previousAmount: number, change: number, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } } | null, kpiAvgCommentsPerPr?: { __typename?: 'CodeReviewFloatKpi', currentAmount: number, previousAmount: number, change: number, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } } | null, kpiPrsWithoutApproval?: { __typename?: 'CodeReviewCountKpi', currentAmount: number, previousAmount: number, change: number, previousPeriod: { __typename?: 'DateTimeRangeValue', from?: string | null, to?: string | null } } | null, sizeCommentCorrelation?: { __typename?: 'ScatterChartData', series: Array<{ __typename?: 'ScatterChartSeries', name: string, color?: string | null, data: Array<{ __typename?: 'ScatterPoint', x: number, y: number, title?: string | null, url?: string | null }> }> } | null, codeReviewDistribution?: { __typename?: 'CodeReviewDistributionChartData', totalReviews: number, entities: Array<{ __typename?: 'CodeReviewDistributionEntity', id: string, name: string, image?: string | null, reviewCount?: number | null, reviewSharePercentage?: number | null }>, links: Array<{ __typename?: 'GraphChartLink', source: string, target: string, value: number }> } | null, teamOverview?: Array<{ __typename?: 'CodeReviewTeamOverviewRow', teamId?: string | null, teamName: string, teamIcon: string, avgTimeToFirstReview: number, avgTimeToApproval: number, prsWithoutApproval: number }> | null } } } };
 
 export type PersonCodeReviewsQueryVariables = Exact<{
   workspaceId: Scalars['SweetID']['input'];
@@ -2117,7 +2213,7 @@ export const WorkspaceAutomationsDocument = {"kind":"Document","definitions":[{"
 export const UpdateAutomationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAutomation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateAutomationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAutomation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"settings"}}]}}]}}]} as unknown as DocumentNode<UpdateAutomationMutation, UpdateAutomationMutationVariables>;
 export const BillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Billing"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billing"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchasablePlans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cloud"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthly"}},{"kind":"Field","name":{"kind":"Name","value":"yearly"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"estimatedSeats"}}]}}]}}]}}]} as unknown as DocumentNode<BillingQuery, BillingQueryVariables>;
 export const LoginToStripeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginToStripe"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginToStripeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginToStripe"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<LoginToStripeMutation, LoginToStripeMutationVariables>;
-export const CodeReviewDistributionWorkspaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodeReviewDistributionWorkspace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PullRequestFlowInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metrics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prFlow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"codeReviewDistribution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"reviewCount"}},{"kind":"Field","name":{"kind":"Name","value":"reviewSharePercentage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"links"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalReviews"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CodeReviewDistributionWorkspaceQuery, CodeReviewDistributionWorkspaceQueryVariables>;
+export const CodeReviewEfficiencyMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodeReviewEfficiencyMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PullRequestFlowInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metrics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"codeReviewEfficiency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reviewTurnaroundTime"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeToApproval"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prsWithoutApproval"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]},{"kind":"Field","name":{"kind":"Name","value":"kpiTimeToFirstReview"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"kpiTimeToApproval"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"kpiAvgCommentsPerPr"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"kpiPrsWithoutApproval"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"previousAmount"}},{"kind":"Field","name":{"kind":"Name","value":"change"}},{"kind":"Field","name":{"kind":"Name","value":"previousPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"from"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sizeCommentCorrelation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"series"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"codeReviewDistribution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"reviewCount"}},{"kind":"Field","name":{"kind":"Name","value":"reviewSharePercentage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"links"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalReviews"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teamOverview"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"teamIcon"}},{"kind":"Field","name":{"kind":"Name","value":"avgTimeToFirstReview"}},{"kind":"Field","name":{"kind":"Name","value":"avgTimeToApproval"}},{"kind":"Field","name":{"kind":"Name","value":"prsWithoutApproval"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CodeReviewEfficiencyMetricsQuery, CodeReviewEfficiencyMetricsQueryVariables>;
 export const PersonCodeReviewsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PersonCodeReviews"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"handle"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CodeReviewsInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"handle"},"value":{"kind":"Variable","name":{"kind":"Name","value":"handle"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"codeReviews"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"commentCount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"handle"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pullRequest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"gitUrl"}},{"kind":"Field","name":{"kind":"Name","value":"commentCount"}},{"kind":"Field","name":{"kind":"Name","value":"changedFilesCount"}},{"kind":"Field","name":{"kind":"Name","value":"linesAddedCount"}},{"kind":"Field","name":{"kind":"Name","value":"linesDeletedCount"}},{"kind":"Field","name":{"kind":"Name","value":"tracking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"changedFilesCount"}},{"kind":"Field","name":{"kind":"Name","value":"linesAddedCount"}},{"kind":"Field","name":{"kind":"Name","value":"linesDeletedCount"}},{"kind":"Field","name":{"kind":"Name","value":"firstReviewAt"}},{"kind":"Field","name":{"kind":"Name","value":"timeToFirstReview"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"handle"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"repository"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<PersonCodeReviewsQuery, PersonCodeReviewsQueryVariables>;
 export const DeploymentOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DeploymentOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeploymentsQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deployments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"deployedAt"}},{"kind":"Field","name":{"kind":"Name","value":"application"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeploymentOptionsQuery, DeploymentOptionsQueryVariables>;
 export const DeploymentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Deployments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SweetID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeploymentsQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"workspace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"workspaceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workspaceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deployments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"application"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"environment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isProduction"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"deployedAt"}},{"kind":"Field","name":{"kind":"Name","value":"archivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"pullRequestCount"}}]}}]}}]}}]} as unknown as DocumentNode<DeploymentsQuery, DeploymentsQueryVariables>;

@@ -4,83 +4,42 @@ import {
   IconArrowNarrowRightDashed,
   IconArrowUpRight,
   IconInfoCircle,
-  IconProps,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router";
-import {
-  DateTimeRange,
-  formatLocaleDate,
-} from "../../../../../providers/date.provider";
+import { DateTimeRange, formatLocaleDate } from "../../providers/date.provider";
 
-interface CardDoraMetricProps {
+interface CardKpiProps {
   name: string;
   amount: string;
-  amountDescription?: string;
   previousAmount: string;
   change: number;
-  icon: React.ComponentType<IconProps>;
-  href: string;
   higherIsBetter: boolean;
   previousPeriod?: Partial<DateTimeRange>;
 }
 
-export const CardDoraMetric = ({
+export const CardKpi = ({
   name,
   amount,
   change,
-  amountDescription,
   previousAmount,
-  icon: Icon,
-  href,
   higherIsBetter,
   previousPeriod,
-}: CardDoraMetricProps) => {
-  const { pathname } = useLocation();
-  const isActive = pathname === href;
-
+}: CardKpiProps) => {
   const getTrendColor = () => {
-    if (change === 0) {
-      return "dimmed";
-    }
-
+    if (change === 0) return "dimmed";
     const isPositiveChange = change >= 0;
     const isGood = higherIsBetter ? isPositiveChange : !isPositiveChange;
-
     return isGood ? "green.4" : "red";
   };
 
   return (
-    <Paper
-      withBorder
-      p="md"
-      radius="md"
-      h="100%"
-      ta="left"
-      w="100%"
-      style={{
-        borderColor: isActive ? "var(--mantine-color-dark-2)" : undefined,
-      }}
-      className="grow-on-hover"
-      component={Link}
-      to={href}
-    >
-      <Group justify="space-between" mb="md">
-        <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
-          {name}
-        </Text>
-        <Icon size={24} stroke={1.5} color="var(--mantine-color-text)" />
-      </Group>
+    <Paper withBorder p="md" radius="md" h="100%" w="100%">
+      <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb="md">
+        {name}
+      </Text>
 
-      <Group gap="xs" mb="md" justify="space-between">
-        <Text fz="lg" c="white" fw={500}>
-          {amount}
-        </Text>
-        {amountDescription && (
-          <Text fz="sm" c="dimmed">
-            {amountDescription}
-          </Text>
-        )}
-      </Group>
+      <Text fz="lg" c="white" fw={500} mb="md">
+        {amount}
+      </Text>
 
       <Text
         c={getTrendColor()}

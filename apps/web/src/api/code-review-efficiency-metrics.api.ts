@@ -2,17 +2,17 @@ import { graphql } from "@sweetr/graphql-types/frontend";
 import { graphQLClient } from "./clients/graphql-client";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import {
-  CodeReviewDistributionWorkspaceQuery,
-  CodeReviewDistributionWorkspaceQueryVariables,
+  CodeReviewEfficiencyMetricsQuery,
+  CodeReviewEfficiencyMetricsQueryVariables,
 } from "@sweetr/graphql-types/frontend/graphql";
 
-export const useCodeReviewDistributionWorkspaceQuery = (
-  args: CodeReviewDistributionWorkspaceQueryVariables,
-  options?: Partial<UseQueryOptions<CodeReviewDistributionWorkspaceQuery>>,
+export const useCodeReviewEfficiencyMetricsQuery = (
+  args: CodeReviewEfficiencyMetricsQueryVariables,
+  options?: Partial<UseQueryOptions<CodeReviewEfficiencyMetricsQuery>>,
 ) =>
   useQuery({
     queryKey: [
-      "code-review-distribution-workspace",
+      "code-review-efficiency-metrics",
       args.workspaceId,
       args.input.dateRange.from,
       args.input.dateRange.to,
@@ -23,13 +23,70 @@ export const useCodeReviewDistributionWorkspaceQuery = (
     queryFn: () =>
       graphQLClient.request(
         graphql(/* GraphQL */ `
-          query CodeReviewDistributionWorkspace(
+          query CodeReviewEfficiencyMetrics(
             $workspaceId: SweetID!
             $input: PullRequestFlowInput!
           ) {
             workspace(workspaceId: $workspaceId) {
               metrics {
-                prFlow {
+                codeReviewEfficiency {
+                  reviewTurnaroundTime(input: $input) {
+                    columns
+                    data
+                  }
+                  timeToApproval(input: $input) {
+                    columns
+                    data
+                  }
+                  prsWithoutApproval(input: $input)
+                  kpiTimeToFirstReview(input: $input) {
+                    currentAmount
+                    previousAmount
+                    change
+                    previousPeriod {
+                      from
+                      to
+                    }
+                  }
+                  kpiTimeToApproval(input: $input) {
+                    currentAmount
+                    previousAmount
+                    change
+                    previousPeriod {
+                      from
+                      to
+                    }
+                  }
+                  kpiAvgCommentsPerPr(input: $input) {
+                    currentAmount
+                    previousAmount
+                    change
+                    previousPeriod {
+                      from
+                      to
+                    }
+                  }
+                  kpiPrsWithoutApproval(input: $input) {
+                    currentAmount
+                    previousAmount
+                    change
+                    previousPeriod {
+                      from
+                      to
+                    }
+                  }
+                  sizeCommentCorrelation(input: $input) {
+                    series {
+                      name
+                      color
+                      data {
+                        x
+                        y
+                        title
+                        url
+                      }
+                    }
+                  }
                   codeReviewDistribution(input: $input) {
                     entities {
                       id
@@ -44,6 +101,14 @@ export const useCodeReviewDistributionWorkspaceQuery = (
                       value
                     }
                     totalReviews
+                  }
+                  teamOverview(input: $input) {
+                    teamId
+                    teamName
+                    teamIcon
+                    avgTimeToFirstReview
+                    avgTimeToApproval
+                    prsWithoutApproval
                   }
                 }
               }

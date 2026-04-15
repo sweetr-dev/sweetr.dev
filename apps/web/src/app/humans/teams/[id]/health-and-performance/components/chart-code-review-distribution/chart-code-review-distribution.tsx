@@ -42,13 +42,18 @@ export const ChartCodeReviewDistribution = ({
     };
 
     const options: ECOption = {
-      backgroundColor: "#25262B",
+      backgroundColor: "transparent",
       legend: [
         {
           data: chartData.entities
             .filter((entity) => entity.id.includes("cr-author"))
             .map((entity) => entity.name as string),
-          top: "0%",
+          bottom: 0,
+          textStyle: { color: "#C1C2C5", fontSize: 12 },
+          itemGap: 16,
+          icon: "roundRect",
+          itemWidth: 16,
+          itemHeight: 12,
         },
       ],
       // @ts-expect-error ECharts types

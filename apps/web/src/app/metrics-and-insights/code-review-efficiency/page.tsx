@@ -1,4 +1,11 @@
-import { Group, Paper, Skeleton, Table } from "@mantine/core";
+import {
+  Divider,
+  Group,
+  Paper,
+  SimpleGrid,
+  Skeleton,
+  Table,
+} from "@mantine/core";
 import { LoadableContent } from "../../../components/loadable-content";
 import { useForm } from "@mantine/form";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
@@ -14,16 +21,22 @@ import {
   useTeamAsyncOptions,
 } from "../../../providers/async-options.provider";
 import {
+  getAbbreviatedDuration,
   parseNullableISO,
   thirtyDaysAgo,
 } from "../../../providers/date.provider";
 import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
-import { useCodeReviewDistributionWorkspaceQuery } from "../../../api/code-review-efficiency-metrics.api";
+import { useCodeReviewEfficiencyMetricsQuery } from "../../../api/code-review-efficiency-metrics.api";
 import { PageEmptyState } from "../../../components/page-empty-state";
 import { AvatarUser } from "../../../components/avatar-user";
 import { ChartCodeReviewDistribution } from "../../humans/teams/[id]/health-and-performance/components/chart-code-review-distribution";
+import { CardChart } from "../../../components/card-chart";
+import { CardKpi } from "../../../components/card-kpi";
+import { ChartReviewSpeed } from "./components/chart-review-speed";
+import { ChartSizeCommentCorrelation } from "./components/chart-size-comment-correlation";
+import { TableTeamOverview } from "./components/table-team-overview";
 import { CodeReviewEfficiencyFilters } from "./types";
 
 export const CodeReviewEfficiencyPage = () => {
@@ -54,13 +67,12 @@ export const CodeReviewEfficiencyPage = () => {
 
   const queryArgs = { workspaceId: workspace.id, input: queryInput };
 
-  const { data, isLoading } = useCodeReviewDistributionWorkspaceQuery(
-    queryArgs,
-  );
-  const codeReviewDistribution =
-    data?.workspace.metrics?.prFlow?.codeReviewDistribution;
+  const { data, isLoading } = useCodeReviewEfficiencyMetricsQuery(queryArgs);
+  const metrics = data?.workspace.metrics?.codeReviewEfficiency;
 
-  const isEmpty = !codeReviewDistribution?.entities.length && !isLoading;
+  const codeReviewDistribution = metrics?.codeReviewDistribution;
+  const isDistributionEmpty =
+    !codeReviewDistribution?.entities.length && !isLoading;
 
   const reviewers = codeReviewDistribution?.entities.filter(
     (entity) => entity.reviewCount !== null,
@@ -128,7 +140,136 @@ export const CodeReviewEfficiencyPage = () => {
         />
       </Group>
 
-      <Paper withBorder h={500} p="xs" mt="md" bg="dark.6">
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={
+          <SimpleGrid cols={4} mt="xl">
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+            <Skeleton h={168} />
+          </SimpleGrid>
+        }
+        content={
+          <Group wrap="nowrap" mt="xl">
+            <CardKpi
+              name="Time to First Review"
+              amount={
+                metrics?.kpiTimeToFirstReview?.currentAmount
+                  ? getAbbreviatedDuration(
+                      Number(metrics.kpiTimeToFirstReview.currentAmount),
+                    )
+                  : "0s"
+              }
+              previousAmount={
+                metrics?.kpiTimeToFirstReview?.previousAmount
+                  ? getAbbreviatedDuration(
+                      Number(metrics.kpiTimeToFirstReview.previousAmount),
+                    )
+                  : "0s"
+              }
+              change={metrics?.kpiTimeToFirstReview?.change ?? 0}
+              higherIsBetter={false}
+              previousPeriod={metrics?.kpiTimeToFirstReview?.previousPeriod}
+            />
+            <CardKpi
+              name="Time to Approve"
+              amount={
+                metrics?.kpiTimeToApproval?.currentAmount
+                  ? getAbbreviatedDuration(
+                      Number(metrics.kpiTimeToApproval.currentAmount),
+                    )
+                  : "0s"
+              }
+              previousAmount={
+                metrics?.kpiTimeToApproval?.previousAmount
+                  ? getAbbreviatedDuration(
+                      Number(metrics.kpiTimeToApproval.previousAmount),
+                    )
+                  : "0s"
+              }
+              change={metrics?.kpiTimeToApproval?.change ?? 0}
+              higherIsBetter={false}
+              previousPeriod={metrics?.kpiTimeToApproval?.previousPeriod}
+            />
+            <CardKpi
+              name="Avg Comments per PR"
+              amount={
+                metrics?.kpiAvgCommentsPerPr?.currentAmount?.toFixed(1) ?? "0"
+              }
+              previousAmount={
+                metrics?.kpiAvgCommentsPerPr?.previousAmount?.toFixed(1) ?? "0"
+              }
+              change={metrics?.kpiAvgCommentsPerPr?.change ?? 0}
+              higherIsBetter={true}
+              previousPeriod={metrics?.kpiAvgCommentsPerPr?.previousPeriod}
+            />
+            <CardKpi
+              name="PRs Without Approval"
+              amount={
+                metrics?.kpiPrsWithoutApproval?.currentAmount?.toString() ?? "0"
+              }
+              previousAmount={
+                metrics?.kpiPrsWithoutApproval?.previousAmount
+                  ? `${metrics.kpiPrsWithoutApproval.previousAmount} PRs`
+                  : "0 PRs"
+              }
+              change={metrics?.kpiPrsWithoutApproval?.change ?? 0}
+              higherIsBetter={false}
+              previousPeriod={metrics?.kpiPrsWithoutApproval?.previousPeriod}
+            />
+          </Group>
+        }
+      />
+
+      <Divider mt="xl" mb="md" label="Review Speed" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={340} />}
+        content={
+          <CardChart
+            title="Review Speed"
+            description="Average time from PR ready for review to first review (turnaround) and from first review to approval, per period."
+            style={{ gridColumn: "span 2" }}
+          >
+            <ChartReviewSpeed
+              chartId="cr-review-speed"
+              turnaroundData={metrics?.reviewTurnaroundTime}
+              approvalData={metrics?.timeToApproval}
+              period={filters.values.period}
+            />
+          </CardChart>
+        }
+      />
+
+      <Divider mt="xl" mb="md" label="Review Quality" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={450} />}
+        content={
+          <CardChart
+            title="PR Size vs Comments"
+            description="Scatter plot correlating PR size (lines changed) with comment count. Helps identify whether larger PRs get proportionally more review attention."
+            height={450}
+          >
+            <ChartSizeCommentCorrelation
+              chartId="cr-size-comment-correlation"
+              chartData={metrics?.sizeCommentCorrelation}
+            />
+          </CardChart>
+        }
+      />
+
+      <Divider
+        mt="xl"
+        mb="md"
+        label="Review Distribution"
+        labelPosition="left"
+      />
+
+      <Paper withBorder h={500} p="xs" bg="dark.7">
         <LoadableContent
           isLoading={isLoading}
           whenLoading={<Skeleton h="100%" />}
@@ -141,17 +282,17 @@ export const CodeReviewEfficiencyPage = () => {
             />
           }
           style={
-            isEmpty
+            isDistributionEmpty
               ? { alignItems: "center", justifyContent: "center" }
               : undefined
           }
-          isEmpty={isEmpty}
+          isEmpty={isDistributionEmpty}
           whenEmpty={<PageEmptyState message="No data available." />}
         />
       </Paper>
 
-      {!isEmpty && (
-        <Paper mt="md" withBorder p="xs" bg="dark.6">
+      {!isDistributionEmpty && (
+        <Paper mt="md" withBorder p="xs" bg="dark.7">
           <Table>
             <Table.Thead>
               <Table.Tr>
@@ -183,6 +324,14 @@ export const CodeReviewEfficiencyPage = () => {
           </Table>
         </Paper>
       )}
+
+      <Divider mt="xl" mb="md" label="Team Overview" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={200} />}
+        content={<TableTeamOverview data={metrics?.teamOverview} />}
+      />
     </PageContainer>
   );
 };
