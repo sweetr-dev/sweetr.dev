@@ -243,6 +243,14 @@ export const CodeReviewEfficiencyPage = () => {
         }
       />
 
+      <Divider mt="xl" mb="md" label="Team Overview" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={200} />}
+        content={<TableTeamOverview data={metrics?.teamOverview} />}
+      />
+
       <Divider mt="xl" mb="md" label="Review Quality" labelPosition="left" />
 
       <LoadableContent
@@ -324,14 +332,6 @@ export const CodeReviewEfficiencyPage = () => {
           </Table>
         </Paper>
       )}
-
-      <Divider mt="xl" mb="md" label="Team Overview" labelPosition="left" />
-
-      <LoadableContent
-        isLoading={isLoading}
-        whenLoading={<Skeleton h={200} />}
-        content={<TableTeamOverview data={metrics?.teamOverview} />}
-      />
     </PageContainer>
   );
 };
