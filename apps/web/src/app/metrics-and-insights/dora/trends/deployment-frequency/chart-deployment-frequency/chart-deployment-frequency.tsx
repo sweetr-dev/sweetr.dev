@@ -30,7 +30,7 @@ export const ChartDeploymentFrequency = ({
     const chart = echarts.init(document.getElementById(chartId), "dark");
 
     const options: ECOption = {
-      backgroundColor: "#25262B",
+      backgroundColor: "transparent",
       tooltip: {
         trigger: "axis",
         backgroundColor: "#25262B",

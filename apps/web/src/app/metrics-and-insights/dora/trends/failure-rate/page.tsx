@@ -54,7 +54,7 @@ export const DoraFailureRatePage = () => {
         </ButtonUnderstand>
       </Group>
 
-      <Paper withBorder bg="dark.6" h={400} p="xs">
+      <Paper withBorder bg="dark.7" h={400} p="xs">
         <ChartFailureRate
           chartData={{
             columns: metrics.changeFailureRate.columns,

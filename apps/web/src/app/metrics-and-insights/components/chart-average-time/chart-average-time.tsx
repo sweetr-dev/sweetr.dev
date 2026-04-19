@@ -4,12 +4,12 @@ import {
   echarts,
   formatAxisDate,
   formatTooltipDate,
-} from "../../../../../../../providers/echarts.provider";
+} from "../../../../providers/echarts.provider";
 import {
   NumericChartData,
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { formatMsDuration } from "../../../../../../../providers/date.provider";
+import { formatMsDuration } from "../../../../providers/date.provider";
 import { UTCDate } from "@date-fns/utc";
 interface ChartAverageTimeProps {
   chartData?: NumericChartData | null;
@@ -28,7 +28,10 @@ export const ChartAverageTime = ({
     const chart = echarts.init(document.getElementById("main"), "dark");
 
     const options: ECOption = {
-      backgroundColor: "#25262B",
+      backgroundColor: "transparent",
+      legend: {
+        show: false,
+      },
       tooltip: {
         trigger: "axis",
         backgroundColor: "#25262B",

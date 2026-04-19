@@ -31,7 +31,7 @@ import { useWorkspace } from "../../../providers/workspace.provider";
 import { useCodeReviewEfficiencyMetricsQuery } from "../../../api/code-review-efficiency-metrics.api";
 import { PageEmptyState } from "../../../components/page-empty-state";
 import { AvatarUser } from "../../../components/avatar-user";
-import { ChartCodeReviewDistribution } from "../../humans/teams/[id]/health-and-performance/components/chart-code-review-distribution";
+import { ChartCodeReviewDistribution } from "./components/chart-code-review-distribution";
 import { CardChart } from "../../../components/card-chart";
 import { CardKpi } from "../../../components/card-kpi";
 import { ChartReviewSpeed } from "./components/chart-review-speed";

@@ -22,13 +22,6 @@ import { SlowReviewAlertPage } from "./app/humans/teams/[id]/alerts/settings/slo
 import { TeamDigestsPage } from "./app/humans/teams/[id]/digests/page";
 import { TeamMetricsDigestPage } from "./app/humans/teams/[id]/digests/settings/team-metrics/page";
 import { TeamWipDigestPage } from "./app/humans/teams/[id]/digests/settings/team-wip/page";
-import { TeamCodeReviewDistributionPage } from "./app/humans/teams/[id]/health-and-performance/activity/code-review-distribution/page";
-import { TeamCodeReviewsTimeToApprovePage } from "./app/humans/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
-import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/humans/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
-import { TeamHealthAndPerformancePage } from "./app/humans/teams/[id]/health-and-performance/page";
-import { TeamPullRequestsCycleTimePage } from "./app/humans/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
-import { TeamPullRequestsSizeDistribution } from "./app/humans/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
-import { TeamPullRequestsTimeToMergePage } from "./app/humans/teams/[id]/health-and-performance/pull-requests/time-to-merge/page";
 import { TeamMembersPage } from "./app/humans/teams/[id]/members/page";
 import { TeamPage } from "./app/humans/teams/[id]/page";
 import { TeamPullRequestsPage } from "./app/humans/teams/[id]/pull-requests/page";
@@ -312,7 +305,7 @@ export const router = createBrowserRouter([
                 element: <TeamPage />,
                 children: [
                   {
-                    path: "/humans/teams/:teamId",
+                    path: "/humans/teams/:teamId/wip",
                     element: <TeamWorkInProgressPage />,
                   },
                   {
@@ -356,36 +349,6 @@ export const router = createBrowserRouter([
                       {
                         path: "/humans/teams/:teamId/digests/wip",
                         element: <TeamWipDigestPage />,
-                      },
-                    ],
-                  },
-                  {
-                    path: "/humans/teams/:teamId/health-and-performance",
-                    element: <TeamHealthAndPerformancePage />,
-                    children: [
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/activity/code-review-distribution",
-                        element: <TeamCodeReviewDistributionPage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/cycle-time",
-                        element: <TeamPullRequestsCycleTimePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/size-distribution",
-                        element: <TeamPullRequestsSizeDistribution />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/time-to-merge",
-                        element: <TeamPullRequestsTimeToMergePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-approve",
-                        element: <TeamCodeReviewsTimeToApprovePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-first-review",
-                        element: <TeamCodeReviewsTimeToFirstReviewPage />,
                       },
                     ],
                   },

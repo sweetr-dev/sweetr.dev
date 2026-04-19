@@ -1,13 +1,10 @@
 import { useEffect } from "react";
-import {
-  ECOption,
-  echarts,
-} from "../../../../../../../providers/echarts.provider";
+import { ECOption, echarts } from "../../../../../providers/echarts.provider";
 import {
   CodeReviewDistributionChartData,
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
-import { getAbbreviatedName } from "../../../../../../../providers/person.provider";
+import { getAbbreviatedName } from "../../../../../providers/person.provider";
 
 interface ChartAverageTimeProps {
   chartData?: CodeReviewDistributionChartData | null;

@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { DrawerUpsertTeam } from "../components/drawer-upsert-team";
 import { PageTitle } from "../../../../components/page-title";
-import { Outlet } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useTeamQuery } from "../../../../api/teams.api";
 import { Breadcrumbs } from "../../../../components/breadcrumbs";
 import { HeaderActions } from "../../../../components/header-actions";
@@ -30,6 +30,7 @@ export const TeamPage = () => {
   const [isDrawerOpen, drawerControl] = useDisclosure(false);
   const teamId = useTeamId();
   const { workspace } = useWorkspace();
+  const { pathname } = useLocation();
 
   useContextualActions({
     editTeam: {
@@ -49,6 +50,10 @@ export const TeamPage = () => {
     },
     { enabled: !!teamId },
   );
+
+  if (pathname === `/humans/teams/${teamId}`) {
+    return <Navigate to={`/humans/teams/${teamId}/members`} />;
+  }
 
   const team = data?.workspace.team;
 

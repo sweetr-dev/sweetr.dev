@@ -55,7 +55,7 @@ export const DoraDeploymentFrequencyPage = () => {
         </ButtonUnderstand>
       </Group>
 
-      <Paper withBorder bg="dark.6" h={400} p="xs">
+      <Paper withBorder bg="dark.7" h={400} p="xs">
         <ChartDeploymentFrequency
           chartData={{
             columns: metrics.deploymentFrequency.columns,

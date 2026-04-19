@@ -7,7 +7,7 @@ import { useWorkspace } from "../../../../../providers/workspace.provider";
 import { ButtonUnderstand } from "../../components/button-understand";
 import { DoraMetricOutletContext } from "../../types";
 import { useDoraMetrics } from "../../useDoraMetrics";
-import { ChartAverageTime } from "../../../../humans/teams/[id]/health-and-performance/components/chart-average-time";
+import { ChartAverageTime } from "../../../components/chart-average-time";
 
 export const DoraMttrPage = () => {
   const { workspace } = useWorkspace();
@@ -54,7 +54,7 @@ export const DoraMttrPage = () => {
         </ButtonUnderstand>
       </Group>
 
-      <Paper withBorder bg="dark.6" h={400} p="xs">
+      <Paper withBorder h={400} p="xs">
         <ChartAverageTime
           chartData={{
             columns: metrics.meanTimeToRecover.columns,
