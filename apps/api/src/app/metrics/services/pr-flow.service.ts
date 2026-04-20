@@ -7,6 +7,7 @@ import {
   CycleTimeBreakdownRow,
   PullRequestFiltersResult,
   PullRequestFlowChartFilters,
+  TeamOverviewRow,
 } from "./pr-flow.types";
 
 const buildPullRequestFilters = (
@@ -664,16 +665,6 @@ export const getWorkspaceSizeCycleTimeCorrelation = async (
       }),
   };
 };
-
-interface TeamOverviewRow {
-  team_id: number | null;
-  team_name: string;
-  team_icon: string;
-  median_cycle_time: number;
-  merged_count: bigint;
-  avg_lines_changed: number;
-  pct_big_prs: number;
-}
 
 export const getWorkspaceTeamOverview = async (
   filters: Omit<PullRequestFlowChartFilters, "period">

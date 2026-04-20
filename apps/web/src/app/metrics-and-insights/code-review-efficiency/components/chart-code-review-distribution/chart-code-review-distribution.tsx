@@ -1,10 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ECOption, echarts } from "../../../../../providers/echarts.provider";
 import {
   CodeReviewDistributionChartData,
   Period,
 } from "@sweetr/graphql-types/frontend/graphql";
 import { getAbbreviatedName } from "../../../../../providers/person.provider";
+import {
+  avatarRasterKey,
+  getDistributionSymbolSize,
+  useRoundedAvatars,
+} from "./use-rounded-avatar";
 
 interface ChartAverageTimeProps {
   chartData?: CodeReviewDistributionChartData | null;
@@ -15,30 +20,39 @@ export const ChartCodeReviewDistribution = ({
   chartData,
   period,
 }: ChartAverageTimeProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const reviewerCount = useMemo(
+    () =>
+      chartData?.entities?.filter((e) => e.id.includes("cr-author")).length ?? 0,
+    [chartData?.entities],
+  );
+
+  const idealLoad = useMemo(
+    () =>
+      chartData
+        ? chartData.totalReviews / Math.max(reviewerCount, 1)
+        : undefined,
+    [chartData?.totalReviews, reviewerCount],
+  );
+
+  const { avatarMap, isRasterReady } = useRoundedAvatars(
+    chartData?.entities,
+    idealLoad,
+  );
+
+  const safeIdeal = Math.max(idealLoad ?? 0, 1e-6);
+
   useEffect(() => {
-    if (!chartData) return;
+    if (!chartData || !containerRef.current || !isRasterReady) return;
 
-    const chart = echarts.init(document.getElementById("main"), "dark");
-    const numberOfReviewers = chartData.entities.filter((entity) =>
-      entity.id.includes("cr-author"),
-    ).length;
-    const idealLoad = chartData.totalReviews / numberOfReviewers;
+    const el = containerRef.current;
+    const chart = echarts.init(el, "dark");
+    let cancelled = false;
 
-    // Calculates symbol size based on review load (%)
-    const calculateSymbolSize = (numberOfReviews?: number | null) => {
-      if (!numberOfReviews) return 62.5;
-
-      const baseSize = 62.5;
-      const minSize = 25;
-      const maxSize = 150;
-      const scalingFactor = (maxSize - baseSize) / idealLoad;
-      const deviation = numberOfReviews - idealLoad;
-      const size = baseSize + deviation * scalingFactor;
-
-      return Math.max(minSize, Math.min(size, maxSize));
-    };
-
-    const options: ECOption = {
+    const buildOptions = (
+      avatarMap: Map<string, string>,
+    ): ECOption => ({
       backgroundColor: "transparent",
       legend: [
         {
@@ -55,7 +69,7 @@ export const ChartCodeReviewDistribution = ({
       ],
       // @ts-expect-error ECharts types
       tooltip: {
-        backgroundColor: "#25262B",
+        backgroundColor: "var(--mantine-color-dark-7)",
         borderColor: "#303030",
         padding: [0, 0],
         textStyle: {
@@ -172,6 +186,7 @@ export const ChartCodeReviewDistribution = ({
           layout: "force",
           tooltip: {},
           roam: true,
+          roamTrigger: "global",
           zoom: 0.6,
           label: {
             position: "bottom",
@@ -193,7 +208,7 @@ export const ChartCodeReviewDistribution = ({
             edgeLength: 100,
           },
           scaleLimit: {
-            min: 0.4,
+            min: 0.1,
             max: 1.2,
           },
           categories: chartData.entities.map((entity) => ({
@@ -206,15 +221,21 @@ export const ChartCodeReviewDistribution = ({
           data: [
             ...chartData.entities.map((entity) => {
               const isReviewer = entity.id.includes("cr-author");
+              const sizePx = getDistributionSymbolSize(entity, safeIdeal);
+              const raster =
+                entity.image &&
+                avatarMap.get(avatarRasterKey(entity.image, sizePx));
+              const imageSrc =
+                entity.image &&
+                (raster ?? entity.image);
 
               return {
                 id: entity.id,
                 value: entity.reviewCount,
                 name: entity.name,
-                symbol: entity.image ? `image://${entity.image}` : "square",
-                symbolSize: isReviewer
-                  ? calculateSymbolSize(entity.reviewCount)
-                  : 25,
+                symbol: entity.image ? `image://${imageSrc}` : "square",
+                symbolKeepAspect: entity.image ? true : undefined,
+                symbolSize: sizePx,
                 category: entity.id.includes("cr-author")
                   ? entity.name
                   : entity.id.split(":").at(1),
@@ -237,11 +258,24 @@ export const ChartCodeReviewDistribution = ({
           ],
         },
       ],
+    });
+
+    chart.setOption(buildOptions(avatarMap));
+
+    const handleResize = () => chart.resize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("resize", handleResize);
+      chart.dispose();
     };
+  }, [chartData, period, avatarMap, isRasterReady, safeIdeal]);
 
-    chart.setOption(options);
-    chart.renderToCanvas();
-  }, [chartData, period]);
-
-  return <div id="main" style={{ width: "100%", height: "100%" }}></div>;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%" }}
+    />
+  );
 };

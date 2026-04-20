@@ -32,3 +32,13 @@ export interface CycleTimeBreakdownResult {
   timeToApproval: bigint;
   timeToMerge: bigint;
 }
+
+export interface TeamOverviewRow {
+  team_id: number | null;
+  team_name: string;
+  team_icon: string;
+  median_cycle_time: number;
+  merged_count: bigint;
+  avg_lines_changed: number;
+  pct_big_prs: number;
+}

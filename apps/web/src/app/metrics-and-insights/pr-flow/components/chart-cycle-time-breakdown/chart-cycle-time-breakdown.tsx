@@ -151,11 +151,6 @@ export const ChartCycleTimeBreakdown = ({
             period,
           );
 
-          const total = STACKED_SERIES.reduce(
-            (sum, { key }) => sum + (Number(chartData[key][idx]) || 0),
-            0,
-          );
-
           let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
 
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;

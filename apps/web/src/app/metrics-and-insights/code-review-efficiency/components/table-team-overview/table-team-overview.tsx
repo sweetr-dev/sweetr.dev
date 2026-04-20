@@ -38,7 +38,7 @@ const COLUMNS: { field: SortField; label: string; align: "left" | "right" }[] =
     },
     {
       field: "prsWithoutApproval",
-      label: "PRs Without Approval",
+      label: "Merged Without Approval",
       align: "right",
     },
   ];
@@ -74,8 +74,7 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
           );
         case "avgTimeToApproval":
           return (
-            dir *
-            (Number(a.avgTimeToApproval) - Number(b.avgTimeToApproval))
+            dir * (Number(a.avgTimeToApproval) - Number(b.avgTimeToApproval))
           );
         case "prsWithoutApproval":
           return dir * (a.prsWithoutApproval - b.prsWithoutApproval);

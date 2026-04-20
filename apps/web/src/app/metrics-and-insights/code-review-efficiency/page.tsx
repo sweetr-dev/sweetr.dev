@@ -10,7 +10,15 @@ import { LoadableContent } from "../../../components/loadable-content";
 import { useForm } from "@mantine/form";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
-import { endOfToday } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  addQuarters,
+  addWeeks,
+  addYears,
+  endOfToday,
+} from "date-fns";
+import { useCallback } from "react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
@@ -76,6 +84,64 @@ export const CodeReviewEfficiencyPage = () => {
 
   const reviewers = codeReviewDistribution?.entities.filter(
     (entity) => entity.reviewCount !== null,
+  );
+
+  const buildPullRequestsUrl = useCallback(
+    (overrides?: {
+      from?: string;
+      to?: string;
+      dateType?: "created" | "completed";
+    }) => {
+      const params = new URLSearchParams();
+      const from = overrides?.from ?? filters.values.from;
+      const to = overrides?.to ?? filters.values.to;
+      const dateType = overrides?.dateType ?? "completed";
+
+      const fromKey =
+        dateType === "created" ? "createdAtFrom" : "completedAtFrom";
+      const toKey = dateType === "created" ? "createdAtTo" : "completedAtTo";
+
+      if (from) params.set(fromKey, from);
+      if (to) params.set(toKey, to);
+
+      for (const id of filters.values.teamIds) {
+        params.append("team", id);
+      }
+      for (const id of filters.values.repositoryIds) {
+        params.append("repository", id);
+      }
+
+      const qs = params.toString();
+      return `/systems/pull-requests${qs ? `?${qs}` : ""}`;
+    },
+    [filters.values],
+  );
+
+  const getPeriodEnd = useCallback(
+    (start: Date) => {
+      const periodEndFn: Record<Period, (d: Date) => Date> = {
+        [Period.DAILY]: (d) => addDays(d, 1),
+        [Period.WEEKLY]: (d) => addWeeks(d, 1),
+        [Period.MONTHLY]: (d) => addMonths(d, 1),
+        [Period.QUARTERLY]: (d) => addQuarters(d, 1),
+        [Period.YEARLY]: (d) => addYears(d, 1),
+      };
+      return periodEndFn[filters.values.period](start);
+    },
+    [filters.values.period],
+  );
+
+  const handleColumnClick = useCallback(
+    (columnDate: string) => {
+      const start = new Date(columnDate);
+      const end = getPeriodEnd(start);
+      const url = buildPullRequestsUrl({
+        from: start.toISOString(),
+        to: end.toISOString(),
+      });
+      window.open(url, "_blank", "noopener,noreferrer");
+    },
+    [getPeriodEnd, buildPullRequestsUrl],
   );
 
   return (
@@ -207,7 +273,7 @@ export const CodeReviewEfficiencyPage = () => {
               previousPeriod={metrics?.kpiAvgCommentsPerPr?.previousPeriod}
             />
             <CardKpi
-              name="PRs Without Approval"
+              name="Merged Without Approval"
               amount={
                 metrics?.kpiPrsWithoutApproval?.currentAmount?.toString() ?? "0"
               }
@@ -240,6 +306,7 @@ export const CodeReviewEfficiencyPage = () => {
               turnaroundData={metrics?.reviewTurnaroundTime}
               approvalData={metrics?.timeToApproval}
               period={filters.values.period}
+              onColumnClick={handleColumnClick}
             />
           </CardChart>
         }
@@ -261,7 +328,7 @@ export const CodeReviewEfficiencyPage = () => {
         content={
           <CardChart
             title="PR Size vs Comments"
-            description="Scatter plot correlating PR size (lines changed) with comment count. Helps identify whether larger PRs get proportionally more review attention."
+            description="Scatter plot correlating PR size (lines changed) with comment count. Shows up to 2,000 PRs merged in the selected period (the most recently merged first). Helps identify whether larger PRs get proportionally more review attention."
             height={450}
           >
             <ChartSizeCommentCorrelation

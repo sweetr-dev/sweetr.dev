@@ -120,13 +120,12 @@ export const ChartReviewTurnaround = ({
       if (col) onColumnClickRef.current?.(col);
     });
     chart.getZr().on("mousemove", (e) => {
-      chart
-        .getZr()
-        .setCursorStyle(
+      chart.getZr().setCursorStyle(
+        onColumnClickRef.current &&
           chart.containPixel("grid", [e.offsetX, e.offsetY])
-            ? "pointer"
-            : "default",
-        );
+          ? "pointer"
+          : "default",
+      );
     });
 
     const handleResize = () => chart.resize();

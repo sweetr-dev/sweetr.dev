@@ -4,16 +4,16 @@ import { getPreviousPeriod } from "../../../lib/date";
 import { periodToDateTrunc, periodToInterval } from "./chart.service";
 import { PullRequestFlowChartFilters } from "./pr-flow.types";
 import {
+  AvgCommentsKpiResult,
+  CodeReviewCountKpiResult,
   CodeReviewDistributionRow,
+  CodeReviewEfficiencyFiltersResult,
+  CodeReviewKpiResult,
   CodeReviewLink,
+  CodeReviewTeamOverviewRow,
 } from "./chart-code-review-efficiency.types";
 import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
-
-interface CodeReviewEfficiencyFiltersResult {
-  joins: Prisma.Sql[];
-  conditions: Prisma.Sql[];
-}
 
 const buildCodeReviewFilters = (
   filters: PullRequestFlowChartFilters
@@ -153,6 +153,7 @@ export const getWorkspacePrsWithoutApproval = async (
     Prisma.sql`NOT EXISTS (
       SELECT 1 FROM "CodeReview" cr
       WHERE cr."pullRequestId" = p."id"
+      AND cr."workspaceId" = ${filters.workspaceId}
       AND cr."state" = 'APPROVED'::"CodeReviewState"
     )`,
   ];
@@ -176,30 +177,6 @@ export const getWorkspacePrsWithoutApproval = async (
 
 // ---- KPI helpers (current vs previous period with % change) ----
 
-export interface CodeReviewKpiResult {
-  currentAmount: bigint;
-  previousAmount: bigint;
-  change: number;
-  currentPeriod: { from: string; to: string };
-  previousPeriod: { from: string; to: string };
-}
-
-export interface CodeReviewCountKpiResult {
-  currentAmount: number;
-  previousAmount: number;
-  change: number;
-  currentPeriod: { from: string; to: string };
-  previousPeriod: { from: string; to: string };
-}
-
-export interface AvgCommentsKpiResult {
-  currentAmount: number;
-  previousAmount: number;
-  change: number;
-  currentPeriod: { from: string; to: string };
-  previousPeriod: { from: string; to: string };
-}
-
 const buildPrsWithoutApprovalCountQuery = (
   filters: Omit<PullRequestFlowChartFilters, "period">,
   from: string,
@@ -217,6 +194,7 @@ const buildPrsWithoutApprovalCountQuery = (
     Prisma.sql`NOT EXISTS (
       SELECT 1 FROM "CodeReview" cr
       WHERE cr."pullRequestId" = p."id"
+      AND cr."workspaceId" = ${filters.workspaceId}
       AND cr."state" = 'APPROVED'::"CodeReviewState"
     )`,
   ];
@@ -456,7 +434,7 @@ export const getWorkspaceSizeCommentCorrelation = async (
     FROM "PullRequestTracking" pt
     ${joinClause}
     WHERE ${whereClause}
-    ORDER BY p."commentCount" DESC
+    ORDER BY p."mergedAt" DESC
     LIMIT 2000;
   `;
 
@@ -642,6 +620,7 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
   WHERE
     "CodeReview"."createdAt" >= ${new Date(filters.startDate)}
     AND "CodeReview"."createdAt" <= ${new Date(filters.endDate)}
+    AND "CodeReview"."workspaceId" = ${filters.workspaceId}
     AND "PullRequest"."workspaceId" = ${filters.workspaceId}
     ${teamFilter}
     ${repoFilter}
@@ -665,15 +644,6 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
 };
 
 // ---- Team Overview ----
-
-interface CodeReviewTeamOverviewRow {
-  team_id: number | null;
-  team_name: string;
-  team_icon: string;
-  avg_time_to_first_review: number;
-  avg_time_to_approval: number;
-  prs_without_approval: bigint;
-}
 
 export const getCodeReviewTeamOverview = async (
   filters: Omit<PullRequestFlowChartFilters, "period">
@@ -716,6 +686,7 @@ export const getCodeReviewTeamOverview = async (
           WHERE NOT EXISTS (
             SELECT 1 FROM "CodeReview" cr
             WHERE cr."pullRequestId" = p."id"
+            AND cr."workspaceId" = ${filters.workspaceId}
             AND cr."state" = 'APPROVED'::"CodeReviewState"
           )
         ) AS prs_without_approval
@@ -758,6 +729,7 @@ export const getCodeReviewTeamOverview = async (
           WHERE NOT EXISTS (
             SELECT 1 FROM "CodeReview" cr
             WHERE cr."pullRequestId" = ppt.pr_id
+            AND cr."workspaceId" = ${filters.workspaceId}
             AND cr."state" = 'APPROVED'::"CodeReviewState"
           )
         ) AS prs_without_approval

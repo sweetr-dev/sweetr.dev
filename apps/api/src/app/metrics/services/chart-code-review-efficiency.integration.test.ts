@@ -1712,20 +1712,25 @@ describe("Code Review Efficiency Metrics", () => {
       expect(medium.data[0].url).toContain("/pull/42");
     });
 
-    it("orders a series' data points by commentCount descending", async () => {
+    it("orders a series' data points by mergedAt descending (newest merged first)", async () => {
       const ctx = await createTestContextWithGitProfile();
       const gp = await seedGitProfile(ctx);
       const repo = await seedRepository(ctx);
 
-      for (const [i, cc] of [1, 5, 3].entries()) {
+      const rows = [
+        { mergedAt: new Date("2024-01-15T10:00:00Z"), commentCount: 1 },
+        { mergedAt: new Date("2024-01-15T11:00:00Z"), commentCount: 5 },
+        { mergedAt: new Date("2024-01-15T12:00:00Z"), commentCount: 3 },
+      ];
+      for (const [i, row] of rows.entries()) {
         await seedPrWithTracking(
           ctx.workspaceId,
           repo.repositoryId,
           gp.gitProfileId,
           {
             number: `${i + 1}`,
-            mergedAt: new Date("2024-01-15T10:00:00Z"),
-            commentCount: cc,
+            mergedAt: row.mergedAt,
+            commentCount: row.commentCount,
             tracking: { size: PullRequestSize.MEDIUM },
           }
         );
@@ -1737,7 +1742,7 @@ describe("Code Review Efficiency Metrics", () => {
       });
 
       const medium = result.series.find((s) => s.name === "Medium")!;
-      expect(medium.data.map((d) => d.y)).toEqual([5, 3, 1]);
+      expect(medium.data.map((d) => d.y)).toEqual([3, 5, 1]);
     });
 
     it("excludes non-merged PRs and PRs outside the range", async () => {
