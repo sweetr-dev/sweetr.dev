@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import {
   ECOption,
   echarts,
+  escapeHtml,
   formatAxisDate,
   formatTooltipDate,
 } from "../../../../../../providers/echarts.provider";
@@ -44,7 +45,7 @@ export const ChartFailureRate = ({
             new UTCDate(chartData.columns[idx]),
             period,
           );
-          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
+          let html = `<div style="padding: 5px 0; font-weight:600">${escapeHtml(dateLabel)}</div>`;
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
           for (const p of params) {
             const raw = p.value;
@@ -56,8 +57,8 @@ export const ChartFailureRate = ({
             const sName = p.seriesName ?? "";
             html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
             html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>`;
-            html += `<span style="padding-right: 40px;">${sName}</span>`;
-            html += `<span style="margin-left:auto;font-weight:500">${display}</span>`;
+            html += `<span style="padding-right: 40px;">${escapeHtml(sName)}</span>`;
+            html += `<span style="margin-left:auto;font-weight:500">${escapeHtml(display)}</span>`;
             html += `</div>`;
           }
           html += `</div>`;

@@ -82,4 +82,15 @@ export const formatTooltipDate = (date: Date, period: Period): string => {
   return format(date, "yyyy");
 };
 
+const HTML_ESCAPE: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+export const escapeHtml = (value: unknown): string =>
+  String(value ?? "").replace(/[&<>"']/g, (char) => HTML_ESCAPE[char] ?? char);
+
 export { echarts };

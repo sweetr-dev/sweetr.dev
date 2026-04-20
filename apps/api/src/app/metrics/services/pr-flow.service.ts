@@ -17,6 +17,7 @@ const buildPullRequestFilters = (
     Prisma.sql`INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"`,
   ];
   const conditions: Prisma.Sql[] = [
+    Prisma.sql`pt."workspaceId" = ${filters.workspaceId}`,
     Prisma.sql`p."workspaceId" = ${filters.workspaceId}`,
   ];
 

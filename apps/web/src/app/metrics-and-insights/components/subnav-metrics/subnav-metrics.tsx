@@ -43,8 +43,8 @@ export const SubnavMetrics = () => {
       />
       <Divider label="Misc" labelPosition="left" mt="sm" />
       <NavLink
-        to="/metrics-and-insights/ai-adoption"
-        active={pathname.startsWith("/metrics-and-insights/ai-adoption")}
+        to="/metrics-and-insights/work-allocation"
+        active={pathname.startsWith("/metrics-and-insights/work-allocation")}
         component={Link}
         label="Work Allocation"
         disabled

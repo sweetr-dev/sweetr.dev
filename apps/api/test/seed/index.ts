@@ -217,7 +217,7 @@ export async function seedPullRequest(
     number?: string;
     title?: string;
     state?: PullRequestState;
-    mergedAt?: Date;
+    mergedAt?: Date | null;
     createdAt?: Date;
     sourceBranch?: string;
     targetBranch?: string;

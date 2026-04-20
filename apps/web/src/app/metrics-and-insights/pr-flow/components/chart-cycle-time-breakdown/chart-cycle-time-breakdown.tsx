@@ -161,7 +161,6 @@ export const ChartCycleTimeBreakdown = ({
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
           for (const { key, name: sName, color: sColor } of STACKED_SERIES) {
             const absVal = Number(chartData[key][idx]) || 0;
-            const pct = total > 0 ? Math.round((absVal / total) * 100) : 0;
             html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
             html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${sColor}"></span>`;
             html += `<span style="padding-right: 40px;">${sName}</span>`;

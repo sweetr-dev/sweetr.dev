@@ -8,7 +8,6 @@ interface ChartCardProps {
   children: ReactNode;
   height?: number;
   style?: React.CSSProperties;
-  href?: string;
 }
 
 export const CardChart = ({
@@ -17,7 +16,6 @@ export const CardChart = ({
   children,
   height = 340,
   style,
-  href,
 }: ChartCardProps) => {
   return (
     <Paper

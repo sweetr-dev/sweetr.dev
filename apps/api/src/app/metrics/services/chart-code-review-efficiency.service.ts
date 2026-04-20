@@ -23,6 +23,7 @@ const buildCodeReviewFilters = (
     Prisma.sql`INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"`,
   ];
   const conditions: Prisma.Sql[] = [
+    Prisma.sql`pt."workspaceId" = ${filters.workspaceId}`,
     Prisma.sql`p."workspaceId" = ${filters.workspaceId}`,
   ];
 
@@ -507,6 +508,10 @@ export const getWorkspaceSizeCommentCorrelation = async (
 
 // ---- Code Review Distribution (moved from chart-code-review.service.ts) ----
 
+// Reviewer (`source`) and PR-author (`target`) ids live in separate
+// namespaces (`cr-author:<handle>` vs `<handle>:<reviewerName>`), so they
+// cannot collide when merging into a single entity map even when the same
+// person is both reviewer and PR author.
 const processCodeReviewDistributionRows = (
   results: CodeReviewDistributionRow[]
 ) => {
@@ -592,6 +597,7 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
       ? Prisma.sql`AND EXISTS (
           SELECT 1 FROM "TeamMember" tm
           WHERE tm."gitProfileId" = CR_Author."id"
+          AND tm."workspaceId" = ${filters.workspaceId}
           AND tm."teamId" = ANY(ARRAY[${Prisma.join(
             filters.teamIds.map((id) => Prisma.sql`${id}`),
             ", "
@@ -615,7 +621,9 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
       SELECT 1
       FROM "TeamMember" tm_cr
       JOIN "TeamMember" tm_pr ON tm_cr."teamId" = tm_pr."teamId"
+        AND tm_pr."workspaceId" = ${filters.workspaceId}
       WHERE tm_cr."gitProfileId" = CR_Author."id"
+        AND tm_cr."workspaceId" = ${filters.workspaceId}
         AND tm_pr."gitProfileId" = PR_Author."id"
     ) AS "isTargetFromTeam",
     CR_Author."name" AS "crAuthorName",
@@ -746,7 +754,7 @@ export const getCodeReviewTeamOverview = async (
             THEN EXTRACT(EPOCH FROM (ppt."firstApprovalAt" - ppt."firstReviewAt")) * 1000
           END
         ) AS avg_time_to_approval,
-        COUNT(*) FILTER (
+        COUNT(ppt.pr_id) FILTER (
           WHERE NOT EXISTS (
             SELECT 1 FROM "CodeReview" cr
             WHERE cr."pullRequestId" = ppt.pr_id

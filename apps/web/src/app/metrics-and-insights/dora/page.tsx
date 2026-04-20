@@ -60,7 +60,9 @@ export const DoraPage = () => {
   });
 
   if (pathname === "/metrics-and-insights/dora") {
-    return <Navigate to="/metrics-and-insights/dora/deployment-frequency" />;
+    return (
+      <Navigate replace to="/metrics-and-insights/dora/deployment-frequency" />
+    );
   }
 
   return (
@@ -138,7 +140,7 @@ export const DoraPage = () => {
               (metrics.deploymentFrequency?.previousAmount || 0) +
               " deployments"
             }
-            amountDescription={`${metrics.deploymentFrequency?.avg} per day`}
+            amountDescription={`${metrics.deploymentFrequency?.avg ?? 0} per day`}
             change={metrics.deploymentFrequency?.change || 0}
             icon={IconDeployment}
             href="/metrics-and-insights/dora/deployment-frequency"

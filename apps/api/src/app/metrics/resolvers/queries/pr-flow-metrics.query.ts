@@ -1,4 +1,3 @@
-import { thirtyDaysAgo } from "../../../../lib/date";
 import { createFieldResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
@@ -14,19 +13,7 @@ import {
   getWorkspaceTimeToCodeChartData,
   getWorkspaceTimeToMergeChartData,
 } from "../../services/pr-flow.service";
-import { PullRequestFlowChartFilters } from "../../services/pr-flow.types";
-
-const buildFilters = (
-  input: Record<string, any>,
-  workspaceId: number
-): PullRequestFlowChartFilters => ({
-  workspaceId,
-  startDate: input.dateRange.from ?? thirtyDaysAgo().toISOString(),
-  endDate: input.dateRange.to ?? new Date().toISOString(),
-  period: input.period,
-  teamIds: input.teamIds ?? undefined,
-  repositoryIds: input.repositoryIds ?? undefined,
-});
+import { buildPullRequestFlowChartFilters } from "./utils";
 
 export const prFlowMetricsQuery = createFieldResolver(
   "PullRequestFlowMetrics",
@@ -41,7 +28,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       return getWorkspaceThroughputChartData(filters);
     },
     timeToCode: async (_, { input }, context) => {
@@ -54,7 +44,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceTimeToCodeChartData(filters);
 
       return {
@@ -72,7 +65,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceCycleTimeChartData(filters);
 
       return {
@@ -90,7 +86,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceTimeToMergeChartData(filters);
 
       return {
@@ -108,7 +107,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceTimeForFirstReviewChartData(filters);
 
       return {
@@ -126,7 +128,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceTimeForApprovalChartData(filters);
 
       return {
@@ -144,7 +149,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       const result = await getWorkspaceCycleTimeBreakdownChartData(filters);
 
       return {
@@ -166,7 +174,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       return getWorkspacePullRequestSizeDistributionChartData(filters);
     },
     sizeCycleTimeCorrelation: async (_, { input }, context) => {
@@ -179,7 +190,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       return getWorkspaceSizeCycleTimeCorrelation(filters);
     },
     teamOverview: async (_, { input }, context) => {
@@ -192,7 +206,10 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildFilters(input, context.workspaceId);
+      const filters = buildPullRequestFlowChartFilters(
+        input,
+        context.workspaceId
+      );
       return getWorkspaceTeamOverview(filters);
     },
   }

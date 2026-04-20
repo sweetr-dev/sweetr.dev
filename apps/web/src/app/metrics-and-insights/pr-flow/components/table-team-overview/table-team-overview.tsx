@@ -87,11 +87,8 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
     };
   };
 
-  const buildTeamLink = (teamId: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("team");
-    params.append("team", teamId);
-    return `?${params.toString()}`;
+  const selectTeam = (teamId: string) => {
+    searchParams.set("team", [teamId]);
   };
 
   return (
@@ -161,9 +158,7 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
                 <Table.Tr
                   key={row.teamId}
                   style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    window.location.search = buildTeamLink(row.teamId!);
-                  }}
+                  onClick={() => selectTeam(row.teamId!)}
                 >
                   <Table.Td>
                     <Group gap="xs" wrap="nowrap">

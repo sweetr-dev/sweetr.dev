@@ -1,9 +1,12 @@
 import { thirtyDaysAgo } from "../../../../lib/date";
-import { PullRequestFlowInput } from "../../../../graphql-types";
+import {
+  CodeReviewEfficiencyInput,
+  PullRequestFlowInput,
+} from "../../../../graphql-types";
 import { PullRequestFlowChartFilters } from "../../services/pr-flow.types";
 
 export const buildPullRequestFlowChartFilters = (
-  input: PullRequestFlowInput,
+  input: PullRequestFlowInput | CodeReviewEfficiencyInput,
   workspaceId: number
 ): PullRequestFlowChartFilters => ({
   workspaceId,

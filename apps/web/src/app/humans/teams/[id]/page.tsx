@@ -52,7 +52,7 @@ export const TeamPage = () => {
   );
 
   if (pathname === `/humans/teams/${teamId}`) {
-    return <Navigate to={`/humans/teams/${teamId}/members`} />;
+    return <Navigate replace to={`/humans/teams/${teamId}/members`} />;
   }
 
   const team = data?.workspace.team;

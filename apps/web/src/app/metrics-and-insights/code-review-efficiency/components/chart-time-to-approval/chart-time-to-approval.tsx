@@ -118,9 +118,13 @@ export const ChartTimeToApproval = ({
         if (col) onColumnClick(col);
       });
       chart.getZr().on("mousemove", (e) => {
-        if (chart.containPixel("grid", [e.offsetX, e.offsetY])) {
-          chart.getZr().setCursorStyle("pointer");
-        }
+        chart
+          .getZr()
+          .setCursorStyle(
+            chart.containPixel("grid", [e.offsetX, e.offsetY])
+              ? "pointer"
+              : "default",
+          );
       });
     }
 

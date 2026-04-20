@@ -127,7 +127,6 @@ export const ChartSizeDistribution = ({
               Medium: "M",
               Large: "L",
               Huge: "XL",
-              "Avg. Lines ": "Avg. Lines Changed",
             }[name] || name
           );
         },

@@ -301,7 +301,7 @@ export const CodeReviewEfficiencyPage = () => {
         />
       </Paper>
 
-      {!isDistributionEmpty && (
+      {!isLoading && !isDistributionEmpty && (
         <Paper mt="md" withBorder p="xs" bg="dark.7">
           <Table>
             <Table.Thead>

@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
-import { ECOption, echarts } from "../../../../../providers/echarts.provider";
+import {
+  ECOption,
+  echarts,
+  escapeHtml,
+} from "../../../../../providers/echarts.provider";
 import { ScatterChartData } from "@sweetr/graphql-types/frontend/graphql";
 
 const svgIcon = (paths: string, color = "#909296") =>
@@ -54,9 +58,9 @@ export const ChartSizeCommentCorrelation = ({
 
           html += `<div style="padding: 5px 0; font-weight:600; display:flex; align-items:center; gap:6px;">`;
           if (data.title) {
-            html += `${ICON_PR} <span style="padding-right: 40px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${data.title}</span>`;
+            html += `${ICON_PR} <span style="padding-right: 40px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(data.title)}</span>`;
           }
-          html += `<span style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>${p.seriesName}</span>`;
+          html += `<span style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>${escapeHtml(p.seriesName)}</span>`;
           html += `</div>`;
 
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">`;

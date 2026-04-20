@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import {
   ECOption,
   echarts,
+  escapeHtml,
   formatAxisDate,
   formatTooltipDate,
 } from "../../../../../providers/echarts.provider";
@@ -28,6 +29,8 @@ export const ChartReviewTurnaround = ({
   onColumnClick,
 }: ChartReviewTurnaroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const onColumnClickRef = useRef(onColumnClick);
+  onColumnClickRef.current = onColumnClick;
 
   useEffect(() => {
     if (!chartData || !containerRef.current) return;
@@ -57,7 +60,7 @@ export const ChartReviewTurnaround = ({
           const val = Number(data[idx]) || 0;
           const duration = val ? getAbbreviatedDuration(val) : "0s";
 
-          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
+          let html = `<div style="padding: 5px 0; font-weight:600">${escapeHtml(dateLabel)}</div>`;
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">`;
           html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8ce9c7"></span>`;
           html += `<span style="padding-right: 40px;">Time to First Review</span>`;
@@ -107,22 +110,24 @@ export const ChartReviewTurnaround = ({
 
     chart.setOption(options);
 
-    if (onColumnClick) {
-      chart.getZr().on("click", (e) => {
-        if (!chart.containPixel("grid", [e.offsetX, e.offsetY])) return;
-        const [dataIndex] = chart.convertFromPixel("grid", [
-          e.offsetX,
-          e.offsetY,
-        ]);
-        const col = columns[Math.round(dataIndex)];
-        if (col) onColumnClick(col);
-      });
-      chart.getZr().on("mousemove", (e) => {
-        if (chart.containPixel("grid", [e.offsetX, e.offsetY])) {
-          chart.getZr().setCursorStyle("pointer");
-        }
-      });
-    }
+    chart.getZr().on("click", (e) => {
+      if (!chart.containPixel("grid", [e.offsetX, e.offsetY])) return;
+      const [dataIndex] = chart.convertFromPixel("grid", [
+        e.offsetX,
+        e.offsetY,
+      ]);
+      const col = columns[Math.round(dataIndex)];
+      if (col) onColumnClickRef.current?.(col);
+    });
+    chart.getZr().on("mousemove", (e) => {
+      chart
+        .getZr()
+        .setCursorStyle(
+          chart.containPixel("grid", [e.offsetX, e.offsetY])
+            ? "pointer"
+            : "default",
+        );
+    });
 
     const handleResize = () => chart.resize();
     window.addEventListener("resize", handleResize);
@@ -131,7 +136,7 @@ export const ChartReviewTurnaround = ({
       window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, [chartData, period, chartId, onColumnClick]);
+  }, [chartData, period]);
 
   return (
     <div

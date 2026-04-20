@@ -91,7 +91,7 @@ async function seedPrWithTracking(
       number: input.number,
       state: input.state ?? PullRequestState.MERGED,
       createdAt: input.createdAt,
-      mergedAt: input.mergedAt ?? undefined,
+      mergedAt: input.mergedAt === undefined ? undefined : input.mergedAt,
     }
   );
 
@@ -2333,6 +2333,62 @@ describe("Code Review Efficiency Metrics", () => {
 
       expect(result.links).toHaveLength(1);
       expect(result.links[0].isFromTeam).toBe(false);
+    });
+
+    it("keeps reviewer and PR-author entities separate when the same person plays both roles", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const alice = await seedGitProfile(ctx, {
+        handle: "alice",
+        name: "Alice",
+      });
+      const bob = await seedGitProfile(ctx, { handle: "bob", name: "Bob" });
+      const repo = await seedRepository(ctx);
+
+      const prByAlice = await seedPrWithTracking(
+        ctx.workspaceId,
+        repo.repositoryId,
+        alice.gitProfileId,
+        { number: "1", mergedAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      await seedCodeReview(ctx, prByAlice.pullRequestId, bob.gitProfileId, {
+        state: CodeReviewState.APPROVED,
+        createdAt: new Date("2024-01-15T11:00:00Z"),
+      });
+
+      const prByBob = await seedPrWithTracking(
+        ctx.workspaceId,
+        repo.repositoryId,
+        bob.gitProfileId,
+        { number: "2", mergedAt: new Date("2024-01-15T12:00:00Z") }
+      );
+      await seedCodeReview(ctx, prByBob.pullRequestId, alice.gitProfileId, {
+        state: CodeReviewState.APPROVED,
+        createdAt: new Date("2024-01-15T13:00:00Z"),
+      });
+
+      const result = await getWorkspaceCodeReviewDistributionChartData({
+        workspaceId: ctx.workspaceId,
+        ...dateRange,
+        period: Period.DAILY,
+      });
+
+      const reviewerEntities = result.entities.filter((e) =>
+        e.id.startsWith("cr-author:")
+      );
+      const authorEntities = result.entities.filter(
+        (e) => !e.id.startsWith("cr-author:")
+      );
+
+      expect(reviewerEntities).toHaveLength(2);
+      expect(authorEntities).toHaveLength(2);
+
+      const bobReviewer = reviewerEntities.find((e) => e.id === "cr-author:bob");
+      const aliceReviewer = reviewerEntities.find(
+        (e) => e.id === "cr-author:alice"
+      );
+      expect(bobReviewer?.reviewCount).toBe(1);
+      expect(aliceReviewer?.reviewCount).toBe(1);
+      expect(result.totalReviews).toBe(2);
     });
   });
 

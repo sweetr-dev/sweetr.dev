@@ -180,8 +180,8 @@ export const chartMetricsHandlers = [
           __typename: "Workspace",
           metrics: {
             __typename: "Metrics",
-            prFlow: {
-              __typename: "PullRequestFlowMetrics",
+            codeReviewEfficiency: {
+              __typename: "CodeReviewEfficiencyMetrics",
               codeReviewDistribution: distributionData,
             },
           },
