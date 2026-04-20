@@ -579,6 +579,7 @@ export type EnvironmentsQueryInput = {
 
 export type GraphChartLink = {
   __typename?: 'GraphChartLink';
+  isFromTeam: Scalars['Boolean']['output'];
   source: Scalars['String']['output'];
   target: Scalars['String']['output'];
   value: Scalars['Int']['output'];
@@ -2217,6 +2218,7 @@ export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extend
 };
 
 export type GraphChartLinkResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GraphChartLink'] = ResolversParentTypes['GraphChartLink']> = {
+  isFromTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

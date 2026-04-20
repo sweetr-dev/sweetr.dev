@@ -13,8 +13,8 @@ import {
   getWorkspaceTimeForFirstReviewChartData,
   getWorkspaceTimeToCodeChartData,
   getWorkspaceTimeToMergeChartData,
-} from "../../services/chart-pull-request.service";
-import { PullRequestFlowChartFilters } from "../../services/chart-pull-request.types";
+} from "../../services/pr-flow.service";
+import { PullRequestFlowChartFilters } from "../../services/pr-flow.types";
 
 const buildFilters = (
   input: Record<string, any>,

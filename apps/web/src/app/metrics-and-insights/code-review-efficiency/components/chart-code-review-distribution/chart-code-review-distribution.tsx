@@ -99,6 +99,7 @@ export const ChartCodeReviewDistribution = ({
                   name: target.name,
                   image: target.image,
                   reviewCount: link.value,
+                  isFromTeam: link.isFromTeam,
                 },
               ];
             });
@@ -118,11 +119,11 @@ export const ChartCodeReviewDistribution = ({
           };
 
           const teamTargets = targets
-            .filter((target) => target.id?.split(":").at(-1) === "internal")
+            .filter((target) => target.isFromTeam)
             .sort((a, b) => b.reviewCount - a.reviewCount);
 
           const externalTargets = targets
-            .filter((target) => target.id?.split(":").at(-1) === "external")
+            .filter((target) => !target.isFromTeam)
             .sort((a, b) => b.reviewCount - a.reviewCount);
 
           const totalTeamReviews = teamTargets.reduce(

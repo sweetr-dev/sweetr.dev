@@ -14,7 +14,7 @@ import {
   getKpiAvgCommentsPerPr,
   getKpiPrsWithoutApproval,
 } from "../../services/chart-code-review-efficiency.service";
-import { PullRequestFlowChartFilters } from "../../services/chart-pull-request.types";
+import { PullRequestFlowChartFilters } from "../../services/pr-flow.types";
 
 const buildFilters = (
   input: Record<string, any>,
@@ -71,13 +71,10 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
       return getWorkspacePrsWithoutApproval(filters);
     },
     sizeCommentCorrelation: async (_, { input }, context) => {
-      logger.info(
-        "query.metrics.codeReviewEfficiency.sizeCommentCorrelation",
-        {
-          workspaceId: context.workspaceId,
-          input,
-        }
-      );
+      logger.info("query.metrics.codeReviewEfficiency.sizeCommentCorrelation", {
+        workspaceId: context.workspaceId,
+        input,
+      });
 
       if (!context.workspaceId) {
         throw new ResourceNotFoundException("Workspace not found");
@@ -87,13 +84,10 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
       return getWorkspaceSizeCommentCorrelation(filters);
     },
     codeReviewDistribution: async (_, { input }, context) => {
-      logger.info(
-        "query.metrics.codeReviewEfficiency.codeReviewDistribution",
-        {
-          workspaceId: context.workspaceId,
-          input,
-        }
-      );
+      logger.info("query.metrics.codeReviewEfficiency.codeReviewDistribution", {
+        workspaceId: context.workspaceId,
+        input,
+      });
 
       if (!context.workspaceId) {
         throw new ResourceNotFoundException("Workspace not found");

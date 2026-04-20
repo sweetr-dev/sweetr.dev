@@ -2,7 +2,7 @@ export type CodeReviewDistributionRow = {
   source: string;
   target: string;
   value: number;
-  isTargetFromTeam: number;
+  isTargetFromTeam: boolean;
   crAuthorName: string;
   crAuthorAvatar?: string;
   prAuthorName: string;
@@ -13,4 +13,5 @@ export type CodeReviewLink = {
   source: string;
   target: string;
   value: number;
+  isFromTeam: boolean;
 };

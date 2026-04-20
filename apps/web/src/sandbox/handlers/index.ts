@@ -9,6 +9,8 @@ import { chartMetricsHandlers } from "./chart-metrics";
 import { workLogHandlers } from "./work-log";
 import { mutationHandlers } from "./mutations";
 import { systemsHandlers } from "./systems";
+import { prFlowMetricsHandlers } from "./pr-flow-metrics";
+import { codeReviewEfficiencyMetricsHandlers } from "./code-review-efficiency-metrics";
 
 export const handlers = [
   ...userWorkspacesHandlers,
@@ -21,5 +23,7 @@ export const handlers = [
   ...chartMetricsHandlers,
   ...workLogHandlers,
   ...systemsHandlers,
+  ...prFlowMetricsHandlers,
+  ...codeReviewEfficiencyMetricsHandlers,
   ...mutationHandlers,
 ];

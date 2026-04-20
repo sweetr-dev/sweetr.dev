@@ -99,6 +99,7 @@ export const useCodeReviewEfficiencyMetricsQuery = (
                       source
                       target
                       value
+                      isFromTeam
                     }
                     totalReviews
                   }

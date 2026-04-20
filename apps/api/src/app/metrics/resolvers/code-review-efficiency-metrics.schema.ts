@@ -54,6 +54,7 @@ export default /* GraphQL */ `
     source: String!
     target: String!
     value: Int!
+    isFromTeam: Boolean!
   }
 
   type CodeReviewDurationKpi {

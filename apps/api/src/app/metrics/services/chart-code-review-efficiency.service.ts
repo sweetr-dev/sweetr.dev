@@ -2,11 +2,11 @@ import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { getPreviousPeriod } from "../../../lib/date";
 import { periodToDateTrunc, periodToInterval } from "./chart.service";
-import { PullRequestFlowChartFilters } from "./chart-pull-request.types";
+import { PullRequestFlowChartFilters } from "./pr-flow.types";
 import {
   CodeReviewDistributionRow,
   CodeReviewLink,
-} from "./chart-code-review.types";
+} from "./chart-code-review-efficiency.types";
 import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
 
@@ -370,8 +370,7 @@ export const getKpiAvgCommentsPerPr = async (
   ]);
 
   const currentAmount = Math.round((currentResult[0]?.value || 0) * 10) / 10;
-  const previousAmount =
-    Math.round((previousResult[0]?.value || 0) * 10) / 10;
+  const previousAmount = Math.round((previousResult[0]?.value || 0) * 10) / 10;
   const change =
     previousAmount !== 0
       ? Math.round(((currentAmount - previousAmount) / previousAmount) * 100)
@@ -612,6 +611,13 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
   SELECT
     CONCAT('cr-author:', CR_Author."handle") AS source,
     CONCAT(PR_Author."handle", ':', CR_Author."name") AS target,
+    EXISTS (
+      SELECT 1
+      FROM "TeamMember" tm_cr
+      JOIN "TeamMember" tm_pr ON tm_cr."teamId" = tm_pr."teamId"
+      WHERE tm_cr."gitProfileId" = CR_Author."id"
+        AND tm_pr."gitProfileId" = PR_Author."id"
+    ) AS "isTargetFromTeam",
     CR_Author."name" AS "crAuthorName",
     CR_Author."avatar" AS "crAuthorAvatar",
     PR_Author."name" AS "prAuthorName",
@@ -626,8 +632,8 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
   JOIN
     "GitProfile" AS PR_Author ON "PullRequest"."authorId" = PR_Author.id
   WHERE
-    "CodeReview"."createdAt" >= ${filters.startDate}
-    AND "CodeReview"."createdAt" <= ${filters.endDate}
+    "CodeReview"."createdAt" >= ${new Date(filters.startDate)}
+    AND "CodeReview"."createdAt" <= ${new Date(filters.endDate)}
     AND "PullRequest"."workspaceId" = ${filters.workspaceId}
     ${teamFilter}
     ${repoFilter}
@@ -635,10 +641,9 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
     CR_Author."id", PR_Author."id";
 `;
 
-  const results =
-    await getPrisma(filters.workspaceId).$queryRaw<
-      CodeReviewDistributionRow[]
-    >(query);
+  const results = await getPrisma(filters.workspaceId).$queryRaw<
+    CodeReviewDistributionRow[]
+  >(query);
 
   const { entities, links, totalReviews } = processCodeReviewDistributionRows(
     results.map((result) => ({ ...result, value: Number(result.value) }))
@@ -769,9 +774,7 @@ export const getCodeReviewTeamOverview = async (
     avgTimeToFirstReview: BigInt(
       Math.floor(Number(r.avg_time_to_first_review) || 0)
     ),
-    avgTimeToApproval: BigInt(
-      Math.floor(Number(r.avg_time_to_approval) || 0)
-    ),
+    avgTimeToApproval: BigInt(Math.floor(Number(r.avg_time_to_approval) || 0)),
     prsWithoutApproval: Number(r.prs_without_approval),
   }));
 };

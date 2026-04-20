@@ -7,7 +7,7 @@ import {
   CycleTimeBreakdownRow,
   PullRequestFiltersResult,
   PullRequestFlowChartFilters,
-} from "./chart-pull-request.types";
+} from "./pr-flow.types";
 
 const buildPullRequestFilters = (
   filters: PullRequestFlowChartFilters
