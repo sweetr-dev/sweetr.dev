@@ -14,11 +14,14 @@ import { UTCDate } from "@date-fns/utc";
 interface ChartAverageTimeProps {
   chartData?: NumericChartData | null;
   period: Period;
+  /** Shown in the chart legend and tooltip (e.g. Lead Time, MTTR). */
+  seriesName: string;
 }
 
 export const ChartAverageTime = ({
   chartData,
   period,
+  seriesName,
 }: ChartAverageTimeProps) => {
   const max = Math.max(...(chartData?.data || []), 0) / 1000 / 60 / 60;
 
@@ -36,24 +39,51 @@ export const ChartAverageTime = ({
         trigger: "axis",
         backgroundColor: "#25262B",
         borderColor: "#303030",
-        padding: [10, 15],
+        padding: [0, 15],
         textStyle: {
           color: "#fff",
-          fontSize: 16,
+          fontSize: 14,
         },
-        valueFormatter(value) {
-          if (!value) return "0 hours";
-
-          return formatMsDuration(parseInt(value as string), [
-            "years",
-            "months",
-            "weeks",
-            "days",
-            "hours",
-            "minutes",
-          ]);
+        formatter(params) {
+          if (!Array.isArray(params) || params.length === 0) return "";
+          const p = params[0];
+          const idx = p.dataIndex!;
+          const dateLabel = formatTooltipDate(
+            new UTCDate(chartData.columns[idx]),
+            period,
+          );
+          const formatVal = (value: unknown) => {
+            if (!value) return "0 hours";
+            const ms = parseInt(String(value), 10);
+            return (
+              formatMsDuration(ms, [
+                "years",
+                "months",
+                "weeks",
+                "days",
+                "hours",
+                "minutes",
+                "seconds",
+              ]) || `${Math.round(ms / 1000)} seconds`
+            );
+          };
+          const valueStr = formatVal(p.value);
+          const color = (p.color as string) || "#8ce99a";
+          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040; display:flex; align-items:center; gap:5px;">`;
+          html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>`;
+          html += `<span style="padding-right: 40px;">${seriesName}</span>`;
+          html += `<span style="margin-left:auto;font-weight:500">${valueStr}</span>`;
+          html += `</div>`;
+          return html;
         },
         axisPointer: {
+          type: "line",
+          snap: true,
+          lineStyle: {
+            color: "#555",
+            type: "dashed",
+          },
           label: {
             formatter({ value }) {
               return formatTooltipDate(new UTCDate(value), period);
@@ -91,6 +121,7 @@ export const ChartAverageTime = ({
       series: [
         {
           type: "line",
+          name: seriesName,
           data: chartData.data,
           smooth: true,
           emphasis: { focus: "series" },
@@ -118,7 +149,7 @@ export const ChartAverageTime = ({
 
     chart.setOption(options);
     chart.renderToCanvas();
-  }, [chartData, period, max]);
+  }, [chartData, period, max, seriesName]);
 
   return <div id="main" style={{ width: "100%", height: "100%" }}></div>;
 };

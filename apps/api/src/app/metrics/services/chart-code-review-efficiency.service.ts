@@ -508,7 +508,7 @@ export const getWorkspaceSizeCommentCorrelation = async (
 
 // ---- Code Review Distribution (moved from chart-code-review.service.ts) ----
 
-export const processCodeReviewDistributionRows = (
+const processCodeReviewDistributionRows = (
   results: CodeReviewDistributionRow[]
 ) => {
   const totalReviewsPerReviewer: Record<string, number> = {};

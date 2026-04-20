@@ -1,13 +1,3 @@
-import { Period } from "../../../graphql-types";
-
-export interface CodeReviewChartFilters {
-  workspaceId: number;
-  startDate: string;
-  endDate: string;
-  period: Period;
-  teamId: number;
-}
-
 export type CodeReviewDistributionRow = {
   source: string;
   target: string;

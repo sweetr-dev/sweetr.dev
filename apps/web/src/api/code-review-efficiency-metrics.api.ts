@@ -25,7 +25,7 @@ export const useCodeReviewEfficiencyMetricsQuery = (
         graphql(/* GraphQL */ `
           query CodeReviewEfficiencyMetrics(
             $workspaceId: SweetID!
-            $input: PullRequestFlowInput!
+            $input: CodeReviewEfficiencyInput!
           ) {
             workspace(workspaceId: $workspaceId) {
               metrics {

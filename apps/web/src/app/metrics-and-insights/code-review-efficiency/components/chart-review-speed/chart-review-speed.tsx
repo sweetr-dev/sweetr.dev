@@ -121,6 +121,7 @@ export const ChartReviewSpeed = ({
           name: "Time to First Review",
           data: turnaroundData.data.map((v) => Number(v)),
           color: "#8ce9c7",
+          barMinHeight: 3,
           barMaxWidth: 24,
           itemStyle: {
             borderColor: "#1A1B1E",
@@ -133,6 +134,7 @@ export const ChartReviewSpeed = ({
           name: "Time to Approval",
           data: approvalData.data.map((v) => Number(v)),
           color: "#b197fc",
+          barMinHeight: 3,
           barMaxWidth: 24,
           itemStyle: {
             borderColor: "#1A1B1E",

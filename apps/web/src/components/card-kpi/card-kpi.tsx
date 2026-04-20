@@ -76,7 +76,7 @@ export const CardKpi = ({
             </Text>
             <IconInfoCircle
               size={14}
-              stroke={1.5}
+              stroke={2}
               color="var(--mantine-color-dimmed)"
             />
           </Group>

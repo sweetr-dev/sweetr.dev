@@ -95,7 +95,7 @@ export const ChartSizeCommentCorrelation = ({
         itemHeight: 12,
       },
       grid: {
-        left: "20px",
+        left: "30px",
         right: "0px",
         bottom: "60px",
         top: "15px",

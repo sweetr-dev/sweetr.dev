@@ -4,16 +4,56 @@ export default /* GraphQL */ `
   }
 
   type CodeReviewEfficiencyMetrics {
-    reviewTurnaroundTime(input: PullRequestFlowInput!): NumericChartData
-    timeToApproval(input: PullRequestFlowInput!): NumericChartData
-    prsWithoutApproval(input: PullRequestFlowInput!): Int
-    sizeCommentCorrelation(input: PullRequestFlowInput!): ScatterChartData
-    codeReviewDistribution(input: PullRequestFlowInput!): CodeReviewDistributionChartData
-    teamOverview(input: PullRequestFlowInput!): [CodeReviewTeamOverviewRow!]
-    kpiTimeToFirstReview(input: PullRequestFlowInput!): CodeReviewDurationKpi
-    kpiTimeToApproval(input: PullRequestFlowInput!): CodeReviewDurationKpi
-    kpiAvgCommentsPerPr(input: PullRequestFlowInput!): CodeReviewFloatKpi
-    kpiPrsWithoutApproval(input: PullRequestFlowInput!): CodeReviewCountKpi
+    reviewTurnaroundTime(input: CodeReviewEfficiencyInput!): NumericChartData
+    timeToApproval(input: CodeReviewEfficiencyInput!): NumericChartData
+    prsWithoutApproval(input: CodeReviewEfficiencyInput!): Int
+    sizeCommentCorrelation(input: CodeReviewEfficiencyInput!): ScatterChartData
+    codeReviewDistribution(
+      input: CodeReviewEfficiencyInput!
+    ): CodeReviewDistributionChartData
+    teamOverview(
+      input: CodeReviewEfficiencyInput!
+    ): [CodeReviewTeamOverviewRow!]
+    kpiTimeToFirstReview(
+      input: CodeReviewEfficiencyInput!
+    ): CodeReviewDurationKpi
+    kpiTimeToApproval(input: CodeReviewEfficiencyInput!): CodeReviewDurationKpi
+    kpiAvgCommentsPerPr(input: CodeReviewEfficiencyInput!): CodeReviewFloatKpi
+    kpiPrsWithoutApproval(input: CodeReviewEfficiencyInput!): CodeReviewCountKpi
+  }
+
+  input CodeReviewEfficiencyInput {
+    "The date range."
+    dateRange: DateTimeRange!
+
+    "The period to group by."
+    period: Period!
+
+    "The team ids to filter by."
+    teamIds: [SweetID!]
+
+    "The repository ids to filter by."
+    repositoryIds: [SweetID!]
+  }
+
+  type CodeReviewDistributionChartData {
+    entities: [CodeReviewDistributionEntity!]!
+    links: [GraphChartLink!]!
+    totalReviews: Int!
+  }
+
+  type CodeReviewDistributionEntity {
+    id: String!
+    name: String!
+    image: String
+    reviewCount: Int
+    reviewSharePercentage: Float
+  }
+
+  type GraphChartLink {
+    source: String!
+    target: String!
+    value: Int!
   }
 
   type CodeReviewDurationKpi {

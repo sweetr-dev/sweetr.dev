@@ -11,7 +11,7 @@ import {
   addYears,
   endOfToday,
 } from "date-fns";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
@@ -80,7 +80,8 @@ export const PrFlowPage = () => {
       const to = overrides?.to ?? filters.values.to;
       const dateType = overrides?.dateType ?? "completed";
 
-      const fromKey = dateType === "created" ? "createdAtFrom" : "completedAtFrom";
+      const fromKey =
+        dateType === "created" ? "createdAtFrom" : "completedAtFrom";
       const toKey = dateType === "created" ? "createdAtTo" : "completedAtTo";
 
       if (from) params.set(fromKey, from);
@@ -138,11 +139,6 @@ export const PrFlowPage = () => {
       window.open(url, "_blank", "noopener,noreferrer");
     },
     [getPeriodEnd, buildPullRequestsUrl],
-  );
-
-  const pullRequestsHref = useMemo(
-    () => buildPullRequestsUrl(),
-    [buildPullRequestsUrl],
   );
 
   return (
@@ -224,7 +220,6 @@ export const PrFlowPage = () => {
             <CardChart
               title="PR Throughput"
               description="Number of pull requests merged and closed over time. Helps track delivery velocity and identify slowdowns."
-              href={pullRequestsHref}
             >
               <ChartThroughput
                 chartId="pr-flow-throughput"
@@ -236,7 +231,6 @@ export const PrFlowPage = () => {
             <CardChart
               title="PR Size distribution"
               description="Distribution of merged pull requests by size (lines added + deleted). The line shows the average lines changed per PR each period."
-              href={pullRequestsHref}
             >
               <ChartSizeDistribution
                 chartId="pr-flow-size-distribution"
@@ -249,7 +243,6 @@ export const PrFlowPage = () => {
               title="PR Cycle time Breakdown"
               description="Stacked breakdown of mean cycle time."
               style={{ gridColumn: "span 2" }}
-              href={pullRequestsHref}
             >
               <ChartCycleTimeBreakdown
                 chartId="pr-flow-cycle-time"
@@ -263,7 +256,6 @@ export const PrFlowPage = () => {
               description="Scatter plot correlating PR size (lines changed) with cycle time. Larger PRs typically take longer to review and merge."
               style={{ gridColumn: "span 2" }}
               height={450}
-              href={pullRequestsHref}
             >
               <ChartSizeCycleCorrelation
                 chartId="pr-flow-size-cycle-correlation"

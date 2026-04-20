@@ -35,12 +35,39 @@ export const ChartDeploymentFrequency = ({
         trigger: "axis",
         backgroundColor: "#25262B",
         borderColor: "#303030",
-        padding: [10, 15],
-        textStyle: { color: "#fff", fontSize: 16 },
-        valueFormatter(value) {
-          return value;
+        padding: [0, 15],
+        textStyle: { color: "#fff", fontSize: 14 },
+        formatter(params) {
+          if (!Array.isArray(params) || params.length === 0) return "";
+          const idx = params[0].dataIndex!;
+          const dateLabel = formatTooltipDate(
+            new UTCDate(chartData.columns[idx]),
+            period,
+          );
+          let html = `<div style="padding: 5px 0; font-weight:600">${dateLabel}</div>`;
+          html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
+          for (const p of params) {
+            const val = p.value;
+            const display =
+              val == null || Array.isArray(val) ? "" : String(val);
+            const color = (p.color as string) || "#8ce99a";
+            const sName = p.seriesName ?? "";
+            html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
+            html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>`;
+            html += `<span style="padding-right: 40px;">${sName}</span>`;
+            html += `<span style="margin-left:auto;font-weight:500">${display}</span>`;
+            html += `</div>`;
+          }
+          html += `</div>`;
+          return html;
         },
         axisPointer: {
+          type: "line",
+          snap: true,
+          lineStyle: {
+            color: "#555",
+            type: "dashed",
+          },
           label: {
             formatter({ value }) {
               return formatTooltipDate(new UTCDate(value), period);
@@ -49,15 +76,13 @@ export const ChartDeploymentFrequency = ({
         },
       },
       legend: {
-        data: chartData.series.map((s) => s.name),
-        textStyle: { color: "#fff" },
-        top: 10,
+        show: false,
       },
       grid: {
         left: "1%",
         right: "4%",
         bottom: "3%",
-        top: "15%",
+        top: "4%",
         containLabel: true,
       },
       xAxis: {

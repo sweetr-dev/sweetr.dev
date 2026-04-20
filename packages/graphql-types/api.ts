@@ -259,6 +259,17 @@ export type CodeReviewDurationKpi = {
   previousPeriod: DateTimeRangeValue;
 };
 
+export type CodeReviewEfficiencyInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The repository ids to filter by. */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The team ids to filter by. */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+};
+
 export type CodeReviewEfficiencyMetrics = {
   __typename?: 'CodeReviewEfficiencyMetrics';
   codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
@@ -275,52 +286,52 @@ export type CodeReviewEfficiencyMetrics = {
 
 
 export type CodeReviewEfficiencyMetricsCodeReviewDistributionArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsKpiAvgCommentsPerPrArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsKpiPrsWithoutApprovalArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsKpiTimeToApprovalArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsKpiTimeToFirstReviewArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsPrsWithoutApprovalArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsReviewTurnaroundTimeArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsSizeCommentCorrelationArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsTeamOverviewArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 
 export type CodeReviewEfficiencyMetricsTimeToApprovalArgs = {
-  input: PullRequestFlowInput;
+  input: CodeReviewEfficiencyInput;
 };
 
 export type CodeReviewFloatKpi = {
@@ -702,45 +713,9 @@ export type MeanTimeToRecoverMetric = {
 
 export type Metrics = {
   __typename?: 'Metrics';
-  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
   codeReviewEfficiency: CodeReviewEfficiencyMetrics;
-  cycleTime?: Maybe<NumericChartData>;
   dora: DoraMetrics;
   prFlow: PullRequestFlowMetrics;
-  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
-  timeForApproval?: Maybe<NumericChartData>;
-  timeForFirstReview?: Maybe<NumericChartData>;
-  timeToMerge?: Maybe<NumericChartData>;
-};
-
-
-export type MetricsCodeReviewDistributionArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsCycleTimeArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsPullRequestSizeDistributionArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeForApprovalArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeForFirstReviewArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeToMergeArgs = {
-  input: TeamMetricInput;
 };
 
 export type Mutation = {
@@ -1138,10 +1113,6 @@ export type PullRequestTracking = {
   timeToMerge?: Maybe<Scalars['BigInt']['output']>;
 };
 
-export type PullRequestTrendInput = {
-  state?: InputMaybe<PullRequestState>;
-};
-
 export type PullRequestsInProgressResponse = {
   __typename?: 'PullRequestsInProgressResponse';
   changesRequested: Array<PullRequest>;
@@ -1325,15 +1296,6 @@ export enum TeamMemberRole {
   PRODUCT = 'PRODUCT',
   QA = 'QA'
 }
-
-export type TeamMetricInput = {
-  /** The date range. */
-  dateRange: DateTimeRange;
-  /** The period to group by. */
-  period: Period;
-  /** The team id to filter by. */
-  teamId: Scalars['SweetID']['input'];
-};
 
 export type TeamPrFlowOverviewRow = {
   __typename?: 'TeamPrFlowOverviewRow';
@@ -1767,6 +1729,7 @@ export type ResolversTypes = {
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
   CodeReviewDurationKpi: ResolverTypeWrapper<DeepPartial<CodeReviewDurationKpi>>;
+  CodeReviewEfficiencyInput: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyInput>>;
   CodeReviewEfficiencyMetrics: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyMetrics>>;
   CodeReviewFloatKpi: ResolverTypeWrapper<DeepPartial<CodeReviewFloatKpi>>;
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
@@ -1827,7 +1790,6 @@ export type ResolversTypes = {
   PullRequestSizeDistributionChartData: ResolverTypeWrapper<DeepPartial<PullRequestSizeDistributionChartData>>;
   PullRequestState: ResolverTypeWrapper<DeepPartial<PullRequestState>>;
   PullRequestTracking: ResolverTypeWrapper<DeepPartial<PullRequestTracking>>;
-  PullRequestTrendInput: ResolverTypeWrapper<DeepPartial<PullRequestTrendInput>>;
   PullRequestsInProgressResponse: ResolverTypeWrapper<DeepPartial<PullRequestsInProgressResponse>>;
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
@@ -1848,7 +1810,6 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversTypes['Alert']>, alerts: Array<ResolversTypes['Alert']>, members: Array<ResolversTypes['TeamMember']>, workLog: ResolversTypes['TeamWorkLogResponse'] }>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversTypes['Person'], team: ResolversTypes['Team'] }>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
-  TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
   TeamPrFlowOverviewRow: ResolverTypeWrapper<DeepPartial<TeamPrFlowOverviewRow>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
   TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
@@ -1910,6 +1871,7 @@ export type ResolversParentTypes = {
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
   CodeReviewDurationKpi: DeepPartial<CodeReviewDurationKpi>;
+  CodeReviewEfficiencyInput: DeepPartial<CodeReviewEfficiencyInput>;
   CodeReviewEfficiencyMetrics: DeepPartial<CodeReviewEfficiencyMetrics>;
   CodeReviewFloatKpi: DeepPartial<CodeReviewFloatKpi>;
   CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
@@ -1960,7 +1922,6 @@ export type ResolversParentTypes = {
   PullRequestMergedEvent: DeepPartial<PullRequestMergedEvent>;
   PullRequestSizeDistributionChartData: DeepPartial<PullRequestSizeDistributionChartData>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
-  PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
   PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
@@ -1980,7 +1941,6 @@ export type ResolversParentTypes = {
   SyncBatch: DeepPartial<SyncBatch>;
   Team: DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversParentTypes['Alert']>, alerts: Array<ResolversParentTypes['Alert']>, members: Array<ResolversParentTypes['TeamMember']>, workLog: ResolversParentTypes['TeamWorkLogResponse'] }>;
   TeamMember: DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversParentTypes['Person'], team: ResolversParentTypes['Team'] }>;
-  TeamMetricInput: DeepPartial<TeamMetricInput>;
   TeamPrFlowOverviewRow: DeepPartial<TeamPrFlowOverviewRow>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
@@ -2327,15 +2287,9 @@ export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, Paren
 };
 
 export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Metrics'] = ResolversParentTypes['Metrics']> = {
-  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<MetricsCodeReviewDistributionArgs, 'input'>>;
   codeReviewEfficiency?: Resolver<ResolversTypes['CodeReviewEfficiencyMetrics'], ParentType, ContextType>;
-  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsCycleTimeArgs, 'input'>>;
   dora?: Resolver<ResolversTypes['DoraMetrics'], ParentType, ContextType>;
   prFlow?: Resolver<ResolversTypes['PullRequestFlowMetrics'], ParentType, ContextType>;
-  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<MetricsPullRequestSizeDistributionArgs, 'input'>>;
-  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
-  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
-  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeToMergeArgs, 'input'>>;
 };
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {

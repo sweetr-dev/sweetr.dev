@@ -140,10 +140,12 @@ export const CodeReviewEfficiencyPage = () => {
         />
       </Group>
 
+      <Divider mt="xl" mb="md" label="Overview" labelPosition="left" />
+
       <LoadableContent
         isLoading={isLoading}
         whenLoading={
-          <SimpleGrid cols={4} mt="xl">
+          <SimpleGrid cols={4}>
             <Skeleton h={168} />
             <Skeleton h={168} />
             <Skeleton h={168} />
@@ -151,7 +153,7 @@ export const CodeReviewEfficiencyPage = () => {
           </SimpleGrid>
         }
         content={
-          <Group wrap="nowrap" mt="xl">
+          <Group wrap="nowrap">
             <CardKpi
               name="Time to First Review"
               amount={

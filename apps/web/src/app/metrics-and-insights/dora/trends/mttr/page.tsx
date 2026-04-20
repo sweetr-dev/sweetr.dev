@@ -56,6 +56,7 @@ export const DoraMttrPage = () => {
 
       <Paper withBorder h={400} p="xs">
         <ChartAverageTime
+          seriesName="MTTR"
           chartData={{
             columns: metrics.meanTimeToRecover.columns,
             data: metrics.meanTimeToRecover.data,

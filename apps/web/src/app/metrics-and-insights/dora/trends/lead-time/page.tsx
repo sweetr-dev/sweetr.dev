@@ -57,6 +57,7 @@ export const DoraLeadTimePage = () => {
 
       <Paper withBorder h={400} p="xs">
         <ChartAverageTime
+          seriesName="Lead Time"
           chartData={{
             columns: metrics.leadTime.columns,
             data: metrics.leadTime.data,
