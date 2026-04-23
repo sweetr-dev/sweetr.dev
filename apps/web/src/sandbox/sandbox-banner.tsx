@@ -3,7 +3,7 @@ import { IconInfoCircle } from "@tabler/icons-react";
 import { clearSandboxMode } from "./sandbox-context";
 import { logout } from "../providers/auth.provider";
 
-const BANNER_HEIGHT = 32;
+const BANNER_HEIGHT = 45;
 
 export const SANDBOX_BANNER_HEIGHT = BANNER_HEIGHT;
 
@@ -18,13 +18,12 @@ const handleExitSandbox = async () => {
 export const SandboxBanner = () => {
   return (
     <Box
-      bg="violet.9"
-      py={4}
+      bg="violet"
       px="md"
       h={BANNER_HEIGHT}
       style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100 }}
     >
-      <Group justify="center" gap="sm" h="100%">
+      <Group justify="center" h="100%" gap="xl">
         <Tooltip
           label="All data is mocked on the frontend for demonstration purposes. Charts and metrics are illustrative and not processed by the backend."
           multiline
@@ -33,9 +32,9 @@ export const SandboxBanner = () => {
           position="bottom"
         >
           <Group gap={6} style={{ cursor: "help" }}>
-            <IconInfoCircle size={16} color="white" stroke={1.5} />
-            <Text size="sm" c="white" fw={500}>
-              You're viewing sandbox data.
+            <IconInfoCircle size={16} color="white" stroke={2} />
+            <Text size="sm" c="bright" fw={500}>
+              You're viewing mocked sandbox data
             </Text>
           </Group>
         </Tooltip>
@@ -46,9 +45,9 @@ export const SandboxBanner = () => {
         >
           <Button
             onClick={handleExitSandbox}
-            size="compact-xs"
+            size="compact-sm"
             variant="white"
-            color="violet.9"
+            c="violet.9"
             fw={700}
             radius="sm"
           >

@@ -47,9 +47,9 @@ export const stopSandboxWorker = async (): Promise<void> => {
 /**
  * Loader for the /sandbox entry route.
  * Starts MSW, sets a fake auth cookie, marks sandbox mode in sessionStorage,
- * then redirects to / where the normal auth flow picks up (MSW intercepts all queries).
+ * then redirects to / (or ?redirectTo=) where the normal auth flow picks up (MSW intercepts all queries).
  */
-export const sandboxLoader = async () => {
+export const sandboxLoader = async ({ request }: { request: Request }) => {
   await ensureSandboxWorker();
 
   sessionStorage.setItem(SANDBOX_STORAGE_KEY, "true");
@@ -58,5 +58,13 @@ export const sandboxLoader = async () => {
     ...getSandboxCookieAttributes(),
   });
 
-  return redirect("/");
+  const redirectTo = new URL(request.url).searchParams.get("redirectTo");
+
+  // Only allow same-origin relative paths to avoid open redirects.
+  const safeRedirect =
+    redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : "/";
+
+  return redirect(safeRedirect);
 };

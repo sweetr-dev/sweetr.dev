@@ -1,7 +1,7 @@
 import {
   Divider,
+  Grid,
   Group,
-  SimpleGrid,
   Skeleton,
   Stack,
   Text,
@@ -114,12 +114,20 @@ export const CodeReviewEfficiencyPage = () => {
       <LoadableContent
         isLoading={isLoading}
         whenLoading={
-          <SimpleGrid cols={4}>
-            <Skeleton h={168} />
-            <Skeleton h={168} />
-            <Skeleton h={168} />
-            <Skeleton h={168} />
-          </SimpleGrid>
+          <Grid>
+            <Grid.Col span={{ base: 12, lg: 3 }}>
+              <Skeleton h={168} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, lg: 3 }}>
+              <Skeleton h={168} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, lg: 3 }}>
+              <Skeleton h={168} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, lg: 3 }}>
+              <Skeleton h={168} />
+            </Grid.Col>
+          </Grid>
         }
         content={
           <Group wrap="nowrap">
@@ -227,7 +235,6 @@ export const CodeReviewEfficiencyPage = () => {
                 </Text>
               </Stack>
             }
-            style={{ gridColumn: "span 2" }}
             height={500}
           >
             <ChartReviewSpeed
