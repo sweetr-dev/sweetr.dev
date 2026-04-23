@@ -61,7 +61,7 @@ export default /* GraphQL */ `
   type CodeReviewDurationKpi {
     currentAmount: BigInt!
     previousAmount: BigInt!
-    change: Int!
+    change: Float!
     currentPeriod: DateTimeRangeValue!
     previousPeriod: DateTimeRangeValue!
   }
@@ -69,7 +69,7 @@ export default /* GraphQL */ `
   type CodeReviewCountKpi {
     currentAmount: Int!
     previousAmount: Int!
-    change: Int!
+    change: Float!
     currentPeriod: DateTimeRangeValue!
     previousPeriod: DateTimeRangeValue!
   }
@@ -77,7 +77,7 @@ export default /* GraphQL */ `
   type CodeReviewFloatKpi {
     currentAmount: Float!
     previousAmount: Float!
-    change: Int!
+    change: Float!
     currentPeriod: DateTimeRangeValue!
     previousPeriod: DateTimeRangeValue!
   }

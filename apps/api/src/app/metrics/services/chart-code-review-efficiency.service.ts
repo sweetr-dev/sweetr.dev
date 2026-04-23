@@ -15,6 +15,11 @@ import {
 import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
 
+const kpiPercentChange = (current: number, previous: number) =>
+  previous !== 0
+    ? parseFloat((((current - previous) / previous) * 100).toFixed(2))
+    : 0;
+
 const buildCodeReviewFilters = (
   filters: CodeReviewEfficiencyChartFilters
 ): CodeReviewEfficiencyFiltersResult => {
@@ -178,10 +183,7 @@ export const getKpiTimeToFirstReview = async (
 
   const currentAmount = Math.floor(currentResult[0]?.value || 0);
   const previousAmount = Math.floor(previousResult[0]?.value || 0);
-  const change =
-    previousAmount !== 0
-      ? Math.round(((currentAmount - previousAmount) / previousAmount) * 100)
-      : 0;
+  const change = kpiPercentChange(currentAmount, previousAmount);
 
   return {
     currentAmount: BigInt(currentAmount),
@@ -231,10 +233,7 @@ export const getKpiTimeToApproval = async (
 
   const currentAmount = Math.floor(currentResult[0]?.value || 0);
   const previousAmount = Math.floor(previousResult[0]?.value || 0);
-  const change =
-    previousAmount !== 0
-      ? Math.round(((currentAmount - previousAmount) / previousAmount) * 100)
-      : 0;
+  const change = kpiPercentChange(currentAmount, previousAmount);
 
   return {
     currentAmount: BigInt(currentAmount),
@@ -283,10 +282,7 @@ export const getKpiAvgCommentsPerPr = async (
 
   const currentAmount = Math.round((currentResult[0]?.value || 0) * 10) / 10;
   const previousAmount = Math.round((previousResult[0]?.value || 0) * 10) / 10;
-  const change =
-    previousAmount !== 0
-      ? Math.round(((currentAmount - previousAmount) / previousAmount) * 100)
-      : 0;
+  const change = kpiPercentChange(currentAmount, previousAmount);
 
   return {
     currentAmount,
@@ -347,10 +343,7 @@ export const getKpiPrsWithoutApproval = async (
 
   const currentAmount = Number(currentResult[0]?.count ?? 0);
   const previousAmount = Number(previousResult[0]?.count ?? 0);
-  const change =
-    previousAmount !== 0
-      ? Math.round(((currentAmount - previousAmount) / previousAmount) * 100)
-      : 0;
+  const change = kpiPercentChange(currentAmount, previousAmount);
 
   return {
     currentAmount,
