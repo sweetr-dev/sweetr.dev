@@ -236,7 +236,7 @@ export const getChangeFailureRateMetric = async (
 
   const allJoins = [
     ...joins,
-    Prisma.sql`LEFT JOIN "Incident" i ON i."causeDeploymentId" = d."id" AND i."workspaceId" = d."workspaceId"`,
+    Prisma.sql`LEFT JOIN "Incident" i ON i."causeDeploymentId" = d."id" AND i."workspaceId" = d."workspaceId" AND i."archivedAt" IS NULL`,
   ];
 
   const chartConditions = [
@@ -286,7 +286,7 @@ export const getChangeFailureRateMetric = async (
 
     const allJoins = [
       ...joins,
-      Prisma.sql`LEFT JOIN "Incident" i ON i."causeDeploymentId" = d."id" AND i."workspaceId" = d."workspaceId"`,
+      Prisma.sql`LEFT JOIN "Incident" i ON i."causeDeploymentId" = d."id" AND i."workspaceId" = d."workspaceId" AND i."archivedAt" IS NULL`,
     ];
 
     conditions.push(
@@ -488,7 +488,7 @@ const buildIncidentFilters = (
   conditions.push(Prisma.sql`i."resolvedAt" IS NOT NULL`);
 
   joins.push(
-    Prisma.sql`INNER JOIN "Deployment" cd ON i."causeDeploymentId" = cd."id" AND cd."workspaceId" = i."workspaceId"`
+    Prisma.sql`INNER JOIN "Deployment" cd ON i."causeDeploymentId" = cd."id" AND cd."workspaceId" = i."workspaceId" AND cd."archivedAt" IS NULL`
   );
 
   if (filters.environmentIds && filters.environmentIds.length > 0) {

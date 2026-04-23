@@ -1615,6 +1615,51 @@ describe("DORA Metrics", () => {
       // Should only see workspace 1's data: 1 deployment, 1 incident = 100%
       expect(result.currentAmount).toBeCloseTo(100, 1);
     });
+
+    it("excludes archived incidents from the failure rate", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      const archived = await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T16:00:00Z"),
+      });
+      await getPrisma(ctx.workspaceId).incident.update({
+        where: { id: archived.incidentId },
+        data: { archivedAt: new Date("2024-01-16T00:00:00Z") },
+      });
+
+      const result = await getChangeFailureRateMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result.currentAmount).toBe(0);
+    });
   });
 
   describe("Mean Time To Recover (MTTR)", () => {
@@ -2324,6 +2369,51 @@ describe("DORA Metrics", () => {
 
       // Should only see workspace 1's data: 2 hours = 7,200,000 ms
       expect(result.currentAmount).toBe(BigInt(7200000));
+    });
+
+    it("excludes incidents whose cause deployment is archived", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T10:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T11:00:00Z"),
+        resolvedAt: new Date("2024-01-15T13:00:00Z"),
+      });
+      await getPrisma(ctx.workspaceId).deployment.update({
+        where: { id: deployment.deploymentId },
+        data: { archivedAt: new Date("2024-01-16T00:00:00Z") },
+      });
+
+      const result = await getMeanTimeToRecoverMetric({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result.currentAmount).toBe(BigInt(0));
     });
   });
 
