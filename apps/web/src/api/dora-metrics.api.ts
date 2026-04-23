@@ -110,6 +110,15 @@ export const useDoraMetricsQuery = (
                       to
                     }
                   }
+                  teamOverview(input: $input) {
+                    teamId
+                    teamName
+                    teamIcon
+                    leadTimeMs
+                    deploymentCount
+                    changeFailureRate
+                    meanTimeToRecoverMs
+                  }
                 }
               }
             }

@@ -10,7 +10,6 @@ import {
 import { CodeReviewTeamOverviewRow } from "@sweetr/graphql-types/frontend/graphql";
 import { ThSort } from "../../../../../components/th-sort";
 import { getAbbreviatedDuration } from "../../../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 
 type SortField =
   | "teamName"
@@ -44,7 +43,6 @@ const COLUMNS: { field: SortField; label: string; align: "left" | "right" }[] =
   ];
 
 export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
-  const searchParams = useFilterSearchParameters();
   const [sortField, setSortField] = useState<SortField>("teamName");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
@@ -118,13 +116,6 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
     };
   };
 
-  const buildTeamLink = (teamId: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("team");
-    params.append("team", teamId);
-    return `?${params.toString()}`;
-  };
-
   if (!hasAnyData) return null;
 
   return (
@@ -186,13 +177,7 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
             {teamRows.map((row) => {
               const formatted = formatRow(row);
               return (
-                <Table.Tr
-                  key={row.teamId}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    window.location.search = buildTeamLink(row.teamId!);
-                  }}
-                >
+                <Table.Tr key={row.teamId}>
                   <Table.Td>
                     <Group gap="xs" wrap="nowrap">
                       <Text size="sm" component="span">

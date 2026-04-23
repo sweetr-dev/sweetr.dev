@@ -33,11 +33,10 @@ export interface MetricResult {
   previousPeriod: { from: string; to: string };
 }
 
-export interface FailureRateResult
-  extends Pick<
-    MetricResult,
-    "columns" | "change" | "currentPeriod" | "previousPeriod"
-  > {
+export interface FailureRateResult extends Pick<
+  MetricResult,
+  "columns" | "change" | "currentPeriod" | "previousPeriod"
+> {
   data: number[];
   currentAmount: number;
   previousAmount: number;
@@ -46,3 +45,13 @@ export interface FailureRateResult
 export interface DeploymentFrequencyResult extends MetricResult {
   avg: number;
 }
+
+export type DoraTeamOverviewSqlRow = {
+  team_id: number;
+  team_name: string;
+  team_icon: string;
+  avg_lead_ms: number | null;
+  deployment_count: bigint;
+  change_failure_rate: number | null;
+  avg_mttr_ms: number | null;
+};

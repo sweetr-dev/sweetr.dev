@@ -32,6 +32,7 @@ export const useDoraMetrics = ({
       changeFailureRate: dora?.changeFailureRate,
       meanTimeToRecover: dora?.meanTimeToRecover,
     },
+    teamOverview: dora?.teamOverview,
     isLoading,
   };
 };

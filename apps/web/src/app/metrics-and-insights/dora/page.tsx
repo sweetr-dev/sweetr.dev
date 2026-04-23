@@ -29,7 +29,9 @@ import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconDeployment, IconTeam } from "../../../providers/icon.provider";
 import { useScreenSize } from "../../../providers/screen.provider";
 import { useWorkspace } from "../../../providers/workspace.provider";
+import { LoadableContent } from "../../../components/loadable-content";
 import { CardDoraMetric } from "./components/card-dora-metric/dora-card-stat";
+import { TableTeamOverview } from "./components/table-team-overview";
 import { DoraMetricFilters, DoraMetricOutletContext } from "./types";
 import { useDoraMetrics } from "./useDoraMetrics";
 import { useFeatureAdoption } from "../../../providers/feature-adoption.provider";
@@ -53,7 +55,7 @@ export const DoraPage = () => {
     },
   });
 
-  const { metrics, isLoading } = useDoraMetrics({
+  const { metrics, teamOverview, isLoading } = useDoraMetrics({
     workspaceId: workspace.id,
     filters: filters.values,
   });
@@ -223,6 +225,14 @@ export const DoraPage = () => {
           }
         />
       </Box>
+
+      <Divider mt="xl" mb="md" label="Team Overview" labelPosition="left" />
+
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={200} />}
+        content={<TableTeamOverview data={teamOverview} />}
+      />
     </PageContainer>
   );
 };
