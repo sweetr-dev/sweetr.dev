@@ -38,41 +38,42 @@ export const useCodeReviewEfficiencyMetricsQuery = (
                     columns
                     data
                   }
-                  prsWithoutApproval(input: $input)
-                  kpiTimeToFirstReview(input: $input) {
-                    currentAmount
-                    previousAmount
-                    change
-                    previousPeriod {
-                      from
-                      to
+                  kpi(input: $input) {
+                    timeToFirstReview {
+                      currentAmount
+                      previousAmount
+                      change
+                      previousPeriod {
+                        from
+                        to
+                      }
                     }
-                  }
-                  kpiTimeToApproval(input: $input) {
-                    currentAmount
-                    previousAmount
-                    change
-                    previousPeriod {
-                      from
-                      to
+                    timeToApproval {
+                      currentAmount
+                      previousAmount
+                      change
+                      previousPeriod {
+                        from
+                        to
+                      }
                     }
-                  }
-                  kpiAvgCommentsPerPr(input: $input) {
-                    currentAmount
-                    previousAmount
-                    change
-                    previousPeriod {
-                      from
-                      to
+                    avgCommentsPerPr {
+                      currentAmount
+                      previousAmount
+                      change
+                      previousPeriod {
+                        from
+                        to
+                      }
                     }
-                  }
-                  kpiPrsWithoutApproval(input: $input) {
-                    currentAmount
-                    previousAmount
-                    change
-                    previousPeriod {
-                      from
-                      to
+                    prsWithoutApproval {
+                      currentAmount
+                      previousAmount
+                      change
+                      previousPeriod {
+                        from
+                        to
+                      }
                     }
                   }
                   sizeCommentCorrelation(input: $input) {

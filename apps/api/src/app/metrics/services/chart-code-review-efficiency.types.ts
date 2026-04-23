@@ -1,4 +1,14 @@
 import { Prisma } from "@prisma/client";
+import { Period } from "../../../graphql-types";
+
+export interface CodeReviewEfficiencyChartFilters {
+  workspaceId: number;
+  startDate: string;
+  endDate: string;
+  period: Period;
+  teamIds?: number[];
+  repositoryIds?: number[];
+}
 
 export type CodeReviewDistributionRow = {
   source: string;

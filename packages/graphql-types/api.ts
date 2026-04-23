@@ -270,14 +270,18 @@ export type CodeReviewEfficiencyInput = {
   teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
 };
 
+export type CodeReviewEfficiencyKpi = {
+  __typename?: 'CodeReviewEfficiencyKpi';
+  avgCommentsPerPr: CodeReviewFloatKpi;
+  prsWithoutApproval: CodeReviewCountKpi;
+  timeToApproval: CodeReviewDurationKpi;
+  timeToFirstReview: CodeReviewDurationKpi;
+};
+
 export type CodeReviewEfficiencyMetrics = {
   __typename?: 'CodeReviewEfficiencyMetrics';
   codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
-  kpiAvgCommentsPerPr?: Maybe<CodeReviewFloatKpi>;
-  kpiPrsWithoutApproval?: Maybe<CodeReviewCountKpi>;
-  kpiTimeToApproval?: Maybe<CodeReviewDurationKpi>;
-  kpiTimeToFirstReview?: Maybe<CodeReviewDurationKpi>;
-  prsWithoutApproval?: Maybe<Scalars['Int']['output']>;
+  kpi: CodeReviewEfficiencyKpi;
   reviewTurnaroundTime?: Maybe<NumericChartData>;
   sizeCommentCorrelation?: Maybe<ScatterChartData>;
   teamOverview?: Maybe<Array<CodeReviewTeamOverviewRow>>;
@@ -290,27 +294,7 @@ export type CodeReviewEfficiencyMetricsCodeReviewDistributionArgs = {
 };
 
 
-export type CodeReviewEfficiencyMetricsKpiAvgCommentsPerPrArgs = {
-  input: CodeReviewEfficiencyInput;
-};
-
-
-export type CodeReviewEfficiencyMetricsKpiPrsWithoutApprovalArgs = {
-  input: CodeReviewEfficiencyInput;
-};
-
-
-export type CodeReviewEfficiencyMetricsKpiTimeToApprovalArgs = {
-  input: CodeReviewEfficiencyInput;
-};
-
-
-export type CodeReviewEfficiencyMetricsKpiTimeToFirstReviewArgs = {
-  input: CodeReviewEfficiencyInput;
-};
-
-
-export type CodeReviewEfficiencyMetricsPrsWithoutApprovalArgs = {
+export type CodeReviewEfficiencyMetricsKpiArgs = {
   input: CodeReviewEfficiencyInput;
 };
 
@@ -989,21 +973,11 @@ export type PullRequestFlowInput = {
 
 export type PullRequestFlowMetrics = {
   __typename?: 'PullRequestFlowMetrics';
-  cycleTime?: Maybe<NumericChartData>;
   cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
   pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
   sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
   teamOverview?: Maybe<Array<TeamPrFlowOverviewRow>>;
   throughput?: Maybe<NumericSeriesChartData>;
-  timeToApproval?: Maybe<NumericChartData>;
-  timeToCode?: Maybe<NumericChartData>;
-  timeToFirstReview?: Maybe<NumericChartData>;
-  timeToMerge?: Maybe<NumericChartData>;
-};
-
-
-export type PullRequestFlowMetricsCycleTimeArgs = {
-  input: PullRequestFlowInput;
 };
 
 
@@ -1028,26 +1002,6 @@ export type PullRequestFlowMetricsTeamOverviewArgs = {
 
 
 export type PullRequestFlowMetricsThroughputArgs = {
-  input: PullRequestFlowInput;
-};
-
-
-export type PullRequestFlowMetricsTimeToApprovalArgs = {
-  input: PullRequestFlowInput;
-};
-
-
-export type PullRequestFlowMetricsTimeToCodeArgs = {
-  input: PullRequestFlowInput;
-};
-
-
-export type PullRequestFlowMetricsTimeToFirstReviewArgs = {
-  input: PullRequestFlowInput;
-};
-
-
-export type PullRequestFlowMetricsTimeToMergeArgs = {
   input: PullRequestFlowInput;
 };
 
@@ -1731,6 +1685,7 @@ export type ResolversTypes = {
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
   CodeReviewDurationKpi: ResolverTypeWrapper<DeepPartial<CodeReviewDurationKpi>>;
   CodeReviewEfficiencyInput: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyInput>>;
+  CodeReviewEfficiencyKpi: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyKpi>>;
   CodeReviewEfficiencyMetrics: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyMetrics>>;
   CodeReviewFloatKpi: ResolverTypeWrapper<DeepPartial<CodeReviewFloatKpi>>;
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
@@ -1873,6 +1828,7 @@ export type ResolversParentTypes = {
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
   CodeReviewDurationKpi: DeepPartial<CodeReviewDurationKpi>;
   CodeReviewEfficiencyInput: DeepPartial<CodeReviewEfficiencyInput>;
+  CodeReviewEfficiencyKpi: DeepPartial<CodeReviewEfficiencyKpi>;
   CodeReviewEfficiencyMetrics: DeepPartial<CodeReviewEfficiencyMetrics>;
   CodeReviewFloatKpi: DeepPartial<CodeReviewFloatKpi>;
   CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
@@ -2108,13 +2064,16 @@ export type CodeReviewDurationKpiResolvers<ContextType = GraphQLContext, ParentT
   previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
 };
 
+export type CodeReviewEfficiencyKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewEfficiencyKpi'] = ResolversParentTypes['CodeReviewEfficiencyKpi']> = {
+  avgCommentsPerPr?: Resolver<ResolversTypes['CodeReviewFloatKpi'], ParentType, ContextType>;
+  prsWithoutApproval?: Resolver<ResolversTypes['CodeReviewCountKpi'], ParentType, ContextType>;
+  timeToApproval?: Resolver<ResolversTypes['CodeReviewDurationKpi'], ParentType, ContextType>;
+  timeToFirstReview?: Resolver<ResolversTypes['CodeReviewDurationKpi'], ParentType, ContextType>;
+};
+
 export type CodeReviewEfficiencyMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewEfficiencyMetrics'] = ResolversParentTypes['CodeReviewEfficiencyMetrics']> = {
   codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsCodeReviewDistributionArgs, 'input'>>;
-  kpiAvgCommentsPerPr?: Resolver<Maybe<ResolversTypes['CodeReviewFloatKpi']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiAvgCommentsPerPrArgs, 'input'>>;
-  kpiPrsWithoutApproval?: Resolver<Maybe<ResolversTypes['CodeReviewCountKpi']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiPrsWithoutApprovalArgs, 'input'>>;
-  kpiTimeToApproval?: Resolver<Maybe<ResolversTypes['CodeReviewDurationKpi']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiTimeToApprovalArgs, 'input'>>;
-  kpiTimeToFirstReview?: Resolver<Maybe<ResolversTypes['CodeReviewDurationKpi']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiTimeToFirstReviewArgs, 'input'>>;
-  prsWithoutApproval?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsPrsWithoutApprovalArgs, 'input'>>;
+  kpi?: Resolver<ResolversTypes['CodeReviewEfficiencyKpi'], ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiArgs, 'input'>>;
   reviewTurnaroundTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsReviewTurnaroundTimeArgs, 'input'>>;
   sizeCommentCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsSizeCommentCorrelationArgs, 'input'>>;
   teamOverview?: Resolver<Maybe<Array<ResolversTypes['CodeReviewTeamOverviewRow']>>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsTeamOverviewArgs, 'input'>>;
@@ -2385,16 +2344,11 @@ export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, Paren
 };
 
 export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestFlowMetrics'] = ResolversParentTypes['PullRequestFlowMetrics']> = {
-  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeArgs, 'input'>>;
   cycleTimeBreakdown?: Resolver<Maybe<ResolversTypes['CycleTimeBreakdownChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeBreakdownArgs, 'input'>>;
   pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
   sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
   teamOverview?: Resolver<Maybe<Array<ResolversTypes['TeamPrFlowOverviewRow']>>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTeamOverviewArgs, 'input'>>;
   throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
-  timeToApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToApprovalArgs, 'input'>>;
-  timeToCode?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToCodeArgs, 'input'>>;
-  timeToFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToFirstReviewArgs, 'input'>>;
-  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTimeToMergeArgs, 'input'>>;
 };
 
 export type PullRequestMergedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestMergedEvent'] = ResolversParentTypes['PullRequestMergedEvent']> = {
@@ -2608,6 +2562,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
   CodeReviewDurationKpi?: CodeReviewDurationKpiResolvers<ContextType>;
+  CodeReviewEfficiencyKpi?: CodeReviewEfficiencyKpiResolvers<ContextType>;
   CodeReviewEfficiencyMetrics?: CodeReviewEfficiencyMetricsResolvers<ContextType>;
   CodeReviewFloatKpi?: CodeReviewFloatKpiResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;

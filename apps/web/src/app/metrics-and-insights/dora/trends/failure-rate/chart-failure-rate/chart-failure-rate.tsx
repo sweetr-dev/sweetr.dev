@@ -49,10 +49,7 @@ export const ChartFailureRate = ({
           html += `<div style="margin: 0 -15px; padding: 5px 15px; border-top:1px solid #404040;">`;
           for (const p of params) {
             const raw = p.value;
-            const display =
-              raw == null || Array.isArray(raw)
-                ? ""
-                : `${raw}%`;
+            const display = raw == null || Array.isArray(raw) ? "" : `${raw}%`;
             const color = (p.color as string) || "#8ce99a";
             const sName = p.seriesName ?? "";
             html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">`;
@@ -82,10 +79,10 @@ export const ChartFailureRate = ({
         show: false,
       },
       grid: {
-        left: "1%",
-        right: "4%",
-        bottom: "3%",
-        top: "4%",
+        left: "0",
+        right: "0",
+        bottom: "40px",
+        top: "15px",
         containLabel: true,
       },
       xAxis: {
@@ -114,9 +111,9 @@ export const ChartFailureRate = ({
         emphasis: { focus: "series" },
         color: series.color || "#8ce99a",
         symbolSize: 7,
-        lineStyle: { width: 3 },
+        lineStyle: { width: 2 },
         areaStyle: {
-          opacity: 0.3,
+          opacity: 0.2,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: series.color || "#8ce99a" },
             { offset: 1, color: "rgba(1, 191, 236, 0)" },

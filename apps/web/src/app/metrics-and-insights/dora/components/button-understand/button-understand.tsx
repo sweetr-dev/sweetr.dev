@@ -8,7 +8,7 @@ interface ButtonUnderstandProps {
 
 export const ButtonUnderstand = ({ children }: ButtonUnderstandProps) => {
   return (
-    <HoverCard width={300} withArrow position="right">
+    <HoverCard width={380} withArrow position="bottom-end">
       <HoverCard.Target>
         <Button
           bg="dark.7"

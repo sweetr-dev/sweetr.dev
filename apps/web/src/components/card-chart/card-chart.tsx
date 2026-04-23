@@ -1,10 +1,19 @@
 import { ReactNode } from "react";
-import { Paper, Group, Text, Divider, Stack, HoverCard } from "@mantine/core";
+import {
+  Paper,
+  Group,
+  Text,
+  Divider,
+  Stack,
+  HoverCard,
+  ActionIcon,
+  PaperProps,
+} from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 
-interface ChartCardProps {
+interface ChartCardProps extends PaperProps {
   title: string;
-  description: string;
+  description: ReactNode;
   children: ReactNode;
   height?: number;
   style?: React.CSSProperties;
@@ -16,27 +25,46 @@ export const CardChart = ({
   children,
   height = 340,
   style,
+  ...props
 }: ChartCardProps) => {
+  const descriptionNode =
+    typeof description === "string" ? (
+      <Text size="sm">{description}</Text>
+    ) : (
+      description
+    );
   return (
     <Paper
       withBorder
       h={height}
       p={0}
       display="flex"
+      flex="1"
       style={{ flexDirection: "column", ...style }}
+      {...props}
     >
-      <Group p="sm" py={8} justify="space-between" wrap="nowrap">
-        <Text fw={500} c="dark.0" tt="uppercase" lineClamp={1}>
+      <Group
+        p="sm"
+        py="xs"
+        justify="space-between"
+        wrap="nowrap"
+        align="center"
+      >
+        <Text size="sm" c="dimmed" tt="uppercase" fw={500} lh={1}>
           {title}
         </Text>
 
-        <HoverCard position="bottom-end" width={280} shadow="md" withArrow>
+        <HoverCard position="bottom-end" width={360} shadow="md" withArrow>
           <HoverCard.Target>
-            <IconInfoCircle size={16} stroke={2} />
+            <ActionIcon
+              size="lg"
+              variant="subtle"
+              color="var(--mantine-color-text)"
+            >
+              <IconInfoCircle stroke={2} size={16} />
+            </ActionIcon>
           </HoverCard.Target>
-          <HoverCard.Dropdown>
-            <Text size="sm">{description}</Text>
-          </HoverCard.Dropdown>
+          <HoverCard.Dropdown>{descriptionNode}</HoverCard.Dropdown>
         </HoverCard>
       </Group>
 

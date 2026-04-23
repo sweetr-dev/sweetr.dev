@@ -1,4 +1,12 @@
-import { Box, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import {
+  Box,
+  Group,
+  Paper,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
 import { useOutletContext } from "react-router";
@@ -42,14 +50,49 @@ export const DoraLeadTimePage = () => {
         <ButtonUnderstand>
           <Stack gap="xs">
             <Text size="sm">
-              Lead Time measures how long it takes for code to go from first
-              commit to production. Shorter lead times mean your team can
-              deliver value faster and respond quickly to customer needs.
+              Average time from <b>first commit</b> of a PR to the moment
+              it's <b>deployed to production</b>. For each deployment, we
+              take the earliest commit across all PRs it included and
+              measure until <code>deployedAt</code>; this chart plots the
+              average per period.
             </Text>
+            <Title order={5}>Why it matters</Title>
             <Text size="sm">
-              Use the breakdown below to identify bottlenecks: Is code waiting
-              too long for review? Are approvals slow? This helps you focus
-              improvement efforts where they matter most.
+              Lead time is the end-to-end "code written → code serving
+              users" clock. It captures every source of delay: slow
+              reviews, approval drought, flaky CI, batched releases. The
+              breakdown below splits this total into its phases so you can
+              attack the biggest slice first.
+            </Text>
+            <Title order={5}>DORA benchmarks</Title>
+            <Text size="sm" component="ul" pl="md" m={0}>
+              <li>
+                <b>Elite</b>: less than one day
+              </li>
+              <li>
+                <b>High</b>: between one day and one week
+              </li>
+              <li>
+                <b>Medium</b>: between one week and one month
+              </li>
+              <li>
+                <b>Low</b>: more than one month
+              </li>
+            </Text>
+            <Title order={5}>What to look for</Title>
+            <Text size="sm" component="ul" pl="md" m={0}>
+              <li>
+                A single stage (review, approval, merge) dominating the
+                breakdown = clear target for investment.
+              </li>
+              <li>
+                Lead time creeping up while <b>PR size</b> stays flat =
+                review capacity problem, not an authoring problem.
+              </li>
+              <li>
+                Large gap between merge and deploy = release cadence,
+                staging bottleneck, or manual promotion steps.
+              </li>
             </Text>
           </Stack>
         </ButtonUnderstand>

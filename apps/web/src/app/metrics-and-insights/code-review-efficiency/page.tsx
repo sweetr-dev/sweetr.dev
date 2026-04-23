@@ -1,24 +1,15 @@
 import {
   Divider,
   Group,
-  Paper,
   SimpleGrid,
   Skeleton,
-  Table,
+  Stack,
+  Text,
+  Title,
 } from "@mantine/core";
 import { LoadableContent } from "../../../components/loadable-content";
-import { useForm } from "@mantine/form";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
-import {
-  addDays,
-  addMonths,
-  addQuarters,
-  addWeeks,
-  addYears,
-  endOfToday,
-} from "date-fns";
-import { useCallback } from "react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
@@ -31,118 +22,30 @@ import {
 import {
   getAbbreviatedDuration,
   parseNullableISO,
-  thirtyDaysAgo,
 } from "../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { useCodeReviewEfficiencyMetricsQuery } from "../../../api/code-review-efficiency-metrics.api";
 import { PageEmptyState } from "../../../components/page-empty-state";
-import { AvatarUser } from "../../../components/avatar-user";
-import { ChartCodeReviewDistribution } from "./components/chart-code-review-distribution";
 import { CardChart } from "../../../components/card-chart";
 import { CardKpi } from "../../../components/card-kpi";
+import { ChartCodeReviewDistribution } from "./components/chart-code-review-distribution";
 import { ChartReviewSpeed } from "./components/chart-review-speed";
 import { ChartSizeCommentCorrelation } from "./components/chart-size-comment-correlation";
 import { TableTeamOverview } from "./components/table-team-overview";
-import { CodeReviewEfficiencyFilters } from "./types";
+import { TableReviewDistribution } from "./components/table-review-distribution";
+import { useCodeReviewEfficiencyPage } from "./useCodeReviewEfficiencyPage";
 
 export const CodeReviewEfficiencyPage = () => {
-  const searchParams = useFilterSearchParameters();
-  const { workspace } = useWorkspace();
-
-  const filters = useForm<CodeReviewEfficiencyFilters>({
-    initialValues: {
-      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
-      to: searchParams.get("to") || endOfToday().toISOString(),
-      teamIds: searchParams.getAll<string[]>("team") || [],
-      repositoryIds: searchParams.getAll<string[]>("repository") || [],
-      period: (searchParams.get("period") as Period) || Period.WEEKLY,
-    },
-  });
-
-  const queryInput = {
-    dateRange: {
-      from: filters.values.from,
-      to: filters.values.to,
-    },
-    period: filters.values.period,
-    teamIds: filters.values.teamIds.length ? filters.values.teamIds : undefined,
-    repositoryIds: filters.values.repositoryIds.length
-      ? filters.values.repositoryIds
-      : undefined,
-  };
-
-  const queryArgs = { workspaceId: workspace.id, input: queryInput };
-
-  const { data, isLoading } = useCodeReviewEfficiencyMetricsQuery(queryArgs);
-  const metrics = data?.workspace.metrics?.codeReviewEfficiency;
-
-  const codeReviewDistribution = metrics?.codeReviewDistribution;
-  const isDistributionEmpty =
-    !codeReviewDistribution?.entities.length && !isLoading;
-
-  const reviewers = codeReviewDistribution?.entities.filter(
-    (entity) => entity.reviewCount !== null,
-  );
-
-  const buildPullRequestsUrl = useCallback(
-    (overrides?: {
-      from?: string;
-      to?: string;
-      dateType?: "created" | "completed";
-    }) => {
-      const params = new URLSearchParams();
-      const from = overrides?.from ?? filters.values.from;
-      const to = overrides?.to ?? filters.values.to;
-      const dateType = overrides?.dateType ?? "completed";
-
-      const fromKey =
-        dateType === "created" ? "createdAtFrom" : "completedAtFrom";
-      const toKey = dateType === "created" ? "createdAtTo" : "completedAtTo";
-
-      if (from) params.set(fromKey, from);
-      if (to) params.set(toKey, to);
-
-      for (const id of filters.values.teamIds) {
-        params.append("team", id);
-      }
-      for (const id of filters.values.repositoryIds) {
-        params.append("repository", id);
-      }
-
-      const qs = params.toString();
-      return `/systems/pull-requests${qs ? `?${qs}` : ""}`;
-    },
-    [filters.values],
-  );
-
-  const getPeriodEnd = useCallback(
-    (start: Date) => {
-      const periodEndFn: Record<Period, (d: Date) => Date> = {
-        [Period.DAILY]: (d) => addDays(d, 1),
-        [Period.WEEKLY]: (d) => addWeeks(d, 1),
-        [Period.MONTHLY]: (d) => addMonths(d, 1),
-        [Period.QUARTERLY]: (d) => addQuarters(d, 1),
-        [Period.YEARLY]: (d) => addYears(d, 1),
-      };
-      return periodEndFn[filters.values.period](start);
-    },
-    [filters.values.period],
-  );
-
-  const handleColumnClick = useCallback(
-    (columnDate: string) => {
-      const start = new Date(columnDate);
-      const end = getPeriodEnd(start);
-      const url = buildPullRequestsUrl({
-        from: start.toISOString(),
-        to: end.toISOString(),
-      });
-      window.open(url, "_blank", "noopener,noreferrer");
-    },
-    [getPeriodEnd, buildPullRequestsUrl],
-  );
+  const {
+    searchParams,
+    filters,
+    isLoading,
+    metrics,
+    kpi,
+    codeReviewDistribution,
+    isDistributionEmpty,
+    reviewers,
+    handleColumnClick,
+  } = useCodeReviewEfficiencyPage();
 
   return (
     <PageContainer size="lg">
@@ -223,68 +126,64 @@ export const CodeReviewEfficiencyPage = () => {
             <CardKpi
               name="Time to First Review"
               amount={
-                metrics?.kpiTimeToFirstReview?.currentAmount
+                kpi?.timeToFirstReview?.currentAmount
                   ? getAbbreviatedDuration(
-                      Number(metrics.kpiTimeToFirstReview.currentAmount),
+                      Number(kpi.timeToFirstReview.currentAmount),
                     )
                   : "0s"
               }
               previousAmount={
-                metrics?.kpiTimeToFirstReview?.previousAmount
+                kpi?.timeToFirstReview?.previousAmount
                   ? getAbbreviatedDuration(
-                      Number(metrics.kpiTimeToFirstReview.previousAmount),
+                      Number(kpi.timeToFirstReview.previousAmount),
                     )
                   : "0s"
               }
-              change={metrics?.kpiTimeToFirstReview?.change ?? 0}
+              change={kpi?.timeToFirstReview?.change ?? 0}
               higherIsBetter={false}
-              previousPeriod={metrics?.kpiTimeToFirstReview?.previousPeriod}
+              previousPeriod={kpi?.timeToFirstReview?.previousPeriod}
             />
             <CardKpi
               name="Time to Approve"
               amount={
-                metrics?.kpiTimeToApproval?.currentAmount
+                kpi?.timeToApproval?.currentAmount
                   ? getAbbreviatedDuration(
-                      Number(metrics.kpiTimeToApproval.currentAmount),
+                      Number(kpi.timeToApproval.currentAmount),
                     )
                   : "0s"
               }
               previousAmount={
-                metrics?.kpiTimeToApproval?.previousAmount
+                kpi?.timeToApproval?.previousAmount
                   ? getAbbreviatedDuration(
-                      Number(metrics.kpiTimeToApproval.previousAmount),
+                      Number(kpi.timeToApproval.previousAmount),
                     )
                   : "0s"
               }
-              change={metrics?.kpiTimeToApproval?.change ?? 0}
+              change={kpi?.timeToApproval?.change ?? 0}
               higherIsBetter={false}
-              previousPeriod={metrics?.kpiTimeToApproval?.previousPeriod}
+              previousPeriod={kpi?.timeToApproval?.previousPeriod}
             />
             <CardKpi
               name="Avg Comments per PR"
-              amount={
-                metrics?.kpiAvgCommentsPerPr?.currentAmount?.toFixed(1) ?? "0"
-              }
+              amount={kpi?.avgCommentsPerPr?.currentAmount?.toFixed(1) ?? "0"}
               previousAmount={
-                metrics?.kpiAvgCommentsPerPr?.previousAmount?.toFixed(1) ?? "0"
+                kpi?.avgCommentsPerPr?.previousAmount?.toFixed(1) ?? "0"
               }
-              change={metrics?.kpiAvgCommentsPerPr?.change ?? 0}
+              change={kpi?.avgCommentsPerPr?.change ?? 0}
               higherIsBetter={true}
-              previousPeriod={metrics?.kpiAvgCommentsPerPr?.previousPeriod}
+              previousPeriod={kpi?.avgCommentsPerPr?.previousPeriod}
             />
             <CardKpi
               name="Merged Without Approval"
-              amount={
-                metrics?.kpiPrsWithoutApproval?.currentAmount?.toString() ?? "0"
-              }
+              amount={kpi?.prsWithoutApproval?.currentAmount?.toString() ?? "0"}
               previousAmount={
-                metrics?.kpiPrsWithoutApproval?.previousAmount
-                  ? `${metrics.kpiPrsWithoutApproval.previousAmount} PRs`
+                kpi?.prsWithoutApproval?.previousAmount
+                  ? `${kpi.prsWithoutApproval.previousAmount} PRs`
                   : "0 PRs"
               }
-              change={metrics?.kpiPrsWithoutApproval?.change ?? 0}
+              change={kpi?.prsWithoutApproval?.change ?? 0}
               higherIsBetter={false}
-              previousPeriod={metrics?.kpiPrsWithoutApproval?.previousPeriod}
+              previousPeriod={kpi?.prsWithoutApproval?.previousPeriod}
             />
           </Group>
         }
@@ -294,12 +193,42 @@ export const CodeReviewEfficiencyPage = () => {
 
       <LoadableContent
         isLoading={isLoading}
-        whenLoading={<Skeleton h={340} />}
+        whenLoading={<Skeleton h={500} />}
         content={
           <CardChart
             title="Review Speed"
-            description="Average time from PR ready for review to first review (turnaround) and from first review to approval, per period."
+            description={
+              <Stack gap="xs">
+                <Text size="sm">
+                  Breaks down review latency into two stacked bars per period,
+                  using <b>merged PRs</b> only:
+                </Text>
+                <Text size="sm" component="ul" pl="md" m={0}>
+                  <li>
+                    <b>Time to First Review</b> — from PR marked ready for
+                    review to the first review submitted. Measures how long
+                    authors wait before someone picks their PR up.
+                  </li>
+                  <li>
+                    <b>Time to Approval</b> — from first review to the approval
+                    that unblocks merge. Measures how long review conversations
+                    drag on.
+                  </li>
+                </Text>
+                <Title order={5}>Why it matters</Title>
+                <Text size="sm">
+                  Long turnaround kills flow: context gets stale, authors start
+                  new work, and rebases pile up. Use this to spot weeks where
+                  reviews stalled and decide whether the bottleneck is getting
+                  attention (first review) or closing the loop (approval).
+                </Text>
+                <Text size="sm">
+                  Click a column to drill into the PRs merged in that period.
+                </Text>
+              </Stack>
+            }
             style={{ gridColumn: "span 2" }}
+            height={500}
           >
             <ChartReviewSpeed
               chartId="cr-review-speed"
@@ -324,12 +253,41 @@ export const CodeReviewEfficiencyPage = () => {
 
       <LoadableContent
         isLoading={isLoading}
-        whenLoading={<Skeleton h={450} />}
+        whenLoading={<Skeleton h={500} />}
         content={
           <CardChart
             title="PR Size vs Comments"
-            description="Scatter plot correlating PR size (lines changed) with comment count. Shows up to 2,000 PRs merged in the selected period (the most recently merged first). Helps identify whether larger PRs get proportionally more review attention."
-            height={450}
+            description={
+              <Stack gap="xs">
+                <Text size="sm">
+                  Scatter of <b>merged PRs</b> in the selected period, plotting{" "}
+                  <b>lines changed</b> (log scale) against{" "}
+                  <b>review comment count</b>. Each dot is one PR, colored by
+                  size bucket (XS → XL). Limited to the 2,000 most recently
+                  merged PRs for performance.
+                </Text>
+                <Title order={5}>Why it matters</Title>
+                <Text size="sm">
+                  A healthy review process scales attention with change size. If
+                  huge PRs cluster near zero comments, you're likely
+                  rubber-stamping risky changes. If tiny PRs attract long
+                  threads, you may have bikeshedding or unclear conventions.
+                </Text>
+                <Title order={5}>What to look for</Title>
+                <Text size="sm" component="ul" pl="md" m={0}>
+                  <li>
+                    <b>Bottom-right outliers</b> (big PR, no comments) — review
+                    blind spots worth auditing.
+                  </li>
+                  <li>
+                    <b>Top-left outliers</b> (tiny PR, many comments) —
+                    contentious changes or new contributors needing support.
+                  </li>
+                </Text>
+                <Text size="sm">Click any dot to open the PR on GitHub.</Text>
+              </Stack>
+            }
+            height={500}
           >
             <ChartSizeCommentCorrelation
               chartId="cr-size-comment-correlation"
@@ -346,60 +304,73 @@ export const CodeReviewEfficiencyPage = () => {
         labelPosition="left"
       />
 
-      <Paper withBorder h={500} p="xs" bg="dark.7">
-        <LoadableContent
-          isLoading={isLoading}
-          whenLoading={<Skeleton h="100%" />}
-          h="100%"
-          display="flex"
-          content={
+      <LoadableContent
+        isLoading={isLoading}
+        whenLoading={<Skeleton h={500} />}
+        display="flex"
+        content={
+          <CardChart
+            title="Review Distribution"
+            description={
+              <Stack gap="xs">
+                <Text size="sm">
+                  Graph of <b>who reviews whom</b> across the selected period.
+                  Nodes are people (reviewers and authors); edges represent
+                  review relationships, weighted by the number of reviews
+                  exchanged.
+                </Text>
+                <Text size="sm">
+                  Node size is relative to the <b>ideal per-reviewer load</b>{" "}
+                  (total reviews ÷ number of reviewers) — bigger than average
+                  means that person is pulling more weight than their share.
+                </Text>
+                <Title order={5}>Why it matters</Title>
+                <Text size="sm">
+                  Review load tends to concentrate on a few seniors, which
+                  creates bottlenecks, burnout risk, and knowledge silos. A
+                  healthy graph is dense and roughly evenly sized; an unhealthy
+                  one has a few giant hubs and many loose ends.
+                </Text>
+                <Title order={5}>What to use it for</Title>
+                <Text size="sm" component="ul" pl="md" m={0}>
+                  <li>
+                    Spot <b>review heroes</b> carrying the team and redistribute
+                    load.
+                  </li>
+                  <li>
+                    Detect <b>knowledge silos</b> — authors who only ever get
+                    reviewed by the same one or two people.
+                  </li>
+                  <li>
+                    Measure <b>cross-team review</b> by separating team members
+                    from external reviewers (shown in the tooltip).
+                  </li>
+                </Text>
+                <Text size="sm">
+                  Hover a node to see their full review breakdown; drag to pan
+                  and scroll to zoom.
+                </Text>
+              </Stack>
+            }
+            height={500}
+          >
             <ChartCodeReviewDistribution
               chartData={codeReviewDistribution}
               period={filters.values.period}
             />
-          }
-          style={
-            isDistributionEmpty
-              ? { alignItems: "center", justifyContent: "center" }
-              : undefined
-          }
-          isEmpty={isDistributionEmpty}
-          whenEmpty={<PageEmptyState message="No data available." />}
-        />
-      </Paper>
+          </CardChart>
+        }
+        style={
+          isDistributionEmpty
+            ? { alignItems: "center", justifyContent: "center" }
+            : undefined
+        }
+        isEmpty={isDistributionEmpty}
+        whenEmpty={<PageEmptyState message="No data available." />}
+      />
 
       {!isLoading && !isDistributionEmpty && (
-        <Paper mt="md" withBorder p="xs" bg="dark.7">
-          <Table>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Reviewer</Table.Th>
-                <Table.Th ta="right">Reviews</Table.Th>
-                <Table.Th ta="right">%</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {reviewers?.map((reviewer) => (
-                <Table.Tr key={reviewer.id}>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <AvatarUser
-                        src={reviewer.image}
-                        size={24}
-                        name={reviewer.name}
-                      />
-                      {reviewer.name}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td align="right">{reviewer.reviewCount}</Table.Td>
-                  <Table.Td align="right">
-                    {reviewer.reviewSharePercentage}%
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </Paper>
+        <TableReviewDistribution reviewers={reviewers ?? []} />
       )}
     </PageContainer>
   );

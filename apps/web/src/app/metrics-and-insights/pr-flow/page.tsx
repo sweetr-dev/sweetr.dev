@@ -1,17 +1,15 @@
-import { Divider, Group, SimpleGrid, Skeleton } from "@mantine/core";
+import {
+  Divider,
+  Group,
+  SimpleGrid,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { LoadableContent } from "../../../components/loadable-content";
-import { useForm } from "@mantine/form";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconCalendarFilled, IconRefresh } from "@tabler/icons-react";
-import {
-  addDays,
-  addMonths,
-  addWeeks,
-  addQuarters,
-  addYears,
-  endOfToday,
-} from "date-fns";
-import { useCallback } from "react";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
@@ -21,125 +19,25 @@ import {
   useRepositoryAsyncOptions,
   useTeamAsyncOptions,
 } from "../../../providers/async-options.provider";
-import {
-  parseNullableISO,
-  thirtyDaysAgo,
-} from "../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../providers/filter.provider";
+import { parseNullableISO } from "../../../providers/date.provider";
 import { IconRepository, IconTeam } from "../../../providers/icon.provider";
-import { useWorkspace } from "../../../providers/workspace.provider";
-import { usePrFlowMetricsQuery } from "../../../api/pr-flow-metrics.api";
+import { CardChart } from "../../../components/card-chart";
 import { ChartCycleTimeBreakdown } from "./components/chart-cycle-time-breakdown";
 import { ChartSizeDistribution } from "./components/chart-size-distribution";
 import { ChartThroughput } from "./components/chart-throughput";
-import type { ThroughputDateType } from "./components/chart-throughput/chart-throughput";
 import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correlation";
-import { CardChart } from "../../../components/card-chart";
 import { TableTeamOverview } from "./components/table-team-overview";
-import { PrFlowFilters } from "./types";
+import { usePrFlowPage } from "./usePrFlowPage";
 
 export const PrFlowPage = () => {
-  const searchParams = useFilterSearchParameters();
-  const { workspace } = useWorkspace();
-
-  const filters = useForm<PrFlowFilters>({
-    initialValues: {
-      from: searchParams.get("from") || thirtyDaysAgo().toISOString(),
-      to: searchParams.get("to") || endOfToday().toISOString(),
-      teamIds: searchParams.getAll<string[]>("team") || [],
-      repositoryIds: searchParams.getAll<string[]>("repository") || [],
-      period: (searchParams.get("period") as Period) || Period.WEEKLY,
-    },
-  });
-
-  const queryInput = {
-    dateRange: {
-      from: filters.values.from,
-      to: filters.values.to,
-    },
-    period: filters.values.period,
-    teamIds: filters.values.teamIds.length ? filters.values.teamIds : undefined,
-    repositoryIds: filters.values.repositoryIds.length
-      ? filters.values.repositoryIds
-      : undefined,
-  };
-
-  const queryArgs = { workspaceId: workspace.id, input: queryInput };
-
-  const { data, isLoading } = usePrFlowMetricsQuery(queryArgs);
-  const prFlow = data?.workspace.metrics?.prFlow;
-
-  const buildPullRequestsUrl = useCallback(
-    (overrides?: {
-      from?: string;
-      to?: string;
-      dateType?: "created" | "completed";
-    }) => {
-      const params = new URLSearchParams();
-      const from = overrides?.from ?? filters.values.from;
-      const to = overrides?.to ?? filters.values.to;
-      const dateType = overrides?.dateType ?? "completed";
-
-      const fromKey =
-        dateType === "created" ? "createdAtFrom" : "completedAtFrom";
-      const toKey = dateType === "created" ? "createdAtTo" : "completedAtTo";
-
-      if (from) params.set(fromKey, from);
-      if (to) params.set(toKey, to);
-
-      for (const id of filters.values.teamIds) {
-        params.append("team", id);
-      }
-      for (const id of filters.values.repositoryIds) {
-        params.append("repository", id);
-      }
-
-      const qs = params.toString();
-      return `/systems/pull-requests${qs ? `?${qs}` : ""}`;
-    },
-    [filters.values],
-  );
-
-  const getPeriodEnd = useCallback(
-    (start: Date) => {
-      const periodEndFn: Record<Period, (d: Date) => Date> = {
-        [Period.DAILY]: (d) => addDays(d, 1),
-        [Period.WEEKLY]: (d) => addWeeks(d, 1),
-        [Period.MONTHLY]: (d) => addMonths(d, 1),
-        [Period.QUARTERLY]: (d) => addQuarters(d, 1),
-        [Period.YEARLY]: (d) => addYears(d, 1),
-      };
-      return periodEndFn[filters.values.period](start);
-    },
-    [filters.values.period],
-  );
-
-  const handleColumnClick = useCallback(
-    (columnDate: string) => {
-      const start = new Date(columnDate);
-      const end = getPeriodEnd(start);
-      const url = buildPullRequestsUrl({
-        from: start.toISOString(),
-        to: end.toISOString(),
-      });
-      window.open(url, "_blank", "noopener,noreferrer");
-    },
-    [getPeriodEnd, buildPullRequestsUrl],
-  );
-
-  const handleThroughputClick = useCallback(
-    (columnDate: string, dateType: ThroughputDateType) => {
-      const start = new Date(columnDate);
-      const end = getPeriodEnd(start);
-      const url = buildPullRequestsUrl({
-        from: start.toISOString(),
-        to: end.toISOString(),
-        dateType,
-      });
-      window.open(url, "_blank", "noopener,noreferrer");
-    },
-    [getPeriodEnd, buildPullRequestsUrl],
-  );
+  const {
+    searchParams,
+    filters,
+    isLoading,
+    prFlow,
+    handleColumnClick,
+    handleThroughputClick,
+  } = usePrFlowPage();
 
   return (
     <PageContainer size="lg">
@@ -211,15 +109,43 @@ export const PrFlowPage = () => {
           <SimpleGrid cols={2}>
             <Skeleton h={340} />
             <Skeleton h={340} />
-            <Skeleton h={340} style={{ gridColumn: "span 2" }} />
-            <Skeleton h={340} style={{ gridColumn: "span 2" }} />
+            <Skeleton h={500} style={{ gridColumn: "span 2" }} />
+            <Skeleton h={500} style={{ gridColumn: "span 2" }} />
           </SimpleGrid>
         }
         content={
           <SimpleGrid cols={2}>
             <CardChart
               title="PR Throughput"
-              description="Number of pull requests merged and closed over time. Helps track delivery velocity and identify slowdowns."
+              description={
+                <Stack gap="xs">
+                  <Text size="sm">
+                    Per-period counts of PR activity, with two bars side by
+                    side:
+                  </Text>
+                  <Text size="sm" component="ul" pl="md" m={0}>
+                    <li>
+                      <b>Opened</b> — PRs created in that period (measures work
+                      started).
+                    </li>
+                    <li>
+                      <b>Merged / Closed</b> — stacked bar of PRs that exited
+                      the queue (measures work shipped vs dropped).
+                    </li>
+                  </Text>
+                  <Title order={5}>Why it matters</Title>
+                  <Text size="sm">
+                    Throughput is the raw delivery rate. Compared against opens,
+                    it surfaces whether the team is keeping up with incoming
+                    work or building up WIP. A rising close rate (vs merge) can
+                    hint at abandoned branches or scope churn.
+                  </Text>
+                  <Text size="sm">
+                    Click a column to jump to the PRs opened, merged, or closed
+                    in that period.
+                  </Text>
+                </Stack>
+              }
             >
               <ChartThroughput
                 chartId="pr-flow-throughput"
@@ -230,7 +156,35 @@ export const PrFlowPage = () => {
             </CardChart>
             <CardChart
               title="PR Size distribution"
-              description="Distribution of merged pull requests by size (lines added + deleted). The line shows the average lines changed per PR each period."
+              description={
+                <Stack gap="xs">
+                  <Text size="sm">
+                    Per-period stacked bar of <b>merged PRs</b> bucketed by size
+                    (lines added + deleted):
+                  </Text>
+                  <Text size="sm" component="ul" pl="md" m={0}>
+                    <li>
+                      Buckets <b>XS → XL</b>, using the size thresholds
+                      configured in your workspace settings.
+                    </li>
+                    <li>
+                      The overlaid <b>white line</b> tracks average lines
+                      changed per PR (right axis).
+                    </li>
+                  </Text>
+                  <Title order={5}>Why it matters</Title>
+                  <Text size="sm">
+                    Small PRs are easier to review, safer to ship, and faster to
+                    merge. If your distribution skews to L/XL, reviews get
+                    superficial and cycle time balloons. This chart makes the
+                    team's "default PR size" visible so you can push culture
+                    toward smaller batches.
+                  </Text>
+                  <Text size="sm">
+                    Click a column to inspect the PRs merged in that period.
+                  </Text>
+                </Stack>
+              }
             >
               <ChartSizeDistribution
                 chartId="pr-flow-size-distribution"
@@ -241,8 +195,49 @@ export const PrFlowPage = () => {
             </CardChart>
             <CardChart
               title="PR Cycle time Breakdown"
-              description="Stacked breakdown of mean cycle time."
+              description={
+                <Stack gap="xs">
+                  <Text size="sm">
+                    Splits mean <b>cycle time</b> for <b>merged PRs</b> into its
+                    four sequential phases, stacked per period:
+                  </Text>
+                  <Text size="sm" component="ul" pl="md" m={0}>
+                    <li>
+                      <b>Coding</b> — first commit to PR marked ready for
+                      review.
+                    </li>
+                    <li>
+                      <b>First Review</b> — ready for review to first review
+                      submitted.
+                    </li>
+                    <li>
+                      <b>Approval</b> — first review to the approval that
+                      unblocks merge.
+                    </li>
+                    <li>
+                      <b>Merge</b> — approval to merge (usually CI + merge
+                      queue).
+                    </li>
+                  </Text>
+                  <Text size="sm">
+                    The <b>white line</b> is total cycle time (sum of the four
+                    phases).
+                  </Text>
+                  <Title order={5}>Why it matters</Title>
+                  <Text size="sm">
+                    Cycle time is the end-to-end "idea to shipped" clock, but
+                    the average alone hides where time actually goes. This
+                    breakdown tells you <i>which phase</i> to attack first: slow
+                    reviews, stale approvals, flaky CI, or authors sitting on
+                    branches.
+                  </Text>
+                  <Text size="sm">
+                    Click a column to drill into the PRs merged in that period.
+                  </Text>
+                </Stack>
+              }
               style={{ gridColumn: "span 2" }}
+              height={500}
             >
               <ChartCycleTimeBreakdown
                 chartId="pr-flow-cycle-time"
@@ -253,9 +248,44 @@ export const PrFlowPage = () => {
             </CardChart>
             <CardChart
               title="PR Size vs Cycle Time"
-              description="Scatter plot correlating PR size (lines changed) with cycle time. Larger PRs typically take longer to review and merge."
+              description={
+                <Stack gap="xs">
+                  <Text size="sm">
+                    Scatter of <b>merged PRs</b> in the selected period,
+                    plotting <b>cycle time</b> (x, log scale) against{" "}
+                    <b>lines changed</b> (y, log scale). Each dot is one PR,
+                    colored by size bucket (XS → XL).
+                  </Text>
+                  <Title order={5}>Why it matters</Title>
+                  <Text size="sm">
+                    PR size is the single biggest predictor of cycle time. This
+                    chart makes that relationship concrete for your team and
+                    surfaces outliers that don't follow it.
+                  </Text>
+                  <Title order={5}>What to look for</Title>
+                  <Text size="sm" component="ul" pl="md" m={0}>
+                    <li>
+                      <b>Far-right outliers</b> (any size, multi-day cycle) —
+                      PRs that got stuck. Check whether in review, waiting on
+                      CI, or idle.
+                    </li>
+                    <li>
+                      <b>Top-right cluster</b> (big + slow) — confirms the "ship
+                      smaller PRs" argument with data.
+                    </li>
+                    <li>
+                      <b>Bottom-right</b> (small PR, long cycle) — process
+                      friction unrelated to size: bad CI, review drought, or
+                      forgotten PRs.
+                    </li>
+                  </Text>
+                  <Text size="sm">
+                    Click any dot to open the PR on GitHub.
+                  </Text>
+                </Stack>
+              }
               style={{ gridColumn: "span 2" }}
-              height={450}
+              height={500}
             >
               <ChartSizeCycleCorrelation
                 chartId="pr-flow-size-cycle-correlation"

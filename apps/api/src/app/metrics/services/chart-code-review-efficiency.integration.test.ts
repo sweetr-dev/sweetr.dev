@@ -22,7 +22,6 @@ import {
   getKpiTimeToApproval,
   getKpiTimeToFirstReview,
   getWorkspaceCodeReviewDistributionChartData,
-  getWorkspacePrsWithoutApproval,
   getWorkspaceReviewTurnaroundTime,
   getWorkspaceSizeCommentCorrelation,
   getWorkspaceTimeToApprovalChart,
@@ -82,18 +81,13 @@ async function seedPrWithTracking(
   authorId: number,
   input: SeedPrInput = {}
 ): Promise<{ pullRequestId: number }> {
-  const pr = await seedPullRequest(
-    { workspaceId },
-    repositoryId,
-    authorId,
-    {
-      title: input.title,
-      number: input.number,
-      state: input.state ?? PullRequestState.MERGED,
-      createdAt: input.createdAt,
-      mergedAt: input.mergedAt === undefined ? undefined : input.mergedAt,
-    }
-  );
+  const pr = await seedPullRequest({ workspaceId }, repositoryId, authorId, {
+    title: input.title,
+    number: input.number,
+    state: input.state ?? PullRequestState.MERGED,
+    createdAt: input.createdAt,
+    mergedAt: input.mergedAt === undefined ? undefined : input.mergedAt,
+  });
 
   if (input.commentCount !== undefined) {
     await getPrisma(workspaceId).pullRequest.update({
@@ -669,224 +663,6 @@ describe("Code Review Efficiency Metrics", () => {
 
       const idx = result.columns.indexOf("2024-01-15T00:00:00.000Z");
       expect(result.data[idx]).toBe(BigInt(2 * HOUR_MS));
-    });
-  });
-
-  describe("getWorkspacePrsWithoutApproval", () => {
-    it("counts merged PRs with no APPROVED CodeReview", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gp = await seedGitProfile(ctx);
-      const repo = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        gp.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(1);
-    });
-
-    it("counts PRs with only COMMENTED / CHANGES_REQUESTED reviews", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const author = await seedGitProfile(ctx, { handle: "author" });
-      const rev = await seedGitProfile(ctx, { handle: "rev" });
-      const repo = await seedRepository(ctx);
-
-      const pr = await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        author.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      await seedCodeReview(ctx, pr.pullRequestId, rev.gitProfileId, {
-        state: CodeReviewState.CHANGES_REQUESTED,
-      });
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(1);
-    });
-
-    it("excludes PRs with at least one APPROVED review", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const author = await seedGitProfile(ctx, { handle: "author" });
-      const rev1 = await seedGitProfile(ctx, { handle: "rev1" });
-      const rev2 = await seedGitProfile(ctx, { handle: "rev2" });
-      const repo = await seedRepository(ctx);
-
-      const pr = await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        author.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      await seedCodeReview(ctx, pr.pullRequestId, rev1.gitProfileId, {
-        state: CodeReviewState.CHANGES_REQUESTED,
-      });
-      await seedCodeReview(ctx, pr.pullRequestId, rev2.gitProfileId, {
-        state: CodeReviewState.APPROVED,
-      });
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(0);
-    });
-
-    it("excludes PRs merged outside the range", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gp = await seedGitProfile(ctx);
-      const repo = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        gp.gitProfileId,
-        { number: "1", mergedAt: new Date("2024-01-10T10:00:00Z") }
-      );
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        gp.gitProfileId,
-        { number: "2", mergedAt: new Date("2024-01-20T10:00:00Z") }
-      );
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(0);
-    });
-
-    it("excludes non-merged PRs", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gp = await seedGitProfile(ctx);
-      const repo = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        gp.gitProfileId,
-        { state: PullRequestState.OPEN, mergedAt: null }
-      );
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(0);
-    });
-
-    it("counts a PR with multiple non-approved reviews only once", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const author = await seedGitProfile(ctx, { handle: "author" });
-      const rev1 = await seedGitProfile(ctx, { handle: "rev1" });
-      const rev2 = await seedGitProfile(ctx, { handle: "rev2" });
-      const repo = await seedRepository(ctx);
-
-      const pr = await seedPrWithTracking(
-        ctx.workspaceId,
-        repo.repositoryId,
-        author.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      await seedCodeReview(ctx, pr.pullRequestId, rev1.gitProfileId, {
-        state: CodeReviewState.COMMENTED,
-      });
-      await seedCodeReview(ctx, pr.pullRequestId, rev2.gitProfileId, {
-        state: CodeReviewState.CHANGES_REQUESTED,
-      });
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(1);
-    });
-
-    it("respects teamIds and repositoryIds filters", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gpIn = await seedGitProfile(ctx, { handle: "in" });
-      const gpOut = await seedGitProfile(ctx, { handle: "out" });
-      const repo1 = await seedRepository(ctx, { name: "r1" });
-      const repo2 = await seedRepository(ctx, { name: "r2" });
-      const team = await seedTeam(ctx);
-      await seedTeamMember(ctx, team.teamId, gpIn.gitProfileId);
-
-      // Correct: team + repo1
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo1.repositoryId,
-        gpIn.gitProfileId,
-        { number: "1", mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      // Wrong team
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo1.repositoryId,
-        gpOut.gitProfileId,
-        { number: "2", mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      // Wrong repo
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repo2.repositoryId,
-        gpIn.gitProfileId,
-        { number: "3", mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        teamIds: [team.teamId],
-        repositoryIds: [repo1.repositoryId],
-      });
-
-      expect(count).toBe(1);
-    });
-
-    it("isolates data across workspaces", async () => {
-      const ctxA = await createTestContextWithGitProfile("a");
-      const ctxB = await createTestContextWithGitProfile("b");
-      const gpA = await seedGitProfile(ctxA);
-      const gpB = await seedGitProfile(ctxB);
-      const repoA = await seedRepository(ctxA);
-      const repoB = await seedRepository(ctxB);
-
-      await seedPrWithTracking(
-        ctxB.workspaceId,
-        repoB.repositoryId,
-        gpB.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-      await seedPrWithTracking(
-        ctxA.workspaceId,
-        repoA.repositoryId,
-        gpA.gitProfileId,
-        { mergedAt: new Date("2024-01-15T10:00:00Z") }
-      );
-
-      const count = await getWorkspacePrsWithoutApproval({
-        workspaceId: ctxA.workspaceId,
-        ...dateRange,
-      });
-
-      expect(count).toBe(1);
     });
   });
 
@@ -2387,7 +2163,9 @@ describe("Code Review Efficiency Metrics", () => {
       expect(reviewerEntities).toHaveLength(2);
       expect(authorEntities).toHaveLength(2);
 
-      const bobReviewer = reviewerEntities.find((e) => e.id === "cr-author:bob");
+      const bobReviewer = reviewerEntities.find(
+        (e) => e.id === "cr-author:bob"
+      );
       const aliceReviewer = reviewerEntities.find(
         (e) => e.id === "cr-author:alice"
       );
@@ -2700,11 +2478,13 @@ describe("Code Review Efficiency Metrics", () => {
         teamIds: [teamA.teamId],
       });
 
-      const teamIds = result.map((r) => r.teamId).sort((a, b) => {
-        if (a === null) return -1;
-        if (b === null) return 1;
-        return a - b;
-      });
+      const teamIds = result
+        .map((r) => r.teamId)
+        .sort((a, b) => {
+          if (a === null) return -1;
+          if (b === null) return 1;
+          return a - b;
+        });
       expect(teamIds).toEqual([null, teamA.teamId]);
 
       const org = result.find((r) => r.teamId === null)!;

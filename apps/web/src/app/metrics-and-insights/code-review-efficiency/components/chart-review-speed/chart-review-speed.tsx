@@ -12,8 +12,6 @@ import {
 import { getAbbreviatedDuration } from "../../../../../providers/date.provider";
 import { UTCDate } from "@date-fns/utc";
 
-const CR_GROUP = "codeReviewEfficiency";
-
 interface ChartReviewSpeedProps {
   chartId: string;
   turnaroundData?: NumericChartData | null;
@@ -43,8 +41,6 @@ export const ChartReviewSpeed = ({
     if (!columns.length) return;
 
     const chart = echarts.init(containerRef.current, "dark");
-    chart.group = CR_GROUP;
-    echarts.connect(CR_GROUP);
 
     const options: ECOption = {
       backgroundColor: "transparent",

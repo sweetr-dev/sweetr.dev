@@ -12,15 +12,10 @@ import { Period } from "../../../graphql-types";
 import { getPrisma } from "../../../prisma";
 import {
   getWorkspaceCycleTimeBreakdownChartData,
-  getWorkspaceCycleTimeChartData,
   getWorkspacePullRequestSizeDistributionChartData,
   getWorkspaceSizeCycleTimeCorrelation,
   getWorkspaceTeamOverview,
   getWorkspaceThroughputChartData,
-  getWorkspaceTimeForApprovalChartData,
-  getWorkspaceTimeForFirstReviewChartData,
-  getWorkspaceTimeToCodeChartData,
-  getWorkspaceTimeToMergeChartData,
 } from "./pr-flow.service";
 
 /**
@@ -121,603 +116,6 @@ const weekRange = {
 };
 
 describe("PR Flow Metrics", () => {
-  describe("getWorkspaceTimeToMergeChartData", () => {
-    it("returns the average time from first approval to merge per bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: {
-            firstApprovalAt: new Date("2024-01-15T12:00:00Z"),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket).toBeDefined();
-      expect(bucket!.value).toBe(BigInt(2 * HOUR_MS));
-    });
-
-    it("averages multiple eligible PRs in the same bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "1",
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: {
-            firstApprovalAt: new Date("2024-01-15T12:00:00Z"), // 2h
-          },
-        }
-      );
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "2",
-          mergedAt: new Date("2024-01-15T18:00:00Z"),
-          tracking: {
-            firstApprovalAt: new Date("2024-01-15T14:00:00Z"), // 4h
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(3 * HOUR_MS));
-    });
-
-    it("excludes PRs without firstApprovalAt", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: { firstApprovalAt: null },
-        }
-      );
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("excludes PRs merged outside the date range", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-10T14:00:00Z"),
-          tracking: {
-            firstApprovalAt: new Date("2024-01-10T12:00:00Z"),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("zero-fills buckets with no data", async () => {
-      const ctx = await createTestContextWithGitProfile();
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctx.workspaceId,
-        ...weekRange,
-        period: Period.DAILY,
-      });
-
-      expect(result.length).toBeGreaterThan(0);
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("isolates data by workspace", async () => {
-      const ctxA = await createTestContextWithGitProfile("user-a");
-      const ctxB = await createTestContextWithGitProfile("user-b");
-
-      for (const ctx of [ctxA, ctxB]) {
-        const gp = await seedGitProfile(ctx);
-        const repo = await seedRepository(ctx);
-        await seedPrWithTracking(
-          ctx.workspaceId,
-          repo.repositoryId,
-          gp.gitProfileId,
-          {
-            mergedAt: new Date("2024-01-15T14:00:00Z"),
-            tracking: {
-              firstApprovalAt: new Date("2024-01-15T12:00:00Z"),
-            },
-          }
-        );
-      }
-
-      const result = await getWorkspaceTimeToMergeChartData({
-        workspaceId: ctxA.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(2 * HOUR_MS));
-    });
-  });
-
-  describe("getWorkspaceTimeToCodeChartData", () => {
-    it("returns the average pre-computed timeToCode per bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: { timeToCode: BigInt(3 * HOUR_MS) },
-        }
-      );
-
-      const result = await getWorkspaceTimeToCodeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(3 * HOUR_MS));
-    });
-
-    it("averages multiple PRs in the same bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "1",
-          mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { timeToCode: BigInt(2 * HOUR_MS) },
-        }
-      );
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "2",
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: { timeToCode: BigInt(4 * HOUR_MS) },
-        }
-      );
-
-      const result = await getWorkspaceTimeToCodeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(3 * HOUR_MS));
-    });
-
-    it("excludes merged PRs with NULL timeToCode", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T14:00:00Z"),
-          tracking: { timeToCode: null },
-        }
-      );
-
-      const result = await getWorkspaceTimeToCodeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("excludes non-merged PRs even when timeToCode is set", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          state: PullRequestState.OPEN,
-          mergedAt: null,
-          tracking: { timeToCode: BigInt(3 * HOUR_MS) },
-        }
-      );
-
-      const result = await getWorkspaceTimeToCodeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-  });
-
-  describe("getWorkspaceTimeForFirstReviewChartData", () => {
-    it("returns the average timeToFirstReview per bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: {
-            firstReviewAt: new Date("2024-01-15T12:00:00Z"),
-            timeToFirstReview: BigInt(90 * 60 * 1000), // 1.5h
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForFirstReviewChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(90 * 60 * 1000));
-    });
-
-    it("includes PRs that were reviewed but not merged", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          state: PullRequestState.OPEN,
-          mergedAt: null,
-          tracking: {
-            firstReviewAt: new Date("2024-01-15T12:00:00Z"),
-            timeToFirstReview: BigInt(2 * HOUR_MS),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForFirstReviewChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(2 * HOUR_MS));
-    });
-
-    it("excludes PRs without firstReviewAt", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: {
-            firstReviewAt: null,
-            timeToFirstReview: BigInt(2 * HOUR_MS),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForFirstReviewChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("excludes reviews that happened outside the date range", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: {
-            firstReviewAt: new Date("2024-01-10T12:00:00Z"),
-            timeToFirstReview: BigInt(2 * HOUR_MS),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForFirstReviewChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-  });
-
-  describe("getWorkspaceTimeForApprovalChartData", () => {
-    it("returns the average firstApprovalAt minus firstReviewAt per bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: {
-            firstReviewAt: new Date("2024-01-15T10:00:00Z"),
-            firstApprovalAt: new Date("2024-01-15T13:00:00Z"),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForApprovalChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(3 * HOUR_MS));
-    });
-
-    it("excludes PRs without firstReviewAt", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: {
-            firstReviewAt: null,
-            firstApprovalAt: new Date("2024-01-15T13:00:00Z"),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForApprovalChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      result.forEach((r) => expect(r.value).toBe(BigInt(0)));
-    });
-
-    it("includes PRs that were approved but not merged", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          state: PullRequestState.OPEN,
-          mergedAt: null,
-          tracking: {
-            firstReviewAt: new Date("2024-01-15T10:00:00Z"),
-            firstApprovalAt: new Date("2024-01-15T11:00:00Z"),
-          },
-        }
-      );
-
-      const result = await getWorkspaceTimeForApprovalChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(1 * HOUR_MS));
-    });
-  });
-
-  describe("getWorkspaceCycleTimeChartData", () => {
-    it("returns the average pre-computed cycleTime per bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          mergedAt: new Date("2024-01-15T20:00:00Z"),
-          tracking: { cycleTime: BigInt(5 * HOUR_MS) },
-        }
-      );
-
-      const result = await getWorkspaceCycleTimeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(5 * HOUR_MS));
-    });
-
-    it("ignores PRs where cycleTime is NULL when averaging", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "1",
-          mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { cycleTime: BigInt(6 * HOUR_MS) },
-        }
-      );
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "2",
-          mergedAt: new Date("2024-01-15T15:00:00Z"),
-          tracking: { cycleTime: null },
-        }
-      );
-
-      const result = await getWorkspaceCycleTimeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(6 * HOUR_MS));
-    });
-
-    it("averages multiple PRs in the same bucket", async () => {
-      const ctx = await createTestContextWithGitProfile();
-      const gitProfile = await seedGitProfile(ctx);
-      const repository = await seedRepository(ctx);
-
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "1",
-          mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { cycleTime: BigInt(4 * HOUR_MS) },
-        }
-      );
-      await seedPrWithTracking(
-        ctx.workspaceId,
-        repository.repositoryId,
-        gitProfile.gitProfileId,
-        {
-          number: "2",
-          mergedAt: new Date("2024-01-15T15:00:00Z"),
-          tracking: { cycleTime: BigInt(8 * HOUR_MS) },
-        }
-      );
-
-      const result = await getWorkspaceCycleTimeChartData({
-        workspaceId: ctx.workspaceId,
-        ...dateRange,
-        period: Period.DAILY,
-      });
-
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(6 * HOUR_MS));
-    });
-  });
 
   describe("getWorkspaceCycleTimeBreakdownChartData", () => {
     it("returns components as-is when raw_sum fits inside cycle_time", async () => {
@@ -1780,7 +1178,16 @@ describe("PR Flow Metrics", () => {
     });
   });
 
-  describe("shared filters (getWorkspaceTimeToCodeChartData)", () => {
+  describe("shared filters (getWorkspaceThroughputChartData)", () => {
+    const mergedInColumn = (
+      result: Awaited<ReturnType<typeof getWorkspaceThroughputChartData>>,
+      periodIso: string
+    ) => {
+      const idx = result.columns.indexOf(periodIso);
+      const merged = result.series.find((s) => s.name === "Merged")!;
+      return merged.data[idx];
+    };
+
     it("applies teamIds based on PR author membership", async () => {
       const ctx = await createTestContextWithGitProfile();
       const gp1 = await seedGitProfile(ctx, { handle: "u1" });
@@ -1796,7 +1203,6 @@ describe("PR Flow Metrics", () => {
         {
           number: "1",
           mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { timeToCode: BigInt(1 * HOUR_MS) },
         }
       );
       await seedPrWithTracking(
@@ -1806,21 +1212,19 @@ describe("PR Flow Metrics", () => {
         {
           number: "2",
           mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { timeToCode: BigInt(5 * HOUR_MS) },
         }
       );
 
-      const result = await getWorkspaceTimeToCodeChartData({
+      const result = await getWorkspaceThroughputChartData({
         workspaceId: ctx.workspaceId,
         ...dateRange,
         period: Period.DAILY,
         teamIds: [team.teamId],
       });
 
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(1 * HOUR_MS));
+      expect(
+        mergedInColumn(result, "2024-01-15T00:00:00.000Z")
+      ).toBe(BigInt(1));
     });
 
     it("applies repositoryIds filter", async () => {
@@ -1836,7 +1240,6 @@ describe("PR Flow Metrics", () => {
         {
           number: "1",
           mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { timeToCode: BigInt(1 * HOUR_MS) },
         }
       );
       await seedPrWithTracking(
@@ -1846,24 +1249,22 @@ describe("PR Flow Metrics", () => {
         {
           number: "2",
           mergedAt: new Date("2024-01-15T10:00:00Z"),
-          tracking: { timeToCode: BigInt(5 * HOUR_MS) },
         }
       );
 
-      const result = await getWorkspaceTimeToCodeChartData({
+      const result = await getWorkspaceThroughputChartData({
         workspaceId: ctx.workspaceId,
         ...dateRange,
         period: Period.DAILY,
         repositoryIds: [repo2.repositoryId],
       });
 
-      const bucket = result.find(
-        (r) => r.period === "2024-01-15T00:00:00.000Z"
-      );
-      expect(bucket!.value).toBe(BigInt(5 * HOUR_MS));
+      expect(
+        mergedInColumn(result, "2024-01-15T00:00:00.000Z")
+      ).toBe(BigInt(1));
     });
 
-    it("rolls up across days when the period is WEEKLY", async () => {
+    it("rolls up merged counts across days when the period is WEEKLY", async () => {
       const ctx = await createTestContextWithGitProfile();
       const gp = await seedGitProfile(ctx);
       const repo = await seedRepository(ctx);
@@ -1876,21 +1277,20 @@ describe("PR Flow Metrics", () => {
           {
             number: `${day}`,
             mergedAt: new Date(`2024-01-${day}T10:00:00Z`),
-            tracking: { timeToCode: BigInt(day * HOUR_MS) },
           }
         );
       }
 
-      const weekly = await getWorkspaceTimeToCodeChartData({
+      const weekly = await getWorkspaceThroughputChartData({
         workspaceId: ctx.workspaceId,
         ...weekRange,
         period: Period.WEEKLY,
       });
 
-      const nonZero = weekly.filter((r) => r.value > BigInt(0));
+      const merged = weekly.series.find((s) => s.name === "Merged")!;
+      const nonZero = merged.data.filter((v) => v > BigInt(0));
       expect(nonZero).toHaveLength(1);
-      // Average of 15h, 16h, 17h = 16h
-      expect(nonZero[0].value).toBe(BigInt(16 * HOUR_MS));
+      expect(nonZero[0]).toBe(BigInt(3));
     });
   });
 });

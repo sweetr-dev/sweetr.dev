@@ -5,18 +5,13 @@ export default /* GraphQL */ `
 
   type PullRequestFlowMetrics {
     throughput(input: PullRequestFlowInput!): NumericSeriesChartData
-    cycleTime(input: PullRequestFlowInput!): NumericChartData
-    timeToCode(input: PullRequestFlowInput!): NumericChartData
-    timeToMerge(input: PullRequestFlowInput!): NumericChartData
-    timeToFirstReview(input: PullRequestFlowInput!): NumericChartData
-    timeToApproval(input: PullRequestFlowInput!): NumericChartData
-    cycleTimeBreakdown(input: PullRequestFlowInput!): CycleTimeBreakdownChartData
+    cycleTimeBreakdown(
+      input: PullRequestFlowInput!
+    ): CycleTimeBreakdownChartData
     pullRequestSizeDistribution(
       input: PullRequestFlowInput!
     ): PullRequestSizeDistributionChartData
-    sizeCycleTimeCorrelation(
-      input: PullRequestFlowInput!
-    ): ScatterChartData
+    sizeCycleTimeCorrelation(input: PullRequestFlowInput!): ScatterChartData
     teamOverview(input: PullRequestFlowInput!): [TeamPrFlowOverviewRow!]
   }
 

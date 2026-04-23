@@ -80,10 +80,10 @@ export const ChartDeploymentFrequency = ({
         show: false,
       },
       grid: {
-        left: "1%",
-        right: "4%",
-        bottom: "3%",
-        top: "4%",
+        left: "0",
+        right: "0",
+        bottom: "15px",
+        top: "15px",
         containLabel: true,
       },
       xAxis: {
@@ -112,9 +112,9 @@ export const ChartDeploymentFrequency = ({
         emphasis: { focus: "series" },
         color: series.color || "#8ce99a",
         symbolSize: 7,
-        lineStyle: { width: 3 },
+        lineStyle: { width: 2 },
         areaStyle: {
-          opacity: 0.3,
+          opacity: 0.2,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: series.color || "#8ce99a" },
             { offset: 1, color: "rgba(1, 191, 236, 0)" },

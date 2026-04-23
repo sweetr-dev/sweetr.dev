@@ -4,14 +4,13 @@ import {
   IconSelector,
 } from "@tabler/icons-react";
 
-interface SortIconProps {
+interface ThSortProps {
   active: boolean;
   direction: "asc" | "desc";
 }
 
-export const SortIcon = ({ active, direction }: SortIconProps) => {
-  if (!active)
-    return <IconSelector size={14} stroke={1.5} color="#868e96" />;
+export const ThSort = ({ active, direction }: ThSortProps) => {
+  if (!active) return <IconSelector size={14} stroke={1.5} color="#868e96" />;
   return direction === "asc" ? (
     <IconChevronUp size={14} stroke={1.5} />
   ) : (

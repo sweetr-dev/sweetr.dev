@@ -2,11 +2,11 @@ import { Prisma, PullRequestSize } from "@prisma/client";
 import { getPrisma } from "../../../prisma";
 import { getPreviousPeriod } from "../../../lib/date";
 import { periodToDateTrunc, periodToInterval } from "./chart.service";
-import { PullRequestFlowChartFilters } from "./pr-flow.types";
 import {
   AvgCommentsKpiResult,
   CodeReviewCountKpiResult,
   CodeReviewDistributionRow,
+  CodeReviewEfficiencyChartFilters,
   CodeReviewEfficiencyFiltersResult,
   CodeReviewKpiResult,
   CodeReviewLink,
@@ -16,7 +16,7 @@ import { sort, sum } from "radash";
 import { roundDecimalPoints } from "../../../lib/number";
 
 const buildCodeReviewFilters = (
-  filters: PullRequestFlowChartFilters
+  filters: CodeReviewEfficiencyChartFilters
 ): CodeReviewEfficiencyFiltersResult => {
   const joins: Prisma.Sql[] = [
     Prisma.sql`INNER JOIN "PullRequest" p ON pt."pullRequestId" = p."id"`,
@@ -54,7 +54,7 @@ const buildCodeReviewFilters = (
 };
 
 const buildTimeSeriesQuery = (
-  filters: PullRequestFlowChartFilters,
+  filters: CodeReviewEfficiencyChartFilters,
   dateColumn: Prisma.Sql,
   valueExpression: Prisma.Sql,
   dateFilter: Prisma.Sql
@@ -99,7 +99,7 @@ const buildTimeSeriesQuery = (
 };
 
 export const getWorkspaceReviewTurnaroundTime = async (
-  filters: PullRequestFlowChartFilters
+  filters: CodeReviewEfficiencyChartFilters
 ) => {
   const query = buildTimeSeriesQuery(
     filters,
@@ -119,7 +119,7 @@ export const getWorkspaceReviewTurnaroundTime = async (
 };
 
 export const getWorkspaceTimeToApprovalChart = async (
-  filters: PullRequestFlowChartFilters
+  filters: CodeReviewEfficiencyChartFilters
 ) => {
   const query = buildTimeSeriesQuery(
     filters,
@@ -138,87 +138,17 @@ export const getWorkspaceTimeToApprovalChart = async (
   };
 };
 
-export const getWorkspacePrsWithoutApproval = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
-) => {
-  const { joins, conditions } = buildCodeReviewFilters(
-    filters as PullRequestFlowChartFilters
-  );
-
-  const allConditions = [
-    ...conditions,
-    Prisma.sql`p."mergedAt" >= ${new Date(filters.startDate)}`,
-    Prisma.sql`p."mergedAt" <= ${new Date(filters.endDate)}`,
-    Prisma.sql`p."mergedAt" IS NOT NULL`,
-    Prisma.sql`NOT EXISTS (
-      SELECT 1 FROM "CodeReview" cr
-      WHERE cr."pullRequestId" = p."id"
-      AND cr."workspaceId" = ${filters.workspaceId}
-      AND cr."state" = 'APPROVED'::"CodeReviewState"
-    )`,
-  ];
-
-  const joinClause = Prisma.join(joins, " ");
-  const whereClause = Prisma.join(allConditions, " AND ");
-
-  const query = Prisma.sql`
-    SELECT COUNT(DISTINCT p."id") AS count
-    FROM "PullRequestTracking" pt
-    ${joinClause}
-    WHERE ${whereClause};
-  `;
-
-  const results = await getPrisma(filters.workspaceId).$queryRaw<
-    { count: bigint }[]
-  >(query);
-
-  return Number(results[0]?.count ?? 0);
-};
-
 // ---- KPI helpers (current vs previous period with % change) ----
 
-const buildPrsWithoutApprovalCountQuery = (
-  filters: Omit<PullRequestFlowChartFilters, "period">,
-  from: string,
-  to: string
-) => {
-  const { joins, conditions } = buildCodeReviewFilters(
-    filters as PullRequestFlowChartFilters
-  );
-
-  const allConditions = [
-    ...conditions,
-    Prisma.sql`p."mergedAt" >= ${new Date(from)}`,
-    Prisma.sql`p."mergedAt" <= ${new Date(to)}`,
-    Prisma.sql`p."mergedAt" IS NOT NULL`,
-    Prisma.sql`NOT EXISTS (
-      SELECT 1 FROM "CodeReview" cr
-      WHERE cr."pullRequestId" = p."id"
-      AND cr."workspaceId" = ${filters.workspaceId}
-      AND cr."state" = 'APPROVED'::"CodeReviewState"
-    )`,
-  ];
-
-  const joinClause = Prisma.join(joins, " ");
-  const whereClause = Prisma.join(allConditions, " AND ");
-
-  return Prisma.sql`
-    SELECT COUNT(DISTINCT p."id") AS count
-    FROM "PullRequestTracking" pt
-    ${joinClause}
-    WHERE ${whereClause};
-  `;
-};
-
 export const getKpiTimeToFirstReview = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ): Promise<CodeReviewKpiResult> => {
   const { startDate: from, endDate: to } = filters;
   const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
-  const buildQuery = (queryFrom: string, queryTo: string) => {
+  const buildAmountQuery = (queryFrom: string, queryTo: string) => {
     const { joins, conditions } = buildCodeReviewFilters(
-      filters as PullRequestFlowChartFilters
+      filters as CodeReviewEfficiencyChartFilters
     );
     const allConditions = [
       ...conditions,
@@ -237,11 +167,12 @@ export const getKpiTimeToFirstReview = async (
     `;
   };
 
-  const prisma = getPrisma(filters.workspaceId);
   const [currentResult, previousResult] = await Promise.all([
-    prisma.$queryRaw<{ value: number | null }[]>(buildQuery(from, to)),
-    prisma.$queryRaw<{ value: number | null }[]>(
-      buildQuery(beforeFrom, beforeTo)
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(from, to)
+    ),
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(beforeFrom, beforeTo)
     ),
   ]);
 
@@ -262,14 +193,14 @@ export const getKpiTimeToFirstReview = async (
 };
 
 export const getKpiTimeToApproval = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ): Promise<CodeReviewKpiResult> => {
   const { startDate: from, endDate: to } = filters;
   const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
-  const buildQuery = (queryFrom: string, queryTo: string) => {
+  const buildAmountQuery = (queryFrom: string, queryTo: string) => {
     const { joins, conditions } = buildCodeReviewFilters(
-      filters as PullRequestFlowChartFilters
+      filters as CodeReviewEfficiencyChartFilters
     );
     const allConditions = [
       ...conditions,
@@ -289,11 +220,12 @@ export const getKpiTimeToApproval = async (
     `;
   };
 
-  const prisma = getPrisma(filters.workspaceId);
   const [currentResult, previousResult] = await Promise.all([
-    prisma.$queryRaw<{ value: number | null }[]>(buildQuery(from, to)),
-    prisma.$queryRaw<{ value: number | null }[]>(
-      buildQuery(beforeFrom, beforeTo)
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(from, to)
+    ),
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(beforeFrom, beforeTo)
     ),
   ]);
 
@@ -314,14 +246,14 @@ export const getKpiTimeToApproval = async (
 };
 
 export const getKpiAvgCommentsPerPr = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ): Promise<AvgCommentsKpiResult> => {
   const { startDate: from, endDate: to } = filters;
   const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
-  const buildQuery = (queryFrom: string, queryTo: string) => {
+  const buildAmountQuery = (queryFrom: string, queryTo: string) => {
     const { joins, conditions } = buildCodeReviewFilters(
-      filters as PullRequestFlowChartFilters
+      filters as CodeReviewEfficiencyChartFilters
     );
     const allConditions = [
       ...conditions,
@@ -340,11 +272,12 @@ export const getKpiAvgCommentsPerPr = async (
     `;
   };
 
-  const prisma = getPrisma(filters.workspaceId);
   const [currentResult, previousResult] = await Promise.all([
-    prisma.$queryRaw<{ value: number | null }[]>(buildQuery(from, to)),
-    prisma.$queryRaw<{ value: number | null }[]>(
-      buildQuery(beforeFrom, beforeTo)
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(from, to)
+    ),
+    getPrisma(filters.workspaceId).$queryRaw<{ value: number | null }[]>(
+      buildAmountQuery(beforeFrom, beforeTo)
     ),
   ]);
 
@@ -365,18 +298,50 @@ export const getKpiAvgCommentsPerPr = async (
 };
 
 export const getKpiPrsWithoutApproval = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ): Promise<CodeReviewCountKpiResult> => {
   const { startDate: from, endDate: to } = filters;
   const [beforeFrom, beforeTo] = getPreviousPeriod(from, to);
 
-  const prisma = getPrisma(filters.workspaceId);
+  const buildAmountQuery = (
+    filters: Omit<CodeReviewEfficiencyChartFilters, "period">,
+    from: string,
+    to: string
+  ) => {
+    const { joins, conditions } = buildCodeReviewFilters(
+      filters as CodeReviewEfficiencyChartFilters
+    );
+
+    const allConditions = [
+      ...conditions,
+      Prisma.sql`p."mergedAt" >= ${new Date(from)}`,
+      Prisma.sql`p."mergedAt" <= ${new Date(to)}`,
+      Prisma.sql`p."mergedAt" IS NOT NULL`,
+      Prisma.sql`NOT EXISTS (
+      SELECT 1 FROM "CodeReview" cr
+      WHERE cr."pullRequestId" = p."id"
+      AND cr."workspaceId" = ${filters.workspaceId}
+      AND cr."state" = 'APPROVED'::"CodeReviewState"
+    )`,
+    ];
+
+    const joinClause = Prisma.join(joins, " ");
+    const whereClause = Prisma.join(allConditions, " AND ");
+
+    return Prisma.sql`
+    SELECT COUNT(DISTINCT p."id") AS count
+    FROM "PullRequestTracking" pt
+    ${joinClause}
+    WHERE ${whereClause};
+  `;
+  };
+
   const [currentResult, previousResult] = await Promise.all([
-    prisma.$queryRaw<{ count: bigint }[]>(
-      buildPrsWithoutApprovalCountQuery(filters, from, to)
+    getPrisma(filters.workspaceId).$queryRaw<{ count: bigint }[]>(
+      buildAmountQuery(filters, from, to)
     ),
-    prisma.$queryRaw<{ count: bigint }[]>(
-      buildPrsWithoutApprovalCountQuery(filters, beforeFrom, beforeTo)
+    getPrisma(filters.workspaceId).$queryRaw<{ count: bigint }[]>(
+      buildAmountQuery(filters, beforeFrom, beforeTo)
     ),
   ]);
 
@@ -408,10 +373,10 @@ const SIZE_SERIES_CONFIG: Record<
 };
 
 export const getWorkspaceSizeCommentCorrelation = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ) => {
   const { joins, conditions } = buildCodeReviewFilters(
-    filters as PullRequestFlowChartFilters
+    filters as CodeReviewEfficiencyChartFilters
   );
 
   const allConditions = [
@@ -568,7 +533,7 @@ const processCodeReviewDistributionRows = (
 };
 
 export const getWorkspaceCodeReviewDistributionChartData = async (
-  filters: PullRequestFlowChartFilters
+  filters: CodeReviewEfficiencyChartFilters
 ) => {
   const teamFilter =
     filters.teamIds && filters.teamIds.length > 0
@@ -646,10 +611,10 @@ export const getWorkspaceCodeReviewDistributionChartData = async (
 // ---- Team Overview ----
 
 export const getCodeReviewTeamOverview = async (
-  filters: Omit<PullRequestFlowChartFilters, "period">
+  filters: Omit<CodeReviewEfficiencyChartFilters, "period">
 ) => {
   const { joins, conditions } = buildCodeReviewFilters(
-    filters as PullRequestFlowChartFilters
+    filters as CodeReviewEfficiencyChartFilters
   );
 
   const allConditions = [

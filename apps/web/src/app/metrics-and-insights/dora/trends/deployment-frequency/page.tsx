@@ -1,4 +1,4 @@
-import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Group, Paper, Skeleton, Stack, Text, Title } from "@mantine/core";
 import { Period } from "@sweetr/graphql-types/frontend/graphql";
 import { IconRefresh } from "@tabler/icons-react";
 import { useOutletContext } from "react-router";
@@ -42,14 +42,47 @@ export const DoraDeploymentFrequencyPage = () => {
         <ButtonUnderstand>
           <Stack gap="xs">
             <Text size="sm">
-              Deployment Frequency shows how often your team ships code to
-              production. Higher frequency typically indicates smaller, safer
-              changes and a healthy CI/CD pipeline.
+              Count of <b>deployments to production</b> per period, based on the
+              deployments Sweetr has ingested for the selected repositories.
+              Each data point is the raw number of successful deploys in that
+              period — not PRs or commits.
             </Text>
+            <Title order={5}>Why it matters</Title>
             <Text size="sm">
-              Elite teams deploy multiple times per day. If your frequency is
-              low, look for large batch sizes, manual processes, or fear of
-              deploying that might be slowing you down.
+              Deployment frequency is the cleanest proxy for <b>batch size</b>.
+              Teams that deploy often are forced to ship in small, independently
+              reviewable chunks, which means faster feedback, safer rollbacks,
+              and less coordination overhead.
+            </Text>
+            <Title order={5}>DORA benchmarks</Title>
+            <Text size="sm" component="ul" pl="md" m={0}>
+              <li>
+                <b>Elite</b>: multiple deploys per day (on-demand)
+              </li>
+              <li>
+                <b>High</b>: between once per day and once per week
+              </li>
+              <li>
+                <b>Medium</b>: between once per week and once per month
+              </li>
+              <li>
+                <b>Low</b>: less than once per month
+              </li>
+            </Text>
+            <Title order={5}>What to look for</Title>
+            <Text size="sm" component="ul" pl="md" m={0}>
+              <li>
+                Sudden dips often point to <b>deploy friction</b>: flaky CI,
+                manual approval steps, or incident freezes.
+              </li>
+              <li>
+                Flat-low cadence usually means <b>big-bang releases</b> — push
+                for trunk-based dev and feature flags.
+              </li>
+              <li>
+                Pair with <b>Change Failure Rate</b>: rising frequency without
+                rising failures is the goal.
+              </li>
             </Text>
           </Stack>
         </ButtonUnderstand>

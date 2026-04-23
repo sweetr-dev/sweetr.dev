@@ -6,7 +6,6 @@ export default /* GraphQL */ `
   type CodeReviewEfficiencyMetrics {
     reviewTurnaroundTime(input: CodeReviewEfficiencyInput!): NumericChartData
     timeToApproval(input: CodeReviewEfficiencyInput!): NumericChartData
-    prsWithoutApproval(input: CodeReviewEfficiencyInput!): Int
     sizeCommentCorrelation(input: CodeReviewEfficiencyInput!): ScatterChartData
     codeReviewDistribution(
       input: CodeReviewEfficiencyInput!
@@ -14,12 +13,14 @@ export default /* GraphQL */ `
     teamOverview(
       input: CodeReviewEfficiencyInput!
     ): [CodeReviewTeamOverviewRow!]
-    kpiTimeToFirstReview(
-      input: CodeReviewEfficiencyInput!
-    ): CodeReviewDurationKpi
-    kpiTimeToApproval(input: CodeReviewEfficiencyInput!): CodeReviewDurationKpi
-    kpiAvgCommentsPerPr(input: CodeReviewEfficiencyInput!): CodeReviewFloatKpi
-    kpiPrsWithoutApproval(input: CodeReviewEfficiencyInput!): CodeReviewCountKpi
+    kpi(input: CodeReviewEfficiencyInput!): CodeReviewEfficiencyKpi!
+  }
+
+  type CodeReviewEfficiencyKpi {
+    timeToFirstReview: CodeReviewDurationKpi!
+    timeToApproval: CodeReviewDurationKpi!
+    avgCommentsPerPr: CodeReviewFloatKpi!
+    prsWithoutApproval: CodeReviewCountKpi!
   }
 
   input CodeReviewEfficiencyInput {

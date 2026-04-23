@@ -92,10 +92,10 @@ export const ChartAverageTime = ({
         },
       },
       grid: {
-        left: "1%",
-        right: "4%",
-        bottom: "3%",
-        top: "4%",
+        left: "0",
+        right: "0",
+        bottom: "40px",
+        top: "15px",
         containLabel: true,
       },
       xAxis: {
@@ -128,10 +128,10 @@ export const ChartAverageTime = ({
           color: "#8ce99a",
           symbolSize: 7,
           lineStyle: {
-            width: 3,
+            width: 2,
           },
           areaStyle: {
-            opacity: 0.8,
+            opacity: 0.2,
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,

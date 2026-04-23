@@ -3,17 +3,12 @@ import { logger } from "../../../../lib/logger";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
   getWorkspaceCycleTimeBreakdownChartData,
-  getWorkspaceCycleTimeChartData,
   getWorkspacePullRequestSizeDistributionChartData,
   getWorkspaceSizeCycleTimeCorrelation,
   getWorkspaceTeamOverview,
   getWorkspaceThroughputChartData,
-  getWorkspaceTimeForApprovalChartData,
-  getWorkspaceTimeForFirstReviewChartData,
-  getWorkspaceTimeToCodeChartData,
-  getWorkspaceTimeToMergeChartData,
 } from "../../services/pr-flow.service";
-import { buildPullRequestFlowChartFilters } from "./utils";
+import { buildCommonChartFilters } from "./utils";
 
 export const prFlowMetricsQuery = createFieldResolver(
   "PullRequestFlowMetrics",
@@ -28,116 +23,9 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
+
       return getWorkspaceThroughputChartData(filters);
-    },
-    timeToCode: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.timeToCode", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      const result = await getWorkspaceTimeToCodeChartData(filters);
-
-      return {
-        columns: result.map((r) => r.period),
-        data: result.map((r) => r.value),
-      };
-    },
-    cycleTime: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.cycleTime", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      const result = await getWorkspaceCycleTimeChartData(filters);
-
-      return {
-        columns: result.map((r) => r.period),
-        data: result.map((r) => r.value),
-      };
-    },
-    timeToMerge: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.timeToMerge", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      const result = await getWorkspaceTimeToMergeChartData(filters);
-
-      return {
-        columns: result.map((r) => r.period),
-        data: result.map((r) => r.value),
-      };
-    },
-    timeToFirstReview: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.timeToFirstReview", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      const result = await getWorkspaceTimeForFirstReviewChartData(filters);
-
-      return {
-        columns: result.map((r) => r.period),
-        data: result.map((r) => r.value),
-      };
-    },
-    timeToApproval: async (_, { input }, context) => {
-      logger.info("query.metrics.prFlow.timeToApproval", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      const result = await getWorkspaceTimeForApprovalChartData(filters);
-
-      return {
-        columns: result.map((r) => r.period),
-        data: result.map((r) => r.value),
-      };
     },
     cycleTimeBreakdown: async (_, { input }, context) => {
       logger.info("query.metrics.prFlow.cycleTimeBreakdown", {
@@ -149,10 +37,7 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       const result = await getWorkspaceCycleTimeBreakdownChartData(filters);
 
       return {
@@ -174,10 +59,7 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getWorkspacePullRequestSizeDistributionChartData(filters);
     },
     sizeCycleTimeCorrelation: async (_, { input }, context) => {
@@ -190,10 +72,8 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
+
       return getWorkspaceSizeCycleTimeCorrelation(filters);
     },
     teamOverview: async (_, { input }, context) => {
@@ -206,10 +86,8 @@ export const prFlowMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
+
       return getWorkspaceTeamOverview(filters);
     },
   }

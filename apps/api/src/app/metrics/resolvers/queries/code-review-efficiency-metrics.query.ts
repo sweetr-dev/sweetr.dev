@@ -4,7 +4,6 @@ import { ResourceNotFoundException } from "../../../errors/exceptions/resource-n
 import {
   getWorkspaceReviewTurnaroundTime,
   getWorkspaceTimeToApprovalChart,
-  getWorkspacePrsWithoutApproval,
   getWorkspaceSizeCommentCorrelation,
   getWorkspaceCodeReviewDistributionChartData,
   getCodeReviewTeamOverview,
@@ -13,7 +12,7 @@ import {
   getKpiAvgCommentsPerPr,
   getKpiPrsWithoutApproval,
 } from "../../services/chart-code-review-efficiency.service";
-import { buildPullRequestFlowChartFilters } from "./utils";
+import { buildCommonChartFilters } from "./utils";
 
 export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
   "CodeReviewEfficiencyMetrics",
@@ -28,10 +27,7 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getWorkspaceReviewTurnaroundTime(filters);
     },
     timeToApproval: async (_, { input }, context) => {
@@ -44,27 +40,8 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getWorkspaceTimeToApprovalChart(filters);
-    },
-    prsWithoutApproval: async (_, { input }, context) => {
-      logger.info("query.metrics.codeReviewEfficiency.prsWithoutApproval", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      return getWorkspacePrsWithoutApproval(filters);
     },
     sizeCommentCorrelation: async (_, { input }, context) => {
       logger.info("query.metrics.codeReviewEfficiency.sizeCommentCorrelation", {
@@ -76,10 +53,7 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getWorkspaceSizeCommentCorrelation(filters);
     },
     codeReviewDistribution: async (_, { input }, context) => {
@@ -92,10 +66,7 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getWorkspaceCodeReviewDistributionChartData(filters);
     },
     teamOverview: async (_, { input }, context) => {
@@ -108,14 +79,11 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
+      const filters = buildCommonChartFilters(input, context.workspaceId);
       return getCodeReviewTeamOverview(filters);
     },
-    kpiTimeToFirstReview: async (_, { input }, context) => {
-      logger.info("query.metrics.codeReviewEfficiency.kpiTimeToFirstReview", {
+    kpi: async (_, { input }, context) => {
+      logger.info("query.metrics.codeReviewEfficiency.kpi", {
         workspaceId: context.workspaceId,
         input,
       });
@@ -124,59 +92,26 @@ export const codeReviewEfficiencyMetricsQuery = createFieldResolver(
         throw new ResourceNotFoundException("Workspace not found");
       }
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      return getKpiTimeToFirstReview(filters);
-    },
-    kpiTimeToApproval: async (_, { input }, context) => {
-      logger.info("query.metrics.codeReviewEfficiency.kpiTimeToApproval", {
-        workspaceId: context.workspaceId,
-        input,
-      });
+      const filters = buildCommonChartFilters(input, context.workspaceId);
 
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
+      const [
+        timeToFirstReview,
+        timeToApproval,
+        avgCommentsPerPr,
+        prsWithoutApproval,
+      ] = await Promise.all([
+        getKpiTimeToFirstReview(filters),
+        getKpiTimeToApproval(filters),
+        getKpiAvgCommentsPerPr(filters),
+        getKpiPrsWithoutApproval(filters),
+      ]);
 
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      return getKpiTimeToApproval(filters);
-    },
-    kpiAvgCommentsPerPr: async (_, { input }, context) => {
-      logger.info("query.metrics.codeReviewEfficiency.kpiAvgCommentsPerPr", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      return getKpiAvgCommentsPerPr(filters);
-    },
-    kpiPrsWithoutApproval: async (_, { input }, context) => {
-      logger.info("query.metrics.codeReviewEfficiency.kpiPrsWithoutApproval", {
-        workspaceId: context.workspaceId,
-        input,
-      });
-
-      if (!context.workspaceId) {
-        throw new ResourceNotFoundException("Workspace not found");
-      }
-
-      const filters = buildPullRequestFlowChartFilters(
-        input,
-        context.workspaceId
-      );
-      return getKpiPrsWithoutApproval(filters);
+      return {
+        timeToFirstReview,
+        timeToApproval,
+        avgCommentsPerPr,
+        prsWithoutApproval,
+      };
     },
   }
 );

@@ -8,7 +8,7 @@ import {
   Center,
 } from "@mantine/core";
 import { TeamPrFlowOverviewRow } from "@sweetr/graphql-types/frontend/graphql";
-import { SortIcon } from "../../../../../components/sort-icon";
+import { ThSort } from "../../../../../components/th-sort";
 import { getAbbreviatedDuration } from "../../../../../providers/date.provider";
 import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 
@@ -80,7 +80,9 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
     return {
       cycleTime: Number(row.medianCycleTime)
         ? getAbbreviatedDuration(Number(row.medianCycleTime))
-        : hasData ? "0s" : "–",
+        : hasData
+          ? "0s"
+          : "–",
       merged: hasData ? row.mergedCount.toLocaleString() : "–",
       avgSize: hasData ? Math.round(row.avgLinesChanged).toLocaleString() : "–",
       bigPrs: hasData ? `${Math.round(row.pctBigPrs)}%` : "–",
@@ -111,7 +113,7 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
                         {col.label}
                       </Text>
                       <Center>
-                        <SortIcon
+                        <ThSort
                           active={col.field === sortField}
                           direction={sortDirection}
                         />
