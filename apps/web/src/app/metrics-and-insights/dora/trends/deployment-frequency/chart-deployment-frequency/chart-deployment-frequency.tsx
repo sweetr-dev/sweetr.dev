@@ -98,6 +98,8 @@ export const ChartDeploymentFrequency = ({
       yAxis: {
         boundaryGap: true,
         min: 0,
+        // @ts-ignore
+        minInterval: 1,
         axisLabel: {
           formatter(value) {
             return value;
