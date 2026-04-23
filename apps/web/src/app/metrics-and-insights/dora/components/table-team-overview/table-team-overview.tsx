@@ -10,7 +10,6 @@ import {
 import { TeamDoraOverviewRow } from "@sweetr/graphql-types/frontend/graphql";
 import { ThSort } from "../../../../../components/th-sort";
 import { getAbbreviatedDuration } from "../../../../../providers/date.provider";
-import { useFilterSearchParameters } from "../../../../../providers/filter.provider";
 
 type SortField =
   | "teamName"
@@ -34,7 +33,6 @@ const COLUMNS: { field: SortField; label: string; align: "left" | "right" }[] =
   ];
 
 export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
-  const searchParams = useFilterSearchParameters();
   const [sortField, setSortField] = useState<SortField>("teamName");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
@@ -95,10 +93,6 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
     };
   };
 
-  const selectTeam = (teamId: string) => {
-    searchParams.set("team", [teamId]);
-  };
-
   return (
     <Paper withBorder bg="dark.7">
       <Table.ScrollContainer minWidth={640}>
@@ -134,11 +128,7 @@ export const TableTeamOverview = ({ data }: TableTeamOverviewProps) => {
             {rows.map((row) => {
               const formatted = formatRow(row);
               return (
-                <Table.Tr
-                  key={row.teamId}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => selectTeam(row.teamId)}
-                >
+                <Table.Tr key={row.teamId}>
                   <Table.Td>
                     <Group gap="xs" wrap="nowrap">
                       <Text size="sm" component="span">

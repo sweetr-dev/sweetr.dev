@@ -20,7 +20,7 @@ export default /* GraphQL */ `
     "Average lead time in milliseconds for deployments in the selected range"
     leadTimeMs: BigInt
     deploymentCount: Int!
-    "Change failure rate as a percentage (0–100)"
+    "Change failure rate as a percentage"
     changeFailureRate: Float!
     "Mean time to recover in milliseconds"
     meanTimeToRecoverMs: BigInt
