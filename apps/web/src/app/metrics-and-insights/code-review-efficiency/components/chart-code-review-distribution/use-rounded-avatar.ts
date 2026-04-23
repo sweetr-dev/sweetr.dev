@@ -34,12 +34,33 @@ export function getDistributionSymbolSize(
   return Math.max(minSize, Math.min(size, maxSize));
 }
 
+const AVATAR_LOAD_TIMEOUT_MS = 3000;
+
 function loadImageCors(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error("avatar load failed"));
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const cleanup = () => {
+      if (timeoutId != null) {
+        clearTimeout(timeoutId);
+        timeoutId = undefined;
+      }
+    };
+    const finish = (action: () => void) => {
+      img.onload = null;
+      img.onerror = null;
+      cleanup();
+      action();
+    };
+    timeoutId = setTimeout(() => {
+      finish(() => {
+        img.removeAttribute("src");
+        reject(new Error("avatar load timeout"));
+      });
+    }, AVATAR_LOAD_TIMEOUT_MS);
+    img.onload = () => finish(() => resolve(img));
+    img.onerror = () => finish(() => reject(new Error("avatar load failed")));
     img.src = src;
   });
 }
@@ -116,7 +137,7 @@ async function buildCircularAvatarMap(
         const dataUrl = toCircularAvatarDataUrl(img, sizePx, dpr);
         if (dataUrl) out.set(key, dataUrl);
       } catch {
-        /* CORS or load failure */
+        // Timeout, CORS, decode, etc.: omit key; chart can fall back for this avatar.
       }
     }),
   );
