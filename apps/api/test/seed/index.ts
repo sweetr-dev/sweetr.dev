@@ -1,5 +1,6 @@
 import {
   AutomationType,
+  CodeReviewState,
   GitProvider,
   Prisma,
   PullRequestState,
@@ -216,7 +217,7 @@ export async function seedPullRequest(
     number?: string;
     title?: string;
     state?: PullRequestState;
-    mergedAt?: Date;
+    mergedAt?: Date | null;
     createdAt?: Date;
     sourceBranch?: string;
     targetBranch?: string;
@@ -249,6 +250,36 @@ export async function seedPullRequest(
   });
 
   return { pullRequestId: pr.id };
+}
+
+/**
+ * Creates a CodeReview linking a GitProfile (reviewer) to a PullRequest.
+ *
+ * Note: the schema has @@unique([pullRequestId, authorId]), so a given
+ * reviewer can only have a single CodeReview row per PR.
+ */
+export async function seedCodeReview(
+  ctx: SeedWorkspace,
+  pullRequestId: number,
+  authorId: number,
+  input: {
+    state?: CodeReviewState;
+    commentCount?: number;
+    createdAt?: Date;
+  } = {}
+): Promise<{ codeReviewId: number }> {
+  const codeReview = await getPrisma(ctx.workspaceId).codeReview.create({
+    data: {
+      pullRequestId,
+      authorId,
+      state: input.state ?? CodeReviewState.APPROVED,
+      commentCount: input.commentCount ?? 0,
+      createdAt: input.createdAt ?? new Date("2024-01-01T00:00:00Z"),
+      workspaceId: ctx.workspaceId,
+    },
+  });
+
+  return { codeReviewId: codeReview.id };
 }
 
 /**

@@ -1,36 +1,93 @@
-import type { ChartCodeReviewDistributionQuery } from "@sweetr/graphql-types/frontend/graphql";
 import { PEOPLE } from "./people";
 
-const reviewerEntity = (
-  person: (typeof PEOPLE)[number],
-  reviewCount: number,
-  reviewSharePercentage: number,
-) => ({
-  __typename: "CodeReviewDistributionEntity" as const,
-  id: `cr-author:${person.handle}`,
-  name: person.name,
-  image: person.avatar,
-  reviewCount,
-  reviewSharePercentage,
-});
+type Person = (typeof PEOPLE)[number];
 
-const prAuthorEntity = (person: (typeof PEOPLE)[number]) => ({
-  __typename: "CodeReviewDistributionEntity" as const,
-  id: `${person.handle}:sweetr-dev:internal`,
-  name: person.name,
-  image: person.avatar,
-  reviewCount: null,
-  reviewSharePercentage: null,
-});
+const reviewerId = (reviewer: Person) => `cr-author:${reviewer.handle}`;
 
-const link = (sourceHandle: string, targetHandle: string, value: number) => ({
-  __typename: "GraphChartLink" as const,
-  source: `cr-author:${sourceHandle}`,
-  target: `${targetHandle}:sweetr-dev:internal`,
-  value,
-});
+const prAuthorId = (prAuthor: Person, reviewer: Person) =>
+  `${prAuthor.handle}:${reviewer.name}`;
 
 const [guest, priya, alex, sam, jordan] = PEOPLE;
+
+const isTeammate = (a: Person, b: Person) =>
+  a.handle !== "guest" && b.handle !== "guest";
+
+const reviewConnections: Array<{
+  reviewer: Person;
+  prAuthor: Person;
+  value: number;
+}> = [
+  { reviewer: guest, prAuthor: priya, value: 8 },
+  { reviewer: guest, prAuthor: alex, value: 6 },
+  { reviewer: guest, prAuthor: sam, value: 4 },
+  { reviewer: priya, prAuthor: guest, value: 7 },
+  { reviewer: priya, prAuthor: alex, value: 5 },
+  { reviewer: priya, prAuthor: jordan, value: 3 },
+  { reviewer: alex, prAuthor: guest, value: 5 },
+  { reviewer: alex, prAuthor: sam, value: 4 },
+  { reviewer: alex, prAuthor: jordan, value: 3 },
+  { reviewer: sam, prAuthor: priya, value: 6 },
+  { reviewer: sam, prAuthor: jordan, value: 4 },
+  { reviewer: jordan, prAuthor: guest, value: 4 },
+  { reviewer: jordan, prAuthor: priya, value: 3 },
+];
+
+const links = reviewConnections.map((connection) => ({
+  __typename: "GraphChartLink" as const,
+  source: reviewerId(connection.reviewer),
+  target: prAuthorId(connection.prAuthor, connection.reviewer),
+  value: connection.value,
+  isFromTeam: isTeammate(connection.reviewer, connection.prAuthor),
+}));
+
+const reviewerTotals = new Map<Person, number>();
+reviewConnections.forEach((connection) => {
+  reviewerTotals.set(
+    connection.reviewer,
+    (reviewerTotals.get(connection.reviewer) ?? 0) + connection.value,
+  );
+});
+
+const totalReviews = Array.from(reviewerTotals.values()).reduce(
+  (sum, value) => sum + value,
+  0,
+);
+
+const reviewerEntities = Array.from(reviewerTotals.entries())
+  .sort(([, a], [, b]) => b - a)
+  .map(([reviewer, reviewCount]) => ({
+    __typename: "CodeReviewDistributionEntity" as const,
+    id: reviewerId(reviewer),
+    name: reviewer.name,
+    image: reviewer.avatar,
+    reviewCount,
+    reviewSharePercentage: Math.round((reviewCount * 100) / totalReviews),
+  }));
+
+const prAuthorEntitiesMap = new Map<
+  string,
+  { prAuthor: Person; reviewer: Person }
+>();
+reviewConnections.forEach((connection) => {
+  const id = prAuthorId(connection.prAuthor, connection.reviewer);
+  if (!prAuthorEntitiesMap.has(id)) {
+    prAuthorEntitiesMap.set(id, {
+      prAuthor: connection.prAuthor,
+      reviewer: connection.reviewer,
+    });
+  }
+});
+
+const prAuthorEntities = Array.from(prAuthorEntitiesMap.entries()).map(
+  ([id, { prAuthor }]) => ({
+    __typename: "CodeReviewDistributionEntity" as const,
+    id,
+    name: prAuthor.name,
+    image: prAuthor.avatar,
+    reviewCount: null,
+    reviewSharePercentage: null,
+  }),
+);
 
 export const codeReviewDistributionFixture = {
   workspace: {
@@ -39,35 +96,10 @@ export const codeReviewDistributionFixture = {
       __typename: "Metrics" as const,
       codeReviewDistribution: {
         __typename: "CodeReviewDistributionChartData" as const,
-        totalReviews: 62,
-        entities: [
-          reviewerEntity(guest, 18, 29),
-          reviewerEntity(priya, 15, 24),
-          reviewerEntity(alex, 12, 19),
-          reviewerEntity(sam, 10, 16),
-          reviewerEntity(jordan, 7, 12),
-          prAuthorEntity(guest),
-          prAuthorEntity(priya),
-          prAuthorEntity(alex),
-          prAuthorEntity(sam),
-          prAuthorEntity(jordan),
-        ],
-        links: [
-          link(guest.handle, priya.handle, 8),
-          link(guest.handle, alex.handle, 6),
-          link(guest.handle, sam.handle, 4),
-          link(priya.handle, guest.handle, 7),
-          link(priya.handle, alex.handle, 5),
-          link(priya.handle, jordan.handle, 3),
-          link(alex.handle, guest.handle, 5),
-          link(alex.handle, sam.handle, 4),
-          link(alex.handle, jordan.handle, 3),
-          link(sam.handle, priya.handle, 6),
-          link(sam.handle, jordan.handle, 4),
-          link(jordan.handle, guest.handle, 4),
-          link(jordan.handle, priya.handle, 3),
-        ],
+        totalReviews,
+        entities: [...reviewerEntities, ...prAuthorEntities],
+        links,
       },
     },
   },
-} satisfies ChartCodeReviewDistributionQuery;
+};

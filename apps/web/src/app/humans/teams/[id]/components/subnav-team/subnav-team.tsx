@@ -3,7 +3,6 @@ import {
   IconActivity,
   IconArrowLeft,
   IconBell,
-  IconChartArcs,
   IconMessage,
   IconProgress,
   IconTarget,
@@ -43,9 +42,18 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
       </Group>
 
       <Divider label="Team" labelPosition="left" mt="sm" />
+
       <NavLink
-        to={getLink("")}
-        active={pathname === getLink("")}
+        to={getLink("members")}
+        active={pathname === getLink("members")}
+        component={Link}
+        label="Members"
+        leftSection={<IconUsers stroke={1.5} size={18} />}
+      />
+
+      <NavLink
+        to={getLink("wip")}
+        active={pathname === getLink("wip")}
         component={Link}
         label="Work In Progress"
         leftSection={<IconProgress stroke={1.5} size={18} />}
@@ -60,27 +68,11 @@ export const SubnavTeam = ({ team }: SubnavTeamProps) => {
       />
 
       <NavLink
-        to={getLink("members")}
-        active={pathname === getLink("members")}
-        component={Link}
-        label="Members"
-        leftSection={<IconUsers stroke={1.5} size={18} />}
-      />
-
-      <Divider label="Insights" labelPosition="left" mt="sm" />
-      <NavLink
         to={getLink("pull-requests")}
         active={pathname.startsWith(getLink("pull-requests"))}
         component={Link}
         label="Pull Requests"
         leftSection={<IconPullRequest stroke={1.5} size={18} />}
-      />
-      <NavLink
-        to={getLink("health-and-performance")}
-        active={pathname.startsWith(getLink("health-and-performance"))}
-        component={Link}
-        label="Health & Performance"
-        leftSection={<IconChartArcs stroke={1.5} size={18} />}
       />
 
       <Divider label="Improve" labelPosition="left" mt="sm" />

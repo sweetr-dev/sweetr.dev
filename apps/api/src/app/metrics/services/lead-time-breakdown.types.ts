@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { DoraMetricsFilters } from "./dora-metrics.types";
 
 export interface StageResult {
@@ -31,9 +30,4 @@ export interface BreakdownAggregateQueryArgs {
   args: GetLeadTimeBreakdownArgs;
   from: string;
   to: string;
-}
-
-export interface DeploymentFilters {
-  joins: Prisma.Sql[];
-  conditions: Prisma.Sql[];
 }

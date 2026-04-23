@@ -1,0 +1,35 @@
+---
+description: Ensure all database queries in API service files are scoped to the current workspace (tenant)
+globs: apps/api/src/**/services/*.service.ts
+alwaysApply: false
+---
+
+# Workspace-scoped queries
+
+All database queries MUST be scoped to the workspace (tenant). Failing to do so leaks data across workspaces.
+
+## How to scope
+
+- `PullRequest`, `PullRequestTracking`, `Repository`, and `Team` all have a direct `workspaceId` column. Filter on it directly:
+
+```sql
+WHERE p."workspaceId" = ${workspaceId}
+```
+
+- Do NOT filter workspace through `WorkspaceMembership` joins. A `GitProfile` can belong to multiple workspaces, so filtering via membership causes cross-workspace data leaks:
+
+```sql
+-- ❌ BAD: leaks data when a user belongs to multiple workspaces
+INNER JOIN "GitProfile" gp ON p."authorId" = gp."id"
+INNER JOIN "WorkspaceMembership" wm ON gp."id" = wm."gitProfileId"
+WHERE wm."workspaceId" = ${workspaceId}
+
+-- ✅ GOOD: uses the direct workspace column on the entity
+WHERE p."workspaceId" = ${workspaceId}
+```
+
+## Checklist for new queries
+
+1. Identify which table owns the data — use its `workspaceId` column.
+2. Never rely solely on user-membership joins for tenant isolation.
+3. When using `getPrisma(workspaceId)`, remember RLS only applies to Prisma transactions, not `$queryRaw`. Raw queries must filter explicitly.

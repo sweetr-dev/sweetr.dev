@@ -33,7 +33,7 @@
     "crisp-sdk-web": "^1.0.25",
     "date-fns": "^4.0.0",
     "dayjs": "^1.11.10",
-    "echarts": "^5.5.0",
+    "echarts": "^6.0.0",
     "emoji-mart": "^5.5.2",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",

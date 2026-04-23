@@ -83,9 +83,9 @@ const buildBreakdownAggregateQuery = ({
 
   const allJoins = [
     ...joins,
-    Prisma.sql`INNER JOIN "DeploymentPullRequest" dpr ON d."id" = dpr."deploymentId"`,
-    Prisma.sql`INNER JOIN "PullRequest" pr ON dpr."pullRequestId" = pr."id"`,
-    Prisma.sql`LEFT JOIN "PullRequestTracking" prt ON pr."id" = prt."pullRequestId"`,
+    Prisma.sql`INNER JOIN "DeploymentPullRequest" dpr ON d."id" = dpr."deploymentId" AND dpr."workspaceId" = d."workspaceId"`,
+    Prisma.sql`INNER JOIN "PullRequest" pr ON dpr."pullRequestId" = pr."id" AND pr."workspaceId" = d."workspaceId"`,
+    Prisma.sql`LEFT JOIN "PullRequestTracking" prt ON pr."id" = prt."pullRequestId" AND prt."workspaceId" = d."workspaceId"`,
   ];
 
   conditions.push(

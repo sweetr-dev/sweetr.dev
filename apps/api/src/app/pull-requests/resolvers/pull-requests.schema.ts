@@ -124,6 +124,9 @@ export default /* GraphQL */ `
 
     "The size to filter by"
     sizes: [PullRequestSize!]
+
+    "The repository ids to filter by"
+    repositoryIds: [SweetID!]
   }
 
   type PullRequestsInProgressResponse {
