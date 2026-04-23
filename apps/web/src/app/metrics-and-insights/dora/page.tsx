@@ -22,7 +22,6 @@ import {
 } from "../../../providers/async-options.provider";
 import {
   getAbbreviatedDuration,
-  humanizeDuration,
   parseNullableISO,
   thirtyDaysAgo,
 } from "../../../providers/date.provider";
@@ -151,13 +150,13 @@ export const DoraPage = () => {
             name="Lead Time"
             amount={
               metrics.leadTime?.currentAmount
-                ? humanizeDuration(metrics.leadTime?.currentAmount)
-                : "0 hours"
+                ? getAbbreviatedDuration(metrics.leadTime?.currentAmount)
+                : "0h"
             }
             previousAmount={
               metrics.leadTime?.previousAmount
-                ? humanizeDuration(metrics.leadTime?.previousAmount)
-                : "0 hours"
+                ? getAbbreviatedDuration(metrics.leadTime?.previousAmount)
+                : "0h"
             }
             change={metrics.leadTime?.change || 0}
             icon={IconClock}

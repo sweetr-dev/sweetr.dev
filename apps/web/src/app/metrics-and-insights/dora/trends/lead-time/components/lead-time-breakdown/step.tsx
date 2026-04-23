@@ -6,7 +6,6 @@ import {
   Stepper,
   Text,
   ThemeIcon,
-  Tooltip,
 } from "@mantine/core";
 import { BreakdownStage } from "@sweetr/graphql-types/frontend/graphql";
 import {
@@ -17,7 +16,6 @@ import {
 import {
   DateTimeRange,
   formatLocaleDate,
-  formatMsDuration,
   getAbbreviatedDuration,
 } from "../../../../../../../providers/date.provider";
 import { UTCDate } from "@date-fns/utc";
@@ -37,9 +35,6 @@ export const Step = ({
 }: StepProps) => {
   const duration = stage.currentAmount
     ? getAbbreviatedDuration(stage.currentAmount)
-    : "0s";
-  const exactDuration = stage.currentAmount
-    ? formatMsDuration(stage.currentAmount)
     : "0s";
   const change = stage.change;
 
@@ -66,11 +61,9 @@ export const Step = ({
       }
       description={
         <Stack gap={5}>
-          <Tooltip label={exactDuration} withArrow position="left">
-            <Text size="lg" fw={500} c="bright" lineClamp={1}>
-              {duration}
-            </Text>
-          </Tooltip>
+          <Text size="lg" fw={500} c="bright" lineClamp={1}>
+            {duration}
+          </Text>
           <HoverCard position="left" withArrow>
             <HoverCard.Target>
               <Box>
@@ -97,22 +90,32 @@ export const Step = ({
               </Box>
             </HoverCard.Target>
             <HoverCard.Dropdown>
-              {previousPeriod?.from && previousPeriod?.to && (
-                <Text c="dimmed" size="sm">
-                  {formatLocaleDate(new UTCDate(previousPeriod.from), {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}{" "}
-                  -{" "}
-                  {formatLocaleDate(new UTCDate(previousPeriod.to), {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </Text>
-              )}
-              <Text size="lg" fw={500} c="bright" display="inline-block">
+              <Text c="dimmed" size="sm" fw={500}>
+                Previous period
+              </Text>
+              <Text c="bright" size="md" fw={500}>
+                {previousPeriod?.from && previousPeriod?.to ? (
+                  <>
+                    {formatLocaleDate(new UTCDate(previousPeriod.from), {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}{" "}
+                    -{" "}
+                    {formatLocaleDate(new UTCDate(previousPeriod.to), {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </>
+                ) : (
+                  "Previous period unavailable"
+                )}
+              </Text>
+              <Text mt="sm" fw={500} size="sm" c="dimmed">
+                Previous value
+              </Text>
+              <Text size="md" fw={500} c="bright" display="inline-block">
                 {stage.previousAmount
                   ? getAbbreviatedDuration(stage.previousAmount)
                   : "0s"}
