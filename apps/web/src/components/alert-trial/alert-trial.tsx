@@ -33,7 +33,7 @@ export const AlertTrial = ({ ...props }: AlertTrialProps) => {
         return `You have less than 1 hour left on your trial.`;
       }
 
-      return `You have ${hoursLeft} hours left on your trial.`;
+      return `You have ${hoursLeft} ${hoursLeft === 1 ? "hour" : "hours"} left on your trial.`;
     }
 
     return `You have ${daysLeft} days left on your trial.`;
