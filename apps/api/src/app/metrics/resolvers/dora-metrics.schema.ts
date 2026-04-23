@@ -10,6 +10,20 @@ export default /* GraphQL */ `
       input: WorkspaceMetricInput!
     ): DeploymentFrequencyMetric!
     meanTimeToRecover(input: WorkspaceMetricInput!): MeanTimeToRecoverMetric!
+    teamOverview(input: WorkspaceMetricInput!): [TeamDoraOverviewRow!]
+  }
+
+  type TeamDoraOverviewRow {
+    teamId: SweetID!
+    teamName: String!
+    teamIcon: String!
+    "Average lead time in milliseconds for deployments in the selected range"
+    leadTimeMs: BigInt
+    deploymentCount: Int!
+    "Change failure rate as a percentage (0–100)"
+    changeFailureRate: Float!
+    "Mean time to recover in milliseconds"
+    meanTimeToRecoverMs: BigInt
   }
 
   input WorkspaceMetricInput {

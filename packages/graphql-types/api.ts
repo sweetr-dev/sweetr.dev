@@ -227,7 +227,7 @@ export type CodeReview = {
 
 export type CodeReviewCountKpi = {
   __typename?: 'CodeReviewCountKpi';
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   currentAmount: Scalars['Int']['output'];
   currentPeriod: DateTimeRangeValue;
   previousAmount: Scalars['Int']['output'];
@@ -252,7 +252,7 @@ export type CodeReviewDistributionEntity = {
 
 export type CodeReviewDurationKpi = {
   __typename?: 'CodeReviewDurationKpi';
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   currentAmount: Scalars['BigInt']['output'];
   currentPeriod: DateTimeRangeValue;
   previousAmount: Scalars['BigInt']['output'];
@@ -320,7 +320,7 @@ export type CodeReviewEfficiencyMetricsTimeToApprovalArgs = {
 
 export type CodeReviewFloatKpi = {
   __typename?: 'CodeReviewFloatKpi';
-  change: Scalars['Int']['output'];
+  change: Scalars['Float']['output'];
   currentAmount: Scalars['Float']['output'];
   currentPeriod: DateTimeRangeValue;
   previousAmount: Scalars['Float']['output'];
@@ -515,6 +515,7 @@ export type DoraMetrics = {
   deploymentFrequency: DeploymentFrequencyMetric;
   leadTime: LeadTimeMetric;
   meanTimeToRecover: MeanTimeToRecoverMetric;
+  teamOverview?: Maybe<Array<TeamDoraOverviewRow>>;
 };
 
 
@@ -534,6 +535,11 @@ export type DoraMetricsLeadTimeArgs = {
 
 
 export type DoraMetricsMeanTimeToRecoverArgs = {
+  input: WorkspaceMetricInput;
+};
+
+
+export type DoraMetricsTeamOverviewArgs = {
   input: WorkspaceMetricInput;
 };
 
@@ -1235,6 +1241,20 @@ export type TeamWorkLogArgs = {
   input: TeamWorkLogInput;
 };
 
+export type TeamDoraOverviewRow = {
+  __typename?: 'TeamDoraOverviewRow';
+  /** Change failure rate as a percentage (0–100) */
+  changeFailureRate: Scalars['Float']['output'];
+  deploymentCount: Scalars['Int']['output'];
+  /** Average lead time in milliseconds for deployments in the selected range */
+  leadTimeMs?: Maybe<Scalars['BigInt']['output']>;
+  /** Mean time to recover in milliseconds */
+  meanTimeToRecoverMs?: Maybe<Scalars['BigInt']['output']>;
+  teamIcon: Scalars['String']['output'];
+  teamId: Scalars['SweetID']['output'];
+  teamName: Scalars['String']['output'];
+};
+
 export type TeamMember = {
   __typename?: 'TeamMember';
   id: Scalars['SweetID']['output'];
@@ -1764,6 +1784,7 @@ export type ResolversTypes = {
   SweetID: ResolverTypeWrapper<DeepPartial<Scalars['SweetID']['output']>>;
   SyncBatch: ResolverTypeWrapper<DeepPartial<SyncBatch>>;
   Team: ResolverTypeWrapper<DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversTypes['Alert']>, alerts: Array<ResolversTypes['Alert']>, members: Array<ResolversTypes['TeamMember']>, workLog: ResolversTypes['TeamWorkLogResponse'] }>>;
+  TeamDoraOverviewRow: ResolverTypeWrapper<DeepPartial<TeamDoraOverviewRow>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversTypes['Person'], team: ResolversTypes['Team'] }>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
   TeamPrFlowOverviewRow: ResolverTypeWrapper<DeepPartial<TeamPrFlowOverviewRow>>;
@@ -1897,6 +1918,7 @@ export type ResolversParentTypes = {
   SweetID: DeepPartial<Scalars['SweetID']['output']>;
   SyncBatch: DeepPartial<SyncBatch>;
   Team: DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversParentTypes['Alert']>, alerts: Array<ResolversParentTypes['Alert']>, members: Array<ResolversParentTypes['TeamMember']>, workLog: ResolversParentTypes['TeamWorkLogResponse'] }>;
+  TeamDoraOverviewRow: DeepPartial<TeamDoraOverviewRow>;
   TeamMember: DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversParentTypes['Person'], team: ResolversParentTypes['Team'] }>;
   TeamPrFlowOverviewRow: DeepPartial<TeamPrFlowOverviewRow>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
@@ -2035,7 +2057,7 @@ export type CodeReviewResolvers<ContextType = GraphQLContext, ParentType extends
 };
 
 export type CodeReviewCountKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewCountKpi'] = ResolversParentTypes['CodeReviewCountKpi']> = {
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2057,7 +2079,7 @@ export type CodeReviewDistributionEntityResolvers<ContextType = GraphQLContext, 
 };
 
 export type CodeReviewDurationKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewDurationKpi'] = ResolversParentTypes['CodeReviewDurationKpi']> = {
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2081,7 +2103,7 @@ export type CodeReviewEfficiencyMetricsResolvers<ContextType = GraphQLContext, P
 };
 
 export type CodeReviewFloatKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewFloatKpi'] = ResolversParentTypes['CodeReviewFloatKpi']> = {
-  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  change?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -2167,6 +2189,7 @@ export type DoraMetricsResolvers<ContextType = GraphQLContext, ParentType extend
   deploymentFrequency?: Resolver<ResolversTypes['DeploymentFrequencyMetric'], ParentType, ContextType, RequireFields<DoraMetricsDeploymentFrequencyArgs, 'input'>>;
   leadTime?: Resolver<ResolversTypes['LeadTimeMetric'], ParentType, ContextType, RequireFields<DoraMetricsLeadTimeArgs, 'input'>>;
   meanTimeToRecover?: Resolver<ResolversTypes['MeanTimeToRecoverMetric'], ParentType, ContextType, RequireFields<DoraMetricsMeanTimeToRecoverArgs, 'input'>>;
+  teamOverview?: Resolver<Maybe<Array<ResolversTypes['TeamDoraOverviewRow']>>, ParentType, ContextType, RequireFields<DoraMetricsTeamOverviewArgs, 'input'>>;
 };
 
 export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Environment'] = ResolversParentTypes['Environment']> = {
@@ -2453,6 +2476,16 @@ export type TeamResolvers<ContextType = GraphQLContext, ParentType extends Resol
   workLog?: Resolver<ResolversTypes['TeamWorkLogResponse'], ParentType, ContextType, RequireFields<TeamWorkLogArgs, 'input'>>;
 };
 
+export type TeamDoraOverviewRowResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamDoraOverviewRow'] = ResolversParentTypes['TeamDoraOverviewRow']> = {
+  changeFailureRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  deploymentCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  leadTimeMs?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  meanTimeToRecoverMs?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  teamIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teamId?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  teamName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
 export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
   id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
@@ -2610,6 +2643,7 @@ export type Resolvers<ContextType = GraphQLContext> = {
   SweetID?: GraphQLScalarType;
   SyncBatch?: SyncBatchResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
+  TeamDoraOverviewRow?: TeamDoraOverviewRowResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
   TeamPrFlowOverviewRow?: TeamPrFlowOverviewRowResolvers<ContextType>;
   TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;

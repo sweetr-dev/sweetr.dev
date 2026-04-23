@@ -21,6 +21,7 @@ import { Period } from "../../../graphql-types";
 import {
   getChangeFailureRateMetric,
   getDeploymentFrequencyMetric,
+  getDoraTeamOverview,
   getLeadTimeMetric,
   getMeanTimeToRecoverMetric,
 } from "./dora-metrics.service";
@@ -3233,6 +3234,800 @@ describe("DORA Metrics", () => {
       expect(result.change).toBeCloseTo(900, 1);
       // Should not be NaN or Infinity
       expect(Number.isFinite(result.change)).toBe(true);
+    });
+  });
+
+  describe("Team Overview", () => {
+    it("returns all non-archived teams, including teams with no activity", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const teamA = await seedTeam(ctx, { name: "A-team", icon: "🅰️" });
+      const teamB = await seedTeam(ctx, { name: "B-team", icon: "🅱️" });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        teamId: teamA.teamId,
+        teamName: "A-team",
+        teamIcon: "🅰️",
+        leadTimeMs: null,
+        deploymentCount: 0,
+        changeFailureRate: 0,
+        meanTimeToRecoverMs: null,
+      });
+      expect(result[1].teamId).toBe(teamB.teamId);
+    });
+
+    it("excludes archived teams", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const activeTeam = await seedTeam(ctx, { name: "active" });
+      const archivedTeam = await seedTeam(ctx, { name: "archived" });
+      await getPrisma(ctx.workspaceId).team.update({
+        where: { id: archivedTeam.teamId },
+        data: { archivedAt: new Date("2024-01-01T00:00:00Z") },
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].teamId).toBe(activeTeam.teamId);
+    });
+
+    it("orders teams by name ascending", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      await seedTeam(ctx, { name: "charlie" });
+      await seedTeam(ctx, { name: "alpha" });
+      await seedTeam(ctx, { name: "bravo" });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result.map((r) => r.teamName)).toEqual([
+        "alpha",
+        "bravo",
+        "charlie",
+      ]);
+    });
+
+    it("filters by teamIds argument", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const team1 = await seedTeam(ctx, { name: "team1" });
+      await seedTeam(ctx, { name: "team2" });
+      await seedTeam(ctx, { name: "team3" });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+        teamIds: [team1.teamId],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].teamId).toBe(team1.teamId);
+    });
+
+    it("computes lead time, deployment count, CFR and MTTR for a team", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "platform" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      // Deployment 1: 4h lead time, causes an incident resolved in 2h
+      const pr1 = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "1", createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment1 = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment1.deploymentId,
+        pr1.pullRequestId
+      );
+      await seedIncident(ctx, deployment1.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T17:00:00Z"),
+      });
+
+      // Deployment 2: 6h lead time, no incident
+      const pr2 = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "2", createdAt: new Date("2024-01-15T08:00:00Z") }
+      );
+      const deployment2 = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          version: "1.0.1",
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment2.deploymentId,
+        pr2.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(1);
+      const row = result[0];
+      expect(row.teamId).toBe(team.teamId);
+      expect(row.deploymentCount).toBe(2);
+      // Avg lead time = (4h + 6h) / 2 = 5h = 18,000,000 ms
+      expect(row.leadTimeMs).toBe(BigInt(18_000_000));
+      // CFR = 1 incident / 2 deployments * 100 = 50%
+      expect(row.changeFailureRate).toBe(50);
+      // MTTR = 2h = 7,200,000 ms
+      expect(row.meanTimeToRecoverMs).toBe(BigInt(7_200_000));
+    });
+
+    it("attributes a deployment to every team the author belongs to", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const teamA = await seedTeam(ctx, { name: "alpha" });
+      const teamB = await seedTeam(ctx, { name: "bravo" });
+      await seedTeamMember(ctx, teamA.teamId, gitProfile.gitProfileId);
+      await seedTeamMember(ctx, teamB.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(2);
+      for (const row of result) {
+        expect(row.deploymentCount).toBe(1);
+        expect(row.leadTimeMs).toBe(BigInt(14_400_000)); // 4h
+      }
+    });
+
+    it("does not attribute deployments to teams the author does not belong to", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const author = await seedGitProfile(ctx, { handle: "author" });
+      const other = await seedGitProfile(ctx, { handle: "other" });
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+
+      const authorTeam = await seedTeam(ctx, { name: "author-team" });
+      const otherTeam = await seedTeam(ctx, { name: "other-team" });
+      await seedTeamMember(ctx, authorTeam.teamId, author.gitProfileId);
+      await seedTeamMember(ctx, otherTeam.teamId, other.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        author.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: author.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      const authorRow = result.find((r) => r.teamId === authorTeam.teamId)!;
+      const otherRow = result.find((r) => r.teamId === otherTeam.teamId)!;
+      expect(authorRow.deploymentCount).toBe(1);
+      expect(otherRow.deploymentCount).toBe(0);
+      expect(otherRow.leadTimeMs).toBeNull();
+      expect(otherRow.changeFailureRate).toBe(0);
+      expect(otherRow.meanTimeToRecoverMs).toBeNull();
+    });
+
+    it("excludes deployments outside the date range", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      // In range
+      const prIn = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "1", createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deploymentIn = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deploymentIn.deploymentId,
+        prIn.pullRequestId
+      );
+
+      // Out of range
+      const prOut = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "2", createdAt: new Date("2024-01-10T10:00:00Z") }
+      );
+      const deploymentOut = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          version: "0.9.0",
+          deployedAt: new Date("2024-01-10T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deploymentOut.deploymentId,
+        prOut.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].deploymentCount).toBe(1);
+    });
+
+    it("filters deployments and incidents by production environment by default", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const prodEnv = await seedEnvironment(ctx, { isProduction: true });
+      const stagingEnv = await seedEnvironment(ctx, { isProduction: false });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      for (const env of [prodEnv, stagingEnv]) {
+        const pr = await seedPullRequest(
+          ctx,
+          repository.repositoryId,
+          gitProfile.gitProfileId,
+          {
+            number: env === prodEnv ? "1" : "2",
+            createdAt: new Date("2024-01-15T10:00:00Z"),
+          }
+        );
+        const deployment = await seedDeployment(
+          ctx,
+          application.applicationId,
+          env.environmentId,
+          {
+            version: env === prodEnv ? "1.0.0" : "1.0.0-staging",
+            deployedAt: new Date("2024-01-15T14:00:00Z"),
+            authorId: gitProfile.gitProfileId,
+          }
+        );
+        await seedDeploymentPullRequest(
+          ctx,
+          deployment.deploymentId,
+          pr.pullRequestId
+        );
+      }
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(1);
+    });
+
+    it("excludes archived deployments", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      await getPrisma(ctx.workspaceId).deployment.update({
+        where: { id: deployment.deploymentId },
+        data: { archivedAt: new Date("2024-01-16T00:00:00Z") },
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(0);
+      expect(result[0].leadTimeMs).toBeNull();
+    });
+
+    it("does not count deployments with null authorId toward any team", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      // Deployment has no authorId → can't be attributed to any team
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        { deployedAt: new Date("2024-01-15T14:00:00Z") }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(0);
+    });
+
+    it("computes MTTR against the deployment cohort, regardless of incident detection date", async () => {
+      // Incident is detected OUTSIDE the query date range, but its cause
+      // deployment is INSIDE the range → incident must count toward MTTR/CFR
+      // because every metric is anchored on the same deployment cohort.
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      // Detected and resolved AFTER the query window
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-20T00:00:00Z"),
+        resolvedAt: new Date("2024-01-20T03:00:00Z"),
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(1);
+      expect(result[0].changeFailureRate).toBe(100);
+      expect(result[0].meanTimeToRecoverMs).toBe(BigInt(3 * 60 * 60 * 1000));
+    });
+
+    it("does not count incidents whose cause deployment is outside the cohort", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      // Deployment OUTSIDE the query window
+      const prOut = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "1", createdAt: new Date("2024-01-10T10:00:00Z") }
+      );
+      const deploymentOut = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          version: "0.9.0",
+          deployedAt: new Date("2024-01-10T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deploymentOut.deploymentId,
+        prOut.pullRequestId
+      );
+      // Incident detected INSIDE the window, but cause deployment is outside
+      await seedIncident(ctx, deploymentOut.deploymentId, {
+        detectedAt: new Date("2024-01-15T10:00:00Z"),
+        resolvedAt: new Date("2024-01-15T12:00:00Z"),
+      });
+
+      // Deployment INSIDE the cohort, no incident
+      const prIn = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { number: "2", createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deploymentIn = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          version: "1.0.0",
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deploymentIn.deploymentId,
+        prIn.pullRequestId
+      );
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(1);
+      expect(result[0].changeFailureRate).toBe(0);
+      expect(result[0].meanTimeToRecoverMs).toBeNull();
+    });
+
+    it("excludes archived incidents from CFR and MTTR", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+      const archived = await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T17:00:00Z"),
+      });
+      await getPrisma(ctx.workspaceId).incident.update({
+        where: { id: archived.incidentId },
+        data: { archivedAt: new Date("2024-01-16T00:00:00Z") },
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(1);
+      expect(result[0].changeFailureRate).toBe(0);
+      expect(result[0].meanTimeToRecoverMs).toBeNull();
+    });
+
+    it("excludes unresolved incidents from MTTR but counts them in CFR", async () => {
+      const ctx = await createTestContextWithGitProfile();
+      const gitProfile = await seedGitProfile(ctx);
+      const repository = await seedRepository(ctx);
+      const application = await seedApplication(ctx, repository.repositoryId);
+      const environment = await seedEnvironment(ctx, { isProduction: true });
+      const team = await seedTeam(ctx, { name: "team" });
+      await seedTeamMember(ctx, team.teamId, gitProfile.gitProfileId);
+
+      const pr = await seedPullRequest(
+        ctx,
+        repository.repositoryId,
+        gitProfile.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx,
+        application.applicationId,
+        environment.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gitProfile.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      // Resolved incident → contributes to both CFR and MTTR
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T17:00:00Z"),
+      });
+      // Unresolved incident → contributes to CFR but NOT MTTR
+      await seedIncident(ctx, deployment.deploymentId, {
+        detectedAt: new Date("2024-01-15T18:00:00Z"),
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result[0].deploymentCount).toBe(1);
+      // 2 incidents / 1 deployment = 200%
+      expect(result[0].changeFailureRate).toBe(200);
+      // MTTR only includes the resolved incident (2h)
+      expect(result[0].meanTimeToRecoverMs).toBe(BigInt(7_200_000));
+    });
+
+    it("isolates data by workspace", async () => {
+      const ctx1 = await createTestContextWithGitProfile();
+      const ctx2 = await createTestContextWithGitProfile();
+
+      // Workspace 1: one team with a deployment + incident
+      const gp1 = await seedGitProfile(ctx1);
+      const repo1 = await seedRepository(ctx1);
+      const app1 = await seedApplication(ctx1, repo1.repositoryId);
+      const env1 = await seedEnvironment(ctx1, { isProduction: true });
+      const team1 = await seedTeam(ctx1, { name: "ws1-team" });
+      await seedTeamMember(ctx1, team1.teamId, gp1.gitProfileId);
+      const pr1 = await seedPullRequest(
+        ctx1,
+        repo1.repositoryId,
+        gp1.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const d1 = await seedDeployment(
+        ctx1,
+        app1.applicationId,
+        env1.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gp1.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(ctx1, d1.deploymentId, pr1.pullRequestId);
+      await seedIncident(ctx1, d1.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T16:00:00Z"),
+      });
+
+      // Workspace 2: team with identical-ish activity that must not leak
+      const gp2 = await seedGitProfile(ctx2);
+      const repo2 = await seedRepository(ctx2);
+      const app2 = await seedApplication(ctx2, repo2.repositoryId);
+      const env2 = await seedEnvironment(ctx2, { isProduction: true });
+      const team2 = await seedTeam(ctx2, { name: "ws2-team" });
+      await seedTeamMember(ctx2, team2.teamId, gp2.gitProfileId);
+      const pr2 = await seedPullRequest(
+        ctx2,
+        repo2.repositoryId,
+        gp2.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const d2 = await seedDeployment(
+        ctx2,
+        app2.applicationId,
+        env2.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: gp2.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(ctx2, d2.deploymentId, pr2.pullRequestId);
+      await seedIncident(ctx2, d2.deploymentId, {
+        detectedAt: new Date("2024-01-15T15:00:00Z"),
+        resolvedAt: new Date("2024-01-15T16:00:00Z"),
+      });
+
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx1.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].teamId).toBe(team1.teamId);
+      expect(result[0].teamName).toBe("ws1-team");
+      expect(result[0].deploymentCount).toBe(1);
+      expect(result[0].changeFailureRate).toBe(100);
+      expect(result[0].meanTimeToRecoverMs).toBe(BigInt(3_600_000)); // 1h
+    });
+
+    it("does not leak a cross-workspace git profile into another workspace's team", async () => {
+      // A single gitProfile can be attached to multiple workspaces; the query
+      // must never attribute workspace A's deployment to workspace B's team
+      // just because the deployment author happens to be a member of a team in B.
+      const ctx1 = await createTestContextWithGitProfile();
+      const ctx2 = await createTestContextWithGitProfile();
+
+      // Shared author: exists in both workspaces (same gitProfile id isn't
+      // possible via seed, but the RLS-bypass shortcut is an author the query
+      // only sees through workspace-scoped joins).
+      const sharedAuthor = await seedGitProfile(ctx1, { handle: "shared" });
+
+      // Put the author on a team in workspace 2 via a membership.
+      const teamB = await seedTeam(ctx2, { name: "ws2-team" });
+      await seedTeamMember(ctx2, teamB.teamId, sharedAuthor.gitProfileId);
+
+      // Create a deployment authored by sharedAuthor in workspace 1
+      const repo = await seedRepository(ctx1);
+      const app = await seedApplication(ctx1, repo.repositoryId);
+      const env = await seedEnvironment(ctx1, { isProduction: true });
+      const pr = await seedPullRequest(
+        ctx1,
+        repo.repositoryId,
+        sharedAuthor.gitProfileId,
+        { createdAt: new Date("2024-01-15T10:00:00Z") }
+      );
+      const deployment = await seedDeployment(
+        ctx1,
+        app.applicationId,
+        env.environmentId,
+        {
+          deployedAt: new Date("2024-01-15T14:00:00Z"),
+          authorId: sharedAuthor.gitProfileId,
+        }
+      );
+      await seedDeploymentPullRequest(
+        ctx1,
+        deployment.deploymentId,
+        pr.pullRequestId
+      );
+
+      // Querying workspace 2 must NOT see workspace 1's deployment.
+      const result = await getDoraTeamOverview({
+        workspaceId: ctx2.workspaceId,
+        dateRange: { from: "2024-01-15T00:00:00Z", to: "2024-01-16T00:00:00Z" },
+        period: Period.DAILY,
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].teamId).toBe(teamB.teamId);
+      expect(result[0].deploymentCount).toBe(0);
+      expect(result[0].leadTimeMs).toBeNull();
+      expect(result[0].changeFailureRate).toBe(0);
+      expect(result[0].meanTimeToRecoverMs).toBeNull();
     });
   });
 });

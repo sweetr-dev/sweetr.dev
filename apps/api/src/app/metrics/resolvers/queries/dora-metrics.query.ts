@@ -6,6 +6,7 @@ import { ResourceNotFoundException } from "../../../errors/exceptions/resource-n
 import {
   getChangeFailureRateMetric,
   getDeploymentFrequencyMetric,
+  getDoraTeamOverview,
   getLeadTimeMetric,
   getMeanTimeToRecoverMetric,
 } from "../../services/dora-metrics.service";
@@ -100,5 +101,19 @@ export const doraMetricsQuery = createFieldResolver("DoraMetrics", {
     );
 
     return transformMeanTimeToRecoverMetric(result);
+  },
+  teamOverview: async (_, { input }, context) => {
+    logger.info("query.metrics.dora.teamOverview", {
+      workspaceId: context.workspaceId,
+      input,
+    });
+
+    if (!context.workspaceId) {
+      throw new ResourceNotFoundException("Workspace not found");
+    }
+
+    return getDoraTeamOverview(
+      buildDoraWorkspaceMetricFilters(context.workspaceId, input)
+    );
   },
 });

@@ -7,6 +7,7 @@ import {
   DeploymentFiltersResult,
   DeploymentFrequencyResult,
   DoraMetricsFilters,
+  DoraTeamOverviewSqlRow,
   FailureRateResult,
   MetricResult,
 } from "./dora-metrics.types";
@@ -661,4 +662,141 @@ export const getMeanTimeToRecoverMetric = async (
     currentPeriod: { from, to },
     previousPeriod: { from: beforeFrom, to: beforeTo },
   };
+};
+
+export const getDoraTeamOverview = async (filters: DoraMetricsFilters) => {
+  const { from, to } = filters.dateRange;
+  const workspaceId = filters.workspaceId;
+
+  const baseFilters: DoraMetricsFilters = {
+    ...filters,
+    teamIds: undefined,
+  };
+
+  const { joins, conditions } = buildDeploymentFilters(baseFilters, "d");
+
+  const deployConditions = [
+    ...conditions,
+    Prisma.sql`d."deployedAt" >= ${new Date(from)}`,
+    Prisma.sql`d."deployedAt" <= ${new Date(to)}`,
+    Prisma.sql`d."archivedAt" IS NULL`,
+  ];
+  const deployWhereClause = Prisma.join(deployConditions, " AND ");
+  const deployJoinClause =
+    joins.length > 0 ? Prisma.join(joins, " ") : Prisma.sql``;
+
+  const teamListFilter =
+    filters.teamIds && filters.teamIds.length > 0
+      ? Prisma.sql`AND t."id" = ANY(ARRAY[${Prisma.join(
+          filters.teamIds.map((id) => Prisma.sql`${id}`),
+          ", "
+        )}])`
+      : Prisma.empty;
+
+  const leadExtraJoins = [
+    Prisma.sql`INNER JOIN "DeploymentPullRequest" dpr ON d."id" = dpr."deploymentId" AND dpr."workspaceId" = d."workspaceId"`,
+    Prisma.sql`INNER JOIN "PullRequest" pr ON dpr."pullRequestId" = pr."id" AND pr."workspaceId" = d."workspaceId"`,
+    Prisma.sql`LEFT JOIN "PullRequestTracking" prt ON pr."id" = prt."pullRequestId" AND prt."workspaceId" = d."workspaceId"`,
+  ];
+  const leadJoinClause = Prisma.join([...joins, ...leadExtraJoins], " ");
+
+  // Every metric is computed against the same cohort: the deployments that
+  // fall inside the date range after all deployment filters are applied.
+  // CFR and MTTR attribute incidents via `causeDeploymentId` against that
+  // cohort — they do NOT re-filter incidents by their own detection date.
+  const query = Prisma.sql`
+    WITH all_teams AS (
+      SELECT t."id", t."name", t."icon"
+      FROM "Team" t
+      WHERE t."workspaceId" = ${workspaceId}
+        AND t."archivedAt" IS NULL
+        ${teamListFilter}
+    ),
+    deployments_scoped AS (
+      SELECT d."id", d."authorId"
+      FROM "Deployment" d
+      ${deployJoinClause}
+      WHERE ${deployWhereClause}
+    ),
+    deployment_lead_times AS (
+      SELECT
+        d."id",
+        EXTRACT(EPOCH FROM (d."deployedAt" - MIN(COALESCE(prt."firstCommitAt", pr."createdAt")))) * 1000 AS lead_time_ms
+      FROM "Deployment" d
+      ${leadJoinClause}
+      WHERE ${deployWhereClause}
+      GROUP BY d."id", d."deployedAt"
+    ),
+    team_deployments AS (
+      SELECT tm."teamId" AS team_id, ds."id" AS deployment_id
+      FROM deployments_scoped ds
+      INNER JOIN "TeamMember" tm ON tm."gitProfileId" = ds."authorId" AND tm."workspaceId" = ${workspaceId}
+    ),
+    team_lead AS (
+      SELECT td.team_id, AVG(dlt.lead_time_ms) AS avg_lead_ms
+      FROM team_deployments td
+      LEFT JOIN deployment_lead_times dlt ON dlt."id" = td.deployment_id
+      GROUP BY td.team_id
+    ),
+    team_deploy_count AS (
+      SELECT team_id, COUNT(DISTINCT deployment_id)::bigint AS deployment_count
+      FROM team_deployments
+      GROUP BY team_id
+    ),
+    team_cfr AS (
+      SELECT
+        td.team_id,
+        ROUND(
+          (COUNT(DISTINCT i."id")::numeric / NULLIF(COUNT(DISTINCT td.deployment_id), 0)::numeric) * 100,
+          2
+        )::double precision AS change_failure_rate
+      FROM team_deployments td
+      LEFT JOIN "Incident" i
+        ON i."causeDeploymentId" = td.deployment_id
+        AND i."workspaceId" = ${workspaceId}
+        AND i."archivedAt" IS NULL
+      GROUP BY td.team_id
+    ),
+    team_mttr AS (
+      SELECT
+        td.team_id,
+        AVG(EXTRACT(EPOCH FROM (i."resolvedAt" - i."detectedAt")) * 1000) AS avg_mttr_ms
+      FROM team_deployments td
+      INNER JOIN "Incident" i
+        ON i."causeDeploymentId" = td.deployment_id
+        AND i."workspaceId" = ${workspaceId}
+        AND i."archivedAt" IS NULL
+        AND i."resolvedAt" IS NOT NULL
+      GROUP BY td.team_id
+    )
+    SELECT
+      at."id" AS team_id,
+      at."name" AS team_name,
+      at."icon" AS team_icon,
+      tl.avg_lead_ms,
+      COALESCE(tdc.deployment_count, 0)::bigint AS deployment_count,
+      COALESCE(tcfr.change_failure_rate, 0) AS change_failure_rate,
+      tm.avg_mttr_ms
+    FROM all_teams at
+    LEFT JOIN team_lead tl ON tl.team_id = at."id"
+    LEFT JOIN team_deploy_count tdc ON tdc.team_id = at."id"
+    LEFT JOIN team_cfr tcfr ON tcfr.team_id = at."id"
+    LEFT JOIN team_mttr tm ON tm.team_id = at."id"
+    ORDER BY at."name" ASC;
+  `;
+
+  const rows =
+    await getPrisma(workspaceId).$queryRaw<DoraTeamOverviewSqlRow[]>(query);
+
+  return rows.map((r) => ({
+    teamId: r.team_id,
+    teamName: r.team_name,
+    teamIcon: r.team_icon,
+    leadTimeMs:
+      r.avg_lead_ms != null ? BigInt(Math.floor(Number(r.avg_lead_ms))) : null,
+    deploymentCount: Number(r.deployment_count),
+    changeFailureRate: Number(r.change_failure_rate) || 0,
+    meanTimeToRecoverMs:
+      r.avg_mttr_ms != null ? BigInt(Math.floor(Number(r.avg_mttr_ms))) : null,
+  }));
 };
