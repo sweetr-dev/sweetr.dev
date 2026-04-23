@@ -1,5 +1,5 @@
 import * as echarts from "echarts/core";
-import { BarChart, LineChart, GraphChart } from "echarts/charts";
+import { BarChart, LineChart, GraphChart, ScatterChart } from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
@@ -9,6 +9,7 @@ import {
   // Built-in transform (filter, sort)
   TransformComponent,
   LegendComponent,
+  AxisPointerComponent,
 } from "echarts/components";
 import { LabelLayout, UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
@@ -17,6 +18,7 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
   GraphSeriesOption,
+  ScatterSeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -35,6 +37,7 @@ export type ECOption = ComposeOption<
   | BarSeriesOption
   | LineSeriesOption
   | GraphSeriesOption
+  | ScatterSeriesOption
   | TitleComponentOption
   | TooltipComponentOption
   | GridComponentOption
@@ -50,9 +53,11 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   LegendComponent,
+  AxisPointerComponent,
   BarChart,
   LineChart,
   GraphChart,
+  ScatterChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
@@ -76,5 +81,16 @@ export const formatTooltipDate = (date: Date, period: Period): string => {
 
   return format(date, "yyyy");
 };
+
+const HTML_ESCAPE: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+export const escapeHtml = (value: unknown): string =>
+  String(value ?? "").replace(/[&<>"']/g, (char) => HTML_ESCAPE[char] ?? char);
 
 export { echarts };

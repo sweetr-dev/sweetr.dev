@@ -22,20 +22,13 @@ import { SlowReviewAlertPage } from "./app/humans/teams/[id]/alerts/settings/slo
 import { TeamDigestsPage } from "./app/humans/teams/[id]/digests/page";
 import { TeamMetricsDigestPage } from "./app/humans/teams/[id]/digests/settings/team-metrics/page";
 import { TeamWipDigestPage } from "./app/humans/teams/[id]/digests/settings/team-wip/page";
-import { TeamCodeReviewDistributionPage } from "./app/humans/teams/[id]/health-and-performance/activity/code-review-distribution/page";
-import { TeamCodeReviewsTimeToApprovePage } from "./app/humans/teams/[id]/health-and-performance/code-reviews/time-to-approve/page";
-import { TeamCodeReviewsTimeToFirstReviewPage } from "./app/humans/teams/[id]/health-and-performance/code-reviews/time-to-first-review/page";
-import { TeamHealthAndPerformancePage } from "./app/humans/teams/[id]/health-and-performance/page";
-import { TeamPullRequestsCycleTimePage } from "./app/humans/teams/[id]/health-and-performance/pull-requests/cycle-time/page";
-import { TeamPullRequestsSizeDistribution } from "./app/humans/teams/[id]/health-and-performance/pull-requests/size-distribution/page";
-import { TeamPullRequestsTimeToMergePage } from "./app/humans/teams/[id]/health-and-performance/pull-requests/time-to-merge/page";
 import { TeamMembersPage } from "./app/humans/teams/[id]/members/page";
 import { TeamPage } from "./app/humans/teams/[id]/page";
 import { TeamPullRequestsPage } from "./app/humans/teams/[id]/pull-requests/page";
 import { TeamWorkInProgressPage } from "./app/humans/teams/[id]/work-in-progress/page";
 import { TeamWorkLogPage } from "./app/humans/teams/[id]/work-log/page";
 import { TeamsPage } from "./app/humans/teams/page";
-import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
+import { DoraPage } from "./app/metrics-and-insights/dora/page";
 import { AppPage } from "./app/page";
 import { BillingPage } from "./app/settings/billing/page";
 import { IntegrationsPage } from "./app/settings/integrations/page";
@@ -68,12 +61,15 @@ import { EnvironmentsPage } from "./app/systems/environments/page";
 import { IncidentsCreatePage } from "./app/systems/incidents/upsert/create/page";
 import { IncidentsEditPage } from "./app/systems/incidents/upsert/edit/page";
 import { DeploymentsViewPage } from "./app/systems/deployments/view/page";
-import { DoraFailureRatePage } from "./app/metrics-and-insights/failure-rate/page";
-import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/deployment-frequency/page";
-import { DoraLeadTimePage } from "./app/metrics-and-insights/lead-time/page";
-import { DoraMttrPage } from "./app/metrics-and-insights/mttr/page";
+import { DoraFailureRatePage } from "./app/metrics-and-insights/dora/trends/failure-rate/page";
+import { DoraDeploymentFrequencyPage } from "./app/metrics-and-insights/dora/trends/deployment-frequency/page";
+import { DoraLeadTimePage } from "./app/metrics-and-insights/dora/trends/lead-time/page";
+import { DoraMttrPage } from "./app/metrics-and-insights/dora/trends/mttr/page";
 import { WorkspaceResyncPage } from "./app/settings/workspace/resync/page";
 import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
+import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
+import { PrFlowPage } from "./app/metrics-and-insights/pr-flow/page";
+import { CodeReviewEfficiencyPage } from "./app/metrics-and-insights/code-review-efficiency/page";
 
 export const router = createBrowserRouter([
   {
@@ -111,9 +107,7 @@ export const router = createBrowserRouter([
       {
         path: "/sandbox",
         lazy: async () => {
-          const { sandboxLoader } = await import(
-            "./sandbox/sandbox-provider"
-          );
+          const { sandboxLoader } = await import("./sandbox/sandbox-provider");
           return { loader: sandboxLoader };
         },
       },
@@ -127,9 +121,8 @@ export const router = createBrowserRouter([
         ),
         loader: async ({ request }) => {
           if (isSandboxMode()) {
-            const { ensureSandboxWorker } = await import(
-              "./sandbox/sandbox-provider"
-            );
+            const { ensureSandboxWorker } =
+              await import("./sandbox/sandbox-provider");
             await ensureSandboxWorker();
           }
 
@@ -268,20 +261,34 @@ export const router = createBrowserRouter([
             element: <MetricsAndInsightsPage />,
             children: [
               {
-                path: "/metrics-and-insights/deployment-frequency",
-                element: <DoraDeploymentFrequencyPage />,
+                path: "/metrics-and-insights/dora",
+                element: <DoraPage />,
+                children: [
+                  {
+                    path: "/metrics-and-insights/dora/deployment-frequency",
+                    element: <DoraDeploymentFrequencyPage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/lead-time",
+                    element: <DoraLeadTimePage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/failure-rate",
+                    element: <DoraFailureRatePage />,
+                  },
+                  {
+                    path: "/metrics-and-insights/dora/mttr",
+                    element: <DoraMttrPage />,
+                  },
+                ],
               },
               {
-                path: "/metrics-and-insights/lead-time",
-                element: <DoraLeadTimePage />,
+                path: "/metrics-and-insights/pr-flow",
+                element: <PrFlowPage />,
               },
               {
-                path: "/metrics-and-insights/failure-rate",
-                element: <DoraFailureRatePage />,
-              },
-              {
-                path: "/metrics-and-insights/mttr",
-                element: <DoraMttrPage />,
+                path: "/metrics-and-insights/code-review-efficiency",
+                element: <CodeReviewEfficiencyPage />,
               },
             ],
           },
@@ -298,7 +305,7 @@ export const router = createBrowserRouter([
                 element: <TeamPage />,
                 children: [
                   {
-                    path: "/humans/teams/:teamId",
+                    path: "/humans/teams/:teamId/wip",
                     element: <TeamWorkInProgressPage />,
                   },
                   {
@@ -342,36 +349,6 @@ export const router = createBrowserRouter([
                       {
                         path: "/humans/teams/:teamId/digests/wip",
                         element: <TeamWipDigestPage />,
-                      },
-                    ],
-                  },
-                  {
-                    path: "/humans/teams/:teamId/health-and-performance",
-                    element: <TeamHealthAndPerformancePage />,
-                    children: [
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/activity/code-review-distribution",
-                        element: <TeamCodeReviewDistributionPage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/cycle-time",
-                        element: <TeamPullRequestsCycleTimePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/size-distribution",
-                        element: <TeamPullRequestsSizeDistribution />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/pull-requests/time-to-merge",
-                        element: <TeamPullRequestsTimeToMergePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-approve",
-                        element: <TeamCodeReviewsTimeToApprovePage />,
-                      },
-                      {
-                        path: "/humans/teams/:teamId/health-and-performance/code-reviews/time-to-first-review",
-                        element: <TeamCodeReviewsTimeToFirstReviewPage />,
                       },
                     ],
                   },

@@ -5,10 +5,11 @@ import { teamsHandlers } from "./teams";
 import { peopleHandlers } from "./people";
 import { spotlightHandlers } from "./spotlight";
 import { doraMetricsHandlers } from "./dora-metrics";
-import { chartMetricsHandlers } from "./chart-metrics";
 import { workLogHandlers } from "./work-log";
 import { mutationHandlers } from "./mutations";
 import { systemsHandlers } from "./systems";
+import { prFlowMetricsHandlers } from "./pr-flow-metrics";
+import { codeReviewEfficiencyMetricsHandlers } from "./code-review-efficiency-metrics";
 
 export const handlers = [
   ...userWorkspacesHandlers,
@@ -18,8 +19,9 @@ export const handlers = [
   ...peopleHandlers,
   ...spotlightHandlers,
   ...doraMetricsHandlers,
-  ...chartMetricsHandlers,
   ...workLogHandlers,
   ...systemsHandlers,
+  ...prFlowMetricsHandlers,
+  ...codeReviewEfficiencyMetricsHandlers,
   ...mutationHandlers,
 ];

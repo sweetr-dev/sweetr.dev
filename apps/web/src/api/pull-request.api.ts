@@ -75,7 +75,13 @@ export const usePullRequestsInfiniteQuery = (
             }
           }
         `),
-        { ...args, input: { ...args.input, cursor: pageParam as string } },
+        {
+          ...args,
+          input: {
+            ...args.input,
+            cursor: pageParam as string,
+          },
+        },
       ),
     ...options,
   });

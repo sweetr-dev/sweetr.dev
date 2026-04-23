@@ -225,6 +225,15 @@ export type CodeReview = {
   state: CodeReviewState;
 };
 
+export type CodeReviewCountKpi = {
+  __typename?: 'CodeReviewCountKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['Int']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['Int']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
 export type CodeReviewDistributionChartData = {
   __typename?: 'CodeReviewDistributionChartData';
   entities: Array<CodeReviewDistributionEntity>;
@@ -241,6 +250,83 @@ export type CodeReviewDistributionEntity = {
   reviewSharePercentage?: Maybe<Scalars['Float']['output']>;
 };
 
+export type CodeReviewDurationKpi = {
+  __typename?: 'CodeReviewDurationKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['BigInt']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['BigInt']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
+export type CodeReviewEfficiencyInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The repository ids to filter by. */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The team ids to filter by. */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+};
+
+export type CodeReviewEfficiencyKpi = {
+  __typename?: 'CodeReviewEfficiencyKpi';
+  avgCommentsPerPr: CodeReviewFloatKpi;
+  prsWithoutApproval: CodeReviewCountKpi;
+  timeToApproval: CodeReviewDurationKpi;
+  timeToFirstReview: CodeReviewDurationKpi;
+};
+
+export type CodeReviewEfficiencyMetrics = {
+  __typename?: 'CodeReviewEfficiencyMetrics';
+  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
+  kpi: CodeReviewEfficiencyKpi;
+  reviewTurnaroundTime?: Maybe<NumericChartData>;
+  sizeCommentCorrelation?: Maybe<ScatterChartData>;
+  teamOverview?: Maybe<Array<CodeReviewTeamOverviewRow>>;
+  timeToApproval?: Maybe<NumericChartData>;
+};
+
+
+export type CodeReviewEfficiencyMetricsCodeReviewDistributionArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsKpiArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsReviewTurnaroundTimeArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsSizeCommentCorrelationArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsTeamOverviewArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+
+export type CodeReviewEfficiencyMetricsTimeToApprovalArgs = {
+  input: CodeReviewEfficiencyInput;
+};
+
+export type CodeReviewFloatKpi = {
+  __typename?: 'CodeReviewFloatKpi';
+  change: Scalars['Int']['output'];
+  currentAmount: Scalars['Float']['output'];
+  currentPeriod: DateTimeRangeValue;
+  previousAmount: Scalars['Float']['output'];
+  previousPeriod: DateTimeRangeValue;
+};
+
 export enum CodeReviewState {
   APPROVED = 'APPROVED',
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
@@ -253,6 +339,16 @@ export type CodeReviewSubmittedEvent = {
   eventAt: Scalars['DateTime']['output'];
 };
 
+export type CodeReviewTeamOverviewRow = {
+  __typename?: 'CodeReviewTeamOverviewRow';
+  avgTimeToApproval: Scalars['BigInt']['output'];
+  avgTimeToFirstReview: Scalars['BigInt']['output'];
+  prsWithoutApproval: Scalars['Int']['output'];
+  teamIcon: Scalars['String']['output'];
+  teamId?: Maybe<Scalars['SweetID']['output']>;
+  teamName: Scalars['String']['output'];
+};
+
 export type CodeReviewsInput = {
   /** The pagination cursor */
   cursor?: InputMaybe<Scalars['SweetID']['input']>;
@@ -262,6 +358,16 @@ export type CodeReviewsInput = {
   state?: InputMaybe<CodeReviewState>;
   /** The date to filter to */
   to?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CycleTimeBreakdownChartData = {
+  __typename?: 'CycleTimeBreakdownChartData';
+  columns: Array<Scalars['DateTime']['output']>;
+  cycleTime: Array<Scalars['BigInt']['output']>;
+  timeToApproval: Array<Scalars['BigInt']['output']>;
+  timeToCode: Array<Scalars['BigInt']['output']>;
+  timeToFirstReview: Array<Scalars['BigInt']['output']>;
+  timeToMerge: Array<Scalars['BigInt']['output']>;
 };
 
 export type DateTimeRange = {
@@ -457,6 +563,7 @@ export type EnvironmentsQueryInput = {
 
 export type GraphChartLink = {
   __typename?: 'GraphChartLink';
+  isFromTeam: Scalars['Boolean']['output'];
   source: Scalars['String']['output'];
   target: Scalars['String']['output'];
   value: Scalars['Int']['output'];
@@ -591,43 +698,9 @@ export type MeanTimeToRecoverMetric = {
 
 export type Metrics = {
   __typename?: 'Metrics';
-  codeReviewDistribution?: Maybe<CodeReviewDistributionChartData>;
-  cycleTime?: Maybe<NumericChartData>;
+  codeReviewEfficiency: CodeReviewEfficiencyMetrics;
   dora: DoraMetrics;
-  pullRequestSizeDistribution?: Maybe<NumericSeriesChartData>;
-  timeForApproval?: Maybe<NumericChartData>;
-  timeForFirstReview?: Maybe<NumericChartData>;
-  timeToMerge?: Maybe<NumericChartData>;
-};
-
-
-export type MetricsCodeReviewDistributionArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsCycleTimeArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsPullRequestSizeDistributionArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeForApprovalArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeForFirstReviewArgs = {
-  input: TeamMetricInput;
-};
-
-
-export type MetricsTimeToMergeArgs = {
-  input: TeamMetricInput;
+  prFlow: PullRequestFlowMetrics;
 };
 
 export type Mutation = {
@@ -887,6 +960,51 @@ export type PullRequestCreatedEvent = {
   pullRequest: PullRequest;
 };
 
+export type PullRequestFlowInput = {
+  /** The date range. */
+  dateRange: DateTimeRange;
+  /** The period to group by. */
+  period: Period;
+  /** The repository ids to filter by. */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+  /** The team ids to filter by. */
+  teamIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
+};
+
+export type PullRequestFlowMetrics = {
+  __typename?: 'PullRequestFlowMetrics';
+  cycleTimeBreakdown?: Maybe<CycleTimeBreakdownChartData>;
+  pullRequestSizeDistribution?: Maybe<PullRequestSizeDistributionChartData>;
+  sizeCycleTimeCorrelation?: Maybe<ScatterChartData>;
+  teamOverview?: Maybe<Array<TeamPrFlowOverviewRow>>;
+  throughput?: Maybe<NumericSeriesChartData>;
+};
+
+
+export type PullRequestFlowMetricsCycleTimeBreakdownArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsPullRequestSizeDistributionArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsSizeCycleTimeCorrelationArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsTeamOverviewArgs = {
+  input: PullRequestFlowInput;
+};
+
+
+export type PullRequestFlowMetricsThroughputArgs = {
+  input: PullRequestFlowInput;
+};
+
 export type PullRequestMergedEvent = {
   __typename?: 'PullRequestMergedEvent';
   eventAt: Scalars['DateTime']['output'];
@@ -905,6 +1023,13 @@ export enum PullRequestSize {
   SMALL = 'SMALL',
   TINY = 'TINY'
 }
+
+export type PullRequestSizeDistributionChartData = {
+  __typename?: 'PullRequestSizeDistributionChartData';
+  averageLinesChanged: Array<Scalars['Float']['output']>;
+  columns: Array<Scalars['DateTime']['output']>;
+  series: Array<ChartNumericSeries>;
+};
 
 export enum PullRequestState {
   CLOSED = 'CLOSED',
@@ -943,10 +1068,6 @@ export type PullRequestTracking = {
   timeToMerge?: Maybe<Scalars['BigInt']['output']>;
 };
 
-export type PullRequestTrendInput = {
-  state?: InputMaybe<PullRequestState>;
-};
-
 export type PullRequestsInProgressResponse = {
   __typename?: 'PullRequestsInProgressResponse';
   changesRequested: Array<PullRequest>;
@@ -966,6 +1087,8 @@ export type PullRequestsQueryInput = {
   ownerIds: Array<Scalars['SweetID']['input']>;
   /** Whether the ids refer to teams or people */
   ownerType: PullRequestOwnerType;
+  /** The repository ids to filter by */
+  repositoryIds?: InputMaybe<Array<Scalars['SweetID']['input']>>;
   /** The size to filter by */
   sizes?: InputMaybe<Array<PullRequestSize>>;
   /** The state to filter by */
@@ -1025,6 +1148,26 @@ export type Repository = {
   fullName: Scalars['String']['output'];
   id: Scalars['SweetID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type ScatterChartData = {
+  __typename?: 'ScatterChartData';
+  series: Array<ScatterChartSeries>;
+};
+
+export type ScatterChartSeries = {
+  __typename?: 'ScatterChartSeries';
+  color?: Maybe<Scalars['HexColorCode']['output']>;
+  data: Array<ScatterPoint>;
+  name: Scalars['String']['output'];
+};
+
+export type ScatterPoint = {
+  __typename?: 'ScatterPoint';
+  title?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
 };
 
 export type ScheduleSyncBatchInput = {
@@ -1109,13 +1252,15 @@ export enum TeamMemberRole {
   QA = 'QA'
 }
 
-export type TeamMetricInput = {
-  /** The date range. */
-  dateRange: DateTimeRange;
-  /** The period to group by. */
-  period: Period;
-  /** The team id to filter by. */
-  teamId: Scalars['SweetID']['input'];
+export type TeamPrFlowOverviewRow = {
+  __typename?: 'TeamPrFlowOverviewRow';
+  avgLinesChanged: Scalars['Float']['output'];
+  medianCycleTime: Scalars['BigInt']['output'];
+  mergedCount: Scalars['Int']['output'];
+  pctBigPrs: Scalars['Float']['output'];
+  teamIcon: Scalars['String']['output'];
+  teamId?: Maybe<Scalars['SweetID']['output']>;
+  teamName: Scalars['String']['output'];
 };
 
 export type TeamWorkLogInput = {
@@ -1535,11 +1680,19 @@ export type ResolversTypes = {
   ChangeFailureRateMetric: ResolverTypeWrapper<DeepPartial<ChangeFailureRateMetric>>;
   ChartNumericSeries: ResolverTypeWrapper<DeepPartial<ChartNumericSeries>>;
   CodeReview: ResolverTypeWrapper<DeepPartial<Omit<CodeReview, 'author'> & { author: ResolversTypes['Person'] }>>;
+  CodeReviewCountKpi: ResolverTypeWrapper<DeepPartial<CodeReviewCountKpi>>;
   CodeReviewDistributionChartData: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionChartData>>;
   CodeReviewDistributionEntity: ResolverTypeWrapper<DeepPartial<CodeReviewDistributionEntity>>;
+  CodeReviewDurationKpi: ResolverTypeWrapper<DeepPartial<CodeReviewDurationKpi>>;
+  CodeReviewEfficiencyInput: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyInput>>;
+  CodeReviewEfficiencyKpi: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyKpi>>;
+  CodeReviewEfficiencyMetrics: ResolverTypeWrapper<DeepPartial<CodeReviewEfficiencyMetrics>>;
+  CodeReviewFloatKpi: ResolverTypeWrapper<DeepPartial<CodeReviewFloatKpi>>;
   CodeReviewState: ResolverTypeWrapper<DeepPartial<CodeReviewState>>;
   CodeReviewSubmittedEvent: ResolverTypeWrapper<DeepPartial<CodeReviewSubmittedEvent>>;
+  CodeReviewTeamOverviewRow: ResolverTypeWrapper<DeepPartial<CodeReviewTeamOverviewRow>>;
   CodeReviewsInput: ResolverTypeWrapper<DeepPartial<CodeReviewsInput>>;
+  CycleTimeBreakdownChartData: ResolverTypeWrapper<DeepPartial<CycleTimeBreakdownChartData>>;
   DateTime: ResolverTypeWrapper<DeepPartial<Scalars['DateTime']['output']>>;
   DateTimeRange: ResolverTypeWrapper<DeepPartial<DateTimeRange>>;
   DateTimeRangeValue: ResolverTypeWrapper<DeepPartial<DateTimeRangeValue>>;
@@ -1585,12 +1738,14 @@ export type ResolversTypes = {
   PlanKeys: ResolverTypeWrapper<DeepPartial<PlanKeys>>;
   PullRequest: ResolverTypeWrapper<DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversTypes['Person'] }>>;
   PullRequestCreatedEvent: ResolverTypeWrapper<DeepPartial<PullRequestCreatedEvent>>;
+  PullRequestFlowInput: ResolverTypeWrapper<DeepPartial<PullRequestFlowInput>>;
+  PullRequestFlowMetrics: ResolverTypeWrapper<DeepPartial<PullRequestFlowMetrics>>;
   PullRequestMergedEvent: ResolverTypeWrapper<DeepPartial<PullRequestMergedEvent>>;
   PullRequestOwnerType: ResolverTypeWrapper<DeepPartial<PullRequestOwnerType>>;
   PullRequestSize: ResolverTypeWrapper<DeepPartial<PullRequestSize>>;
+  PullRequestSizeDistributionChartData: ResolverTypeWrapper<DeepPartial<PullRequestSizeDistributionChartData>>;
   PullRequestState: ResolverTypeWrapper<DeepPartial<PullRequestState>>;
   PullRequestTracking: ResolverTypeWrapper<DeepPartial<PullRequestTracking>>;
-  PullRequestTrendInput: ResolverTypeWrapper<DeepPartial<PullRequestTrendInput>>;
   PullRequestsInProgressResponse: ResolverTypeWrapper<DeepPartial<PullRequestsInProgressResponse>>;
   PullRequestsQueryInput: ResolverTypeWrapper<DeepPartial<PullRequestsQueryInput>>;
   PurchasablePlans: ResolverTypeWrapper<DeepPartial<PurchasablePlans>>;
@@ -1599,6 +1754,9 @@ export type ResolversTypes = {
   RemoveIntegrationInput: ResolverTypeWrapper<DeepPartial<RemoveIntegrationInput>>;
   RepositoriesQueryInput: ResolverTypeWrapper<DeepPartial<RepositoriesQueryInput>>;
   Repository: ResolverTypeWrapper<DeepPartial<Repository>>;
+  ScatterChartData: ResolverTypeWrapper<DeepPartial<ScatterChartData>>;
+  ScatterChartSeries: ResolverTypeWrapper<DeepPartial<ScatterChartSeries>>;
+  ScatterPoint: ResolverTypeWrapper<DeepPartial<ScatterPoint>>;
   ScheduleSyncBatchInput: ResolverTypeWrapper<DeepPartial<ScheduleSyncBatchInput>>;
   SendTestMessageInput: ResolverTypeWrapper<DeepPartial<SendTestMessageInput>>;
   String: ResolverTypeWrapper<DeepPartial<Scalars['String']['output']>>;
@@ -1608,7 +1766,7 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversTypes['Alert']>, alerts: Array<ResolversTypes['Alert']>, members: Array<ResolversTypes['TeamMember']>, workLog: ResolversTypes['TeamWorkLogResponse'] }>>;
   TeamMember: ResolverTypeWrapper<DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversTypes['Person'], team: ResolversTypes['Team'] }>>;
   TeamMemberRole: ResolverTypeWrapper<DeepPartial<TeamMemberRole>>;
-  TeamMetricInput: ResolverTypeWrapper<DeepPartial<TeamMetricInput>>;
+  TeamPrFlowOverviewRow: ResolverTypeWrapper<DeepPartial<TeamPrFlowOverviewRow>>;
   TeamWorkLogInput: ResolverTypeWrapper<DeepPartial<TeamWorkLogInput>>;
   TeamWorkLogResponse: ResolverTypeWrapper<DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversTypes['ActivityEvent']> }>>;
   TeamsQueryInput: ResolverTypeWrapper<DeepPartial<TeamsQueryInput>>;
@@ -1665,10 +1823,18 @@ export type ResolversParentTypes = {
   ChangeFailureRateMetric: DeepPartial<ChangeFailureRateMetric>;
   ChartNumericSeries: DeepPartial<ChartNumericSeries>;
   CodeReview: DeepPartial<Omit<CodeReview, 'author'> & { author: ResolversParentTypes['Person'] }>;
+  CodeReviewCountKpi: DeepPartial<CodeReviewCountKpi>;
   CodeReviewDistributionChartData: DeepPartial<CodeReviewDistributionChartData>;
   CodeReviewDistributionEntity: DeepPartial<CodeReviewDistributionEntity>;
+  CodeReviewDurationKpi: DeepPartial<CodeReviewDurationKpi>;
+  CodeReviewEfficiencyInput: DeepPartial<CodeReviewEfficiencyInput>;
+  CodeReviewEfficiencyKpi: DeepPartial<CodeReviewEfficiencyKpi>;
+  CodeReviewEfficiencyMetrics: DeepPartial<CodeReviewEfficiencyMetrics>;
+  CodeReviewFloatKpi: DeepPartial<CodeReviewFloatKpi>;
   CodeReviewSubmittedEvent: DeepPartial<CodeReviewSubmittedEvent>;
+  CodeReviewTeamOverviewRow: DeepPartial<CodeReviewTeamOverviewRow>;
   CodeReviewsInput: DeepPartial<CodeReviewsInput>;
+  CycleTimeBreakdownChartData: DeepPartial<CycleTimeBreakdownChartData>;
   DateTime: DeepPartial<Scalars['DateTime']['output']>;
   DateTimeRange: DeepPartial<DateTimeRange>;
   DateTimeRangeValue: DeepPartial<DateTimeRangeValue>;
@@ -1708,9 +1874,11 @@ export type ResolversParentTypes = {
   PlanKeys: DeepPartial<PlanKeys>;
   PullRequest: DeepPartial<Omit<PullRequest, 'author'> & { author: ResolversParentTypes['Person'] }>;
   PullRequestCreatedEvent: DeepPartial<PullRequestCreatedEvent>;
+  PullRequestFlowInput: DeepPartial<PullRequestFlowInput>;
+  PullRequestFlowMetrics: DeepPartial<PullRequestFlowMetrics>;
   PullRequestMergedEvent: DeepPartial<PullRequestMergedEvent>;
+  PullRequestSizeDistributionChartData: DeepPartial<PullRequestSizeDistributionChartData>;
   PullRequestTracking: DeepPartial<PullRequestTracking>;
-  PullRequestTrendInput: DeepPartial<PullRequestTrendInput>;
   PullRequestsInProgressResponse: DeepPartial<PullRequestsInProgressResponse>;
   PullRequestsQueryInput: DeepPartial<PullRequestsQueryInput>;
   PurchasablePlans: DeepPartial<PurchasablePlans>;
@@ -1719,6 +1887,9 @@ export type ResolversParentTypes = {
   RemoveIntegrationInput: DeepPartial<RemoveIntegrationInput>;
   RepositoriesQueryInput: DeepPartial<RepositoriesQueryInput>;
   Repository: DeepPartial<Repository>;
+  ScatterChartData: DeepPartial<ScatterChartData>;
+  ScatterChartSeries: DeepPartial<ScatterChartSeries>;
+  ScatterPoint: DeepPartial<ScatterPoint>;
   ScheduleSyncBatchInput: DeepPartial<ScheduleSyncBatchInput>;
   SendTestMessageInput: DeepPartial<SendTestMessageInput>;
   String: DeepPartial<Scalars['String']['output']>;
@@ -1727,7 +1898,7 @@ export type ResolversParentTypes = {
   SyncBatch: DeepPartial<SyncBatch>;
   Team: DeepPartial<Omit<Team, 'alert' | 'alerts' | 'members' | 'workLog'> & { alert?: Maybe<ResolversParentTypes['Alert']>, alerts: Array<ResolversParentTypes['Alert']>, members: Array<ResolversParentTypes['TeamMember']>, workLog: ResolversParentTypes['TeamWorkLogResponse'] }>;
   TeamMember: DeepPartial<Omit<TeamMember, 'person' | 'team'> & { person: ResolversParentTypes['Person'], team: ResolversParentTypes['Team'] }>;
-  TeamMetricInput: DeepPartial<TeamMetricInput>;
+  TeamPrFlowOverviewRow: DeepPartial<TeamPrFlowOverviewRow>;
   TeamWorkLogInput: DeepPartial<TeamWorkLogInput>;
   TeamWorkLogResponse: DeepPartial<Omit<TeamWorkLogResponse, 'data'> & { data: Array<ResolversParentTypes['ActivityEvent']> }>;
   TeamsQueryInput: DeepPartial<TeamsQueryInput>;
@@ -1863,6 +2034,14 @@ export type CodeReviewResolvers<ContextType = GraphQLContext, ParentType extends
   state?: Resolver<ResolversTypes['CodeReviewState'], ParentType, ContextType>;
 };
 
+export type CodeReviewCountKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewCountKpi'] = ResolversParentTypes['CodeReviewCountKpi']> = {
+  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+};
+
 export type CodeReviewDistributionChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewDistributionChartData'] = ResolversParentTypes['CodeReviewDistributionChartData']> = {
   entities?: Resolver<Array<ResolversTypes['CodeReviewDistributionEntity']>, ParentType, ContextType>;
   links?: Resolver<Array<ResolversTypes['GraphChartLink']>, ParentType, ContextType>;
@@ -1877,10 +2056,60 @@ export type CodeReviewDistributionEntityResolvers<ContextType = GraphQLContext, 
   reviewSharePercentage?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
 };
 
+export type CodeReviewDurationKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewDurationKpi'] = ResolversParentTypes['CodeReviewDurationKpi']> = {
+  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+};
+
+export type CodeReviewEfficiencyKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewEfficiencyKpi'] = ResolversParentTypes['CodeReviewEfficiencyKpi']> = {
+  avgCommentsPerPr?: Resolver<ResolversTypes['CodeReviewFloatKpi'], ParentType, ContextType>;
+  prsWithoutApproval?: Resolver<ResolversTypes['CodeReviewCountKpi'], ParentType, ContextType>;
+  timeToApproval?: Resolver<ResolversTypes['CodeReviewDurationKpi'], ParentType, ContextType>;
+  timeToFirstReview?: Resolver<ResolversTypes['CodeReviewDurationKpi'], ParentType, ContextType>;
+};
+
+export type CodeReviewEfficiencyMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewEfficiencyMetrics'] = ResolversParentTypes['CodeReviewEfficiencyMetrics']> = {
+  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsCodeReviewDistributionArgs, 'input'>>;
+  kpi?: Resolver<ResolversTypes['CodeReviewEfficiencyKpi'], ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsKpiArgs, 'input'>>;
+  reviewTurnaroundTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsReviewTurnaroundTimeArgs, 'input'>>;
+  sizeCommentCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsSizeCommentCorrelationArgs, 'input'>>;
+  teamOverview?: Resolver<Maybe<Array<ResolversTypes['CodeReviewTeamOverviewRow']>>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsTeamOverviewArgs, 'input'>>;
+  timeToApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<CodeReviewEfficiencyMetricsTimeToApprovalArgs, 'input'>>;
+};
+
+export type CodeReviewFloatKpiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewFloatKpi'] = ResolversParentTypes['CodeReviewFloatKpi']> = {
+  change?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  currentPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+  previousAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  previousPeriod?: Resolver<ResolversTypes['DateTimeRangeValue'], ParentType, ContextType>;
+};
+
 export type CodeReviewSubmittedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewSubmittedEvent'] = ResolversParentTypes['CodeReviewSubmittedEvent']> = {
   codeReview?: Resolver<ResolversTypes['CodeReview'], ParentType, ContextType>;
   eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CodeReviewTeamOverviewRowResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CodeReviewTeamOverviewRow'] = ResolversParentTypes['CodeReviewTeamOverviewRow']> = {
+  avgTimeToApproval?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  avgTimeToFirstReview?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  prsWithoutApproval?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  teamIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['SweetID']>, ParentType, ContextType>;
+  teamName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type CycleTimeBreakdownChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CycleTimeBreakdownChartData'] = ResolversParentTypes['CycleTimeBreakdownChartData']> = {
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  cycleTime?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToApproval?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToCode?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToFirstReview?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  timeToMerge?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
@@ -1948,6 +2177,7 @@ export type EnvironmentResolvers<ContextType = GraphQLContext, ParentType extend
 };
 
 export type GraphChartLinkResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GraphChartLink'] = ResolversParentTypes['GraphChartLink']> = {
+  isFromTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2018,13 +2248,9 @@ export type MeanTimeToRecoverMetricResolvers<ContextType = GraphQLContext, Paren
 };
 
 export type MetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Metrics'] = ResolversParentTypes['Metrics']> = {
-  codeReviewDistribution?: Resolver<Maybe<ResolversTypes['CodeReviewDistributionChartData']>, ParentType, ContextType, RequireFields<MetricsCodeReviewDistributionArgs, 'input'>>;
-  cycleTime?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsCycleTimeArgs, 'input'>>;
+  codeReviewEfficiency?: Resolver<ResolversTypes['CodeReviewEfficiencyMetrics'], ParentType, ContextType>;
   dora?: Resolver<ResolversTypes['DoraMetrics'], ParentType, ContextType>;
-  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<MetricsPullRequestSizeDistributionArgs, 'input'>>;
-  timeForApproval?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForApprovalArgs, 'input'>>;
-  timeForFirstReview?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeForFirstReviewArgs, 'input'>>;
-  timeToMerge?: Resolver<Maybe<ResolversTypes['NumericChartData']>, ParentType, ContextType, RequireFields<MetricsTimeToMergeArgs, 'input'>>;
+  prFlow?: Resolver<ResolversTypes['PullRequestFlowMetrics'], ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -2117,10 +2343,24 @@ export type PullRequestCreatedEventResolvers<ContextType = GraphQLContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PullRequestFlowMetricsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestFlowMetrics'] = ResolversParentTypes['PullRequestFlowMetrics']> = {
+  cycleTimeBreakdown?: Resolver<Maybe<ResolversTypes['CycleTimeBreakdownChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsCycleTimeBreakdownArgs, 'input'>>;
+  pullRequestSizeDistribution?: Resolver<Maybe<ResolversTypes['PullRequestSizeDistributionChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsPullRequestSizeDistributionArgs, 'input'>>;
+  sizeCycleTimeCorrelation?: Resolver<Maybe<ResolversTypes['ScatterChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsSizeCycleTimeCorrelationArgs, 'input'>>;
+  teamOverview?: Resolver<Maybe<Array<ResolversTypes['TeamPrFlowOverviewRow']>>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsTeamOverviewArgs, 'input'>>;
+  throughput?: Resolver<Maybe<ResolversTypes['NumericSeriesChartData']>, ParentType, ContextType, RequireFields<PullRequestFlowMetricsThroughputArgs, 'input'>>;
+};
+
 export type PullRequestMergedEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestMergedEvent'] = ResolversParentTypes['PullRequestMergedEvent']> = {
   eventAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   pullRequest?: Resolver<ResolversTypes['PullRequest'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PullRequestSizeDistributionChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestSizeDistributionChartData'] = ResolversParentTypes['PullRequestSizeDistributionChartData']> = {
+  averageLinesChanged?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  series?: Resolver<Array<ResolversTypes['ChartNumericSeries']>, ParentType, ContextType>;
 };
 
 export type PullRequestTrackingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PullRequestTracking'] = ResolversParentTypes['PullRequestTracking']> = {
@@ -2163,6 +2403,23 @@ export type RepositoryResolvers<ContextType = GraphQLContext, ParentType extends
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export type ScatterChartDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterChartData'] = ResolversParentTypes['ScatterChartData']> = {
+  series?: Resolver<Array<ResolversTypes['ScatterChartSeries']>, ParentType, ContextType>;
+};
+
+export type ScatterChartSeriesResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterChartSeries'] = ResolversParentTypes['ScatterChartSeries']> = {
+  color?: Resolver<Maybe<ResolversTypes['HexColorCode']>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['ScatterPoint']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ScatterPointResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScatterPoint'] = ResolversParentTypes['ScatterPoint']> = {
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+};
+
 export type SubscriptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   isActive?: SubscriptionResolver<ResolversTypes['Boolean'], "isActive", ParentType, ContextType>;
 };
@@ -2201,6 +2458,16 @@ export type TeamMemberResolvers<ContextType = GraphQLContext, ParentType extends
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TeamMemberRole'], ParentType, ContextType>;
   team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+};
+
+export type TeamPrFlowOverviewRowResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamPrFlowOverviewRow'] = ResolversParentTypes['TeamPrFlowOverviewRow']> = {
+  avgLinesChanged?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  medianCycleTime?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  mergedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pctBigPrs?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  teamIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['SweetID']>, ParentType, ContextType>;
+  teamName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type TeamWorkLogResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['TeamWorkLogResponse'] = ResolversParentTypes['TeamWorkLogResponse']> = {
@@ -2291,9 +2558,16 @@ export type Resolvers<ContextType = GraphQLContext> = {
   ChangeFailureRateMetric?: ChangeFailureRateMetricResolvers<ContextType>;
   ChartNumericSeries?: ChartNumericSeriesResolvers<ContextType>;
   CodeReview?: CodeReviewResolvers<ContextType>;
+  CodeReviewCountKpi?: CodeReviewCountKpiResolvers<ContextType>;
   CodeReviewDistributionChartData?: CodeReviewDistributionChartDataResolvers<ContextType>;
   CodeReviewDistributionEntity?: CodeReviewDistributionEntityResolvers<ContextType>;
+  CodeReviewDurationKpi?: CodeReviewDurationKpiResolvers<ContextType>;
+  CodeReviewEfficiencyKpi?: CodeReviewEfficiencyKpiResolvers<ContextType>;
+  CodeReviewEfficiencyMetrics?: CodeReviewEfficiencyMetricsResolvers<ContextType>;
+  CodeReviewFloatKpi?: CodeReviewFloatKpiResolvers<ContextType>;
   CodeReviewSubmittedEvent?: CodeReviewSubmittedEventResolvers<ContextType>;
+  CodeReviewTeamOverviewRow?: CodeReviewTeamOverviewRowResolvers<ContextType>;
+  CycleTimeBreakdownChartData?: CycleTimeBreakdownChartDataResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DateTimeRangeValue?: DateTimeRangeValueResolvers<ContextType>;
   Deployment?: DeploymentResolvers<ContextType>;
@@ -2321,17 +2595,23 @@ export type Resolvers<ContextType = GraphQLContext> = {
   PlanKeys?: PlanKeysResolvers<ContextType>;
   PullRequest?: PullRequestResolvers<ContextType>;
   PullRequestCreatedEvent?: PullRequestCreatedEventResolvers<ContextType>;
+  PullRequestFlowMetrics?: PullRequestFlowMetricsResolvers<ContextType>;
   PullRequestMergedEvent?: PullRequestMergedEventResolvers<ContextType>;
+  PullRequestSizeDistributionChartData?: PullRequestSizeDistributionChartDataResolvers<ContextType>;
   PullRequestTracking?: PullRequestTrackingResolvers<ContextType>;
   PullRequestsInProgressResponse?: PullRequestsInProgressResponseResolvers<ContextType>;
   PurchasablePlans?: PurchasablePlansResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Repository?: RepositoryResolvers<ContextType>;
+  ScatterChartData?: ScatterChartDataResolvers<ContextType>;
+  ScatterChartSeries?: ScatterChartSeriesResolvers<ContextType>;
+  ScatterPoint?: ScatterPointResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SweetID?: GraphQLScalarType;
   SyncBatch?: SyncBatchResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TeamPrFlowOverviewRow?: TeamPrFlowOverviewRowResolvers<ContextType>;
   TeamWorkLogResponse?: TeamWorkLogResponseResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;

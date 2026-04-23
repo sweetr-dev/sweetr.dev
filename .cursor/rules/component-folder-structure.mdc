@@ -1,0 +1,39 @@
+---
+description: Component folder structure — each component in its own folder with barrel export
+globs: apps/web/**/components/**/*.tsx
+alwaysApply: false
+---
+
+# Component Folder Structure
+
+Every React component must live in its own folder with a barrel `index.ts` file.
+
+```
+components/
+  my-component/
+    my-component.tsx   ← component implementation
+    index.ts           ← re-exports the component
+```
+
+## Rules
+
+- Never place component files directly inside a `components/` directory — always create a subfolder.
+- The subfolder name must match the component file name (kebab-case).
+- The `index.ts` file re-exports the component's public API:
+
+```ts
+export { MyComponent } from "./my-component";
+```
+
+- Consumers import from the folder, not the file:
+
+```ts
+// ✅ Good
+import { MyComponent } from "./components/my-component";
+
+// ❌ Bad
+import { MyComponent } from "./components/my-component/my-component";
+```
+
+- Co-located files (hooks, types, utils, styles) go in the same folder when they are specific to that component.
+- **One component per file.** Never define more than one React component in a single `.tsx` file. If a component needs a helper component, that helper gets its own folder and file (either co-located or in a shared `components/` directory).

@@ -15,17 +15,23 @@ import {
 import { LoadableContent } from "../../../components/loadable-content/loadable-content";
 import { FilterDate } from "../../../components/filter-date";
 import { FilterMultiSelect } from "../../../components/filter-multi-select";
-import { IconTeam } from "../../../providers/icon.provider";
-import { useTeamAsyncOptions } from "../../../providers/async-options.provider";
+import { IconTeam, IconRepository } from "../../../providers/icon.provider";
+import {
+  useTeamAsyncOptions,
+  useRepositoryAsyncOptions,
+} from "../../../providers/async-options.provider";
 import { PageContainer } from "../../../components/page-container";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { usePullRequestList } from "../../../providers/pull-request-list.provider";
 import { useFilterSearchParameters } from "../../../providers/filter.provider";
 
 export const SystemsPullRequestsPage = () => {
-  const teamSearchParams = useFilterSearchParameters();
+  const searchParamsFilter = useFilterSearchParameters();
   const [teamIds, setTeamIds] = useState<string[]>(
-    teamSearchParams.getAll<string[]>("team") || [],
+    searchParamsFilter.getAll<string[]>("team") || [],
+  );
+  const [repositoryIds, setRepositoryIds] = useState<string[]>(
+    searchParamsFilter.getAll<string[]>("repository") || [],
   );
 
   const {
@@ -44,7 +50,7 @@ export const SystemsPullRequestsPage = () => {
     handleCompletedAtChange,
     resetFilters,
     searchParams,
-  } = usePullRequestList({ ownerIds: teamIds });
+  } = usePullRequestList({ ownerIds: teamIds, repositoryIds });
 
   return (
     <PageContainer>
@@ -80,6 +86,18 @@ export const SystemsPullRequestsPage = () => {
           onChange={(value) => {
             setTeamIds(value);
             searchParams.set("team", value);
+          }}
+        />
+        <FilterMultiSelect
+          label="Repository"
+          icon={IconRepository}
+          asyncController={useRepositoryAsyncOptions}
+          withSearch
+          value={repositoryIds}
+          capitalize={false}
+          onChange={(value) => {
+            setRepositoryIds(value);
+            searchParams.set("repository", value);
           }}
         />
 
@@ -129,6 +147,7 @@ export const SystemsPullRequestsPage = () => {
               onResetFilter={() => {
                 resetFilters();
                 setTeamIds([]);
+                setRepositoryIds([]);
               }}
             />
           </Box>

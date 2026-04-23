@@ -1,0 +1,40 @@
+---
+description: API services — define interfaces and types in adjacent *.types.ts files
+globs: apps/api/**/*.service.ts
+alwaysApply: false
+---
+
+# API service types colocation
+
+When adding or editing **service** modules under `apps/api`, keep **interfaces**, **type aliases**, and **shared request/response or row shapes** out of `*.service.ts`. Put them in the **adjacent** file `<same-base-name>.types.ts` in the same directory, and import from there.
+
+## Naming
+
+| Service file | Types file |
+|--------------|------------|
+| `foo.service.ts` | `foo.types.ts` |
+
+## Rules
+
+- **Export** types that the service or its callers need from `*.types.ts`.
+- **`*.service.ts`** holds implementation (classes, functions, queries). Only imports types from `./<name>.types` (and shared libs), not inline `interface` / `type` definitions for API shapes.
+- **Shared types** used only by this service module stay in that `*.types.ts`. If multiple services need the same shape, prefer a shared types module only when the codebase already uses that pattern.
+
+## Example
+
+```ts
+// chart-pull-request.types.ts — filters, SQL helper shapes, chart row types
+export interface PullRequestFlowChartFilters { /* ... */ }
+export interface PullRequestFiltersResult { /* ... */ }
+
+// chart-pull-request.service.ts
+import {
+  PullRequestFlowChartFilters,
+  PullRequestFiltersResult,
+} from "./chart-pull-request.types";
+```
+
+```ts
+// ❌ Avoid — interfaces / row DTOs defined in *.service.ts
+// ✅ Prefer — my-feature.types.ts beside my-feature.service.ts
+```

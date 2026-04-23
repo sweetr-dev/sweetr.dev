@@ -6,12 +6,20 @@ interface PageContainerProps {
   children?: ReactNode;
   pt?: number;
   pb?: number;
+  size?: "md" | "lg" | "xl";
 }
+
+const containerSizes = {
+  md: undefined,
+  lg: 1200,
+  xl: 1600,
+};
 
 export const PageContainer = ({
   children,
   pt = 40,
   pb = 40,
+  size = "md",
 }: PageContainerProps) => {
   const { fullWidth } = usePageStore();
   const { isSmallScreen } = useScreenSize();
@@ -22,6 +30,7 @@ export const PageContainer = ({
       pt={pt}
       pb={pb}
       px={fullWidth && !isSmallScreen ? "xl" : undefined}
+      maw={containerSizes[size]}
     >
       {children}
     </Container>
