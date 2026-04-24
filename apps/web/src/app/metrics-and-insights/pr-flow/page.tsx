@@ -28,6 +28,7 @@ import { ChartSizeCycleCorrelation } from "./components/chart-size-cycle-correla
 import { ChartThroughput } from "./components/chart-throughput";
 import { TableTeamOverview } from "./components/table-team-overview";
 import { usePrFlowPage } from "./usePrFlowPage";
+import { useLargerPageContainer } from "../../../providers/page.provider";
 
 export const PrFlowPage = () => {
   const {
@@ -39,8 +40,10 @@ export const PrFlowPage = () => {
     handleThroughputClick,
   } = usePrFlowPage();
 
+  useLargerPageContainer("lg");
+
   return (
-    <PageContainer size="lg">
+    <PageContainer>
       <Breadcrumbs items={[{ label: "Metrics & Insights" }]} />
 
       <Group gap={5}>

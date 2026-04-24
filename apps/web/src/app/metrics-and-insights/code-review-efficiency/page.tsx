@@ -33,6 +33,7 @@ import { ChartSizeCommentCorrelation } from "./components/chart-size-comment-cor
 import { TableTeamOverview } from "./components/table-team-overview";
 import { TableReviewDistribution } from "./components/table-review-distribution";
 import { useCodeReviewEfficiencyPage } from "./useCodeReviewEfficiencyPage";
+import { useLargerPageContainer } from "../../../providers/page.provider";
 
 export const CodeReviewEfficiencyPage = () => {
   const {
@@ -46,9 +47,10 @@ export const CodeReviewEfficiencyPage = () => {
     reviewers,
     handleColumnClick,
   } = useCodeReviewEfficiencyPage();
+  useLargerPageContainer("lg");
 
   return (
-    <PageContainer size="lg">
+    <PageContainer>
       <Breadcrumbs items={[{ label: "Metrics & Insights" }]} />
 
       <Group gap={5}>

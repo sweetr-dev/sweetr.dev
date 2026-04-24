@@ -24,15 +24,16 @@ export const AppPage = ({ children }: AppProps) => {
   if (shouldShowPaywall && !isSandbox) {
     showPaywallNotification();
     goToPaywall();
-
-    return <></>;
   }
 
   return (
     <>
       {isSandbox && <SandboxBanner />}
       {workspace && <AppSpotlight workspaceId={workspace.id} />}
-      <AppShell key={workspace?.id} topOffset={isSandbox ? SANDBOX_BANNER_HEIGHT : 0}>
+      <AppShell
+        key={workspace?.id}
+        topOffset={isSandbox ? SANDBOX_BANNER_HEIGHT : 0}
+      >
         {children ? children : <Outlet />}
       </AppShell>
     </>
