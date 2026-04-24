@@ -1,0 +1,191 @@
+---
+title: Code Review Efficiency
+description: How your team reviews code — who's involved, how fast, and how deep.
+icon: "eye"
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+## Demo
+
+<Frame>
+  <img src="/images/code-review-efficiency.png" />
+</Frame>
+
+## How it works
+
+The **Code Review Efficiency** dashboard focuses on the review stage of the PR lifecycle. It answers three questions at once: _how fast_ reviews happen, _how deep_ they are, and _who_ is doing them. All charts respect the same filters at the top of the page:
+
+- **Date range** — the window of PRs and reviews to include.
+- **Team** — filter by PR author's team membership. Multi-select.
+- **Repository** — filter by repository. Multi-select.
+- **Period** — time bucket for the charts: `daily`, `weekly`, `monthly`, `quarterly`, or `yearly`.
+
+Most charts are scoped to **merged PRs**. The Review Distribution graph uses all code reviews in the range (merged or not).
+
+## Overview KPIs
+
+Four headline numbers with a comparison to the previous window of the same length.
+
+### Time to First Review
+
+Average elapsed time from a PR being ready for review to the first non-author review submission, for reviews that happened in the selected period.
+
+- **Start ("ready"):** the earliest available among first reviewer requested, "marked ready for review," or PR creation. Draft PRs are not ready.
+- **End:** first non-author, non-bot review submission.
+- **Aggregation:** mean.
+- **Direction:** lower is better.
+
+### Time to Approve
+
+Average elapsed time from the first review on a PR to the first approval, for approvals that happened in the selected period.
+
+- **Start:** first review submission.
+- **End:** first approval.
+- **Aggregation:** mean across PRs with both timestamps.
+- **Direction:** lower is better.
+
+### Avg Comments per PR
+
+Average of `commentCount` across all PRs merged in the period.
+
+- **Direction:** higher is better, within reason. Zero comments on non-trivial PRs is a red flag; triple-digit comment threads usually mean the PR is too big or the review process has scope creep.
+
+### Merged Without Approval
+
+Count of PRs merged in the period that have **no** `APPROVED` code review on record.
+
+- **Direction:** lower is better.
+- **Caveat:** some teams intentionally allow self-merge for bots, hotfixes, or single-contributor repositories. Calibrate against what's expected, not zero.
+
+Each KPI shows the absolute value, the percent change vs the previous period of the same length, and the previous value for context.
+
+## Review Speed
+
+Breaks down review latency into two stacked bars per period, using **merged PRs** only.
+
+- **Time to First Review** — from PR marked ready for review to the first review submitted. Measures how long authors wait before someone picks their PR up.
+- **Time to Approval** — from first review to the approval that unblocks merge. Measures how long review conversations drag on.
+
+Click a column to drill into the PRs merged in that period.
+
+### Why it matters
+
+Long turnaround kills flow: context gets stale, authors start new work, and rebases pile up. Splitting first-review from approval tells you _where_ the time goes:
+
+- Thick **First Review** → reviewers aren't picking PRs up.
+- Thick **Approval** → threads drag on, nitpicks, or too many rounds.
+
+### What good looks like
+
+Most small PRs should get a first review within hours. Time to approval varies with change complexity, but should trend down as review discipline improves.
+
+### How to improve
+
+- **For slow first review:** set a team SLA, simplify reviewer assignment (codeowners, round-robin), and enable [Alerts](/automations/alerts) for stuck reviews.
+- **For slow approval:** move style to linters, discourage nitpicks, outline requirements in tickets, and encourage authors to review their own diff before requesting reviews.
+- Keep PRs small. Review latency scales non-linearly with size.
+
+### How it's calculated
+
+- **Time to First Review:** `AVG(PullRequestTracking.timeToFirstReview)` for PRs whose `firstReviewAt` falls in the period, bucketed by `firstReviewAt`.
+- **Time to Approval:** `AVG(firstApprovalAt - firstReviewAt)` for PRs whose `firstApprovalAt` falls in the period and which have a `firstReviewAt`.
+- **Business time:** Weekends are excluded. Full weekdays are counted.
+
+## Team Overview
+
+Per-team roll-up of review performance, always including an **All teams** row for org-wide context.
+
+- **Avg Time to First Review** — mean time from ready to first review.
+- **Avg Time to Approval** — mean time from first review to approval.
+- **Merged Without Approval** — count of PRs merged without an `APPROVED` review in the period.
+
+Sorted columns. Membership is resolved via the PR author's `TeamMember` records. Teams with zero review activity in the period are hidden to keep the table useful.
+
+### How to use it
+
+- Compare each team's review speed to the **All teams** baseline, not to each other.
+- A team with many PRs **merged without approval** plus a low approval time is worth a closer look; that pattern often indicates rubber-stamping.
+- Use it to pick the team for your next retro or coaching conversation.
+
+## PR Size vs Comments
+
+Scatter of **merged PRs** in the selected period, plotting **lines changed** (log scale) against **review comment count**. Each dot is one PR, colored by size bucket. Limited to the 2,000 most recently merged PRs for performance. Click any dot to open the PR on GitHub.
+
+### Why it matters
+
+A healthy review process scales attention with change size. This chart surfaces where that relationship breaks.
+
+### What to look for
+
+- **Bottom-right outliers** (big PR, no comments) — review blind spots worth auditing. Risky changes went in without scrutiny.
+- **Top-left outliers** (tiny PR, many comments) — contentious changes, unclear conventions, or new contributors who need support.
+- **Clean diagonal** — attention scales with size. That's the signal you want.
+
+### How it's calculated
+
+- **X:** `linesAddedCount + linesDeletedCount` on `PullRequestTracking`.
+- **Y:** `PullRequest.commentCount` (issue comments + review comments tracked on the PR record).
+- Colored by the PR's size bucket at merge time.
+
+## Review Distribution
+
+Graph of **who reviews whom** across the selected period. Nodes are people (reviewers and authors); edges represent review relationships, weighted by the number of reviews exchanged.
+
+Node size is relative to the **ideal per-reviewer load** — `total reviews ÷ number of reviewers`. A node bigger than average means that person is pulling more weight than their share.
+
+Hover a node to see the full breakdown, including the split between reviews for **in-team** members vs **external** authors. Drag to pan, scroll to zoom.
+
+### Why it matters
+
+Review load tends to concentrate on a few seniors, which creates bottlenecks, burnout risk, and knowledge silos. A healthy graph is dense and roughly evenly sized; an unhealthy one has a few giant hubs and many loose ends.
+
+### What to use it for
+
+- Spot **review heroes** carrying the team and redistribute load.
+- Detect **knowledge silos** — authors who only ever get reviewed by the same one or two people.
+- Measure **cross-team review** by the in-team vs external split shown on hover.
+- Validate whether your reviewer assignment strategy (CODEOWNERS, round-robin, manual) is actually producing the distribution you want.
+
+### What good looks like
+
+Each team is unique; only iteration finds the right balance.
+
+In general, teams benefit from a somewhat even load of reviews per developer. Senior engineers will naturally do more. What matters is that **everyone contributes**, knowledge spreads, and no one person is a single point of failure.
+
+### How to improve
+
+- Visit this chart during retros.
+- Talk about review ownership in 1:1s and performance conversations.
+- Encourage new developers to review code early in onboarding — even if only to ask questions.
+- Make sure the team feels safe giving feedback. Pair this chart with the [Pull Requests](/platform/pull-requests) list to sanity-check review tone.
+
+### How it's calculated
+
+- **Nodes:**
+  - Reviewers are identified as `cr-author:<handle>`.
+  - PR authors (review targets) are identified as `<handle>:<reviewerName>` so the same person can appear as both reviewer and author without collisions.
+- **Edges:** one per (reviewer, PR author) pair, weighted by `COUNT(CodeReview)` in the selected period.
+- **In-team vs external:** an edge is considered in-team when the reviewer and PR author share at least one team in the workspace.
+- **Ideal load:** `totalReviews ÷ reviewerCount`. Node size is relative to this.
+
+The table below the graph reflects the same data in tabular form, including each reviewer's share of total reviews.
+
+## Bad practices
+
+It's very important to know how this data should **not** be used.
+
+- **Do not** evaluate review quality based on quantity.
+- **Do not** stack rank developers by review count, speed, or comments.
+- **Do not** obsess over a single KPI — drive review speed to zero and you'll lose the value of review itself. Strive for a good balance of quality and speed.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Pull Request Flow" href="/metrics-and-insights/pr-flow" />
+  <Card title="DORA Metrics" href="/metrics-and-insights/dora" />
+  <Card title="Pull Requests" href="/platform/pull-requests" />
+  <Card title="Code Reviews" href="/platform/code-reviews" />
+</CardGroup>
+
+<CtaGetStarted />

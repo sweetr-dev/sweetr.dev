@@ -33,6 +33,25 @@ Sweetr gives your team the visibility and automations to uncover friction, impro
 
 <br/>
 
+## 📊 Metrics
+
+Find bottlenecks; understand the team's flow and impact of process changes; improve continuously.
+
+<table>
+  <tr>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/dora" target="_blank">DORA Metrics</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/pr-flow/intro" target="_blank">PR Flow</a></th>
+    <th><a href="https://docs.sweetr.dev/metrics-and-insights/code-review-efficiency/intro" target="_blank">Code Review Efficiency</a></th>
+  </tr>
+  <tr>
+    <td><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/29ab060c-660e-45dc-9ce8-73fa7163e8c8"></kbd></td>
+    <td><kbd><img width="100%" alt="PR Flow" src="https://github.com/user-attachments/assets/1db4cca9-01fc-4041-8d02-9d2f31f1af06"></kbd></td>
+    <td><kbd><img width="100%" alt="Code Review Efficiency" src="https://github.com/user-attachments/assets/73327cc7-732f-44f2-89a9-48373ba820b1"></kbd></td>
+  </tr>
+</table>
+
+<br/>
+
 ## 📋 Activity
 
 Spot work that needs attention; unblock your team; gather data for retros, 1:1s and performance reviews.
@@ -47,8 +66,8 @@ Spot work that needs attention; unblock your team; gather data for retros, 1:1s 
     <th><kbd><img width="100%" alt="WIP PRs" src="https://github.com/user-attachments/assets/fe1417ca-d80c-4e0c-838c-8dd5d91737ff"></kbd></th>
   </tr>
   <tr>
-    <th><a href="https://docs.sweetr.dev/metrics-and-insights/pull-requests" target="_blank">Pull Requests</a></th>
-    <th><a href="https://docs.sweetr.dev/metrics-and-insights/code-reviews" target="_blank">Code Reviews</a></th>
+    <th><a href="https://docs.sweetr.dev/platform/pull-requests" target="_blank">Pull Requests</a></th>
+    <th><a href="https://docs.sweetr.dev/platform/code-reviews" target="_blank">Code Reviews</a></th>
   </tr>
   <tr>
     <th><kbd><img width="100%" alt="Pull Requests" src="https://github.com/user-attachments/assets/ed91ec67-c945-47b7-acb2-27d365bb9a96"></kbd></th>
@@ -70,29 +89,6 @@ Keep your team on the loop; unblock work; speed up reviews and releases.
   <tr>
     <td><kbd><img width="100%" alt="Digests" src="https://github.com/user-attachments/assets/d92d06f0-055f-4086-ab53-3089d3bd3b83"></kbd></td>
     <td><kbd><img width="100%" alt="Pull Request Alerts" src="https://github.com/user-attachments/assets/e827bc68-e715-4a9e-a71e-1e0579ef7604"></kbd></td>
-  </tr>
-</table>
-
-<br/>
-
-## 📊 Metrics
-
-Find bottlenecks; understand the team's flow and impact of process changes; improve continuously.
-
-<table>
-  <tr>
-    <th colspan="2"><a href="https://docs.sweetr.dev/metrics-and-insights/dora" target="_blank">DORA Metrics</a></th>
-  </tr>
-  <tr>
-    <td colspan="2"><kbd><img width="100%" alt="DORA Metrics" src="https://github.com/user-attachments/assets/2c93e328-ba38-46bc-b411-f8400cb5d75a"></kbd></td>
-  </tr>
-  <tr>
-    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/pr-size-distribution" target="_blank">PR Size</a></th>
-    <th><a href="https://docs.sweetr.dev/metrics-and-insights/team/code-review-distribution" target="_blank">Code Review Distribution</a></th>
-  </tr>
-  <tr>
-    <td><kbd><img width="100%" alt="PR Size" src="https://github.com/user-attachments/assets/9a8678c6-358c-4528-81c3-ff886861aa75"></kbd></td>
-    <td><kbd><img width="100%" alt="Code Review Distribution" src="https://github.com/user-attachments/assets/ef9f847e-fc13-4ba1-9d31-30e462cedaf6"></kbd></td>
   </tr>
 </table>
 
