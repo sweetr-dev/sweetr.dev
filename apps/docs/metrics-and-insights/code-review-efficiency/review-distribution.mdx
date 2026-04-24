@@ -1,0 +1,50 @@
+---
+title: Review Distribution
+description: Graph of who reviews whom, weighted by review count.
+---
+
+Graph of **who reviews whom** across the selected period. Nodes are people (reviewers and authors); edges represent review relationships, weighted by the number of reviews exchanged.
+
+Node size is relative to an even split: **total reviews ÷ number of reviewers**. A node bigger than that baseline means that person is pulling more weight than their share.
+
+Hover a node to see the full breakdown, including the split between reviews for **in-team** members vs **external** authors. Drag to pan, scroll to zoom.
+
+A tabular summary below the graph lists each reviewer's share of total reviews.
+
+### Why it matters
+
+Review load tends to concentrate on a few seniors, which creates bottlenecks, burnout risk, and knowledge silos. A healthy graph is dense and roughly evenly sized; an unhealthy one has a few giant hubs and many loose ends.
+
+### What to use it for
+
+- Spot **review heroes** carrying the team and redistribute load.
+- Detect **knowledge silos** — authors who only ever get reviewed by the same one or two people.
+- Measure **cross-team review** by the in-team vs external split shown on hover.
+- Validate whether your reviewer assignment strategy (CODEOWNERS, round-robin, manual) is actually producing the distribution you want.
+
+### What good looks like
+
+Each team is unique; only iteration finds the right balance.
+
+In general, teams benefit from a somewhat even load of reviews per developer. Senior engineers will naturally do more. What matters is that **everyone contributes**, knowledge spreads, and no one person is a single point of failure.
+
+### How to improve
+
+- Visit this chart during retros.
+- Talk about review ownership in 1:1s and performance conversations.
+- Encourage new developers to review code early in onboarding — even if only to ask questions.
+- Make sure the team feels safe giving feedback. Pair this chart with the [Pull requests](/platform/pull-requests) view to sanity-check review tone.
+
+### How the chart is built
+
+- **Lines between people** connect a reviewer to an author. Thickness reflects how many times that reviewer left a review on that author's PRs in the range.
+- **In-team vs external** on the tooltip: Sweetr flags whether the author is on a team you share with the reviewer, or comes from outside that circle — useful for seeing cross-team load.
+- **Node size** compares each person to a fair share of the total review work (same for everyone in the view). Bigger = more than their share of reviews; smaller = less.
+
+## See Also
+
+<Card
+  title="Code Review Efficiency — Intro"
+  href="/metrics-and-insights/code-review-efficiency/intro"
+  icon="eye"
+/>

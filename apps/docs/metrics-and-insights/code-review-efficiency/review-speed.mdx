@@ -1,0 +1,44 @@
+---
+title: Review Speed
+description: Stacked time to first review and time to approval per period.
+---
+
+Breaks down review latency into two stacked bars per period, using **merged PRs** only.
+
+- **Time to first review** — from PR marked ready for review to the first review submitted. Measures how long authors wait before someone picks their PR up.
+- **Time to approval** — from first review to the approval that unblocks merge. Measures how long review conversations drag on.
+
+Click a column to drill into the PRs merged in that period.
+
+### Why it matters
+
+Long turnaround kills flow: context gets stale, authors start new work, and rebases pile up. Splitting first review from approval tells you _where_ the time goes:
+
+- Thick **first review** → reviewers aren't picking PRs up.
+- Thick **approval** → threads drag on, nitpicks, or too many rounds.
+
+### What good looks like
+
+Most small PRs should get a first review within hours. Time to approval varies with change complexity, but should trend down as review discipline improves.
+
+### How to improve
+
+- **For slow first review:** set a team SLA, simplify reviewer assignment (codeowners, round-robin), and enable [Alerts](/automations/alerts) for stuck reviews.
+- **For slow approval:** move style to linters, discourage nitpicks, outline requirements in tickets, and encourage authors to review their own diff before requesting reviews.
+- Keep PRs small. Review latency scales non-linearly with size.
+
+### How the numbers are built
+
+- **Time to first review** is averaged for each period. A PR is placed in the bucket that contains when the first review happened. The clock starts when the PR is **ready** (see below) and stops at the first human review (not the author, not bots).
+- **Time to approval** is the average time from that first review until the first approval in the same bucket (by when the approval landed). If a PR never got a first review, it does not contribute here.
+- **Business time:** weekends are excluded; only full weekdays count.
+
+**When a PR counts as "ready"** matches the rest of Sweetr: the earliest of (1) first review request, (2) marked ready for review (drafts are not ready), or (3) opening the PR — using only what happened before the first review.
+
+## See Also
+
+<Card
+  title="Code Review Efficiency — Intro"
+  href="/metrics-and-insights/code-review-efficiency/intro"
+  icon="eye"
+/>

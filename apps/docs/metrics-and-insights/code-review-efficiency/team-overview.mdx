@@ -1,0 +1,26 @@
+---
+title: Team Overview
+description: Avg time to first review, time to approval, and merges without approval by team.
+---
+
+Per-team roll-up of review performance, always including an **All teams** row for org-wide context.
+
+- **Avg time to first review** — mean time from ready to first review.
+- **Avg time to approval** — mean time from first review to approval.
+- **Merged without approval** — count of merged PRs that never had an approval on GitHub in that window.
+
+Table rows use who **authored** the PR to decide their team. The table is hidden if no team had any review activity in the period.
+
+### How to use it
+
+- Compare each team's review speed to the **All teams** baseline, not to each other.
+- A team with many PRs **merged without approval** plus a low approval time is worth a closer look; that pattern often indicates rubber-stamping.
+- Use it to pick the team for your next retro or coaching conversation.
+
+## See Also
+
+<Card
+  title="Review Distribution"
+  href="/metrics-and-insights/code-review-efficiency/review-distribution"
+  icon="affiliate"
+/>

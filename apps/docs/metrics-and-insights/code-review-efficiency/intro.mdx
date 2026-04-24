@@ -1,0 +1,62 @@
+---
+title: Intro
+description: How your team reviews code — who's involved, how fast, and how deep.
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+<Frame>
+  <img src="/images/code-review-efficiency.png" />
+</Frame>
+
+## How It Works
+
+The **Code review efficiency** dashboard focuses on the review stage of the PR lifecycle. It answers three questions at once: _how fast_ reviews happen, _how deep_ they are, and _who_ is doing them. All charts respect the same filters at the top of the page:
+
+- **Date range** — the window of PRs and reviews to include.
+- **Team** — filter by PR author's team membership. Multi-select.
+- **Repository** — filter by repository. Multi-select.
+- **Period** — group the time axis as daily, weekly, monthly, quarterly, or yearly.
+
+Most charts are scoped to **merged PRs**. The **Review distribution** graph uses all code reviews in the range (merged or not).
+
+## Explore
+
+<CardGroup cols={2}>
+  <Card title="KPIs" href="/metrics-and-insights/code-review-efficiency/kpis" />
+  <Card
+    title="Review Speed"
+    href="/metrics-and-insights/code-review-efficiency/review-speed"
+  />
+  <Card
+    title="Team Overview"
+    href="/metrics-and-insights/code-review-efficiency/team-overview"
+  />
+  <Card
+    title="PR Size vs Comments"
+    href="/metrics-and-insights/code-review-efficiency/pr-size-vs-comments"
+  />
+  <Card
+    title="Review Distribution"
+    href="/metrics-and-insights/code-review-efficiency/review-distribution"
+  />
+</CardGroup>
+
+## Bad Practices
+
+It's very important to know how this data should **not** be used.
+
+- **Do not** evaluate review quality based on quantity.
+- **Do not** stack rank developers by review count, speed, or comments.
+- **Do not** obsess over a single KPI — drive review speed to zero and you'll lose the value of review itself. Strive for a good balance of quality and speed.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Pull Request Flow" href="/metrics-and-insights/pr-flow/intro" />
+  <Card title="DORA Metrics" href="/metrics-and-insights/dora" />
+  <Card title="Pull Requests" href="/platform/pull-requests" />
+  <Card title="Code Reviews" href="/platform/code-reviews" />
+</CardGroup>
+
+<CtaGetStarted />

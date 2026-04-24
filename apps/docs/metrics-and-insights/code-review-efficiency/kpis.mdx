@@ -1,0 +1,47 @@
+---
+title: KPIs
+description: Time to first review, time to approval, comments per PR, and merges without approval.
+---
+
+Four headline numbers with a comparison to the previous window of the same length.
+
+### Time to first review
+
+Average elapsed time from a PR being ready for review to the first non-author review submission, for reviews that happened in the selected period.
+
+- **Start ("ready"):** the earliest available among first reviewer requested, "marked ready for review," or PR creation. Draft PRs are not ready.
+- **End:** first non-author, non-bot review submission.
+- **Aggregation:** mean.
+- **Direction:** lower is better.
+
+### Time to approve
+
+Average elapsed time from the first review on a PR to the first approval, for approvals that happened in the selected period.
+
+- **Start:** first review submission.
+- **End:** first approval.
+- **Aggregation:** mean across PRs with both timestamps.
+- **Direction:** lower is better.
+
+### Avg comments per PR
+
+Average number of comments on merged PRs in the period (issue and review thread activity on the PR).
+
+- **Direction:** higher is better, within reason. Zero comments on non-trivial PRs is a red flag; triple-digit comment threads usually mean the PR is too big or the review process has scope creep.
+
+### Merged without approval
+
+Count of merged PRs that never received an approval in GitHub (as Sweetr sees it from your connected data).
+
+- **Direction:** lower is better.
+- **Caveat:** some teams intentionally allow self-merge for bots, hotfixes, or single-contributor repositories. Calibrate against what's expected, not zero.
+
+Each KPI shows the absolute value, the percent change vs the previous period of the same length, and the previous value for context.
+
+## See Also
+
+<Card
+  title="Review Speed"
+  href="/metrics-and-insights/code-review-efficiency/review-speed"
+  icon="chart-histogram"
+/>

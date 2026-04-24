@@ -1,0 +1,65 @@
+---
+title: Intro
+description: How work moves through your team, from first commit to merge.
+---
+
+import { CtaGetStarted } from "/snippets/cta-get-started.mdx";
+
+<Frame>
+  <img src="/images/pr-flow.png" />
+</Frame>
+
+## How It Works
+
+The **Pull Request flow** dashboard visualizes how your team ships code: throughput, batch size, and where cycle time is spent. All charts respect the same filters at the top of the page:
+
+- **Date range** — the window of PRs to include.
+- **Team** — filter by PR author's team membership. Multi-select.
+- **Repository** — filter by repository. Multi-select.
+- **Period** — group the time axis as daily, weekly, monthly, quarterly, or yearly.
+
+Unless noted otherwise, charts include **merged PRs** whose **merge** falls inside the selected date range.
+
+## Explore
+
+<CardGroup cols={2}>
+  <Card title="PR Throughput" href="/metrics-and-insights/pr-flow/throughput" />
+  <Card
+    title="PR Size Distribution"
+    href="/metrics-and-insights/pr-flow/size-distribution"
+  />
+  <Card
+    title="PR Cycle Time Breakdown"
+    href="/metrics-and-insights/pr-flow/cycle-time-breakdown"
+  />
+  <Card
+    title="PR Size vs Cycle Time"
+    href="/metrics-and-insights/pr-flow/size-vs-cycle-time"
+  />
+  <Card
+    title="Team Overview"
+    href="/metrics-and-insights/pr-flow/team-overview"
+  />
+</CardGroup>
+
+## Bad Practices
+
+It's very important to know how this data should **not** be used.
+
+- **Do not** stack rank developers or teams by throughput or cycle time.
+- **Do not** optimize a single metric in isolation — faster merges with fewer reviews is not a win.
+- **Do not** treat throughput as a productivity score; it ignores complexity, quality, and risk.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card
+    title="Code Review Efficiency"
+    href="/metrics-and-insights/code-review-efficiency/intro"
+  />
+  <Card title="DORA Metrics" href="/metrics-and-insights/dora" />
+  <Card title="Pull Requests" href="/platform/pull-requests" />
+  <Card title="Work in Progress" href="/metrics-and-insights/wip" />
+</CardGroup>
+
+<CtaGetStarted />

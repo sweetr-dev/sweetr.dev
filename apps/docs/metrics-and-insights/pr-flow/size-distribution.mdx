@@ -1,0 +1,47 @@
+---
+title: PR Size Distribution
+description: Merged PRs bucketed by size with average lines changed per period.
+---
+
+import { PrSize } from "/snippets/pr-size.mdx";
+
+Per-period stacked bar of **merged PRs** bucketed by size (lines added + deleted). An overlaid **white line** tracks the average lines changed per PR on the right axis.
+
+The bucket thresholds come from your workspace settings. Defaults:
+
+<PrSize color="#69DB7C" size="Tiny" label="< 20 lines changed." />
+<PrSize color="#69DB7C" size="Small" label="20~100 lines changed." />
+<PrSize color="#A6A7AB" size="Medium" label="100~250 lines changed." />
+<PrSize color="#ff8787" size="Large" label="250~500 lines changed." />
+<PrSize color="#ff8787" size="Huge" label="> 500 lines changed." />
+
+Click a column to inspect the PRs merged in that period.
+
+### Why it matters
+
+Small PRs are easier to review, safer to ship, and faster to merge. When the distribution skews to Large/Huge, reviews get superficial, merge conflicts pile up, and cycle time balloons. This chart makes the team's "default PR size" visible so you can push culture toward smaller batches.
+
+### What good looks like
+
+Most merged PRs should sit in the **Tiny** and **Small** buckets. Large and Huge should be the exception and tied to clear structural work (big migrations, codegen), not regular feature development.
+
+### How to improve
+
+- Break tickets into vertical slices before coding starts.
+- Try <a href="https://www.stacking.dev/" target="_blank" rel="nofollow">stacking</a> PRs for dependent changes instead of one megabranch.
+- Separate refactors and moves from behavior changes. Ship the mechanical change, then the logic change.
+- Keep CI fast and painless so the cost of shipping one more PR is low.
+
+### How the chart is built
+
+- Each merged PR is bucketed by **total lines added and deleted** using the size thresholds in your workspace settings (the same Tiny → Huge scale as elsewhere in Sweetr).
+- The stacked bars show how many PRs fell in each size bucket in each time period.
+- The white line is the **average total lines changed** for merged PRs in that same period.
+
+## See Also
+
+<Card
+  title="PR Cycle Time Breakdown"
+  href="/metrics-and-insights/pr-flow/cycle-time-breakdown"
+  icon="git-compare"
+/>

@@ -62,7 +62,11 @@
               {
                 "group": "Get Started",
                 "icon": "sparkles",
-                "pages": ["get-started/cloud", "get-started/self-host", "get-started/onboarding"]
+                "pages": [
+                  "get-started/cloud",
+                  "get-started/self-host",
+                  "get-started/onboarding"
+                ]
               }
             ]
           },
@@ -71,22 +75,31 @@
             "pages": [
               "metrics-and-insights/dora",
               {
-                "group": "Team Insights",
-                "icon": "chart-arcs",
+                "group": "Pull Request Flow",
+                "icon": "activity",
                 "pages": [
-                  "metrics-and-insights/team/intro",
-                  "metrics-and-insights/team/code-review-distribution",
-                  "metrics-and-insights/team/pr-size-distribution",
-                  "metrics-and-insights/team/cycle-time",
-                  "metrics-and-insights/team/time-to-first-review",
-                  "metrics-and-insights/team/time-to-approve",
-                  "metrics-and-insights/team/time-to-merge"
+                  "metrics-and-insights/pr-flow/intro",
+                  "metrics-and-insights/pr-flow/throughput",
+                  "metrics-and-insights/pr-flow/size-distribution",
+                  "metrics-and-insights/pr-flow/cycle-time-breakdown",
+                  "metrics-and-insights/pr-flow/size-vs-cycle-time",
+                  "metrics-and-insights/pr-flow/team-overview"
+                ]
+              },
+              {
+                "group": "Code Review Efficiency",
+                "icon": "eye",
+                "pages": [
+                  "metrics-and-insights/code-review-efficiency/intro",
+                  "metrics-and-insights/code-review-efficiency/kpis",
+                  "metrics-and-insights/code-review-efficiency/review-speed",
+                  "metrics-and-insights/code-review-efficiency/team-overview",
+                  "metrics-and-insights/code-review-efficiency/pr-size-vs-comments",
+                  "metrics-and-insights/code-review-efficiency/review-distribution"
                 ]
               },
               "metrics-and-insights/work-log",
-              "metrics-and-insights/pull-requests",
-              "metrics-and-insights/wip",
-              "metrics-and-insights/code-reviews"
+              "metrics-and-insights/wip"
             ]
           },
           {
@@ -104,6 +117,8 @@
             "pages": [
               "platform/teams",
               "platform/people",
+              "platform/pull-requests",
+              "platform/code-reviews",
               "platform/applications",
               "platform/deployments",
               "platform/incidents",

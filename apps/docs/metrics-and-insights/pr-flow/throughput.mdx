@@ -1,0 +1,36 @@
+---
+title: PR Throughput
+description: Opened, merged, and closed PRs per time bucket.
+---
+
+Per-period counts of PR activity, with two bars side by side:
+
+- **Opened** — PRs created in that period. Measures work started.
+- **Merged / Closed** — stacked bar of PRs that exited the queue. Measures work shipped vs dropped.
+
+Click a column to jump to the PRs opened, merged, or closed in that period.
+
+### Why it matters
+
+Throughput is the raw delivery rate. Compared against opens, it surfaces whether the team is keeping up with incoming work or building up WIP. A rising close rate (vs merge) can hint at abandoned branches or scope churn.
+
+### Insights
+
+- Are we shipping faster than we're opening new work, or falling behind?
+- Are closed-without-merge PRs growing? That usually means scope churn or abandoned branches.
+- Did a process change actually lift throughput, or just shift where the work sits?
+
+### How the chart is built
+
+- **Opened** counts PRs by **when they were created** in the selected range.
+- **Merged** counts PRs by **when they were merged** in the range.
+- **Closed (without merge)** counts PRs that were closed in the range but never merged.
+- Time buckets (daily, weekly, etc.) always appear for the full date range you picked; a bucket with no activity shows as zero.
+
+## See Also
+
+<Card
+  title="Pull Request Flow — Intro"
+  href="/metrics-and-insights/pr-flow/intro"
+  icon="activity"
+/>

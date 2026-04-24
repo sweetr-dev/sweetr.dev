@@ -1,0 +1,44 @@
+---
+title: PR Cycle Time Breakdown
+description: Mean cycle time split into coding, first review, approval, and merge.
+---
+
+Splits mean **cycle time** for **merged PRs** into its four sequential phases, stacked per period. The **white line** is total cycle time (sum of the four phases).
+
+- **Coding** — first commit to PR marked ready for review.
+- **First review** — ready for review to first review submitted.
+- **Approval** — first review to the approval that unblocks merge.
+- **Merge** — approval to merge (usually CI + merge queue).
+
+Click a column to drill into the PRs merged in that period.
+
+### Why it matters
+
+Cycle time is the end-to-end "idea to shipped" clock, but the average alone hides where time actually goes. This breakdown tells you _which phase_ to attack first: slow reviews, stale approvals, flaky CI, or authors sitting on branches.
+
+### What good looks like
+
+High-performing teams aim for a median cycle time **under 24 hours**, but what matters more is the shape of the breakdown. A healthy team's cycle time is dominated by **Coding**, with thin slivers for first review, approval, and merge. When review or merge phases grow, the team is waiting, not building.
+
+### How to improve
+
+Pick the thickest phase and attack it:
+
+- **Coding dominates** — PRs may be too big, or authors are parking branches. See [PR size distribution](/metrics-and-insights/pr-flow/size-distribution).
+- **First review dominates** — reviewers aren't picking PRs up. Shorten assignment rules, set a team SLA, or enable [Alerts](/automations/alerts) on stuck reviews.
+- **Approval dominates** — review threads drag on. Cut nitpicks, move style to linters, and coach the team on trusting small changes.
+- **Merge dominates** — flaky CI or a crowded merge queue. Stabilize CI and prioritize shipping what's ready over starting new work.
+
+### How the timing works
+
+- **Total cycle time** is end-to-end for each merged PR: from first commit to merge.
+- The chart splits that time into **coding** (up to "ready" for review), **first review**, **approval**, and **merge** (e.g. CI, queue) using the same events you see in Git.
+- In edge cases, those slices can overlap. Sweetr **normalizes** them so the four segments always add up to the same total cycle time, then **averages** that per period. The white line (total) always matches the sum of the four bands, so you can compare weeks fairly.
+
+## See Also
+
+<Card
+  title="PR Size vs Cycle Time"
+  href="/metrics-and-insights/pr-flow/size-vs-cycle-time"
+  icon="chart-scatter"
+/>

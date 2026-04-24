@@ -1,0 +1,25 @@
+---
+title: PR Size vs Cycle Time
+description: Scatter of cycle time and lines changed per merged PR.
+---
+
+Scatter of **merged PRs** in the selected period, plotting **cycle time** (x, log scale) against **lines changed** (y, log scale). Each dot is one PR, colored by size bucket. Limited to 2,000 most recently merged PRs for performance. Click any dot to open the PR on GitHub.
+
+### Why it matters
+
+PR size is the single biggest predictor of cycle time. This chart makes that relationship concrete for your team and surfaces outliers that don't follow it.
+
+### What to look for
+
+- **Top-right cluster** (big + slow) — confirms the "ship smaller PRs" argument with data.
+- **Far-right outliers** (any size, multi-day cycle) — PRs that got stuck. Check whether in review, waiting on CI, or idle.
+- **Bottom-right** (small PR, long cycle) — process friction unrelated to size: bad CI, review drought, or forgotten PRs.
+- **Top-left** (big PR, fast cycle) — either a rubber-stamped review or well-prepared structural change.
+
+## See Also
+
+<Card
+  title="PR Size Distribution"
+  href="/metrics-and-insights/pr-flow/size-distribution"
+  icon="layout-grid"
+/>

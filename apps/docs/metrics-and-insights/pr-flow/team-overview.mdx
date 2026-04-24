@@ -1,0 +1,31 @@
+---
+title: Team Overview
+description: Median cycle time, merge count, and PR size by team.
+---
+
+A per-team roll-up table, always including an **All teams** row for org-wide context. Columns:
+
+- **Median cycle time** — the middle value if you ordered every merged PR by total cycle time (half the PRs are faster, half are slower).
+- **Merged PRs** — how many PRs from that team merged in the period.
+- **Avg PR size** — average of total lines added and deleted for those PRs.
+- **% large+ PRs** — share of merged PRs that Sweetr classifies as **Large** or **Huge** using your workspace size rules.
+
+All columns sort. A PR counts toward a team by **its author's** team membership in your workspace.
+
+### Why it matters
+
+Averages across the whole org hide the team that's driving them. The breakdown lets you spot which team is bottlenecked, who's shipping big batches, and where a process change should land first.
+
+### How to use it
+
+- Benchmark teams against the **All teams** row, not against each other.
+- Pair **median cycle time** with **% large+ PRs** to separate "slow because big" from "slow for other reasons."
+- Use it to pick the team for your next retro or coaching conversation.
+
+## See Also
+
+<Card
+  title="Pull Request Flow — Intro"
+  href="/metrics-and-insights/pr-flow/intro"
+  icon="activity"
+/>

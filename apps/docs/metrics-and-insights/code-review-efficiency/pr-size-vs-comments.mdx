@@ -1,0 +1,31 @@
+---
+title: PR Size vs Comments
+description: Lines changed vs review comment count per merged PR.
+---
+
+Scatter of **merged PRs** in the selected period, plotting **lines changed** (log scale) against **review comment count**. Each dot is one PR, colored by size bucket. Click any dot to open the PR on GitHub.
+
+### Why it matters
+
+A healthy review process scales attention with change size. This chart surfaces where that relationship breaks.
+
+### What to look for
+
+- **Bottom-right outliers** (big PR, no comments) — review blind spots worth auditing. Risky changes went in without scrutiny.
+- **Top-left outliers** (tiny PR, many comments) — contentious changes, unclear conventions, or new contributors who need support.
+- **Clean diagonal** — attention scales with size. That's the signal you want.
+
+### How the chart is built
+
+- **Horizontal axis:** total lines added plus deleted on the PR.
+- **Vertical axis:** comment count on the PR (threads and discussion Sweetr attributes to that PR).
+- **Color:** the same size bucket you use elsewhere (Tiny through Huge), based on lines changed and your workspace thresholds.
+- To keep the chart responsive, it includes at most the **2,000 most recently merged** PRs in the selected range.
+
+## See Also
+
+<Card
+  title="PR Size Distribution (PR Flow)"
+  href="/metrics-and-insights/pr-flow/size-distribution"
+  icon="layout-grid"
+/>
