@@ -9,6 +9,8 @@
   <a href="https://sweetr.dev">Website</a>
   ·
   <a href="https://docs.sweetr.dev/">Docs</a>
+  ·
+  <a href="https://app.sweetr.dev/sandbox">Try Live Demo</a>
 </p>
 <br/>
 <hr/>
