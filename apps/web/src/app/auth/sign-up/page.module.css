@@ -1,0 +1,32 @@
+.page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 600px 400px at 15% 10%,
+      rgba(64, 192, 87, 0.12) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 500px 500px at 85% 80%,
+      rgba(64, 192, 87, 0.08) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 300px 600px at 50% 50%,
+      rgba(64, 192, 87, 0.04) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle 800px at 70% 20%,
+      rgba(34, 139, 230, 0.04) 0%,
+      transparent 100%
+    );
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
