@@ -1,7 +1,7 @@
 import { createBrowserRouter, redirect } from "react-router";
 import { PageNotFound } from "./app/404";
 import { ErrorPage } from "./app/500";
-import { LoginPage } from "./app/auth/login/page";
+import { SignUpPage } from "./app/auth/sign-up/page";
 import { AutomationsPage } from "./app/automations/page";
 import { AutomationPrSizeLabelerPage } from "./app/automations/settings/pr-size-labeler/page";
 import { AutomationIncidentDetectionPage } from "./app/automations/settings/incident-detection/page";
@@ -70,6 +70,7 @@ import { SystemsPullRequestsPage } from "./app/systems/pull-requests/page";
 import { MetricsAndInsightsPage } from "./app/metrics-and-insights/page";
 import { PrFlowPage } from "./app/metrics-and-insights/pr-flow/page";
 import { CodeReviewEfficiencyPage } from "./app/metrics-and-insights/code-review-efficiency/page";
+import { LoginPage } from "./app/auth/login/page";
 
 export const router = createBrowserRouter([
   {
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
           {
             path: "/login",
             element: <LoginPage />,
+          },
+          {
+            path: "/sign-up",
+            element: <SignUpPage />,
           },
         ],
       },
