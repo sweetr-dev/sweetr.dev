@@ -22,6 +22,7 @@ import { Logo } from "../../../components/logo";
 import { Link } from "react-router";
 import { Particles } from "../components/particles";
 import classes from "./page.module.css";
+import { installGithubAppUrl } from "../../../providers/github.provider";
 
 const FAQ_ITEMS = [
   {
@@ -31,8 +32,8 @@ const FAQ_ITEMS = [
     question: "Does the GitHub app have access to my source code?",
     answer: (
       <>
-        No. Sweetr only ask access to metadata about organization members and
-        their pull requests. You can check the{" "}
+        No. Sweetr only asks for access to metadata about organization members
+        and their pull requests. You can check the{" "}
         <Anchor
           href="https://docs.sweetr.dev/about/data-privacy-and-security"
           target="_blank"
@@ -119,7 +120,7 @@ export const SignUpPage = () => {
               fullWidth
               size="md"
               w={280}
-              href="https://github.com/apps/dev-sweetr-dev/installations/new"
+              href={installGithubAppUrl}
               leftSection={<IconBrandGithub size={16} />}
               bg="green.4"
               loaderProps={{ color: "black" }}

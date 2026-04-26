@@ -71,7 +71,6 @@ export const LoginPage = () => {
                 size="md"
                 w={280}
                 to="/sign-up"
-                loading={isLoading}
                 loaderProps={{ color: "black" }}
                 variant="default"
               >
