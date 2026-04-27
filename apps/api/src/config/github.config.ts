@@ -3,6 +3,7 @@ import { env } from "../env";
 
 export default {
   appId: env.GITHUB_APP_ID,
+  appHandle: env.GITHUB_APP_HANDLE,
   privateKey: env.GITHUB_APP_PRIVATE_KEY,
   clientSecret: env.GITHUB_CLIENT_SECRET,
   clientId: env.GITHUB_CLIENT_ID,

@@ -12,6 +12,7 @@ import {
   AuthProviderQueryVariables,
   LoginWithGithubMutation,
   MutationLoginWithGithubArgs,
+  NewInstallationUrlQuery,
 } from "@sweetr/graphql-types/frontend/graphql";
 
 export const useLoginWithGithubMutation = (
@@ -51,6 +52,24 @@ export const useAuthProviderQuery = (
             authProvider(input: $input) {
               redirectUrl
             }
+          }
+        `),
+        args,
+      ),
+    ...options,
+  });
+
+export const useNewInstallationUrlQuery = (
+  args: AuthProviderQueryVariables,
+  options?: UseQueryOptions<NewInstallationUrlQuery>,
+) =>
+  useQuery({
+    queryKey: ["NewInstallationUrl"],
+    queryFn: () =>
+      graphQLClient.request(
+        graphql(/* GraphQL */ `
+          query NewInstallationUrl($input: NewInstallationUrlInput!) {
+            newInstallationUrl(input: $input)
           }
         `),
         args,

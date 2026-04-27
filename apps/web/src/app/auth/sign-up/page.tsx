@@ -22,7 +22,8 @@ import { Logo } from "../../../components/logo";
 import { Link } from "react-router";
 import { Particles } from "../components/particles";
 import classes from "./page.module.css";
-import { installGithubAppUrl } from "../../../providers/github.provider";
+import { useNewInstallationUrlQuery } from "../../../api/auth.api";
+import { AuthProvider } from "@sweetr/graphql-types/frontend/graphql";
 
 const FAQ_ITEMS = [
   {
@@ -84,6 +85,12 @@ const FAQ_ITEMS = [
 export const SignUpPage = () => {
   document.body.style.backgroundColor = "#141517";
 
+  const { data, isLoading } = useNewInstallationUrlQuery({
+    input: {
+      provider: AuthProvider.GITHUB,
+    },
+  });
+
   return (
     <Flex align="center" justify="center" p="xl" className={classes.page}>
       <Particles
@@ -120,7 +127,8 @@ export const SignUpPage = () => {
               fullWidth
               size="md"
               w={280}
-              href={installGithubAppUrl}
+              loading={isLoading}
+              href={data?.newInstallationUrl}
               leftSection={<IconBrandGithub size={16} />}
               bg="green.4"
               loaderProps={{ color: "black" }}

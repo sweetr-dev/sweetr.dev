@@ -57,6 +57,10 @@ export const loginWithGithub = async (
   });
 };
 
+export const getGithubNewInstallationUrl = () => {
+  return github.getGithubNewInstallationUrl(getLoginState());
+};
+
 export const getGithubLoginUrl = (redirectTo?: string) => {
   return github.getGithubAuthtUrl(getLoginState(redirectTo));
 };

@@ -857,6 +857,10 @@ export type MutationUpsertTeamArgs = {
   input: UpsertTeamInput;
 };
 
+export type NewInstallationUrlInput = {
+  provider: AuthProvider;
+};
+
 export type NumericChartData = {
   __typename?: 'NumericChartData';
   columns: Array<Scalars['DateTime']['output']>;
@@ -1109,6 +1113,7 @@ export type PurchasablePlans = {
 export type Query = {
   __typename?: 'Query';
   authProvider: AuthProviderResponse;
+  newInstallationUrl: Scalars['String']['output'];
   userWorkspaces: Array<Workspace>;
   workspace: Workspace;
   workspaceByInstallationId?: Maybe<Workspace>;
@@ -1117,6 +1122,11 @@ export type Query = {
 
 export type QueryAuthProviderArgs = {
   input: AuthProviderInput;
+};
+
+
+export type QueryNewInstallationUrlArgs = {
+  input: NewInstallationUrlInput;
 };
 
 
@@ -1243,7 +1253,7 @@ export type TeamWorkLogArgs = {
 
 export type TeamDoraOverviewRow = {
   __typename?: 'TeamDoraOverviewRow';
-  /** Change failure rate as a percentage (0–100) */
+  /** Change failure rate as a percentage */
   changeFailureRate: Scalars['Float']['output'];
   deploymentCount: Scalars['Int']['output'];
   /** Average lead time in milliseconds for deployments in the selected range */
@@ -1748,6 +1758,7 @@ export type ResolversTypes = {
   MeanTimeToRecoverMetric: ResolverTypeWrapper<DeepPartial<MeanTimeToRecoverMetric>>;
   Metrics: ResolverTypeWrapper<DeepPartial<Metrics>>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  NewInstallationUrlInput: ResolverTypeWrapper<DeepPartial<NewInstallationUrlInput>>;
   NumericChartData: ResolverTypeWrapper<DeepPartial<NumericChartData>>;
   NumericPersonalMetric: ResolverTypeWrapper<DeepPartial<NumericPersonalMetric>>;
   NumericSeriesChartData: ResolverTypeWrapper<DeepPartial<NumericSeriesChartData>>;
@@ -1886,6 +1897,7 @@ export type ResolversParentTypes = {
   MeanTimeToRecoverMetric: DeepPartial<MeanTimeToRecoverMetric>;
   Metrics: DeepPartial<Metrics>;
   Mutation: Record<PropertyKey, never>;
+  NewInstallationUrlInput: DeepPartial<NewInstallationUrlInput>;
   NumericChartData: DeepPartial<NumericChartData>;
   NumericPersonalMetric: DeepPartial<NumericPersonalMetric>;
   NumericSeriesChartData: DeepPartial<NumericSeriesChartData>;
@@ -2415,6 +2427,7 @@ export type PurchasablePlansResolvers<ContextType = GraphQLContext, ParentType e
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   authProvider?: Resolver<ResolversTypes['AuthProviderResponse'], ParentType, ContextType, RequireFields<QueryAuthProviderArgs, 'input'>>;
+  newInstallationUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryNewInstallationUrlArgs, 'input'>>;
   userWorkspaces?: Resolver<Array<ResolversTypes['Workspace']>, ParentType, ContextType>;
   workspace?: Resolver<ResolversTypes['Workspace'], ParentType, ContextType, RequireFields<QueryWorkspaceArgs, 'workspaceId'>>;
   workspaceByInstallationId?: Resolver<Maybe<ResolversTypes['Workspace']>, ParentType, ContextType, RequireFields<QueryWorkspaceByInstallationIdArgs, 'gitInstallationId'>>;

@@ -31,7 +31,7 @@ export const GithubInstallPage = () => {
   return (
     <Container mt={80}>
       <Box ta="center" mb={40}>
-        <Logo size={40} />
+        <Logo size={120} />
       </Box>
 
       <Stepper
@@ -57,9 +57,9 @@ export const GithubInstallPage = () => {
             }
           >
             <Group gap="xs" justify="center" mt={60}>
-              <IconBrandGithub size={32} stroke={0.5} />
+              <IconBrandGithub size={32} stroke={1.5} />
 
-              <Title order={1} size="h2" m={0}>
+              <Title order={1} size="h2" fw={500} m={0}>
                 Contacting GitHub...
               </Title>
             </Group>

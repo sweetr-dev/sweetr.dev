@@ -14,6 +14,10 @@ export default /* GraphQL */ `
     redirectTo: String
   }
 
+  input NewInstallationUrlInput {
+    provider: AuthProvider!
+  }
+
   type AuthProviderResponse {
     redirectUrl: String! @skipAuth
   }
@@ -34,6 +38,7 @@ export default /* GraphQL */ `
 
   type Query {
     authProvider(input: AuthProviderInput!): AuthProviderResponse! @skipAuth
+    newInstallationUrl(input: NewInstallationUrlInput!): String! @skipAuth
   }
 
   type Mutation {

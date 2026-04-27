@@ -28,6 +28,16 @@ export const getGithubAuthtUrl = (state: string): string => {
   return baseUrl.toString();
 };
 
+export const getGithubNewInstallationUrl = (state: string) => {
+  const baseUrl = new URL(
+    `https://github.com/apps/${config.github.appHandle}/installations/new`
+  );
+
+  baseUrl.searchParams.append("state", state);
+
+  return baseUrl.toString();
+};
+
 export const authorize = async (code: string): Promise<GithubOAuthSuccess> => {
   const httpClient = await getHttpClient();
 

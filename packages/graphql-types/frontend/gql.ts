@@ -27,6 +27,7 @@ type Documents = {
     "\n          mutation UnarchiveApplication($input: UnarchiveApplicationInput!) {\n            unarchiveApplication(input: $input) {\n              id\n              name\n              description\n              archivedAt\n            }\n          }\n        ": typeof types.UnarchiveApplicationDocument,
     "\n          mutation LoginWithGithub($input: LoginWithGithubInput!) {\n            loginWithGithub(input: $input) {\n              token {\n                accessToken\n              }\n            }\n          }\n        ": typeof types.LoginWithGithubDocument,
     "\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        ": typeof types.AuthProviderDocument,
+    "\n          query NewInstallationUrl($input: NewInstallationUrlInput!) {\n            newInstallationUrl(input: $input)\n          }\n        ": typeof types.NewInstallationUrlDocument,
     "\n          query WorkspaceAutomation(\n            $workspaceId: SweetID!\n            $input: AutomationQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              automation(input: $input) {\n                type\n                enabled\n                settings\n              }\n            }\n          }\n        ": typeof types.WorkspaceAutomationDocument,
     "\n          query WorkspaceAutomations($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              automations {\n                type\n                enabled\n              }\n            }\n          }\n        ": typeof types.WorkspaceAutomationsDocument,
     "\n          mutation UpdateAutomation($input: UpdateAutomationInput!) {\n            updateAutomation(input: $input) {\n              type\n              enabled\n              settings\n            }\n          }\n        ": typeof types.UpdateAutomationDocument,
@@ -94,6 +95,7 @@ const documents: Documents = {
     "\n          mutation UnarchiveApplication($input: UnarchiveApplicationInput!) {\n            unarchiveApplication(input: $input) {\n              id\n              name\n              description\n              archivedAt\n            }\n          }\n        ": types.UnarchiveApplicationDocument,
     "\n          mutation LoginWithGithub($input: LoginWithGithubInput!) {\n            loginWithGithub(input: $input) {\n              token {\n                accessToken\n              }\n            }\n          }\n        ": types.LoginWithGithubDocument,
     "\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        ": types.AuthProviderDocument,
+    "\n          query NewInstallationUrl($input: NewInstallationUrlInput!) {\n            newInstallationUrl(input: $input)\n          }\n        ": types.NewInstallationUrlDocument,
     "\n          query WorkspaceAutomation(\n            $workspaceId: SweetID!\n            $input: AutomationQueryInput!\n          ) {\n            workspace(workspaceId: $workspaceId) {\n              automation(input: $input) {\n                type\n                enabled\n                settings\n              }\n            }\n          }\n        ": types.WorkspaceAutomationDocument,
     "\n          query WorkspaceAutomations($workspaceId: SweetID!) {\n            workspace(workspaceId: $workspaceId) {\n              automations {\n                type\n                enabled\n              }\n            }\n          }\n        ": types.WorkspaceAutomationsDocument,
     "\n          mutation UpdateAutomation($input: UpdateAutomationInput!) {\n            updateAutomation(input: $input) {\n              type\n              enabled\n              settings\n            }\n          }\n        ": types.UpdateAutomationDocument,
@@ -214,6 +216,10 @@ export function graphql(source: "\n          mutation LoginWithGithub($input: Lo
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        "): (typeof documents)["\n          query AuthProvider($input: AuthProviderInput!) {\n            authProvider(input: $input) {\n              redirectUrl\n            }\n          }\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n          query NewInstallationUrl($input: NewInstallationUrlInput!) {\n            newInstallationUrl(input: $input)\n          }\n        "): (typeof documents)["\n          query NewInstallationUrl($input: NewInstallationUrlInput!) {\n            newInstallationUrl(input: $input)\n          }\n        "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
