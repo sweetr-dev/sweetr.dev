@@ -72,7 +72,7 @@ export const syncRepositoryAccess = async (
 
   await getPrisma(workspaceId).$transaction(async (tx) => {
     await tx.workspaceMembershipRepository.deleteMany({
-      where: { repositoryId },
+      where: { repositoryId, workspaceId },
     });
 
     if (membershipIdsWithAccess.length > 0) {

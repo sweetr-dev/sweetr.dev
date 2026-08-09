@@ -181,8 +181,10 @@ export const githubRepositoryAccessSyncWorker = createWorker(
 
       if (!repository) {
         logger.warn("[GITHUB_REPOSITORY_ACCESS_SYNC] Repository not found", {
-          job,
-          data,
+          jobId: job.id,
+          workspaceId: workspace.id,
+          installationId,
+          repositoryNodeId: data.repository.node_id,
         });
 
         return;
