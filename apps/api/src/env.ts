@@ -124,6 +124,11 @@ export const env = envsafe({
     default: "",
     allowEmpty: true,
   }),
+  ADMIN_API_SECRET: str({
+    desc: "Shared secret for admin API endpoints",
+    default: "",
+    allowEmpty: true,
+  }),
   APP_MODE: str({
     desc: "Whether the application is being self-hosted",
     choices: ["self-hosted", "saas"],

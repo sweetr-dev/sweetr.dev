@@ -13,6 +13,7 @@ import { slackRouter } from "./app/integrations/slack/slack.router";
 import { env } from "./env";
 import { deploymentsRouter } from "./app/deployment/deployments.router";
 import { healthRouter } from "./app/health/health.router";
+import { adminRouter } from "./app/admin/admin.router";
 import { isAppSelfHosted } from "./lib/self-host";
 import { getBearerToken } from "./app/api-keys/services/api-keys.service";
 
@@ -44,6 +45,7 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   await app.register(githubRouter);
   await app.register(slackRouter);
   await app.register(bullBoardRouter);
+  await app.register(adminRouter);
 
   if (!isAppSelfHosted()) {
     await app.register(stripeRouter);

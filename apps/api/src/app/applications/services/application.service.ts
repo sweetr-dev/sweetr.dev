@@ -138,6 +138,13 @@ export const initApplicationsFromRepositories = async (
   workspaceId: number,
   repositories: Repository[]
 ) => {
+  const existing = await getPrisma(workspaceId).application.findFirst({
+    where: { workspaceId },
+    select: { id: true },
+  });
+
+  if (existing) return;
+
   await parallel(10, repositories, async (repository) => {
     return upsertApplication({
       workspaceId,
