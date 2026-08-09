@@ -191,8 +191,9 @@ model Workspace {
   gitProfile   GitProfile? @relation(fields: [gitProfileId], references: [id], onDelete: SetNull)
   gitProfileId Int?
 
-  memberships            WorkspaceMembership[]
-  repositories           Repository[]
+  memberships                     WorkspaceMembership[]
+  membershipRepositoryAccessLinks WorkspaceMembershipRepository[]
+  repositories                    Repository[]
   teams                  Team[]
   automations            Automation[]
   codeReviews            CodeReview[]
@@ -296,11 +297,32 @@ model WorkspaceMembership {
 
   role String?
 
+  accessibleRepositories WorkspaceMembershipRepository[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([gitProfileId, workspaceId])
   @@index([workspaceId])
+}
+
+model WorkspaceMembershipRepository {
+  id Int @id @default(autoincrement())
+
+  workspaceMembership   WorkspaceMembership @relation(fields: [workspaceMembershipId], references: [id], onDelete: Cascade)
+  workspaceMembershipId Int
+
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  repositoryId Int
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([workspaceMembershipId, repositoryId])
+  @@index([workspaceId])
+  @@index([repositoryId])
 }
 
 model Repository {
@@ -328,6 +350,8 @@ model Repository {
   pullRequests   PullRequest[]
   activityEvents ActivityEvent[]
   applications   Application[]
+
+  membershipAccess WorkspaceMembershipRepository[]
 
   @@unique([gitProvider, gitRepositoryId])
   @@index([workspaceId])

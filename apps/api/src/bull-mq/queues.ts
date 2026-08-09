@@ -18,6 +18,7 @@ export enum SweetQueue {
   GITHUB_INSTALLATION_CONFIG_SYNC = "{github.installation.config.sync}",
   GITHUB_MEMBERS_SYNC = "{github.members.sync}",
   GITHUB_REPOSITORIES_SYNC = "{github.repositories.sync}",
+  GITHUB_REPOSITORY_ACCESS_SYNC = "{github.repository.access.sync}",
   GITHUB_OAUTH_REVOKED = "{github.oauth.revoked}",
   GITHUB_INSTALLATION_DELETED = "{github.installation.deleted}",
   GITHUB_SYNC_PULL_REQUEST = "{github.sync.pull_request}",

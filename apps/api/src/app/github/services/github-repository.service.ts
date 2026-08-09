@@ -15,6 +15,7 @@ import { captureException } from "../../../lib/sentry";
 import { initApplicationsFromRepositories } from "../../applications/services/application.service";
 import { initIncidentDetectionSettings } from "../../incidents/services/incident-detection.service";
 import { isRepositorySyncable } from "../../repositories/services/repository.service";
+import { enqueueRepositoryAccessSyncJobs } from "./github-repository-access.service";
 
 type RepositoryData = Omit<
   Repository,
@@ -39,6 +40,17 @@ export const syncGitHubRepositories = async (
   const isOnboarding = syncRepositories === undefined;
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
+
+  const reposToSyncAccess =
+    syncRepositories === undefined
+      ? repositories
+      : repositories.filter((r) => syncRepositories.includes(r.name));
+
+  await enqueueRepositoryAccessSyncJobs(
+    workspace.id,
+    gitInstallationId,
+    reposToSyncAccess.map((r) => r.id)
+  );
 
   if (isOnboarding) {
     try {

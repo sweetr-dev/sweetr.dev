@@ -48,6 +48,16 @@ const webhookToQueueMap: Record<string, SweetQueue[]> = {
   "organization.member_added": [SweetQueue.GITHUB_MEMBERS_SYNC],
   "organization.member_removed": [SweetQueue.GITHUB_MEMBERS_SYNC],
 
+  // Team / membership (repository access matrix)
+  "team.added_to_repository": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+  "team.removed_from_repository": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+  "membership.added": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+  "membership.removed": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+
+  // Direct collaborator changes
+  "member.added": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+  "member.removed": [SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC],
+
   // "organization.renamed": [], // TO-DO: Handle org rename
 };
 
