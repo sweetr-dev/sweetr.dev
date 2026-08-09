@@ -24,7 +24,8 @@ type RepositoryData = Omit<
 
 export const syncGitHubRepositories = async (
   gitInstallationId: number,
-  syncRepositories?: string[]
+  syncRepositories?: string[],
+  isOnboardingOverride?: boolean
 ): Promise<void> => {
   logger.info("syncGitHubRepositories", { gitInstallationId });
 
@@ -37,7 +38,7 @@ export const syncGitHubRepositories = async (
     return;
   }
 
-  const isOnboarding = syncRepositories === undefined;
+  const isOnboarding = isOnboardingOverride ?? syncRepositories === undefined;
   const gitHubRepositories = await fetchGitHubRepositories(gitInstallationId);
   const repositories = await upsertRepositories(workspace, gitHubRepositories);
 

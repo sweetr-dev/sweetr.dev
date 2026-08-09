@@ -62,7 +62,7 @@ export const adminRouter: FastifyPluginAsync = async (fastify) => {
 
         await addJob(
           SweetQueue.GITHUB_REPOSITORIES_SYNC,
-          { installation: { id: installationId } },
+          { installation: { id: installationId }, isOnboarding: false },
           { delay }
         );
 

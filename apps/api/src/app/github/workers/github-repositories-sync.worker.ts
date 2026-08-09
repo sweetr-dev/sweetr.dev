@@ -6,10 +6,15 @@ import { InputValidationException } from "../../errors/exceptions/input-validati
 import { syncGitHubRepositories } from "../services/github-repository.service";
 import { withDelayedRetryOnRateLimit } from "../services/github-rate-limit.service";
 
+type ResyncJobData = {
+  installation?: { id: number };
+  isOnboarding?: boolean;
+};
+
 export const githubRepositoriesSyncWorker = createWorker(
   SweetQueue.GITHUB_REPOSITORIES_SYNC,
   async (
-    job: Job<InstallationRepositoriesEvent | { installation?: { id: number } }>,
+    job: Job<InstallationRepositoriesEvent | ResyncJobData>,
     token?: string
   ) => {
     const installationId = job.data.installation?.id;
@@ -28,8 +33,12 @@ export const githubRepositoriesSyncWorker = createWorker(
         ? job.data.repositories_added?.map((repository) => repository.name)
         : undefined;
 
+    const isOnboarding =
+      "isOnboarding" in job.data ? job.data.isOnboarding : undefined;
+
     await withDelayedRetryOnRateLimit(
-      () => syncGitHubRepositories(installationId, syncRepositories),
+      () =>
+        syncGitHubRepositories(installationId, syncRepositories, isOnboarding),
       {
         job,
         jobToken: token,
