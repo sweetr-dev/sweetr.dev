@@ -20,7 +20,13 @@ export const cronAlertScheduleWorker = createWorker(
       (alert) => alert.type === AlertType.SLOW_REVIEW
     );
 
-    await addJobs(SweetQueue.ALERT_SLOW_REVIEW, slowReviewAlerts);
-    await addJobs(SweetQueue.ALERT_SLOW_MERGE, slowMergeAlerts);
+    await addJobs(
+      SweetQueue.ALERT_SLOW_REVIEW,
+      slowReviewAlerts.map((data) => ({ data }))
+    );
+    await addJobs(
+      SweetQueue.ALERT_SLOW_MERGE,
+      slowMergeAlerts.map((data) => ({ data }))
+    );
   }
 );

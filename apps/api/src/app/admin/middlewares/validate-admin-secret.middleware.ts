@@ -12,13 +12,16 @@ export const validateAdminSecret = async (
 
   const secret = req.headers["x-admin-secret"] as string;
 
+  if (!secret) {
+    return reply.code(401).send({ error: "Unauthorized" });
+  }
+
+  const secretBuffer = Buffer.from(secret);
+  const expectedBuffer = Buffer.from(env.ADMIN_API_SECRET);
+
   if (
-    !secret ||
-    secret.length !== env.ADMIN_API_SECRET.length ||
-    !crypto.timingSafeEqual(
-      Buffer.from(secret),
-      Buffer.from(env.ADMIN_API_SECRET)
-    )
+    secretBuffer.length !== expectedBuffer.length ||
+    !crypto.timingSafeEqual(secretBuffer, expectedBuffer)
   ) {
     return reply.code(401).send({ error: "Unauthorized" });
   }

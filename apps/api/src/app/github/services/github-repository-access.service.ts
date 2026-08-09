@@ -1,7 +1,7 @@
 import { getInstallationOctoKit } from "../../../lib/octokit";
 import { getBypassRlsPrisma, getPrisma } from "../../../prisma";
 import { logger } from "../../../lib/logger";
-import { addJob, SweetQueue } from "../../../bull-mq/queues";
+import { addJobs, SweetQueue } from "../../../bull-mq/queues";
 import type { RepositoryAccessSyncJobPayload } from "./github-repository-access.types";
 
 export const syncRepositoryAccess = async (
@@ -156,11 +156,15 @@ export const enqueueRepositoryAccessSyncJobs = async (
     return;
   }
 
-  for (const repositoryId of repositoryIds) {
-    await addJob(
-      SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC,
-      { workspaceId, gitInstallationId, repositoryId } satisfies RepositoryAccessSyncJobPayload,
-      { jobId: `repository-access-${repositoryId}` }
-    );
-  }
+  await addJobs(
+    SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC,
+    repositoryIds.map((repositoryId) => ({
+      data: {
+        workspaceId,
+        gitInstallationId,
+        repositoryId,
+      } satisfies RepositoryAccessSyncJobPayload,
+      options: { jobId: `repository-access-${repositoryId}` },
+    }))
+  );
 };

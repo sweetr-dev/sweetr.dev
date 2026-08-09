@@ -61,15 +61,15 @@ export const syncGitHubRepositoryPullRequests = async (
   addJobs(
     SweetQueue.GITHUB_SYNC_PULL_REQUEST,
     gitHubPullRequests.map((pullRequest) => ({
-      installation: { id: gitInstallationId },
-      pull_request: { node_id: pullRequest.id },
-      syncReviews: true,
-      isOnboarding,
-      syncBatchId,
-    })),
-    {
-      priority: JobPriority.LOW,
-    }
+      data: {
+        installation: { id: gitInstallationId },
+        pull_request: { node_id: pullRequest.id },
+        syncReviews: true,
+        isOnboarding,
+        syncBatchId,
+      },
+      options: { priority: JobPriority.LOW },
+    }))
   );
 };
 

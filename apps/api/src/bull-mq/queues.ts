@@ -130,14 +130,17 @@ export const addDelayedJob = async <T>(
 
 export const addJobs = async <T>(
   queueName: SweetQueue,
-  data: T[],
-  options?: BulkJobOptions
+  entries: { data: T; options?: BulkJobOptions }[]
 ) => {
-  logger.info(`🐂✉️ BullMQ: Adding ${data.length} job to ${queueName}`);
+  logger.info(`🐂✉️ BullMQ: Adding ${entries.length} jobs to ${queueName}`);
 
   const queue = getQueue(queueName);
 
   return queue.addBulk(
-    data.map((d) => ({ name: `${queue.name}-job`, data: d, opts: options }))
+    entries.map((e) => ({
+      name: `${queue.name}-job`,
+      data: e.data,
+      opts: e.options,
+    }))
   );
 };
