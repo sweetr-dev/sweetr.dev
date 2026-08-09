@@ -149,24 +149,33 @@ export const githubRepositoryAccessSyncWorker = createWorker(
         return;
       }
 
-      const orgLogin = data.organization.login;
-      const teamSlug = await resolveTeamSlug(
-        installationId,
-        data.organization,
-        data.team
-      );
+      await withDelayedRetryOnRateLimit(
+        async () => {
+          const orgLogin = data.organization.login;
+          const teamSlug = await resolveTeamSlug(
+            installationId,
+            data.organization,
+            data.team
+          );
 
-      const repoIds = await listTeamRepositoryInternalIds(
-        installationId,
-        orgLogin,
-        teamSlug,
-        workspace.id
-      );
+          const repoIds = await listTeamRepositoryInternalIds(
+            installationId,
+            orgLogin,
+            teamSlug,
+            workspace.id
+          );
 
-      await enqueueRepositoryAccessSyncJobs(
-        workspace.id,
-        installationId,
-        repoIds
+          await enqueueRepositoryAccessSyncJobs(
+            workspace.id,
+            installationId,
+            repoIds
+          );
+        },
+        {
+          job,
+          jobToken: token,
+          installationId,
+        }
       );
       return;
     }

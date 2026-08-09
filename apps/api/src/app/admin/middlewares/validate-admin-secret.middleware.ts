@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { env } from "../../../env";
 
@@ -11,7 +12,14 @@ export const validateAdminSecret = async (
 
   const secret = req.headers["x-admin-secret"] as string;
 
-  if (!secret || secret !== env.ADMIN_API_SECRET) {
+  if (
+    !secret ||
+    secret.length !== env.ADMIN_API_SECRET.length ||
+    !crypto.timingSafeEqual(
+      Buffer.from(secret),
+      Buffer.from(env.ADMIN_API_SECRET)
+    )
+  ) {
     return reply.code(401).send({ error: "Unauthorized" });
   }
 };

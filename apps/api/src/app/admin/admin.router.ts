@@ -22,10 +22,12 @@ export const adminRouter: FastifyPluginAsync = async (fastify) => {
       );
 
       const prisma = getBypassRlsPrisma();
+      const uniqueIds =
+        workspaceIds !== "all" ? [...new Set(workspaceIds)] : workspaceIds;
 
       const workspaces = await prisma.workspace.findMany({
         where: {
-          ...(workspaceIds !== "all" ? { id: { in: workspaceIds } } : {}),
+          ...(uniqueIds !== "all" ? { id: { in: uniqueIds } } : {}),
           installation: {
             suspendedAt: null,
           },
@@ -68,9 +70,9 @@ export const adminRouter: FastifyPluginAsync = async (fastify) => {
       }
 
       const skipped =
-        workspaceIds === "all"
+        uniqueIds === "all"
           ? 0
-          : workspaceIds.length - queued;
+          : uniqueIds.length - queued;
 
       logger.info("admin/sync-workspaces", { queued, skipped, delayBetween });
 

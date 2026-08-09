@@ -160,7 +160,7 @@ export const enqueueRepositoryAccessSyncJobs = async (
     await addJob(
       SweetQueue.GITHUB_REPOSITORY_ACCESS_SYNC,
       { workspaceId, gitInstallationId, repositoryId } satisfies RepositoryAccessSyncJobPayload,
-      { jobId: `repo-access-${repositoryId}` }
+      { jobId: `repository-access-${repositoryId}` }
     );
   }
 };
