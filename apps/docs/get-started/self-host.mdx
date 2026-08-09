@@ -205,7 +205,7 @@ If you prefer to set things up manually, follow the steps below.
         depends_on:
           postgres:
             condition: service_healthy
-          dragonfly:
+          valkey:
             condition: service_healthy
 
       web:
@@ -238,26 +238,23 @@ If you prefer to set things up manually, follow the steps below.
           timeout: 5s
           retries: 5
 
-      dragonfly:
-        image: docker.dragonflydb.io/dragonflydb/dragonfly
-        container_name: sweetr-dragonfly
-        command: ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=2"]
-        ulimits:
-          memlock: -1
+      valkey:
+        image: valkey/valkey:8-alpine
+        container_name: sweetr-valkey
         volumes:
-          - sweetr-dragonfly:/data
+          - sweetr-valkey:/data
         restart: unless-stopped
         networks:
           - sweetr
         healthcheck:
-          test: ["CMD-SHELL", "redis-cli ping"]
+          test: ["CMD-SHELL", "valkey-cli ping"]
           interval: 10s
           timeout: 5s
           retries: 5
 
     volumes:
       sweetr-db:
-      sweetr-dragonfly:
+      sweetr-valkey:
       sweetr-caddy-data:
       sweetr-caddy-config:
 
@@ -282,7 +279,7 @@ If you prefer to set things up manually, follow the steps below.
     PORT=8000
     FRONTEND_URL=https://your-domain.com
     JWT_SECRET=<generate-a-secure-random-string>
-    REDIS_CONNECTION_STRING=redis://dragonfly:6379
+    REDIS_CONNECTION_STRING=redis://valkey:6379
 
     # GitHub App
     GITHUB_APP_ID=<your-app-id>
@@ -326,7 +323,7 @@ If you prefer to set things up manually, follow the steps below.
 | Variable                                          | Required | Default            | Description                                |
 | ------------------------------------------------- | -------- | ------------------ | ------------------------------------------ |
 | `DATABASE_URL`                                    | Yes      | —                  | PostgreSQL connection string               |
-| `REDIS_CONNECTION_STRING`                         | Yes      | —                  | Redis/Dragonfly connection string          |
+| `REDIS_CONNECTION_STRING`                         | Yes      | —                  | Redis/Valkey connection string             |
 | `JWT_SECRET`                                      | Yes      | —                  | Secret for signing JWT tokens              |
 | `FRONTEND_URL`                                    | Yes      | —                  | URL of the web application                 |
 | `PORT`                                            | No       | `3000`             | API server port                            |
@@ -441,7 +438,7 @@ Common causes:
 
 - **Database connection failed**: Ensure Postgres is healthy with `docker compose ps`. The API waits for migrations to run on startup.
 - **Missing environment variables**: The API will log which required variables are missing.
-- **Redis connection failed**: Ensure Dragonfly is healthy. Check that `REDIS_CONNECTION_STRING` uses the Docker service name (e.g., `redis://dragonfly:6379`).
+- **Redis connection failed**: Ensure Valkey is healthy. Check that `REDIS_CONNECTION_STRING` uses the Docker service name (e.g., `redis://valkey:6379`).
 
 ### Web app shows blank page
 

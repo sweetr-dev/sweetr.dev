@@ -15,7 +15,7 @@ services:
       - app_network
     depends_on:
       - postgres
-      - dragonfly
+      - valkey
   web:
     container_name: sweetr-web
     build:
@@ -62,22 +62,23 @@ services:
       - "5433:5432"
     volumes:
       - ./apps/api/init-app-db.sh:/docker-entrypoint-initdb.d/init-app-db.sh
-  dragonfly:
-    image: "docker.dragonflydb.io/dragonflydb/dragonfly"
-    ulimits:
-      memlock: -1
-    command:
-      ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=4"]
+  valkey:
+    image: "valkey/valkey:8-alpine"
     ports:
       - "6379:6379"
     volumes:
-      - dragonflydata:/data
+      - valkeydata:/data
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   docker-sweetr-db:
-  dragonflydata:
+  valkeydata:
 networks:
   app_network:
     driver: bridge
