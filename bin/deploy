@@ -297,7 +297,7 @@ DATABASE_URL=postgres://postgres:${DB_PASSWORD}@postgres:5432/sweetr
 PORT=8000
 FRONTEND_URL=${URL_SCHEME}://${DOMAIN}
 JWT_SECRET=${JWT_SECRET}
-REDIS_CONNECTION_STRING=redis://dragonfly:6379
+REDIS_CONNECTION_STRING=redis://valkey:6379
 
 # GitHub App
 GITHUB_APP_ID=${GITHUB_APP_ID}
@@ -387,7 +387,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      dragonfly:
+      valkey:
         condition: service_healthy
 
   web:
@@ -420,26 +420,23 @@ services:
       timeout: 5s
       retries: 5
 
-  dragonfly:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly
-    container_name: sweetr-dragonfly
-    command: ["--cluster_mode=emulated", "--lock_on_hashtags", "--proactor_threads=2"]
-    ulimits:
-      memlock: -1
+  valkey:
+    image: valkey/valkey:8-alpine
+    container_name: sweetr-valkey
     volumes:
-      - sweetr-dragonfly:/data
+      - sweetr-valkey:/data
     restart: unless-stopped
     networks:
       - sweetr
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping"]
+      test: ["CMD-SHELL", "valkey-cli ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
   sweetr-db:
-  sweetr-dragonfly:
+  sweetr-valkey:
   sweetr-caddy-data:
   sweetr-caddy-config:
 

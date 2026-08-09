@@ -30,13 +30,12 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-      dragonfly:
-        image: docker.dragonflydb.io/dragonflydb/dragonfly
+      valkey:
+        image: valkey/valkey:8-alpine
         ports:
           - 6379:6379
         options: >-
-          --ulimit memlock=-1
-          --health-cmd "redis-cli ping | grep -q PONG"
+          --health-cmd "valkey-cli ping | grep -q PONG"
           --health-interval 2s
           --health-timeout 5s
           --health-retries 10

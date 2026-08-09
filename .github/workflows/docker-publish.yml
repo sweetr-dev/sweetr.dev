@@ -32,16 +32,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      dragonfly:
-        image: docker.dragonflydb.io/dragonflydb/dragonfly
-        env:
-          DFLY_cluster_mode: emulated
-          DFLY_lock_on_hashtags: "true"
-
+      valkey:
+        image: valkey/valkey:8-alpine
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "redis-cli ping"
+          --health-cmd "valkey-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
