@@ -320,8 +320,14 @@ describe("Row Level Security", () => {
       ]);
 
       // Level 3
-      const [tracking, codeReview, codeReviewRequest, deployment, alertEvent] =
-        await Promise.all([
+      const [
+        tracking,
+        codeReview,
+        codeReviewRequest,
+        deployment,
+        alertEvent,
+        membershipRepository,
+      ] = await Promise.all([
           prisma.pullRequestTracking.create({
             data: {
               changedFilesCount: 1,
@@ -367,6 +373,13 @@ describe("Row Level Security", () => {
               workspaceId: workspaceA,
             },
           }),
+          prisma.workspaceMembershipRepository.create({
+            data: {
+              workspaceMembershipId: membership.id,
+              repositoryId: repository.id,
+              workspaceId: workspaceA,
+            },
+          }),
         ]);
 
       // Level 4
@@ -400,6 +413,7 @@ describe("Row Level Security", () => {
         pullRequest: pullRequest.id,
         teamMember: teamMember.id,
         membership: membership.id,
+        membershipRepository: membershipRepository.id,
         activityEvent: activityEvent.id,
         alert: alert.id,
         apiKey: apiKey.id,
@@ -433,6 +447,13 @@ describe("Row Level Security", () => {
         name: "WorkspaceMembership",
         find: (p) =>
           p.workspaceMembership.findFirst({ where: { id: ids.membership } }),
+      },
+      {
+        name: "WorkspaceMembershipRepository",
+        find: (p) =>
+          p.workspaceMembershipRepository.findFirst({
+            where: { id: ids.membershipRepository },
+          }),
       },
       {
         name: "Repository",

@@ -11,6 +11,7 @@ import { logger } from "../../../lib/logger";
 import { findWorkspaceByGitInstallationId } from "../../workspaces/services/workspace.service";
 import { gitHubUserToGitProfileData } from "./github-user.service";
 import { GitHubUser } from "./github-user.types";
+import { enqueueRepositoryAccessSyncJobs } from "./github-repository-access.service";
 
 type GitOrganizationMember = {
   id: string;
@@ -71,6 +72,17 @@ export const syncOrganizationMembers = async (
       },
     },
   });
+
+  const repositories = await getPrisma(workspace.id).repository.findMany({
+    where: { workspaceId: workspace.id },
+    select: { id: true },
+  });
+
+  await enqueueRepositoryAccessSyncJobs(
+    workspace.id,
+    gitInstallationId,
+    repositories.map((r) => r.id)
+  );
 };
 
 const fetchGitHubOrganizationMembers = async (

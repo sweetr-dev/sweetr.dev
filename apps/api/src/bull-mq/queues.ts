@@ -18,6 +18,7 @@ export enum SweetQueue {
   GITHUB_INSTALLATION_CONFIG_SYNC = "{github.installation.config.sync}",
   GITHUB_MEMBERS_SYNC = "{github.members.sync}",
   GITHUB_REPOSITORIES_SYNC = "{github.repositories.sync}",
+  GITHUB_REPOSITORY_ACCESS_SYNC = "{github.repository.access.sync}",
   GITHUB_OAUTH_REVOKED = "{github.oauth.revoked}",
   GITHUB_INSTALLATION_DELETED = "{github.installation.deleted}",
   GITHUB_SYNC_PULL_REQUEST = "{github.sync.pull_request}",
@@ -129,14 +130,17 @@ export const addDelayedJob = async <T>(
 
 export const addJobs = async <T>(
   queueName: SweetQueue,
-  data: T[],
-  options?: BulkJobOptions
+  entries: { data: T; options?: BulkJobOptions }[]
 ) => {
-  logger.info(`🐂✉️ BullMQ: Adding ${data.length} job to ${queueName}`);
+  logger.info(`🐂✉️ BullMQ: Adding ${entries.length} jobs to ${queueName}`);
 
   const queue = getQueue(queueName);
 
   return queue.addBulk(
-    data.map((d) => ({ name: `${queue.name}-job`, data: d, opts: options }))
+    entries.map((e) => ({
+      name: `${queue.name}-job`,
+      data: e.data,
+      opts: e.options,
+    }))
   );
 };

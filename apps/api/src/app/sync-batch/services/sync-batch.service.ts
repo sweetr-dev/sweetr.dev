@@ -138,11 +138,13 @@ export const startSyncBatch = async (syncBatchId: number) => {
   return addJobs(
     SweetQueue.GITHUB_SYNC_REPOSITORY_PULL_REQUESTS,
     metadata.repositories.map((repositoryName) => ({
-      gitInstallationId: installation.gitInstallationId,
-      repositoryName,
-      sinceDaysAgo: syncBatch.sinceDaysAgo,
-      syncBatchId,
-      isOnboarding: metadata.isOnboarding,
+      data: {
+        gitInstallationId: installation.gitInstallationId,
+        repositoryName,
+        sinceDaysAgo: syncBatch.sinceDaysAgo,
+        syncBatchId,
+        isOnboarding: metadata.isOnboarding,
+      },
     }))
   );
 };

@@ -1,0 +1,19 @@
+name: Sync All Workspaces
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync all workspaces
+        run: |
+          curl -sf -X POST \
+            -H "x-admin-secret: ${{ secrets.ADMIN_API_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d '{"workspaceIds": "all", "delayBetween": 60000}' \
+            "${{ secrets.API_URL }}/admin/sync-workspaces"

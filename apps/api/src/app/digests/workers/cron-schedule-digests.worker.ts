@@ -17,6 +17,9 @@ export const cronScheduleDigestsWorker = createWorker(
       }
     );
 
-    await addJobs(SweetQueue.DIGEST_SEND, digests);
+    await addJobs(
+      SweetQueue.DIGEST_SEND,
+      digests.map((data) => ({ data }))
+    );
   }
 );
