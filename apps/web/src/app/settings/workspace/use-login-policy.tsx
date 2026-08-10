@@ -12,7 +12,7 @@ import {
 export const useLoginPolicy = () => {
   const { workspace } = useWorkspace();
 
-  const { data: settingsData } = useWorkspaceSettingsQuery({
+  const { data: settingsData, isLoading } = useWorkspaceSettingsQuery({
     workspaceId: workspace.id,
   });
 
@@ -43,5 +43,5 @@ export const useLoginPolicy = () => {
     });
   };
 
-  return { loginPolicy, handlePolicyChange };
+  return { loginPolicy, handlePolicyChange, isLoading };
 };

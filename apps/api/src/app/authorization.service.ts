@@ -74,6 +74,33 @@ export const authorizeWorkspaceMemberOrThrow = async ({
   }
 };
 
+export const authorizeWorkspaceAdminOrThrow = async ({
+  workspaceId,
+  gitProfileId,
+}: {
+  workspaceId: number;
+  gitProfileId: number;
+}) => {
+  const membership = await getPrisma(
+    workspaceId
+  ).workspaceMembership.findUnique({
+    where: {
+      gitProfileId_workspaceId: {
+        gitProfileId,
+        workspaceId,
+      },
+    },
+  });
+
+  if (!membership) {
+    throw new AuthorizationException();
+  }
+
+  if (membership.role !== "ADMIN") {
+    throw new AuthorizationException();
+  }
+};
+
 export const authorizeTeamMembersOrThrow = async ({
   workspaceId,
   members,

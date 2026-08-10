@@ -51,7 +51,7 @@ const FAQ_ITEMS = [
     color: "blue",
     question: "Who can see the data?",
     answer:
-      "By default, all of your organization members can login to Sweetr and see the data. You can change permissions to restrict access only to organization admins.",
+      "By default, all of your organization members can log in to Sweetr and see the data. You can change permissions to restrict access only to organization admins.",
   },
   {
     value: "security",

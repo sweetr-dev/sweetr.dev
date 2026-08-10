@@ -1,6 +1,8 @@
 import { Installation } from "@octokit/webhooks-types";
 import { config } from "../../../../config";
 import { getHttpClient } from "../../../../lib/got";
+import { logger } from "../../../../lib/logger";
+import { captureException } from "../../../../lib/sentry";
 import { UnknownException } from "../../../errors/exceptions/unknown.exception";
 import {
   isError,
@@ -105,14 +107,20 @@ export const getUserInfo = async (accessToken: string) => {
     .json<{ installations: Installation[]; total_count: number }>();
 
   const requestOrgMemberships = httpClient
-    .get("https://api.github.com/user/memberships/orgs", {
+    .get("https://api.github.com/user/memberships/orgs?per_page=100&state=active", {
       responseType: "json",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
     .json<GithubOrgMembership[]>()
-    .catch(() => [] as GithubOrgMembership[]);
+    .catch((error) => {
+      logger.warn("Failed to fetch GitHub org memberships", {
+        error: error?.message,
+      });
+      captureException(error);
+      return [] as GithubOrgMembership[];
+    });
 
   const [user, emails, installationsResponse, orgMemberships] =
     await Promise.all([

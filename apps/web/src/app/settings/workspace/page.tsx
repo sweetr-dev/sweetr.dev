@@ -35,7 +35,7 @@ export const WorkspaceSettingsPage = () => {
       workspaceId: workspace.id,
     },
   );
-  const { loginPolicy, handlePolicyChange } = useLoginPolicy();
+  const { loginPolicy, handlePolicyChange, isLoading: isLoadingPolicy } = useLoginPolicy();
 
   const lastSyncBatch = lastSyncBatchData?.workspace?.lastSyncBatch;
 
@@ -80,10 +80,12 @@ export const WorkspaceSettingsPage = () => {
                 { value: "WHOLE_ORG", label: "Whole organization" },
                 { value: "ONLY_ADMINS", label: "Only admins" },
               ]}
-              value={loginPolicy}
+              value={isLoadingPolicy ? null : loginPolicy}
               onChange={handlePolicyChange}
               w={200}
               allowDeselect={false}
+              disabled={isLoadingPolicy}
+              placeholder="Loading..."
             />
           </BoxSetting>
         </Box>

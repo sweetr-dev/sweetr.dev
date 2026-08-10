@@ -24,7 +24,7 @@ export const useWorkspaceUsersInfiniteQuery = (
   >,
 ) =>
   useInfiniteQuery({
-    queryKey: ["workspace-users", args.workspaceId],
+    queryKey: ["workspace-users", args.workspaceId, args.input],
     queryFn: ({ pageParam }) =>
       graphQLClient.request(
         graphql(/* GraphQL */ `

@@ -40,9 +40,10 @@ export const paginateWorkspaceUsers = async (
     take: take(args.limit || 20),
     skip: args.cursor ? 1 : 0,
     cursor: args.cursor ? { id: args.cursor } : undefined,
-    orderBy: {
-      name: "asc",
-    },
+    orderBy: [
+      { name: "asc" },
+      { id: "asc" },
+    ],
     where,
     include: {
       user: true,
@@ -53,12 +54,5 @@ export const paginateWorkspaceUsers = async (
     },
   });
 
-  return profiles.sort((a, b) => {
-    const roleA = a.workspaceMemberships[0]?.role;
-    const roleB = b.workspaceMemberships[0]?.role;
-    if (roleA === roleB) return a.name.localeCompare(b.name);
-    if (roleA === "ADMIN") return -1;
-    if (roleB === "ADMIN") return 1;
-    return a.name.localeCompare(b.name);
-  });
+  return profiles;
 };

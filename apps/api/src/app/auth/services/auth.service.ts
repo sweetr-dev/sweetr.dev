@@ -196,10 +196,12 @@ const connectGitProfileToWorkspaces = async (
   logger.info("connectUserToInstallations", { gitProfileId, gitInstallations });
 
   const orgRoleByNodeId = new Map(
-    orgMemberships.map((m) => [
-      m.organization.node_id,
-      m.role.toUpperCase(),
-    ])
+    orgMemberships
+      .filter((m) => m.state === "active")
+      .map((m) => [
+        m.organization.node_id,
+        m.role.toUpperCase(),
+      ])
   );
 
   const installationIds = gitInstallations.map((installation) =>
