@@ -669,6 +669,11 @@ export type LeadTimeMetric = {
   previousPeriod: DateTimeRangeValue;
 };
 
+export enum LoginPolicy {
+  ONLY_ADMINS = 'ONLY_ADMINS',
+  WHOLE_ORG = 'WHOLE_ORG'
+}
+
 export type LoginToStripeInput = {
   workspaceId: Scalars['SweetID']['input'];
 };
@@ -1475,6 +1480,7 @@ export type Workspace = {
   settings: WorkspaceSettings;
   team?: Maybe<Team>;
   teams: Array<Team>;
+  users: Array<WorkspaceUser>;
 };
 
 
@@ -1547,6 +1553,11 @@ export type WorkspaceTeamsArgs = {
   input?: InputMaybe<TeamsQueryInput>;
 };
 
+
+export type WorkspaceUsersArgs = {
+  input?: InputMaybe<WorkspaceUsersQueryInput>;
+};
+
 export type WorkspaceFeatureAdoption = {
   __typename?: 'WorkspaceFeatureAdoption';
   lastDeploymentCreatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1569,10 +1580,21 @@ export type WorkspaceMetricInput = {
 
 export type WorkspaceSettings = {
   __typename?: 'WorkspaceSettings';
+  auth: WorkspaceSettingsAuth;
   pullRequest: WorkspaceSettingsPullRequest;
 };
 
+export type WorkspaceSettingsAuth = {
+  __typename?: 'WorkspaceSettingsAuth';
+  loginPolicy: LoginPolicy;
+};
+
+export type WorkspaceSettingsAuthInput = {
+  loginPolicy?: InputMaybe<LoginPolicy>;
+};
+
 export type WorkspaceSettingsInput = {
+  auth?: InputMaybe<WorkspaceSettingsAuthInput>;
   pullRequest?: InputMaybe<WorkspaceSettingsPullRequestInput>;
 };
 
@@ -1600,6 +1622,25 @@ export type WorkspaceSettingsPullRequestSizeInput = {
   medium?: InputMaybe<Scalars['Int']['input']>;
   small?: InputMaybe<Scalars['Int']['input']>;
   tiny?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type WorkspaceUser = {
+  __typename?: 'WorkspaceUser';
+  avatar?: Maybe<Scalars['String']['output']>;
+  handle: Scalars['String']['output'];
+  id: Scalars['SweetID']['output'];
+  lastLoginAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  role?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceUsersQueryInput = {
+  /** The pagination cursor. */
+  cursor?: InputMaybe<Scalars['SweetID']['input']>;
+  /** The amount of records to return. */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** The query to search by. Looks up by name and git handle. */
+  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1752,6 +1793,7 @@ export type ResolversTypes = {
   JSONObject: ResolverTypeWrapper<DeepPartial<Scalars['JSONObject']['output']>>;
   LeadTimeBreakdown: ResolverTypeWrapper<DeepPartial<LeadTimeBreakdown>>;
   LeadTimeMetric: ResolverTypeWrapper<DeepPartial<LeadTimeMetric>>;
+  LoginPolicy: ResolverTypeWrapper<DeepPartial<LoginPolicy>>;
   LoginToStripeInput: ResolverTypeWrapper<DeepPartial<LoginToStripeInput>>;
   LoginWithGithubInput: ResolverTypeWrapper<DeepPartial<LoginWithGithubInput>>;
   LoginWithGithubResponse: ResolverTypeWrapper<DeepPartial<LoginWithGithubResponse>>;
@@ -1823,11 +1865,15 @@ export type ResolversTypes = {
   WorkspaceFeatureAdoption: ResolverTypeWrapper<DeepPartial<WorkspaceFeatureAdoption>>;
   WorkspaceMetricInput: ResolverTypeWrapper<DeepPartial<WorkspaceMetricInput>>;
   WorkspaceSettings: ResolverTypeWrapper<DeepPartial<WorkspaceSettings>>;
+  WorkspaceSettingsAuth: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsAuth>>;
+  WorkspaceSettingsAuthInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsAuthInput>>;
   WorkspaceSettingsInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsInput>>;
   WorkspaceSettingsPullRequest: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequest>>;
   WorkspaceSettingsPullRequestInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestInput>>;
   WorkspaceSettingsPullRequestSize: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestSize>>;
   WorkspaceSettingsPullRequestSizeInput: ResolverTypeWrapper<DeepPartial<WorkspaceSettingsPullRequestSizeInput>>;
+  WorkspaceUser: ResolverTypeWrapper<DeepPartial<WorkspaceUser>>;
+  WorkspaceUsersQueryInput: ResolverTypeWrapper<DeepPartial<WorkspaceUsersQueryInput>>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -1957,11 +2003,15 @@ export type ResolversParentTypes = {
   WorkspaceFeatureAdoption: DeepPartial<WorkspaceFeatureAdoption>;
   WorkspaceMetricInput: DeepPartial<WorkspaceMetricInput>;
   WorkspaceSettings: DeepPartial<WorkspaceSettings>;
+  WorkspaceSettingsAuth: DeepPartial<WorkspaceSettingsAuth>;
+  WorkspaceSettingsAuthInput: DeepPartial<WorkspaceSettingsAuthInput>;
   WorkspaceSettingsInput: DeepPartial<WorkspaceSettingsInput>;
   WorkspaceSettingsPullRequest: DeepPartial<WorkspaceSettingsPullRequest>;
   WorkspaceSettingsPullRequestInput: DeepPartial<WorkspaceSettingsPullRequestInput>;
   WorkspaceSettingsPullRequestSize: DeepPartial<WorkspaceSettingsPullRequestSize>;
   WorkspaceSettingsPullRequestSizeInput: DeepPartial<WorkspaceSettingsPullRequestSizeInput>;
+  WorkspaceUser: DeepPartial<WorkspaceUser>;
+  WorkspaceUsersQueryInput: DeepPartial<WorkspaceUsersQueryInput>;
 };
 
 export type RateLimitDirectiveArgs = {
@@ -2568,6 +2618,7 @@ export type WorkspaceResolvers<ContextType = GraphQLContext, ParentType extends 
   settings?: Resolver<ResolversTypes['WorkspaceSettings'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType, RequireFields<WorkspaceTeamArgs, 'teamId'>>;
   teams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType, Partial<WorkspaceTeamsArgs>>;
+  users?: Resolver<Array<ResolversTypes['WorkspaceUser']>, ParentType, ContextType, Partial<WorkspaceUsersArgs>>;
 };
 
 export type WorkspaceFeatureAdoptionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceFeatureAdoption'] = ResolversParentTypes['WorkspaceFeatureAdoption']> = {
@@ -2575,7 +2626,12 @@ export type WorkspaceFeatureAdoptionResolvers<ContextType = GraphQLContext, Pare
 };
 
 export type WorkspaceSettingsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettings'] = ResolversParentTypes['WorkspaceSettings']> = {
+  auth?: Resolver<ResolversTypes['WorkspaceSettingsAuth'], ParentType, ContextType>;
   pullRequest?: Resolver<ResolversTypes['WorkspaceSettingsPullRequest'], ParentType, ContextType>;
+};
+
+export type WorkspaceSettingsAuthResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsAuth'] = ResolversParentTypes['WorkspaceSettingsAuth']> = {
+  loginPolicy?: Resolver<ResolversTypes['LoginPolicy'], ParentType, ContextType>;
 };
 
 export type WorkspaceSettingsPullRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceSettingsPullRequest'] = ResolversParentTypes['WorkspaceSettingsPullRequest']> = {
@@ -2588,6 +2644,15 @@ export type WorkspaceSettingsPullRequestSizeResolvers<ContextType = GraphQLConte
   medium?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   tiny?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type WorkspaceUserResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkspaceUser'] = ResolversParentTypes['WorkspaceUser']> = {
+  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  handle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['SweetID'], ParentType, ContextType>;
+  lastLoginAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = GraphQLContext> = {
@@ -2667,8 +2732,10 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Workspace?: WorkspaceResolvers<ContextType>;
   WorkspaceFeatureAdoption?: WorkspaceFeatureAdoptionResolvers<ContextType>;
   WorkspaceSettings?: WorkspaceSettingsResolvers<ContextType>;
+  WorkspaceSettingsAuth?: WorkspaceSettingsAuthResolvers<ContextType>;
   WorkspaceSettingsPullRequest?: WorkspaceSettingsPullRequestResolvers<ContextType>;
   WorkspaceSettingsPullRequestSize?: WorkspaceSettingsPullRequestSizeResolvers<ContextType>;
+  WorkspaceUser?: WorkspaceUserResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = GraphQLContext> = {

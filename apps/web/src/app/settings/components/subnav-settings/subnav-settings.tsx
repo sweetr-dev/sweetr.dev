@@ -1,4 +1,4 @@
-import { Badge, Divider, Title, NavLink } from "@mantine/core";
+import { Divider, Title, NavLink } from "@mantine/core";
 import {
   IconApps,
   IconBuildingCommunity,
@@ -51,15 +51,10 @@ export const SubnavSettings = () => {
         leftSection={<IconApps stroke={1.5} size={18} />}
       />
       <NavLink
-        to="#"
+        to="/settings/users"
+        active={pathname.startsWith("/settings/users")}
         component={Link}
         label="Users"
-        disabled
-        rightSection={
-          <Badge size="xs" variant="default">
-            Soon
-          </Badge>
-        }
         leftSection={<IconUserHexagon stroke={1.5} size={18} />}
       />
       <Divider label="Misc" labelPosition="left" mt="md" />

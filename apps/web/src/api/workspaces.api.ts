@@ -137,6 +137,9 @@ export const useWorkspaceSettingsQuery = (
                     ignorePatterns
                   }
                 }
+                auth {
+                  loginPolicy
+                }
               }
             }
           }
@@ -171,6 +174,9 @@ export const useUpdateWorkspaceSettingsMutation = (
                     medium
                     large
                   }
+                }
+                auth {
+                  loginPolicy
                 }
               }
             }

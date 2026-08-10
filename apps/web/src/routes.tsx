@@ -37,6 +37,7 @@ import { MyAccountPage } from "./app/settings/my-account/page";
 import { SettingsPage } from "./app/settings/page";
 import { PullRequestSettingsPage } from "./app/settings/pull-request-settings/page";
 import { PullRequestSizePage } from "./app/settings/pull-request-settings/size/page";
+import { UsersSettingsPage } from "./app/settings/users/page";
 import { WorkspaceSettingsPage } from "./app/settings/workspace/page";
 import { SystemsPage } from "./app/systems/page";
 import { RepositoriesPage } from "./app/systems/repositories/page";
@@ -244,6 +245,10 @@ export const router = createBrowserRouter([
                     element: <PullRequestSizePage />,
                   },
                 ],
+              },
+              {
+                path: "/settings/users",
+                element: <UsersSettingsPage />,
               },
               {
                 path: "/settings/my-account",

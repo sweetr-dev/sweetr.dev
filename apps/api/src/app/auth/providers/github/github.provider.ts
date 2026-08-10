@@ -1,11 +1,14 @@
 import { Installation } from "@octokit/webhooks-types";
 import { config } from "../../../../config";
 import { getHttpClient } from "../../../../lib/got";
+import { logger } from "../../../../lib/logger";
+import { captureException } from "../../../../lib/sentry";
 import { UnknownException } from "../../../errors/exceptions/unknown.exception";
 import {
   isError,
   GithubOAccessTokenResponse,
   GithubOAuthSuccess,
+  GithubOrgMembership,
   GithubUser,
   GithubUserEmail,
 } from "./github.types";
@@ -103,11 +106,30 @@ export const getUserInfo = async (accessToken: string) => {
     })
     .json<{ installations: Installation[]; total_count: number }>();
 
-  const [user, emails, installationsResponse] = await Promise.all([
-    requestUser,
-    requestEmail,
-    requestInstallations,
-  ]);
+  // TO-DO: Support pagination
+  const requestOrgMemberships = httpClient
+    .get("https://api.github.com/user/memberships/orgs?per_page=100&state=active", {
+      responseType: "json",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .json<GithubOrgMembership[]>()
+    .catch((error) => {
+      logger.warn("Failed to fetch GitHub org memberships", {
+        error: error?.message,
+      });
+      captureException(error);
+      return [] as GithubOrgMembership[];
+    });
+
+  const [user, emails, installationsResponse, orgMemberships] =
+    await Promise.all([
+      requestUser,
+      requestEmail,
+      requestInstallations,
+      requestOrgMemberships,
+    ]);
 
   const primaryEmail = emails.find((email) => email.primary)?.email;
 
@@ -122,5 +144,6 @@ export const getUserInfo = async (accessToken: string) => {
     email: primaryEmail,
     emails,
     installations: installationsResponse.installations,
+    orgMemberships,
   };
 };

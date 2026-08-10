@@ -61,7 +61,7 @@ export const useInfoModal = () => {
             {payload?.title || <>Please confirm your action</>}
           </Text>
         ),
-        children: (
+        children: payload?.children ?? (
           <Text size="sm">
             {payload?.label || <>Are you sure you want to proceed?</>}
           </Text>

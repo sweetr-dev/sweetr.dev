@@ -10,6 +10,9 @@ export const WorkspaceSettings = z.object({
       ignorePatterns: z.array(z.string()),
     }),
   }),
+  auth: z.object({
+    loginPolicy: z.enum(["WHOLE_ORG", "ONLY_ADMINS"]),
+  }),
 });
 
 export type WorkspaceSettings = z.infer<typeof WorkspaceSettings>;

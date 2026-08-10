@@ -7,6 +7,7 @@ import { spotlightHandlers } from "./spotlight";
 import { doraMetricsHandlers } from "./dora-metrics";
 import { workLogHandlers } from "./work-log";
 import { mutationHandlers } from "./mutations";
+import { usersHandlers } from "./users";
 import { systemsHandlers } from "./systems";
 import { prFlowMetricsHandlers } from "./pr-flow-metrics";
 import { codeReviewEfficiencyMetricsHandlers } from "./code-review-efficiency-metrics";
@@ -23,5 +24,6 @@ export const handlers = [
   ...systemsHandlers,
   ...prFlowMetricsHandlers,
   ...codeReviewEfficiencyMetricsHandlers,
+  ...usersHandlers,
   ...mutationHandlers,
 ];

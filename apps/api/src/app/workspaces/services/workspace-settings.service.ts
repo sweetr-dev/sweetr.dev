@@ -49,6 +49,9 @@ const getDefaultSettings = (): WorkspaceSettings => {
         ignorePatterns: config.glob.ignorableFilesGlob,
       },
     },
+    auth: {
+      loginPolicy: "WHOLE_ORG",
+    },
   };
 };
 
@@ -75,6 +78,11 @@ const mergeSettings = (
           newSettings.pullRequest?.size?.ignorePatterns ??
           existingSettings.pullRequest?.size?.ignorePatterns,
       },
+    },
+    auth: {
+      loginPolicy:
+        newSettings.auth?.loginPolicy ??
+        existingSettings.auth?.loginPolicy,
     },
   };
 };

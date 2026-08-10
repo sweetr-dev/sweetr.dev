@@ -556,6 +556,10 @@ export const systemsHandlers = [
                 ignorePatterns: [],
               },
             },
+            auth: {
+              __typename: "WorkspaceSettingsAuth",
+              loginPolicy: "WHOLE_ORG",
+            },
           },
         },
       },

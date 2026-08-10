@@ -8,7 +8,7 @@ export default {
   clientSecret: env.GITHUB_CLIENT_SECRET,
   clientId: env.GITHUB_CLIENT_ID,
   redirectPath: env.GITHUB_OAUTH_REDIRECT_PATH,
-  scope: "read:user, user:email",
+  scope: "read:user, user:email, read:org",
   failedWebhooks: {
     repeatEveryMinutes: env.CRON_GITHUB_RETRY_FAILED_WEBHOOKS_EVERY_MINUTES,
     recentWebhooksTimeframe: minutesToMilliseconds(

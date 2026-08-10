@@ -49,9 +49,9 @@ const FAQ_ITEMS = [
     value: "permissions",
     icon: IconLock,
     color: "blue",
-    question: "Who has permissions to see the data?",
+    question: "Who can see the data?",
     answer:
-      "Sweetr inherits the exact permissions your team already has on GitHub. If a teammate can't see a private repository on GitHub, they won't see any of its data on Sweetr either.",
+      "By default, all of your organization members can log in to Sweetr and see the data. You can change permissions to restrict access only to organization admins.",
   },
   {
     value: "security",
