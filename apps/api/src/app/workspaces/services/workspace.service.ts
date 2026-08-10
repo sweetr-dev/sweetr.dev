@@ -70,7 +70,7 @@ export const findWorkspaceByGitInstallationIdOrThrow = async (
 };
 
 export const findUserWorkspaces = async (gitProfileId: number) => {
-  return getBypassRlsPrisma().workspace.findMany({
+  const workspaces = await getBypassRlsPrisma().workspace.findMany({
     where: {
       memberships: {
         some: {
@@ -82,8 +82,17 @@ export const findUserWorkspaces = async (gitProfileId: number) => {
       organization: true,
       installation: true,
       gitProfile: true,
+      memberships: {
+        where: { gitProfileId },
+        take: 1,
+      },
     },
   });
+
+  return workspaces.map((workspace) => ({
+    ...workspace,
+    membership: workspace.memberships[0] ?? null,
+  }));
 };
 
 export const findWorkspaceUsers = (workspaceId: number) => {

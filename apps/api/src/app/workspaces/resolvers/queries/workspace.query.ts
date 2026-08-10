@@ -1,5 +1,9 @@
 import { createQueryResolver } from "../../../../lib/graphql";
 import { logger } from "../../../../lib/logger";
+import {
+  isAllowedByLoginPolicy,
+  throwWhenLoginPolicyRestrictsAccess,
+} from "../../../authorization.service";
 import { AuthorizationException } from "../../../errors/exceptions/authorization.exception";
 import { ResourceNotFoundException } from "../../../errors/exceptions/resource-not-found.exception";
 import {
@@ -30,6 +34,8 @@ export const workspaceQuery = createQueryResolver({
       throw new AuthorizationException();
     }
 
+    throwWhenLoginPolicyRestrictsAccess(workspace, membership);
+
     context.workspaceId = workspace.id;
 
     return transformWorkspace(workspace);
@@ -56,6 +62,10 @@ export const workspaceQuery = createQueryResolver({
       return null;
     }
 
+    if (!isAllowedByLoginPolicy(workspace, membership)) {
+      return null;
+    }
+
     return workspace ? transformWorkspace(workspace) : null;
   },
   userWorkspaces: async (_, __, context) => {
@@ -67,6 +77,11 @@ export const workspaceQuery = createQueryResolver({
       context.currentToken.gitProfileId
     );
 
-    return workspaces.map((workspace) => transformWorkspace(workspace));
+    return workspaces
+      .filter((workspace) => {
+        if (!workspace.membership) return false;
+        return isAllowedByLoginPolicy(workspace, workspace.membership);
+      })
+      .map((workspace) => transformWorkspace(workspace));
   },
 });

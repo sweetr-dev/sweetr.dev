@@ -1,4 +1,4 @@
-import { Workspace, Subscription } from "@prisma/client";
+import { Workspace, WorkspaceMembership, Subscription } from "@prisma/client";
 import { getRedisConnection } from "../bull-mq/redis-connection";
 import { getRandomString } from "../lib/crypto";
 import { isAppSelfHosted } from "../lib/self-host";
@@ -9,6 +9,7 @@ import {
 } from "./billing/services/billing.service";
 import { AuthorizationException } from "./errors/exceptions/authorization.exception";
 import { BusinessRuleException } from "./errors/exceptions/business-rule.exception";
+import { getWorkspaceSettings } from "./workspaces/services/workspace-settings.service";
 
 export const isActiveCustomer = (
   workspace: Workspace & { subscription?: Subscription | null }
@@ -93,6 +94,34 @@ export const authorizeTeamMembersOrThrow = async ({
   if (peopleCount !== members.length) {
     throw new AuthorizationException(
       "Some members do not belong to this workspace."
+    );
+  }
+};
+
+export const isAllowedByLoginPolicy = (
+  workspace: Pick<Workspace, "settings">,
+  membership: Pick<WorkspaceMembership, "role">
+): boolean => {
+  const settings = getWorkspaceSettings(workspace);
+
+  if (settings.auth.loginPolicy === "ONLY_ADMINS") {
+    return membership.role === "ADMIN";
+  }
+
+  return true;
+};
+
+export const throwWhenLoginPolicyRestrictsAccess = (
+  workspace: Pick<Workspace, "settings">,
+  membership: Pick<WorkspaceMembership, "role">
+) => {
+  if (!isAllowedByLoginPolicy(workspace, membership)) {
+    throw new AuthorizationException(
+      "Your organization administrator has restricted access to this workspace.",
+      {
+        userFacingMessage:
+          "Your organization administrator has restricted access to this workspace.",
+      }
     );
   }
 };
