@@ -35,7 +35,7 @@
     "minimatch": "10.2.4"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.22.2"
   },
   "packageManager": "npm@8.5.5",
   "msw": {
