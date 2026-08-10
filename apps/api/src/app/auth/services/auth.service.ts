@@ -14,6 +14,7 @@ import { JWTPayload, Token } from "./auth.types";
 import { Installation as GitInstallation } from "@octokit/webhooks-types";
 import { logger } from "../../../lib/logger";
 import { captureException } from "../../../lib/sentry";
+import { AuthorizationException } from "../../errors/exceptions/authorization.exception";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
 import { DataAccessException } from "../../errors/exceptions/data-access.exception";
 import { InputValidationException } from "../../errors/exceptions/input-validation.exception";
@@ -22,6 +23,7 @@ import {
   getTemporaryNonce,
   preventCSRFAttack,
 } from "../../authorization.service";
+import { getWorkspaceSettings } from "../../workspaces/services/workspace-settings.service";
 
 export const loginWithGithub = async (
   code: string,
@@ -44,6 +46,13 @@ export const loginWithGithub = async (
     githubUser.node_id,
     githubUser.installations
   );
+
+  await throwWhenOrgPoliciesRestrictAccess(gitProfile.id);
+
+  await getBypassRlsPrisma().user.update({
+    where: { id: gitProfile.user.id },
+    data: { lastLoginAt: new Date() },
+  });
 
   return signJwtToken({
     userId: gitProfile.user.id,
@@ -269,5 +278,34 @@ const connectGitProfileToWorkspaces = async (
         },
       });
     }
+  }
+};
+
+const throwWhenOrgPoliciesRestrictAccess = async (gitProfileId: number) => {
+  const memberships = await getBypassRlsPrisma().workspaceMembership.findMany({
+    where: { gitProfileId },
+    include: { workspace: true },
+  });
+
+  if (memberships.length === 0) return;
+
+  const hasAccessToAnyWorkspace = memberships.some((membership) => {
+    const settings = getWorkspaceSettings(membership.workspace);
+
+    if (settings.auth.loginPolicy === "ONLY_ADMINS") {
+      return membership.role === "ADMIN";
+    }
+
+    return true;
+  });
+
+  if (!hasAccessToAnyWorkspace) {
+    throw new AuthorizationException(
+      "Your organization administrator has restricted login access.",
+      {
+        userFacingMessage:
+          "Your organization administrator has restricted login access.",
+      }
+    );
   }
 };

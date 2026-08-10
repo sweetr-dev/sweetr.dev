@@ -4,6 +4,7 @@ import {
   Button,
   Group,
   Paper,
+  Select,
   Text,
   TextInput,
   Title,
@@ -15,6 +16,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import { AvatarUser } from "../../../components/avatar-user";
+import { BoxSetting } from "../../../components/box-setting";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { useWorkspace } from "../../../providers/workspace.provider";
 import { PageContainer } from "../../../components/page-container";
@@ -24,6 +26,7 @@ import { Outlet } from "react-router";
 import { useWorkspaceLastSyncBatchQuery } from "../../../api/sync-batch.api";
 import { formatLocaleDate } from "../../../providers/date.provider";
 import { parseISO } from "date-fns";
+import { useLoginPolicy } from "./use-login-policy";
 
 export const WorkspaceSettingsPage = () => {
   const { workspace } = useWorkspace();
@@ -32,6 +35,7 @@ export const WorkspaceSettingsPage = () => {
       workspaceId: workspace.id,
     },
   );
+  const { loginPolicy, handlePolicyChange } = useLoginPolicy();
 
   const lastSyncBatch = lastSyncBatchData?.workspace?.lastSyncBatch;
 
@@ -61,6 +65,28 @@ export const WorkspaceSettingsPage = () => {
             Your workspace data is automatically synced with GitHub.
           </Text>
         </Paper>
+
+        <Title order={3} mt={40}>
+          Authentication
+        </Title>
+        <Box mt="xs">
+          <BoxSetting
+            surface="page"
+            label="Who can log in"
+            description="Control which organization members can access this workspace."
+          >
+            <Select
+              data={[
+                { value: "WHOLE_ORG", label: "Whole organization" },
+                { value: "ONLY_ADMINS", label: "Only admins" },
+              ]}
+              value={loginPolicy}
+              onChange={handlePolicyChange}
+              w={200}
+              allowDeselect={false}
+            />
+          </BoxSetting>
+        </Box>
 
         <Title order={3} mt={40}>
           Data Ingestion

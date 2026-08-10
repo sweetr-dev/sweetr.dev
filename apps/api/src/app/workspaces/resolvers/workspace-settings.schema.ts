@@ -5,6 +5,16 @@ export default /* GraphQL */ `
 
   type WorkspaceSettings {
     pullRequest: WorkspaceSettingsPullRequest!
+    auth: WorkspaceSettingsAuth!
+  }
+
+  type WorkspaceSettingsAuth {
+    loginPolicy: LoginPolicy!
+  }
+
+  enum LoginPolicy {
+    WHOLE_ORG
+    ONLY_ADMINS
   }
 
   type WorkspaceSettingsPullRequest {
@@ -30,6 +40,11 @@ export default /* GraphQL */ `
 
   input WorkspaceSettingsInput {
     pullRequest: WorkspaceSettingsPullRequestInput
+    auth: WorkspaceSettingsAuthInput
+  }
+
+  input WorkspaceSettingsAuthInput {
+    loginPolicy: LoginPolicy
   }
 
   input WorkspaceSettingsPullRequestInput {

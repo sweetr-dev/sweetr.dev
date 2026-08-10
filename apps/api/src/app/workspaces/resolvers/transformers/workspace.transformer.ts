@@ -4,7 +4,10 @@ import {
   Organization,
   Workspace,
 } from "@prisma/client";
-import { Workspace as ApiWorkspace } from "../../../../graphql-types";
+import {
+  Workspace as ApiWorkspace,
+  WorkspaceSettings as ApiWorkspaceSettings,
+} from "../../../../graphql-types";
 import {
   getWorkspaceAvatar,
   getWorkspaceHandle,
@@ -39,7 +42,7 @@ export const transformWorkspace = (
     handle: getWorkspaceHandle(workspace),
     avatar: getWorkspaceAvatar(workspace),
     gitUninstallUrl: getWorkspaceUninstallGitUrl(workspace),
-    settings: getWorkspaceSettings(workspace),
+    settings: getWorkspaceSettings(workspace) as unknown as ApiWorkspaceSettings,
     featureAdoption: safeParseFeatureAdoption(workspace.featureAdoption),
   };
 };
