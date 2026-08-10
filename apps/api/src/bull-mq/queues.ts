@@ -95,8 +95,9 @@ export function initQueues(): Record<SweetQueue, Queue> {
 
 export { queuesRecord as queues };
 
-function getQueue(queueName: SweetQueue): Queue {
+export const getQueue = (queueName: SweetQueue): Queue => {
   const record = initQueues();
+  
   return record[queueName];
 }
 
