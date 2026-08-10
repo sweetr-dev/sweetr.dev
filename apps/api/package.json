@@ -29,7 +29,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bull-board/fastify": "^6.19.0",
+    "@bull-board/api": "^8.6.0",
+    "@bull-board/fastify": "^8.6.0",
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
     "@envelop/generic-auth": "^7.0.0",
