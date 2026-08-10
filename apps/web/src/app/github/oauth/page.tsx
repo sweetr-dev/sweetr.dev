@@ -47,13 +47,8 @@ export const OAuthGithubPage = () => {
           "Could not verify the request origin, please authenticate again.",
         autoClose: false,
       });
-    } else {
-      showErrorNotification({
-        title: "Error",
-        message: "Something went wrong, please try again.",
-      });
     }
-
+    
     if (isGithubInstallSuccessCallback(new URL(window.location.href))) {
       const installationId = searchParams.get("installation_id");
 

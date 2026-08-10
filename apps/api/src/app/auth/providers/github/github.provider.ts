@@ -6,6 +6,7 @@ import {
   isError,
   GithubOAccessTokenResponse,
   GithubOAuthSuccess,
+  GithubOrgMembership,
   GithubUser,
   GithubUserEmail,
 } from "./github.types";
@@ -103,11 +104,23 @@ export const getUserInfo = async (accessToken: string) => {
     })
     .json<{ installations: Installation[]; total_count: number }>();
 
-  const [user, emails, installationsResponse] = await Promise.all([
-    requestUser,
-    requestEmail,
-    requestInstallations,
-  ]);
+  const requestOrgMemberships = httpClient
+    .get("https://api.github.com/user/memberships/orgs", {
+      responseType: "json",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .json<GithubOrgMembership[]>()
+    .catch(() => [] as GithubOrgMembership[]);
+
+  const [user, emails, installationsResponse, orgMemberships] =
+    await Promise.all([
+      requestUser,
+      requestEmail,
+      requestInstallations,
+      requestOrgMemberships,
+    ]);
 
   const primaryEmail = emails.find((email) => email.primary)?.email;
 
@@ -122,5 +135,6 @@ export const getUserInfo = async (accessToken: string) => {
     email: primaryEmail,
     emails,
     installations: installationsResponse.installations,
+    orgMemberships,
   };
 };

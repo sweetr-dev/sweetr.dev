@@ -110,7 +110,7 @@ export const UsersSettingsPage = () => {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Member</Table.Th>
-                <Table.Th>Role</Table.Th>
+                <Table.Th>GitHub Role</Table.Th>
                 <Table.Th>Last login</Table.Th>
               </Table.Tr>
             </Table.Thead>
@@ -140,7 +140,7 @@ export const UsersSettingsPage = () => {
                         variant="light"
                         color={user.role === "ADMIN" ? "blue" : "gray"}
                       >
-                        {user.role}
+                        Org {user.role}
                       </Badge>
                     )}
                   </Table.Td>

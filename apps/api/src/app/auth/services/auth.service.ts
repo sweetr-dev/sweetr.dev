@@ -12,6 +12,7 @@ import * as github from "../providers/github/github.provider";
 import { GithubUser } from "../providers/github/github.types";
 import { JWTPayload, Token } from "./auth.types";
 import { Installation as GitInstallation } from "@octokit/webhooks-types";
+import { GithubOrgMembership } from "../providers/github/github.types";
 import { logger } from "../../../lib/logger";
 import { captureException } from "../../../lib/sentry";
 import { BusinessRuleException } from "../../errors/exceptions/business-rule.exception";
@@ -43,7 +44,8 @@ export const loginWithGithub = async (
   await connectGitProfileToWorkspaces(
     gitProfile.id,
     githubUser.node_id,
-    githubUser.installations
+    githubUser.installations,
+    githubUser.orgMemberships
   );
 
   await getBypassRlsPrisma().user.update({
@@ -188,9 +190,17 @@ export const deleteUserByGitUserId = async (
 const connectGitProfileToWorkspaces = async (
   gitProfileId: number,
   gitId: string,
-  gitInstallations: GitInstallation[]
+  gitInstallations: GitInstallation[],
+  orgMemberships: GithubOrgMembership[]
 ) => {
   logger.info("connectUserToInstallations", { gitProfileId, gitInstallations });
+
+  const orgRoleByNodeId = new Map(
+    orgMemberships.map((m) => [
+      m.organization.node_id,
+      m.role.toUpperCase(),
+    ])
+  );
 
   const installationIds = gitInstallations.map((installation) =>
     installation.id.toString()
@@ -212,7 +222,11 @@ const connectGitProfileToWorkspaces = async (
       ],
     },
     include: {
-      workspace: true,
+      workspace: {
+        include: {
+          organization: true,
+        },
+      },
     },
   });
 
@@ -230,6 +244,11 @@ const connectGitProfileToWorkspaces = async (
 
   for (const installation of dbInstallations) {
     const workspaceId = installation.workspaceId;
+    const orgNodeId =
+      installation.workspace.organization?.gitOrganizationId;
+    const role = orgNodeId
+      ? orgRoleByNodeId.get(orgNodeId) ?? undefined
+      : undefined;
 
     logger.info("connectUserToInstallations: Adding missing memberships", {
       gitProfileId,
@@ -245,10 +264,11 @@ const connectGitProfileToWorkspaces = async (
           gitProfileId,
         },
       },
-      update: {},
+      update: role !== undefined ? { role } : {},
       create: {
         workspaceId,
         gitProfileId,
+        role: role ?? null,
       },
     });
 

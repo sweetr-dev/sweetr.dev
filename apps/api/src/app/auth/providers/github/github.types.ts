@@ -68,6 +68,21 @@ export interface GithubUserEmail {
   visibility: string;
 }
 
+export interface GithubOrgMembership {
+  url: string;
+  state: string;
+  role: string;
+  organization_url: string;
+  organization: {
+    login: string;
+    id: number;
+    node_id: string;
+    url: string;
+    avatar_url: string;
+    description: string | null;
+  };
+}
+
 export const isError = (
   response: GithubOAccessTokenResponse
 ): response is GithubError => "error" in response;
