@@ -12,7 +12,6 @@ import {
 } from "@mantine/core";
 import { parseISO } from "date-fns";
 import { IconUserPlus } from "@tabler/icons-react";
-import { useNavigate } from "react-router";
 import { Breadcrumbs } from "../../../components/breadcrumbs";
 import { PageContainer } from "../../../components/page-container";
 import { PageEmptyState } from "../../../components/page-empty-state";
@@ -27,7 +26,6 @@ import { WorkspaceUser } from "@sweetr/graphql-types/frontend/graphql";
 
 export const UsersSettingsPage = () => {
   const { workspace } = useWorkspace();
-  const navigate = useNavigate();
   const { openInfoModal } = useInfoModal();
 
   const {
