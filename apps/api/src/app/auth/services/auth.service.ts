@@ -270,7 +270,7 @@ const connectGitProfileToWorkspaces = async (
       create: {
         workspaceId,
         gitProfileId,
-        role: role ?? null,
+        role: role ?? "MEMBER",
       },
     });
 

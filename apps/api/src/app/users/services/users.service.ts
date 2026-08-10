@@ -1,11 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma, take } from "../../../prisma";
-
-interface PaginateWorkspaceUsersArgs {
-  cursor?: number;
-  query?: string;
-  limit?: number;
-}
+import { PaginateWorkspaceUsersArgs } from "./users.types";
 
 export const paginateWorkspaceUsers = async (
   workspaceId: number,

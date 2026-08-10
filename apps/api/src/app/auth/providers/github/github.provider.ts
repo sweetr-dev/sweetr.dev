@@ -106,6 +106,7 @@ export const getUserInfo = async (accessToken: string) => {
     })
     .json<{ installations: Installation[]; total_count: number }>();
 
+  // TO-DO: Support pagination
   const requestOrgMemberships = httpClient
     .get("https://api.github.com/user/memberships/orgs?per_page=100&state=active", {
       responseType: "json",
