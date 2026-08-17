@@ -1,4 +1,6 @@
-FROM node:24-bookworm-slim AS base
+# The build output is static assets, so the toolchain always runs on the native
+# build platform. Only the final nginx stage is built per target architecture.
+FROM --platform=$BUILDPLATFORM node:24-bookworm-slim AS base
 
 FROM base AS builder
 WORKDIR /app
@@ -7,7 +9,8 @@ COPY . .
 RUN npx turbo prune web --docker
 
 FROM base AS installer
-ARG TARGETARCH
+# BUILDARCH, not TARGETARCH: this stage runs on the build platform.
+ARG BUILDARCH
 WORKDIR /app
 
 # Won't build without copying eslint
@@ -15,7 +18,7 @@ COPY .eslintrc.js /app/
 COPY ./apps/web/nginx.conf /app/apps/web/nginx.conf
 COPY --from=builder /app/out/json/ .
 RUN npm install --include=optional \
-    && case "$TARGETARCH" in \
+    && case "$BUILDARCH" in \
         amd64) npm install --no-save @rollup/rollup-linux-x64-gnu ;; \
         arm64) npm install --no-save @rollup/rollup-linux-arm64-gnu ;; \
     esac

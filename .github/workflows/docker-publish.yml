@@ -57,8 +57,8 @@ jobs:
           push: false
           load: true
           tags: ${{ env.API_IMAGE }}:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
 
       - name: Start API container
         run: |
@@ -111,8 +111,8 @@ jobs:
           push: false
           load: true
           tags: ${{ env.WEB_IMAGE }}:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
 
       - name: Start Web container
         run: |
@@ -139,6 +139,7 @@ jobs:
   publish:
     needs: [validate-api, validate-web]
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       contents: read
 
@@ -168,8 +169,8 @@ jobs:
           tags: |
             ${{ env.API_IMAGE }}:${{ inputs.version }}
             ${{ env.API_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
 
       - name: Build and push Web image
         uses: docker/build-push-action@v6
@@ -181,5 +182,5 @@ jobs:
           tags: |
             ${{ env.WEB_IMAGE }}:${{ inputs.version }}
             ${{ env.WEB_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web

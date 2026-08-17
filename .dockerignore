@@ -1,0 +1,34 @@
+# Dependencies
+**/node_modules
+.pnp
+.pnp.js
+
+# VCS / CI
+.git
+.github
+
+# Build output & caches
+**/dist
+**/build
+**/coverage
+**/.turbo
+**/*.tsbuildinfo
+/out
+
+# Secrets & local config
+**/.env
+**/.env.*
+certs/*.cert
+certs/*.key
+*.pem
+
+# Logs
+**/*.log
+
+# Editor / tooling / OS
+.DS_Store
+.vscode
+.cursor
+.claude
+docker-compose.yml
+.dockerignore
